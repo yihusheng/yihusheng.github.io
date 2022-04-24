@@ -2,19 +2,23 @@
 <head>
 <meta charset="utf-8">
 <title>music</title>
-	<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#ffffff">
 <link rel="orange.svg" href="orange.svg" type="image/x-icon">
+<style>
+body {
+	/*加载背景图*/
+	background-image: url("logo.svg");
+	/* 背景图水平均居中 */
+	background-position:top;
+	/* 背景图不平铺 */
+	background-repeat: no-repeat;
+	/* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+	background-attachment: fixed;
+    /* 让背景图基于容器大小伸缩 */
+    background-size: 1080px;
+}
+</style>
 </head>
-<body style="width: auto; height: auto">
-<div align="center"> <img src="orange.svg" width="500" height="281"> </div>
-<i>
-<p style="text-align:center"> <a href="A/index.html" style="font-size:30px;">1</a> <a  style="font-size:30px;">/</a> <a href="B/index.html" style="font-size:30px;">2</a> </p>
-</i>
-<div align="center">
-  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=376417&auto=1&height=66"></iframe>
-  <p><i><a style="font-size:20px;"><br>
-  </a></i></p>
-  <p> <i><a style="font-size:20px;">+</a></i></p>
-</div>
-</body>
-</html>
+<body class="body" style="width: auto; height: auto">
+
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=376417&auto=1&height=66"></iframe>
