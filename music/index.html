@@ -9,33 +9,35 @@ body {
 	/*加载背景图*/
 	background-image: url("logo.svg");
 	/* 背景图水平均居中 */
-	background-position:top;
+	background-position: top;
 	/* 背景图不平铺 */
 	background-repeat: no-repeat;
 	/* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
 	background-attachment: fixed;
-    /* 让背景图基于容器大小伸缩 */
-    background-size: 1080px;
+	/* 让背景图基于容器大小伸缩 */
+	background-size: 1080px;
 }
 h1.text {
-position:absolute;
-left:150px;
-right:150px;
-top:400px
+	position: absolute;
+	left: 150px;
+	right: 150px;
+	top: 400px
 }
-wangyi {
-position:absolute;
-left:200px;
-right:200px;
-top:450px
+div {
+	border: 1px solid red;
+	width: 330px;
+	height: 86px;
+	position:absolute;
+	left: 150px;
+	right: 150px;
+	top: 450px;
+	bottom: 100px;
 }
 </style>
 </head>
 <body class="body" style="width: auto; height: auto">
- <h1 class="text" style="text-align:center;width:auto;height: -100px">
- <a href="A/index.html" style="font-size:30px;">1</a>
- <a style="font-size:30px;">/</a>
- <a href="B/index.html" style="font-size:30px;">2</a>
-</h1>
-<iframe class="wangyi" frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=376417&auto=1&height=66">
+<h1 class="text" style="text-align:center;width:auto;height: -100px"> <a href="A/index.html" style="font-size:30px;">1</a> <a style="font-size:30px;">/</a> <a href="B/index.html" style="font-size:30px;">2</a> </h1>
+<div class="div">
+  <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=376417&auto=1&height=66">
+</div>
 </iframe>
