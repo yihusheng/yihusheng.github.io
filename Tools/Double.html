@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>双字换算计算机</title>
+</head>
+<body>
+    <h1>双浮点运算计算器</h1>
+    初始数值：<input id="input" type="text" value="1" /><br><br>
+    双字数值：<input id="result" type="text" value="1072693248" /><br><br>
+    <input id="calculate" type="button" value="开始计算" /><br><br>
+    <h3>有能力的请支持下作者：【支付宝帐号137362300@qq.com】</h3><br>
+    <b>在SB修改器等修改工具，无法直接查找到数据的时候；可使用此计算器算出的对应数据进行查找。</b><br><br>
+    <b>直接查找数据：金币、经验、攻击力等属性</b><br><br>
+    <b>间接查找数据：任务获得金币、任务获得经验、成就中各种收益【成就内数据查找修改的成功率最高】</b><br><br>
+    <b>查找隐藏数据：升级时的属性增量【技能、人物血量、攻击等升级增量】、装备的基础属性及装备升级的属性增量等</b><br><br>
+    <b>如果该游戏做了数据保护或者服务器验证，那就GG了！</b><br><br>
+    <b>不过不管什么游戏，都会有数据漏洞，去发现吧！</b><br><br>
+    <b>---- 实用单机游戏 </b>
+</body>
+<script>
+    var button = window.document.getElementById("calculate");
+    var result = window.document.getElementById("result");
+    button.onclick = gogogo;
+    function checkNum() { //输入审查
+        var vnum1 = window.document.getElementById("input").value;
+        return isNaN(vnum1) ? null : vnum1;
+    }
+    function cal(a) { //计算过程
+        if (a != null) {
+            return 1072693248 + Math.pow(2, (20 - Math.floor(Math.log(a) / Math.log(2)))) * (a - Math.pow(2, (Math.floor(Math.log(a) / Math.log(2))))) + Math.pow(2, 20) * Math.floor(Math.log(a) / Math.log(2));
+        }
+    }
+    function coutRes(b) { //输出结果
+        if (b != null) {
+            result.value = b;
+        } else {
+            result.value = "数值不正确。";
+        }
+    }
+    function gogogo() { //清除上一次残留
+        result.value = "";
+        coutRes(cal(checkNum()));
+    }
+</script>
+</html>
