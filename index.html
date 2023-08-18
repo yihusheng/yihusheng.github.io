@@ -37,5 +37,12 @@ div {
 </head>
 <body class="body" style="text-align: center;width: auto; height: auto">
 <h1 class="text" style="text-align:center;width:auto;height: -100px"> <a href="music/index.html" style="font-size:30px;">Muisc</a> </h1>
+	<div id="app"></div>
+<script src="https://unpkg.com/webamp"></script>
+<script>
+    const app = document.getElementById("app")
+    const webamp = new Webamp();
+    webamp.renderWhenReady(app);
+</script>
 </body>
 </html>
