@@ -4,41 +4,46 @@
 <meta charset="utf-8">
 <title>music</title>
 <meta name="theme-color" content="#ffffff">
-<link rel="orange.svg" href="orange.svg" type="image/x-icon">
+<link rel="icon" href="orange.svg" type="image/x-icon">
 <style>
 body {
-	
-	/* 背景图水平均居中 */
-	background-position: top;
-	/* 背景图不平铺 */
-	background-repeat: no-repeat;
-	/* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
-	background-attachment: fixed;
-	/* 让背景图基于容器大小伸缩 */
-	background-size: auto;
+    /* 背景图水平均居中 */
+    background-position: center;
+    /* 背景图不平铺 */
+    background-repeat: no-repeat;
+    /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
+    background-attachment: fixed;
+    /* 让背景图基于容器大小伸缩 */
+    background-size: cover;
 }
 h1.text {
-	position: absolute;
-	left: 150px;
-	right: 150px;
-	top: 400px
+    position: absolute;
+    left: 150px;
+    top: 400px;
+    right: auto; /* 移除原来的right属性，因为我们要左对齐 */
+    bottom: auto; /* 移除原来的bottom属性 */
+    text-align: left; /* 设置文本左对齐 */
+    font-size: 50px; /* 设置字号为50px */
+    width: auto; /* 宽度自适应 */
+    height: auto; /* 高度自适应 */
+    margin: 0; /* 移除默认的外边距 */
+    padding: 0; /* 移除默认的内边距 */
 }
 div {
-	width: 330px;
-	height: 86px;
-	position:absolute;
-	left:auto;
-	right:0px;
-	top: 500px;
-	bottom: 100px;
+    width: 330px;
+    height: 86px;
+    position: absolute;
+    right: 0px;
+    top: 500px;
+    bottom: 100px;
 }
 </style>
 </head>
-<body class="body" style="text-align: center;width: auto; height: auto">
-	<h1 class="text" style="text-align:center;width:auto;height: -100px">
-	<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=32648305&auto=1&height=66"></iframe>
-	<a href="music/index.html" style="font-size:30px;">Muisc</a>
-	<a href="Tools/Webp2jpg" style="font-size:30px;">Webp2jpg</a> 
-	</h1>
+<body class="body" style="text-align: center; width: auto; height: auto">
+    <h1 class="text">
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=32648305&auto=1&height=66"></iframe>
+        <a href="music/index.html" style="font-size:30px;">Muisc</a>
+        <a href="Tools/Webp2jpg" style="font-size:30px;">Webp2jpg</a>
+    </h1>
 </body>
 </html>
