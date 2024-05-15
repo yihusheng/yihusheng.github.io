@@ -1,55 +1,49 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music</title>
-    <meta name="theme-color" content="#ffffff">
     <link rel="icon" href="orange.svg" type="image/x-icon">
     <!-- 引入 Material Design 3 CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500&family=Material+Icons&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@500&family=Material+Icons&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Sharp&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Two+Tone&display=swap" rel="stylesheet">
-    <link href="https://unpkg.com/@material/top-app-bar@latest/mdc.top-app-bar.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/@material/button@latest/mdc.button.min.css" rel="stylesheet">
-    <!-- 引入 Material Design 3 JS -->
-    <script src="https://unpkg.com/@material/top-app-bar@latest/mdc.top-app-bar.min.js"></script>
-    <script src="https://unpkg.com/@material/button@latest/mdc.button.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/14.0.0/material-components-web.min.css" rel="stylesheet">
     <style>
+        /* 自定义浅绿色主题 */
+        :root {
+            --mdc-theme-primary: #a8d5ba;
+            --mdc-theme-secondary: #87c7a1;
+            --mdc-theme-background: #e8f5e9;
+        }
+
         body {
-            background-color: #f5f5f5;
+            background-color: var(--mdc-theme-background);
             margin: 0;
             font-family: 'Roboto', sans-serif;
         }
-        .mdc-card {
-            width: 100%;
-            margin: 20px auto;
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
             padding: 20px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: #fff;
-        }
-        .mdc-button {
-            display: block;
-            width: calc(100% - 40px);
-            margin: 10px 20px;
-            font-size: 1.2rem;
-            text-transform: none;
         }
 
-        /* 响应式设计 */
-        @media screen and (max-width: 600px) {
-            .mdc-button {
-                width: calc(100% - 40px);
-                margin: 10px 20px;
-            }
+        .mdc-button {
+            margin-bottom: 8px;
+        }
+
+        .mdc-top-app-bar {
+            background-color: var(--mdc-theme-primary);
+        }
+
+        .mdc-card {
+            margin-bottom: 16px;
         }
     </style>
 </head>
+
 <body>
     <header class="mdc-top-app-bar">
         <div class="mdc-top-app-bar__row">
@@ -58,14 +52,30 @@
             </section>
         </div>
     </header>
-    <div class="mdc-card">
-        <a class="mdc-button mdc-button--outlined" href="music/index.html">Music</a>
-        <a class="mdc-button mdc-button--outlined" href="Tools/Webp2jpg">Webp2jpg</a>
-        <a class="mdc-button mdc-button--outlined" href="Tools/Metacubexd">Metacubexd</a>
-        <a class="mdc-button mdc-button--outlined" href="Tools/Double.html">Double</a>
+    <div class="container">
+        <div class="mdc-card">
+            <div class="mdc-card__primary-action">
+                <a class="mdc-button mdc-button--outlined" href="music/index.html">Music</a>
+            </div>
+            <div class="mdc-card__primary-action">
+                <a class="mdc-button mdc-button--outlined" href="Tools/Webp2jpg">Webp2jpg</a>
+            </div>
+            <div class="mdc-card__primary-action">
+                <a class="mdc-button mdc-button--outlined" href="Tools/Metacubexd">Metacubexd</a>
+            </div>
+            <div class="mdc-card__primary-action">
+                <a class="mdc-button mdc-button--outlined" href="Tools/Double.html">Double</a>
+            </div>
+        </div>
     </div>
+    <!-- 初始化 Material Design 3 组件 -->
     <script>
-        mdc.autoInit();
+        // 初始化按钮和卡片的 Material Design 3 样式
+        const buttons = document.querySelectorAll('.mdc-button');
+        buttons.forEach((button) => {
+            mdc.ripple.MDCRipple.attachTo(button);
+        });
     </script>
 </body>
+
 </html>
