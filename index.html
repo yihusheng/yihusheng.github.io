@@ -45,6 +45,14 @@
             margin-bottom: 16px;
             padding: 16px;
             background-color: white;
+            transition: box-shadow 0.3s ease-in-out;
+            border-radius: 16px;
+            box-shadow: none; /* 扁平化 */
+            border: 1px solid #e0e0e0; /* 扁平化 */
+        }
+
+        .mdc-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .mdc-typography--headline6 {
@@ -53,35 +61,43 @@
 
         .mdc-button {
             margin: 8px 0;
+            --mdc-theme-primary: #6200ee;
+            border-radius: 24px; /* 更圆的按钮 */
         }
 
         .mdc-list-item__text {
             font-size: 1.25rem;
         }
+
+        .mdc-ripple-surface {
+            overflow: hidden;
+            position: relative;
+            border-radius: 24px; /* 更圆的Ripple效果 */
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="mdc-card mdc-elevation--z4">
+        <div class="mdc-card mdc-elevation--z4 mdc-ripple-surface">
             <h2 class="mdc-typography--headline6">🌺🌸Tools</h2>
             <ul class="mdc-list">
                 <li class="mdc-list-item">
-                    <a class="mdc-button mdc-button--outlined" href="music/index.html">
+                    <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="music/index.html">
                         <span class="mdc-button__label">Music</span>
                     </a>
                 </li>
                 <li class="mdc-list-item">
-                    <a class="mdc-button mdc-button--outlined" href="Tools/Webp2jpg">
+                    <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Webp2jpg">
                         <span class="mdc-button__label">Webp2jpg</span>
                     </a>
                 </li>
                 <li class="mdc-list-item">
-                    <a class="mdc-button mdc-button--outlined" href="Tools/Metacubexd">
+                    <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Metacubexd">
                         <span class="mdc-button__label">Metacubexd</span>
                     </a>
                 </li>
                 <li class="mdc-list-item">
-                    <a class="mdc-button mdc-button--outlined" href="Tools/Double.html">
+                    <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Double.html">
                         <span class="mdc-button__label">Double</span>
                     </a>
                 </li>
