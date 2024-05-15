@@ -1,74 +1,70 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>music</title>
-<meta name="theme-color" content="#ffffff">
-<link rel="icon" href="orange.svg" type="image/x-icon">
-<!-- 引入Material Design 3 CSS -->
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.css" rel="stylesheet">
-<!-- 引入Material Design 3 JS -->
-<script src="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.js"></script>
-<style>
-body {
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    text-align: center;
-}
-h1.text {
-    position: absolute;
-    left: 150px;
-    top: 400px;
-    text-align: left;
-    font-size: 50px;
-    width: auto;
-    height: auto;
-    margin: 0;
-    padding: 0;
-}
-div {
-    width: 330px;
-    height: 86px;
-    position: absolute;
-    right: 0px;
-    top: 500px;
-    bottom: 100px;
-}
-a {
-    display: block;
-    margin: 10px 0;
-    font-size: 30px;
-    color: #000;
-    text-decoration: none;
-}
-.mdc-card {
-    margin: 20px auto;
-    padding: 20px;
-    max-width: 600px;
-    text-align: left;
-}
-</style>
+    <meta charset="utf-8">
+    <title>Music</title>
+    <meta name="theme-color" content="#ffffff">
+    <link rel="icon" href="orange.svg" type="image/x-icon">
+    <!-- 引入Material Design 3 CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.css" rel="stylesheet">
+    <!-- 引入Material Design 3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.js"></script>
+    <style>
+        body {
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            text-align: center;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 20px;
+            color: #333;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
+        .mdc-card {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            text-align: left;
+        }
+        .mdc-button {
+            display: block;
+            margin: 10px 0;
+            font-size: 1.2rem;
+            text-decoration: none;
+            color: #6200ee;
+        }
+    </style>
 </head>
-<body class="body">
-    <h1 class="text">
-                <div class="mdc-card">
-            <a class="mdc-button" href="music/index.html">
+<body>
+    <h1>Music</h1>
+    <div class="content">
+        <div class="mdc-card">
+            <a class="mdc-button mdc-button--outlined" href="music/index.html">
                 <span class="mdc-button__label">Music</span>
             </a>
-            <a class="mdc-button" href="Tools/Webp2jpg">
+            <a class="mdc-button mdc-button--outlined" href="Tools/Webp2jpg">
                 <span class="mdc-button__label">Webp2jpg</span>
             </a>
-            <a class="mdc-button" href="Tools/Metacubexd">
+            <a class="mdc-button mdc-button--outlined" href="Tools/Metacubexd">
                 <span class="mdc-button__label">Metacubexd</span>
             </a>
-            <a class="mdc-button" href="Tools/Double.html">
+            <a class="mdc-button mdc-button--outlined" href="Tools/Double.html">
                 <span class="mdc-button__label">Double</span>
             </a>
         </div>
-    </h1>
+    </div>
     <script>
         // Initialize Material Design components
         mdc.autoInit();
