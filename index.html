@@ -5,29 +5,29 @@
 <title>music</title>
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="orange.svg" type="image/x-icon">
+<!-- 引入Material Design 3 CSS -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.css" rel="stylesheet">
+<!-- 引入Material Design 3 JS -->
+<script src="https://cdn.jsdelivr.net/npm/@material/web@latest/dist/mdc.min.js"></script>
 <style>
 body {
-    /* 背景图水平均居中 */
     background-position: center;
-    /* 背景图不平铺 */
     background-repeat: no-repeat;
-    /* 当内容高度大于图片高度时，背景图像的位置相对于viewport固定 */
     background-attachment: fixed;
-    /* 让背景图基于容器大小伸缩 */
     background-size: cover;
+    text-align: center;
 }
 h1.text {
     position: absolute;
     left: 150px;
     top: 400px;
-    right: auto; /* 移除原来的right属性，因为我们要左对齐 */
-    bottom: auto; /* 移除原来的bottom属性 */
-    text-align: left; /* 设置文本左对齐 */
-    font-size: 50px; /* 设置字号为50px */
-    width: auto; /* 宽度自适应 */
-    height: auto; /* 高度自适应 */
-    margin: 0; /* 移除默认的外边距 */
-    padding: 0; /* 移除默认的内边距 */
+    text-align: left;
+    font-size: 50px;
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 0;
 }
 div {
     width: 330px;
@@ -37,15 +37,55 @@ div {
     top: 500px;
     bottom: 100px;
 }
+a {
+    display: block;
+    margin: 10px 0;
+    font-size: 30px;
+    color: #000;
+    text-decoration: none;
+}
+.mdc-card {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 600px;
+    text-align: left;
+}
+.music-player {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+iframe {
+    border: none;
+    width: 100%;
+    height: 86px;
+}
 </style>
 </head>
-<body class="body" style="text-align: center; width: auto; height: auto">
+<body class="body">
     <h1 class="text">
-        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=32648305&auto=1&height=66"></iframe>
-        <a href="music/index.html" style="font-size:30px;">Muisc</a>
-        <a href="Tools/Webp2jpg" style="font-size:30px;">Webp2jpg</a>
-        <a href="Tools/Metacubexd" style="font-size:30px;">Metacubexd</a>
-        <a href="Tools/Double.html" style="font-size:30px;">Double</a>
+        <div class="mdc-card">
+            <div class="music-player">
+                <iframe src="//music.163.com/outchain/player?type=2&id=1329745083&auto=1&height=66"></iframe>
+            </div>
+            <a class="mdc-button mdc-button--outlined" href="music/index.html">
+                <span class="mdc-button__label">Music</span>
+            </a>
+            <a class="mdc-button mdc-button--outlined" href="Tools/Webp2jpg">
+                <span class="mdc-button__label">Webp2jpg</span>
+            </a>
+            <a class="mdc-button mdc-button--outlined" href="Tools/Metacubexd">
+                <span class="mdc-button__label">Metacubexd</span>
+            </a>
+            <a class="mdc-button mdc-button--outlined" href="Tools/Double.html">
+                <span class="mdc-button__label">Double</span>
+            </a>
+        </div>
     </h1>
+    <script>
+        // Initialize Material Design components
+        mdc.autoInit();
+    </script>
 </body>
 </html>
