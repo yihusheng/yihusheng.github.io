@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music</title>
-    <link rel="icon" href="orange.svg" type="image/x-icon">
+    <title>Tools</title>
+    <link rel="icon" href="https://cdn.materialdesignicons.com/5.3.45/favicon/materialdesignicons.min.css" type="image/svg+xml">
     <!-- 引入 Google Fonts 和 Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- 引入 Material Design 3 CSS -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/material-components-web/14.0.0/material-components-web.min.css" rel="stylesheet">
     <style>
         body {
@@ -41,6 +38,14 @@
             box-sizing: border-box;
         }
 
+        .container1 {
+            margin-top: 16px;
+            padding: 16px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
         .mdc-card {
             margin-bottom: 16px;
             padding: 16px;
@@ -61,7 +66,8 @@
 
         .mdc-button {
             margin: 8px 0;
-            --mdc-theme-primary: #6200ee;
+            --mdc-theme-primary: #8f3e97; /* Monet's Purple */
+            --mdc-theme-on-primary: white; /* Text color on the primary color */
             border-radius: 24px; /* 更圆的按钮 */
         }
 
@@ -77,32 +83,46 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <header class="mdc-top-app-bar" role="banner">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <span class="mdc-top-app-bar__title">yihusheng.github.io</span>
+            </section>
+        </div>
+    </header>
+    <main class="container" role="main">
         <div class="mdc-card mdc-elevation--z4 mdc-ripple-surface">
-            <ul class="mdc-list">
-                <li class="mdc-list-item">🌺🌸Tools
-                </li>
-                <li class="mdc-list-item">Material 3 is the latest version of Google’s open-source design system. Design and build beautiful, usable products with Material 3.             
-                </li>
-                <li class="mdc-list-item">
+            <ul class="mdc-list" role="list">
+                <li class="mdc-list-item" role="listitem">#🌸Tools</li>
+                <li class="mdc-list-item" role="listitem">Material 3 is the latest version of Google’s open-source design system. Design and build beautiful, usable products with Material 3.</li>
+                <li class="mdc-list-item" role="listitem">
                     <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="music/index.html">
                         <span class="mdc-button__label">Music</span>
                     </a>
                 </li>
-                <li class="mdc-list-item">
+                <li class="mdc-list-item" role="listitem">
                     <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Webp2jpg">
                         <span class="mdc-button__label">Webp2jpg</span>
                     </a>
                 </li>
-                <li class="mdc-list-item">
+                <li class="mdc-list-item" role="listitem">
                     <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Metacubexd">
                         <span class="mdc-button__label">Metacubexd</span>
                     </a>
                 </li>
-                <li class="mdc-list-item">
+                <li class="mdc-list-item" role="listitem">
                     <a class="mdc-button mdc-button--outlined mdc-ripple-surface" href="Tools/Double.html">
                         <span class="mdc-button__label">Double</span>
                     </a>
+                </li>
+            </ul>
+        </div>
+    </main>
+    <div class="container1">
+        <div class="mdc-card mdc-elevation--z4 mdc-ripple-surface">
+            <ul class="mdc-list" role="list">
+                <li class="mdc-list-item" role="listitem">
+                    <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=1329745083&auto=1&height=66"></iframe>
                 </li>
             </ul>
         </div>
