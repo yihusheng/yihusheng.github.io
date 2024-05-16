@@ -1,40 +1,142 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>双字换算计算机</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>双浮点运算计算器</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <style>
+    :root {
+      --md3-primary: #6200EE; /* 主色 */
+      --md3-primary-dark: #3700B3; /* 主色加深 */
+      --md3-surface: #FFFFFF; /* 表面颜色 */
+      --md3-surface-variant: #FAFAFA; /* 表面变种颜色 */
+      --md3-on-primary: #FFFFFF; /* 主色上的文本颜色 */
+      --md3-on-surface: #000000; /* 表面上的文本颜色 */
+      --md3-outline: #E0E0E0; /* 轮廓颜色 */
+      --md3-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 阴影 */
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--md3-surface-variant);
+      color: var(--md3-on-surface);
+    }
+
+    h1 {
+      color: var(--md3-primary);
+      font-size: 24px;
+      font-weight: 500;
+      margin-top: 0;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--md3-outline);
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+      color: var(--md3-primary);
+    }
+
+    .input-field, .button {
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 24px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-field {
+      border: 1px solid var(--md3-outline);
+      background-color: var(--md3-surface-variant);
+      color: var(--md3-on-surface);
+    }
+
+    .input-field:focus {
+      border-color: var(--md3-primary);
+      background-color: var(--md3-surface);
+      box-shadow: 0 0 0 4px rgba(98, 0, 238, 0.1); /* 聚焦时的阴影效果 */
+      outline: none; /* 移除默认的聚焦样式 */
+    }
+
+    .button {
+      background-color: var(--md3-primary);
+      color: var(--md3-on-primary);
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .button:hover {
+      background-color: var(--md3-primary-dark);
+      transform: scale(1.05);
+    }
+
+    .button:active {
+      background-color: var(--md3-primary);
+      transform: scale(1);
+    }
+
+    .support-text {
+      color: #757575;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <h1>双浮点运算计算器</h1>
-    初始数值：<input id="input" type="text" value="1" /><br><br>
-    双字数值：<input id="result" type="text" value="1072693248" /><br><br>
-    <input id="calculate" type="button" value="开始计算" /><br><br>
-    <h3>有能力的请支持下作者：【支付宝帐号137362300@qq.com】</h3><br>
-        <b>---- 实用单机游戏 </b>
+  <h1>双浮点运算计算器</h1>
+  <label for="input">双字数值：</label>
+  <input id="input" class="input-field" type="text" value="1072693248">
+  <label for="result">初始数值：</label>
+  <input id="result" class="input-field" type="text" value="1">
+  <input id="calculate" class="button" type="button" value="开始计算">
+  <p class="support-text">有能力的请支持下作者：【支付宝帐号137362300@qq.com】</p>
+
+  <script>
+    document.getElementById("calculate").onclick = function() {
+      var input = document.getElementById("input").value;
+      var result = document.getElementById("result");
+      var inputNum = parseFloat(input);
+
+      if (isNaN(inputNum)) {
+        result.value = "数值不正确。";
+        return;
+      }
+
+      var resultValue = 1 + (inputNum - 1072693248) / Math.pow(2, 20);
+      result.value = resultValue % 1 === 0 ? resultValue.toFixed(0) : resultValue.toFixed(2);
+    }
+
+    // 让双字数值输入框输入时自动计算初始数值
+    document.getElementById("input").addEventListener("input", function() {
+      var input = this.value;
+      var result = document.getElementById("result");
+      var inputNum = parseFloat(input);
+
+      if (!isNaN(inputNum)) {
+        var resultValue = 1 + (inputNum - 1072693248) / Math.pow(2, 20);
+        result.value = resultValue % 1 === 0 ? resultValue.toFixed(0) : resultValue.toFixed(2);
+      }
+    });
+    
+    // 让初始数值输入框输入时自动计算双字数值
+    document.getElementById("result").addEventListener("input", function() {
+      var input = this.value;
+      var inputNum = parseFloat(input);
+
+      if (!isNaN(inputNum)) {
+        var resultValue = (inputNum - 1) * Math.pow(2, 20) + 1072693248;
+        document.getElementById("input").value = resultValue.toFixed(0);
+      }
+    });
+  </script>
 </body>
-<script>
-    var button = window.document.getElementById("calculate");
-    var result = window.document.getElementById("result");
-    button.onclick = gogogo;
-    function checkNum() { //输入审查
-        var vnum1 = window.document.getElementById("input").value;
-        return isNaN(vnum1) ? null : vnum1;
-    }
-    function cal(a) { //计算过程
-        if (a != null) {
-            return 1072693248 + Math.pow(2, (20 - Math.floor(Math.log(a) / Math.log(2)))) * (a - Math.pow(2, (Math.floor(Math.log(a) / Math.log(2))))) + Math.pow(2, 20) * Math.floor(Math.log(a) / Math.log(2));
-        }
-    }
-    function coutRes(b) { //输出结果
-        if (b != null) {
-            result.value = b;
-        } else {
-            result.value = "数值不正确。";
-        }
-    }
-    function gogogo() { //清除上一次残留
-        result.value = "";
-        coutRes(cal(checkNum()));
-    }
-</script>
 </html>
