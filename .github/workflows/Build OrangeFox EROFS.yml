@@ -1,4 +1,4 @@
-name: Build OrangeFox Recovery with EROFS
+name: Build OrangeFox Recovery
 
 on:
   push:
@@ -32,14 +32,11 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
 
-    - name: Configure recovery for EROFS
-      run: |
-            sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' android_device_xiaomi_raphael-orangefox/recovery/BoardConfig.mk
+    - name: Source build/envsetup.sh
+      run: source build/envsetup.sh
 
-    - name: Build OrangeFox Recovery
+    - name: Lunch and build OrangeFox Recovery
       run: |
-        cd android_device_xiaomi_raphael-orangefox
-        source build/envsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
 
@@ -47,4 +44,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: android_device_xiaomi_raphael-orangefox/out/target/product/raphael/recovery.img
+        path: out/target/product/raphael/recovery.img
