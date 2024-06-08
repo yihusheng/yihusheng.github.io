@@ -31,16 +31,16 @@ jobs:
       uses: android-actions/setup-android@v2
 
     - name: Clone OrangeFox repository
-      run: git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox android_device_xiaomi_raphael-orangefox
+      run: git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
 
     - name: Update BoardConfig.mk for EROFS
       run: |
-        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' android_device_xiaomi_raphael-orangefox/BoardConfig.mk
+        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' device/xiaomi/raphael/BoardConfig.mk
 
-    - name: Lunch and build OrangeFox Recovery
+    - name: Build OrangeFox Recovery
       run: |
-        cd android_device_xiaomi_raphael-orangefox
-        
+        cd device/xiaomi/raphael
+        source vendorsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
 
@@ -48,4 +48,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: android_device_xiaomi_raphael-orangefox/out/target/product/raphael/recovery.img
+        path: device/xiaomi/raphael/out/target/product/raphael/recovery.img
