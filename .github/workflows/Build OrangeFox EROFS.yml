@@ -1,12 +1,10 @@
-name: Build OrangeFox Recovery
+name: Build Recovery Image
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -16,52 +14,39 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
+    - name: Set up JDK 8
+      uses: actions/setup-java@v1
       with:
-        distribution: 'adopt'
-        java-version: '11'
+        java-version: 8
 
-    - name: Set up Android SDK
-      uses: android-actions/setup-android@v2
-      with:
-        api-level: 30
-        build-tools: 30.0.3
-
-    - name: Download and setup Repo tool
-      run: |
-        mkdir -p ~/bin
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
-        chmod a+x ~/bin/repo
-        echo 'export PATH=~/bin:$PATH' >> $GITHUB_ENV
-
-    - name: Initialize Repo
-      run: |
-        repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-11
-        repo sync
-
-    - name: Set up build environment
+    - name: Install required packages
       run: |
         sudo apt-get update
-        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
-
-    - name: Clone device specific repository
-      run: |
-        git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox.git device/xiaomi/raphael
+        sudo apt-get install -y openjdk-8-jdk
+        sudo apt-get install -y bc bison build-essential curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
         
-    - name: Update BoardConfig.mk for EROFS
+    - name: Setup repo command
       run: |
-        cd ~/orangefox/device/xiaomi/raphael
-        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' BoardConfig.mk
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+      env:
+        PATH: ~/bin:${{ github.workspace }}/bin:${{ env.PATH }}
 
-    - name: Lunch and build
+    - name: Sync the repository
+      run: |
+        repo init -u https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox -b twrp-12.1
+        repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune
+
+    - name: Set up environment
       run: |
         source build/envsetup.sh
         lunch twrp_raphael-eng
+
+    - name: Build recovery image
+      run: |
         mka recoveryimage
 
-    - name: Upload recovery image
-      if: success()
+    - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: recoveryimage
