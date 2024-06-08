@@ -31,9 +31,10 @@ jobs:
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
-
-    - name: Source build/envsetup.sh
-      run: source build/envsetup.sh
+      
+    - name: Configure recovery for EROFS
+      run: |
+        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' android_device_xiaomi_raphael-orangefox/BoardConfig.mk
 
     - name: Lunch and build OrangeFox Recovery
       run: |
