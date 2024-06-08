@@ -40,7 +40,7 @@ jobs:
     - name: Lunch and build OrangeFox Recovery
       run: |
         cd android_device_xiaomi_raphael-orangefox
-        source build/envsetup.sh
+        
         lunch twrp_raphael-eng
         mka recoveryimage
 
