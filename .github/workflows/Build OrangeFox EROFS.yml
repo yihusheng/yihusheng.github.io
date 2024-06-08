@@ -36,10 +36,9 @@ jobs:
 
     - name: Clone OrangeFox source
       run: |
-        git clone https://gitlab.com/OrangeFox/Recovery.git
-        cd Recovery
-        git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
-
+            git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
+                cd Recovery
+        
     - name: Configure kernel for EROFS
       run: |
         cd Recovery
