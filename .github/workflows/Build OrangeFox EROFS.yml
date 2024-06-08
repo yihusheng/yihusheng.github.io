@@ -1,0 +1,64 @@
+name: Build OrangeFox Recovery with EROFS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DEVICE: "<your_device>"
+      VENDOR: "<your_vendor>"
+      BRANCH: "fox_9.0"
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: '11'
+
+    - name: Install required packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y bc bison build-essential ccache curl flex g++-multilib gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev lib32z1-dev liblz4-tool libncurses5-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 30
+        ndk: '21.3.6528147'
+        cache-build-tools: true
+
+    - name: Clone OrangeFox source
+      run: |
+        git clone https://gitlab.com/OrangeFox/Recovery.git -b ${BRANCH}
+        cd Recovery
+        git clone https://github.com/${VENDOR}/${DEVICE}-twrp.git device/${VENDOR}/${DEVICE}
+
+    - name: Configure kernel for EROFS
+      run: |
+        cd Recovery/kernel/${VENDOR}/${DEVICE}
+        make menuconfig
+        echo "CONFIG_EROFS_FS=y" >> .config
+
+    - name: Build OrangeFox Recovery
+      run: |
+        cd Recovery
+        source build/envsetup.sh
+        lunch omni_${DEVICE}-eng
+        mka recoveryimage
+
+    - name: Upload recovery image
+      uses: actions/upload-artifact@v2
+      with:
+        name: recovery.img
+        path: out/target/product/${DEVICE}/recovery.img
