@@ -30,18 +30,28 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
 
+    - name: Clone minimal manifest
+      run: |
+        mkdir -p ~/orangefox
+        cd ~/orangefox
+        repo init -u https://gitlab.com/OrangeFox/Manifest.git -b fox_9.0
+        repo sync -j$(nproc --all)
+
     - name: Clone OrangeFox repository
-      run: git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
+      run: |
+        cd ~/orangefox
+        git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
 
     - name: Update BoardConfig.mk for EROFS
       run: |
-        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' device/xiaomi/raphael/BoardConfig.mk
+        cd ~/orangefox/device/xiaomi/raphael
+        sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' BoardConfig.mk
 
     - name: Build OrangeFox Recovery
       run: |
-        cd device/xiaomi/raphael
+        cd ~/orangefox
+        source build/envsetup.sh
         export FOX_BUILD_DEVICE=raphael
-        source vendorsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
 
@@ -49,4 +59,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: device/xiaomi/raphael/out/target/product/raphael/recovery.img
+        path: ~/orangefox/out/target/product/raphael/recovery.img
