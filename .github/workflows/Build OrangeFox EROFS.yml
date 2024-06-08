@@ -31,20 +31,14 @@ jobs:
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
-      with:
-        api-level: 30
-        ndk: '21.3.6528147'
-        cache-build-tools: true
 
-    - name: Configure kernel for EROFS
+    - name: Configure recovery for EROFS
       run: |
-        # Assuming the kernel source code is already in the right directory
-        cd kernel/xiaomi/raphael
-        if [ ! -f .config ]; then make defconfig; fi
-        echo "CONFIG_EROFS_FS=y" >> .config
+            sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' android_device_xiaomi_raphael-orangefox/recovery/BoardConfig.mk
 
     - name: Build OrangeFox Recovery
       run: |
+        cd android_device_xiaomi_raphael-orangefox
         source build/envsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
@@ -53,4 +47,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: out/target/product/raphael/recovery.img
+        path: android_device_xiaomi_raphael-orangefox/out/target/product/raphael/recovery.img
