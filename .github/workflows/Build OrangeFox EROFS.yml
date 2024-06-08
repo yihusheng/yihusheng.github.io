@@ -40,6 +40,7 @@ jobs:
     - name: Build OrangeFox Recovery
       run: |
         cd device/xiaomi/raphael
+        export FOX_BUILD_DEVICE=raphael
         source vendorsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
