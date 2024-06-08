@@ -15,8 +15,6 @@ jobs:
     steps:
     - name: Checkout source code
       uses: actions/checkout@v2
-      with:
-        repository: SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox
 
     - name: Set up JDK
       uses: actions/setup-java@v2
@@ -31,16 +29,18 @@ jobs:
 
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
-      
+
     - name: Clone OrangeFox repository
       run: git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox android_device_xiaomi_raphael-orangefox
-           cd android_device_xiaomi_raphael-orangefox
-    - name: Configure recovery for EROFS
+
+    - name: Update BoardConfig.mk for EROFS
       run: |
         sed -i 's/TARGET_USERIMAGES_USE_F2FS := true/TARGET_USERIMAGES_USE_F2FS := false/' android_device_xiaomi_raphael-orangefox/BoardConfig.mk
 
     - name: Lunch and build OrangeFox Recovery
       run: |
+        cd android_device_xiaomi_raphael-orangefox
+        source build/envsetup.sh
         lunch twrp_raphael-eng
         mka recoveryimage
 
@@ -48,4 +48,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: out/target/product/raphael/recovery.img
+        path: android_device_xiaomi_raphael-orangefox/out/target/product/raphael/recovery.img
