@@ -38,6 +38,7 @@ jobs:
 
     - name: Configure kernel for EROFS
       run: |
+        # Assuming the kernel source code is already in the right directory
         cd kernel/xiaomi/raphael
         if [ ! -f .config ]; then make defconfig; fi
         echo "CONFIG_EROFS_FS=y" >> .config
@@ -45,7 +46,7 @@ jobs:
     - name: Build OrangeFox Recovery
       run: |
         source build/envsetup.sh
-        lunch omni_raphael-eng
+        lunch twrp_raphael-eng
         mka recoveryimage
 
     - name: Upload recovery image
