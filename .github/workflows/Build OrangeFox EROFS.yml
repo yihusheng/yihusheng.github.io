@@ -36,14 +36,17 @@ jobs:
 
     - name: Clone OrangeFox source
       run: |
-        git clone https://gitlab.com/OrangeFox/Recovery.git -b ${BRANCH}
+        git clone https://gitlab.com/OrangeFox/Recovery.git
         cd Recovery
         git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
 
     - name: Configure kernel for EROFS
       run: |
-        cd Recovery/kernel/xiaomi/raphael
-        make menuconfig
+        cd Recovery
+        # 假设内核源码位于 kernel/xiaomi/raphael 并已经存在 .config 文件
+        cd kernel/xiaomi/raphael
+        # 如果 .config 文件不存在，可以通过 make defconfig 生成默认配置
+        if [ ! -f .config ]; then make defconfig; fi
         echo "CONFIG_EROFS_FS=y" >> .config
 
     - name: Build OrangeFox Recovery
