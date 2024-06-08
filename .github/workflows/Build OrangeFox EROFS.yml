@@ -11,10 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      DEVICE: "<your_device>"
-      VENDOR: "<your_vendor>"
-      BRANCH: "fox_9.0"
 
     steps:
     - name: Checkout source code
@@ -42,11 +38,11 @@ jobs:
       run: |
         git clone https://gitlab.com/OrangeFox/Recovery.git -b ${BRANCH}
         cd Recovery
-        git clone https://github.com/${VENDOR}/${DEVICE}-twrp.git device/${VENDOR}/${DEVICE}
+        git clone https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
 
     - name: Configure kernel for EROFS
       run: |
-        cd Recovery/kernel/${VENDOR}/${DEVICE}
+        cd Recovery/kernel/xiaomi/raphael
         make menuconfig
         echo "CONFIG_EROFS_FS=y" >> .config
 
@@ -54,11 +50,11 @@ jobs:
       run: |
         cd Recovery
         source build/envsetup.sh
-        lunch omni_${DEVICE}-eng
+        lunch omni_raphael-eng
         mka recoveryimage
 
     - name: Upload recovery image
       uses: actions/upload-artifact@v2
       with:
         name: recovery.img
-        path: out/target/product/${DEVICE}/recovery.img
+        path: out/target/product/raphael/recovery.img
