@@ -21,9 +21,8 @@ jobs:
     
     - name: Sync the repository
       run: |
-        repo init -u https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox -b twrp-12.1
-        repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune
-
+        git clone -b twrp-12.1 https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox
+  
     - name: Set up environment
       run: |
         source build/envsetup.sh
