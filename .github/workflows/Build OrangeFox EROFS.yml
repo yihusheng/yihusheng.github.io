@@ -32,8 +32,6 @@ jobs:
         cd ~/android/lineage
         repo init -u https://android.googlesource.com/platform/manifest
         repo sync -j$(nproc)
-      env:
-        PATH: ~/bin:$PATH
 
     - name: 克隆设备树
       run: |
