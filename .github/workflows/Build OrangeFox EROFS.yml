@@ -12,19 +12,22 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: 安装依赖
       run: |
         sudo apt-get update
-        sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
+        sudo apt-get install -y 
+          git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 
+          libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev 
+          libxml2-utils xsltproc unzip fontconfig wget
+
     - name: 安装 repo 工具
       run: |
         mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
-        echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
-        source ~/.bashrc
+        echo 'export PATH=~/bin:$PATH' >> $GITHUB_ENV
 
     - name: 初始化和同步 AOSP 代码库
       run: |
@@ -32,6 +35,8 @@ jobs:
         cd ~/android/lineage
         repo init -u https://android.googlesource.com/platform/manifest
         repo sync -j$(nproc)
+      env:
+        PATH: ~/bin:$PATH
 
     - name: 克隆设备树
       run: |
@@ -42,16 +47,22 @@ jobs:
       run: |
         cd ~/android/lineage
         source build/envsetup.sh
+      env:
+        PATH: ~/bin:$PATH
 
     - name: 选择构建目标
       run: |
         cd ~/android/lineage
         lunch twrp_raphael-eng
+      env:
+        PATH: ~/bin:$PATH
 
     - name: 构建 Recovery 镜像
       run: |
         cd ~/android/lineage
         mka recoveryimage
+      env:
+        PATH: ~/bin:$PATH
 
     - name: 上传构建产物
       uses: actions/upload-artifact@v2
