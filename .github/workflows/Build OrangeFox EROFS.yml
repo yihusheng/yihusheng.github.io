@@ -25,6 +25,7 @@ jobs:
   
     - name: Set up environment
       run: |
+        git clone https://android.googlesource.com/platform/build
         source build/envsetup.sh
         lunch twrp_raphael-eng && mka recoveryimage
 
