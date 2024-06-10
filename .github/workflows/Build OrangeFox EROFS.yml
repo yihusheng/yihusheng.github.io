@@ -14,24 +14,32 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install required packages
+    - name: 安装依赖
       run: |
         sudo apt-get update
         sudo apt-get install repo git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
     
-    - name: Sync the repository
+    - name: 克隆rec
       run: |
         git clone -b twrp-12.1 https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox
   
-    - name: Set up environment
+    - name: 同步设备树
       run: |
-        git clone https://android.googlesource.com/platform/build
-        source build/envsetup.sh
-        lunch twrp_raphael-eng && mka recoveryimage
+           repo init -u https://android.googlesource.com/platform/manifest
+           repo sync
 
-    - name: Build recovery image
+    - name: 移动目录
       run: |
-        mka recoveryimage
+           mkdir -p device/xiaomi
+           mv android_device_xiaomi_raphael-orangefox device/xiaomi/raphael
+           
+    - name: 初始化环境
+      run: |
+           source build/envsetup.sh
+
+    - name: 构建rec
+      run: |
+           lunch twrp_raphael-eng && mka recoveryimage
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
