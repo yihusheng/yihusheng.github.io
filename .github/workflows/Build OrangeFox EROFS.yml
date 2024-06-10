@@ -32,7 +32,7 @@ jobs:
       run: |
         mkdir -p ~/android/lineage
         cd ~/android/lineage
-        repo init -u https://android.googlesource.com/platform/manifest
+        repo init -u https://github.com/omnirom/android
         repo sync -j$(nproc)
 
     - name: 克隆设备树
