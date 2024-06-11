@@ -35,18 +35,18 @@ jobs:
         sudo mkdir -p /mnt/android/lineage
         cd /mnt/android/lineage
         sudo repo init -u https://android.googlesource.com/platform/manifest
-        repo sync -j$(nproc)
+        sudo repo sync -j$(nproc)
         
 
     - name: 克隆设备树
       run: |
-        mkdir -p /mnt/android/lineage/device/xiaomi
-        git clone -b twrp-12.1 https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox ~/android/lineage/device/xiaomi/raphael
+        sudo mkdir -p /mnt/android/lineage/device/xiaomi
+        sudo git clone -b twrp-12.1 https://github.com/SOVIET-ANDROID/android_device_xiaomi_raphael-orangefox ~/android/lineage/device/xiaomi/raphael
 
     - name: 设置环境变量
       run: |
         cd /mnt/android/lineage
-        source build/envsetup.sh
+        sudo source build/envsetup.sh
 
     - name: 选择构建目标
       run: |
