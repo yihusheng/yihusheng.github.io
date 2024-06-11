@@ -30,6 +30,7 @@ jobs:
     
     - name: 初始化和同步 AOSP 代码库
       run: |
+        df -h
         mkdir -p ~/android/lineage
         cd ~/android/lineage
         repo init -u https://github.com/omnirom/android
