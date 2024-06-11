@@ -24,7 +24,7 @@ jobs:
       run: |
         wget https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
         ls
-        sudo -E apt-get -qq install ./todesk-v4.7.2.0-amd64.deb
+        sudo apt-get install -y ./todesk-v4.7.2.0-amd64.deb
         todesk
         
     - name: 安装repo
