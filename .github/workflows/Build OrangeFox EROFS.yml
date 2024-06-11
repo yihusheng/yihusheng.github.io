@@ -13,7 +13,14 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-
+      
+    - name: 安装控制
+      run: |
+        wget https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
+        sudo apt-get install ./todesk-v4.7.2.0-amd64.deb
+        /opt/todesk/bin/ToDesk_Host -deploy xinxu.xin
+        todesk
+      
     - name: 安装依赖
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
