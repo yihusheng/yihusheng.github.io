@@ -17,6 +17,7 @@ jobs:
     - name: 安装控制
       run: |
         wget https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
+        sudo apt-get install libappindicator3-dev
         sudo apt-get -f install -y  ./todesk-v4.7.2.0-amd64.deb
         todesk
       
