@@ -16,8 +16,8 @@ jobs:
       
     - name: 安装控制
       run: |
-        deb package:https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
-        sudo apt-get install ./todesk-v4.7.2.0-amd64.deb
+        wget https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
+        sudo dpkg -i install ./todesk-v4.7.2.0-amd64.deb
         todesk
       
     - name: 安装依赖
