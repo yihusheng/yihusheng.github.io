@@ -18,7 +18,7 @@ jobs:
       run: |
         wget https://dl.todesk.com/linux/todesk-v4.7.2.0-amd64.deb
         sudo apt-get install ./todesk-v4.7.2.0-amd64.deb
-        /opt/todesk/bin/ToDesk_Host -deploy xinxu.xin
+        
         todesk
       
     - name: 安装依赖
