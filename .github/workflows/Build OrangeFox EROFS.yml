@@ -31,10 +31,10 @@ jobs:
     
     - name: 初始化和同步 AOSP 代码库
       run: |
-        ls /mnt
+        mount | grep /mnt
         sudo mkdir -p /mnt/android/lineage
         cd /mnt/android/lineage
-        repo init -u https://android.googlesource.com/platform/manifest
+        sudo repo init -u https://android.googlesource.com/platform/manifest
         repo sync -j$(nproc)
         
 
