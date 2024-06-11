@@ -25,11 +25,13 @@ jobs:
         curl https://storage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo
         chmod +x /usr/local/bin/repo
         repo --version
+        
 
 
     
     - name: 初始化和同步 AOSP 代码库
       run: |
+        ls /mnt
         sudo mkdir -p /mnt/android/lineage
         cd /mnt/android/lineage
         repo init -u https://android.googlesource.com/platform/manifest
