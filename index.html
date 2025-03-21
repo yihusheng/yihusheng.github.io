@@ -3,184 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>古典系洛丽塔 - Victoria Garden</title>
-    <!-- 引入字体和库 -->
-    <link href="https://fonts.googleapis.com/css2?family=Caudex&family=Cormorant+Garamond&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <title>Lolita 工具箱</title>
     <style>
-        /* 基础样式 */
-        :root {
-            --ivory: #F5F1E6;
-            --forest: #3D4A3F;
-            --gold: #B8860B;
-            --brown: #4A3F35;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Cormorant Garamond', serif;
-            background: url('victoria-pattern.png') repeat;
-            color: var(--brown);
+            background: #ffb3c6 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+            font-family: 'Times New Roman', serif;
+            color: #4d2e2e;
         }
 
-        /* 导航栏 */
-        .velvet-nav {
-            background: linear-gradient(160deg, #2a2a2a 0%, var(--forest) 100%);
-            padding: 1rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 蕾丝边框 */
+        .lace-border {
+            background: 
+                linear-gradient(45deg, #fff5f9 25%, transparent 25%),
+                linear-gradient(-45deg, #fff5f9 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #fff5f9 75%),
+                linear-gradient(-45deg, transparent 75%, #fff5f9 75%);
+            background-size: 20px 20px;
+            background-color: #fff0f5;
+            border: 3px solid #ffffff;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px;
             position: relative;
         }
 
-        .velvet-nav::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: linear-gradient(to right, 
-                transparent 20%,
-                var(--gold) 50%,
-                transparent 80%
-            );
-            opacity: 0.6;
+        .header h1 {
+            font-family: 'Pacifico', cursive;
+            font-size: 3em;
+            color: #c71585;
+            text-shadow: 2px 2px 0px #ffffff;
         }
 
-        /* 烫金标题效果 */
-        .gilded-title {
-            font-family: 'Caudex', serif;
-            color: var(--ivory);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3),
-                        -1px -1px 0 var(--gold);
+        /* 导航菜单 */
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            background: #fff5f9;
+            border: 2px solid #ffffff;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .nav-item:hover {
+            background: #ffd1dc;
+            transform: translateY(-2px);
+        }
+
+        /* 工具卡片 */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .tool-card {
+            background: #fff5f9;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ffffff;
             position: relative;
-            display: inline-block;
+            transition: transform 0.3s;
         }
 
-        /* 3D展示容器 */
-        #dress-viewer {
-            width: 100%;
-            height: 500px;
-            background: rgba(245,241,230,0.9);
-            border: 2px solid var(--gold);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* 古典卡片设计 */
-        .vintage-card {
-            background: var(--ivory);
-            border: 1px solid var(--gold);
-            padding: 1.5rem;
-            position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .vintage-card:hover {
+        .tool-card:hover {
             transform: translateY(-5px);
         }
 
-        .vintage-card::before {
+        .tool-card::before {
             content: '';
             position: absolute;
             top: -10px;
             left: -10px;
             right: -10px;
             bottom: -10px;
-            background: url('lace-border.png');
-            opacity: 0.3;
-            pointer-events: none;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAMUlEQVQ4T2NkYGAQYcAKxv8QdCAYGBj+M4hDMBiVgQoYh0EciImJQSwGsQgHYhEOAPEPCQkQ9QhyAAAAAElFTkSuQmCC');
+            opacity: 0.1;
+            z-index: -1;
         }
 
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .velvet-nav {
-                display: none; /* 移动端显示抽屉菜单 */
-            }
-            #mobile-menu {
-                display: block;
-                background: var(--forest);
-                /* 珍珠拉手样式 */
-            }
+        /* 按钮样式 */
+        .btn {
+            background: #ff69b4;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 2px solid #ffffff;
+            cursor: pointer;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* 花朵装饰 */
+        .flower-decor {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMTIgMkM5LjI0MyAyIDcgNC4yNDMgNyA3YzAgMi4zNTcgMS44NTUgNC4zOTYgNC4wOTkgNS4yNjMtMS4xMDkgMS4wNTktMS43ODcgMi41MDItMS44NzcgNC4wMzdIMTJWMjJIMnYtM2g3djEuMDM5QzkuNDA1IDE3LjQyMSAxMCAxNS44NzEgMTAgMTRjMC00LjQxOCAzLjU4Mi04IDgtOHM4IDMuNTgyIDggOGMwIDEuODcxLS41OTUgMy40MjEtMSA0Ljk2OVYxOUgydjNoMTB2LTUuNjk5Yy0uMDktMS41MzUtLjc2OC0yLjk3OC0xLjg3Ny00LjAzN0MxNS4xNDUgMTEuMzk2IDE3IDkuMzU3IDE3IDdjMC0yLjc1Ny0yLjI0My01LTUtNXoiLz48L3N2Zz4=') no-repeat center;
+            background-size: contain;
+            opacity: 0.3;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- 导航栏 -->
-    <nav class="velvet-nav">
-        <div class="gilded-title">Victoria Garden</div>
-        <div class="nav-item pearl-separator">历史典藏</div>
-        <div class="nav-item pearl-separator">当季系列</div>
-        <div class="nav-item pearl-separator">文化沙龙</div>
-    </nav>
+    <div class="container">
+        <div class="lace-border">
+            <div class="header">
+                <h1>Lolita Tool Box</h1>
+                <div class="flower-decor" style="top: 10px; left: 20px;"></div>
+                <div class="flower-decor" style="top: 10px; right: 20px; transform: scaleX(-1);"></div>
+            </div>
 
-    <!-- 3D服饰展示区 -->
-    <section id="dress-viewer">
-        <canvas id="dress-canvas"></canvas>
-        <div class="dress-info">
-            <h2>维多利亚晨礼服</h2>
-            <p>1890年代复兴设计</p>
-        </div>
-    </section>
+            <nav class="nav-menu">
+                <div class="nav-item">图片工具</div>
+                <div class="nav-item">文本编辑</div>
+                <div class="nav-item">格式转换</div>
+                <div class="nav-item">密码生成</div>
+            </nav>
 
-    <!-- 商品卡片 -->
-    <div class="vintage-grid">
-        <div class="vintage-card">
-            <h3>洛可可茶会裙</h3>
-            <p>18世纪法国宫廷灵感</p>
-            <button class="gilded-button">查看详情</button>
+            <div class="tool-grid">
+                <div class="tool-card">
+                    <h3>图片压缩</h3>
+                    <p>支持JPG/PNG格式压缩</p>
+                    <button class="btn">立即使用</button>
+                </div>
+                <div class="tool-card">
+                    <h3>文字加密</h3>
+                    <p>可爱的加密算法</p>
+                    <button class="btn">立即使用</button>
+                </div>
+                <div class="tool-card">
+                    <h3>PDF转换</h3>
+                    <p>多种格式转换</p>
+                    <button class="btn">立即使用</button>
+                </div>
+            </div>
         </div>
-        <!-- 更多卡片... -->
     </div>
-
-    <script>
-        // Three.js 3D初始化
-        const init3DViewer = () => {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, 
-                window.innerWidth / window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({
-                canvas: document.querySelector('#dress-canvas'),
-                alpha: true
-            });
-
-            // 材质设置
-            const laceTexture = new THREE.TextureLoader().load('lace-pattern.jpg');
-            const dressMaterial = new THREE.MeshPhongMaterial({
-                color: 0xF5F1E6,
-                map: laceTexture,
-                shininess: 100
-            });
-
-            // 创建裙装模型
-            const dressGeometry = new THREE.CylinderGeometry(5, 7, 10, 32);
-            const dress = new THREE.Mesh(dressGeometry, dressMaterial);
-            scene.add(dress);
-
-            // 灯光设置
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            const pointLight = new THREE.PointLight(0xB8860B, 1);
-            pointLight.position.set(10, 10, 10);
-            scene.add(ambientLight, pointLight);
-
-            // 动画循环
-            function animate() {
-                requestAnimationFrame(animate);
-                dress.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        // GSAP动画
-        gsap.from(".vintage-card", {
-            duration: 1.5,
-            y: 100,
-            opacity: 0,
-            stagger: 0.2,
-            ease: "power4.out"
-        });
-
-        // 初始化3D查看器
-        window.addEventListener('load', init3DViewer);
-    </script>
 </body>
 </html>
