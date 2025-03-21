@@ -3,136 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lolita Tools</title>
-    <!-- 新增字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <title>Lolita Material</title>
+    <!-- 新增维多利亚风格字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Berkshire+Swash&family=Material+Symbols+Outlined" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #FFB7C5; /* 樱花粉 */
-            --secondary-color: #FFF3F5; /* 浅粉白 */
-            --accent-color: #FF69B4; /* 热情粉 */
-            --text-color: #6D2E46; /* 深紫红 */
+            --md-lolita-primary: #FFF0F5;  /* 香槟玫瑰色 */
+            --md-lolita-secondary: #FFE4E1; /* 藕荷色 */
+            --md-lolita-accent: #DE3163;    /* 樱桃红 */
+            --md-lolita-gold: #D4AF37;      /* 复古金 */
+            --md-lolita-lace: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                var(--md-lolita-gold) 10px,
+                var(--md-lolita-gold) 12px
+            );
         }
 
-        body {
-            background: var(--secondary-color) url('https://www.toptal.com/designers/subtlepatterns/uploads/lace_pattern.png');
-            font-family: 'Dancing Script', cursive;
-        }
-
-        .mdc-top-app-bar {
-            background: var(--primary-color) !important;
-            box-shadow: 0 4px 20px rgba(255, 183, 197, 0.3);
-            border-bottom: 2px solid var(--accent-color);
-        }
-
-        .mdc-top-app-bar__title {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
-        }
-
-        .container {
-            margin-top: 80px;
-        }
-
+        /* 混合MD3的几何形状与洛丽塔装饰 */
         .mdc-card {
-            background: linear-gradient(145deg, #fff5f7 0%, #ffe9ec 100%);
-            border: 2px solid var(--primary-color);
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(255, 183, 197, 0.15);
+            background: 
+                linear-gradient(175deg, 
+                    var(--md-lolita-primary) 30%, 
+                    var(--md-lolita-secondary)),
+                var(--md-lolita-lace);
+            background-blend-mode: soft-light;
+            border-radius: 24px;
+            border: 3px double var(--md-lolita-gold);
             position: relative;
-            overflow: visible;
-            margin-bottom: 24px;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .mdc-card::before {
             content: '';
             position: absolute;
-            top: -10px; left: -10px;
-            right: -10px; bottom: -10px;
-            background: url('https://www.transparenttextures.com/patterns/vintage-floral.png');
-            opacity: 0.1;
+            inset: -15px;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50Q40 15 60 50Q80 85 80 50" fill="none" stroke="%23DE3163" stroke-width="2" opacity="0.2"/></svg>');
             z-index: -1;
-            border-radius: 20px;
         }
 
-        .mdc-typography--headline6 {
-            font-family: 'Playfair Display', serif;
-            color: var(--text-color);
-            font-size: 2.2rem;
-            border-bottom: 2px dotted var(--accent-color);
-            padding-bottom: 8px;
-        }
-
+        /* 按钮的维多利亚式改造 */
         .mdc-button {
-            --mdc-theme-primary: var(--accent-color);
-            --mdc-theme-on-primary: white;
-            font-family: 'Playfair Display', serif;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            border: 2px solid var(--accent-color) !important;
-            background: rgba(255,255,255,0.8);
+            --mdc-theme-primary: var(--md-lolita-accent);
+            border: 2px solid var(--md-lolita-gold) !important;
+            background: 
+                linear-gradient(145deg, 
+                    rgba(255,240,245,0.9) 0%,
+                    rgba(255,228,225,0.7) 100%),
+                url('https://img.icons8.com/ios/50/000000/vintage-flower.png');
+            background-size: cover;
+            padding: 16px 32px;
+            font-family: 'Cinzel Decorative', cursive;
+            letter-spacing: 1px;
+            box-shadow: 
+                0 4px 6px rgba(0,0,0,0.1),
+                inset 0 0 12px rgba(255,255,255,0.5);
         }
 
-        .mdc-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.3);
+        .mdc-button__label {
+            position: relative;
+            padding-right: 28px;
         }
 
-        .mdc-list-item iframe {
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
-            background: white;
-        }
-
-        /* 新增蝴蝶结装饰 */
-        .container::after {
+        .mdc-button__label::after {
             content: '🎀';
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 3rem;
-            opacity: 0.2;
-            transform: rotate(15deg);
+            position: absolute;
+            right: 0;
+            filter: drop-shadow(0 2px 1px rgba(0,0,0,0.1));
         }
 
-        /* 按钮图标装饰 */
-        .mdc-button__label::before {
-            content: '✦';
-            margin-right: 8px;
-            color: var(--accent-color);
+        /* 顶部应用栏的蕾丝改造 */
+        .mdc-top-app-bar {
+            background: 
+                linear-gradient(160deg, 
+                    var(--md-lolita-accent) 20%, 
+                    #B03060),
+                var(--md-lolita-lace);
+            background-blend-mode: overlay;
+            height: 80px;
+            box-shadow: 0 8px 32px rgba(222,49,99,0.2);
+        }
+
+        .mdc-top-app-bar__title {
+            font-family: 'Berkshire Swash', cursive;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.3);
+            background: linear-gradient(45deg, #FFF0F5, #FFE4E1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 复杂蕾丝边框系统 */
+        .mdc-card--lace {
+            padding: 24px;
+            margin: 32px;
+            position: relative;
+        }
+
+        .mdc-card--lace::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            background: 
+                linear-gradient(45deg, 
+                    transparent 15px,
+                    var(--md-lolita-gold) 16px,
+                    transparent 17px),
+                linear-gradient(-45deg, 
+                    transparent 15px,
+                    var(--md-lolita-gold) 16px,
+                    transparent 17px);
+            background-size: 32px 32px;
+            z-index: -1;
+        }
+
+        /* 动态蕾丝悬停效果 */
+        .mdc-card:hover {
+            transform: translateY(-4px) rotate(0.5deg);
+            box-shadow: 
+                0 12px 24px rgba(222,49,99,0.3),
+                inset 0 0 24px rgba(255,255,255,0.4);
+        }
+
+        /* 音乐播放器定制 */
+        .music-frame {
+            border: 3px solid var(--md-lolita-accent);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 
+                inset 0 0 12px rgba(222,49,99,0.1),
+                0 0 24px rgba(222,49,99,0.1);
         }
     </style>
 </head>
 <body>
     <header class="mdc-top-app-bar">
         <div class="mdc-top-app-bar__row">
-            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
-                <span class="mdc-top-app-bar__title">🌸 Lolita Tools</span>
+            <section class="mdc-top-app-bar__section">
+                <span class="mdc-top-app-bar__title">Lolita Material Design</span>
             </section>
         </div>
     </header>
 
-    <!-- 保持原有容器结构，修改class名称 -->
     <main class="container">
-        <div class="mdc-card">
-            <h2 class="mdc-typography--headline6"># 🎀 Sweet Tools</h2>
-            <p style="color: var(--text-color); font-size: 1.2rem;">
-                Discover magical tools wrapped in lace and roses. Made with ❤️ for lovely creators!
+        <div class="mdc-card mdc-card--lace">
+            <h2 class="mdc-typography--headline4" style="color: var(--md-lolita-accent);">
+                <span class="material-symbols-outlined">celebration</span>
+                ✨ Enchanted Tools
+            </h2>
+            <p style="color: var(--md-lolita-accent); font-family: 'Berkshire Swash';">
+                Where modern design meets vintage charm. Crafted with love and lace.
             </p>
         </div>
 
-        <!-- 按钮组卡片 -->
-        <div class="mdc-card">
-            <a class="mdc-button mdc-button--outlined" href="music/index.html">
-                <span class="mdc-button__label">Music Box</span>
+        <div class="mdc-card mdc-card--lace">
+            <a class="mdc-button mdc-button--raised" href="#">
+                <span class="mdc-button__label">Rose Music Box</span>
             </a>
-            <!-- 其他按钮保持相同结构... -->
+            <!-- 更多按钮... -->
         </div>
 
-        <!-- 音乐播放器卡片 -->
-        <div class="mdc-card">
+        <div class="mdc-card music-frame">
             <iframe...></iframe>
         </div>
     </main>
