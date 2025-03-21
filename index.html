@@ -3,170 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lolita Material</title>
-    <!-- 新增维多利亚风格字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Berkshire+Swash&family=Material+Symbols+Outlined" rel="stylesheet">
+    <title>维多利亚相框馆</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --md-lolita-primary: #FFF0F5;  /* 香槟玫瑰色 */
-            --md-lolita-secondary: #FFE4E1; /* 藕荷色 */
-            --md-lolita-accent: #DE3163;    /* 樱桃红 */
-            --md-lolita-gold: #D4AF37;      /* 复古金 */
-            --md-lolita-lace: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                var(--md-lolita-gold) 10px,
-                var(--md-lolita-gold) 12px
-            );
+            --primary-color: #FFB7C5; /* 樱粉色 */
+            --secondary-color: #704214; /* 深棕色 */
+            --accent-color: #E6D5B8; /* 象牙白 */
         }
 
-        /* 混合MD3的几何形状与洛丽塔装饰 */
-        .mdc-card {
-            background: 
-                linear-gradient(175deg, 
-                    var(--md-lolita-primary) 30%, 
-                    var(--md-lolita-secondary)),
-                var(--md-lolita-lace);
-            background-blend-mode: soft-light;
-            border-radius: 24px;
-            border: 3px double var(--md-lolita-gold);
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mdc-card::before {
-            content: '';
-            position: absolute;
-            inset: -15px;
-            background: url('data:image/svg+xml,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 50Q40 15 60 50Q80 85 80 50" fill="none" stroke="%23DE3163" stroke-width="2" opacity="0.2"/></svg>');
-            z-index: -1;
-        }
-
-        /* 按钮的维多利亚式改造 */
-        .mdc-button {
-            --mdc-theme-primary: var(--md-lolita-accent);
-            border: 2px solid var(--md-lolita-gold) !important;
-            background: 
-                linear-gradient(145deg, 
-                    rgba(255,240,245,0.9) 0%,
-                    rgba(255,228,225,0.7) 100%),
-                url('https://img.icons8.com/ios/50/000000/vintage-flower.png');
-            background-size: cover;
-            padding: 16px 32px;
-            font-family: 'Cinzel Decorative', cursive;
-            letter-spacing: 1px;
-            box-shadow: 
-                0 4px 6px rgba(0,0,0,0.1),
-                inset 0 0 12px rgba(255,255,255,0.5);
-        }
-
-        .mdc-button__label {
-            position: relative;
-            padding-right: 28px;
-        }
-
-        .mdc-button__label::after {
-            content: '🎀';
-            position: absolute;
-            right: 0;
-            filter: drop-shadow(0 2px 1px rgba(0,0,0,0.1));
-        }
-
-        /* 顶部应用栏的蕾丝改造 */
-        .mdc-top-app-bar {
-            background: 
-                linear-gradient(160deg, 
-                    var(--md-lolita-accent) 20%, 
-                    #B03060),
-                var(--md-lolita-lace);
-            background-blend-mode: overlay;
-            height: 80px;
-            box-shadow: 0 8px 32px rgba(222,49,99,0.2);
-        }
-
-        .mdc-top-app-bar__title {
-            font-family: 'Berkshire Swash', cursive;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.3);
+        body {
+            font-family: 'Times New Roman', serif;
             background: linear-gradient(45deg, #FFF0F5, #FFE4E1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            min-height: 100vh;
         }
 
-        /* 复杂蕾丝边框系统 */
-        .mdc-card--lace {
-            padding: 24px;
-            margin: 32px;
+        .nav-bar {
+            background: var(--accent-color) url('data:image/svg+xml,<svg viewBox="0 0 100 10" xmlns="http://www.w3.org/2000/svg"><path d="M0 9 Q 25 5 50 9 T 100 9" fill="%23FFB7C5" /></svg>');
+            padding: 1rem;
+            border-bottom: 3px double var(--secondary-color);
+        }
+
+        .frame-container {
+            width: 60%;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: url('lace-pattern.png') repeat;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
             position: relative;
         }
 
-        .mdc-card--lace::after {
-            content: '';
+        .main-frame {
+            border: 15px solid var(--accent-color);
+            padding: 1rem;
+            background: white;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .frame-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .control-btn {
+            background: var(--primary-color);
+            border: 2px solid var(--secondary-color);
+            padding: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .control-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .decorative-border {
             position: absolute;
-            inset: -16px;
-            background: 
-                linear-gradient(45deg, 
-                    transparent 15px,
-                    var(--md-lolita-gold) 16px,
-                    transparent 17px),
-                linear-gradient(-45deg, 
-                    transparent 15px,
-                    var(--md-lolita-gold) 16px,
-                    transparent 17px);
-            background-size: 32px 32px;
-            z-index: -1;
+            width: 100px;
+            height: 100px;
+            background: url('floral-border.png') no-repeat;
+            background-size: contain;
         }
 
-        /* 动态蕾丝悬停效果 */
-        .mdc-card:hover {
-            transform: translateY(-4px) rotate(0.5deg);
-            box-shadow: 
-                0 12px 24px rgba(222,49,99,0.3),
-                inset 0 0 24px rgba(255,255,255,0.4);
-        }
+        .top-left-decor { top: -20px; left: -20px; transform: rotate(-15deg); }
+        .bottom-right-decor { bottom: -20px; right: -20px; transform: rotate(165deg); }
 
-        /* 音乐播放器定制 */
-        .music-frame {
-            border: 3px solid var(--md-lolita-accent);
-            border-radius: 16px;
-            background: rgba(255,255,255,0.9);
-            box-shadow: 
-                inset 0 0 12px rgba(222,49,99,0.1),
-                0 0 24px rgba(222,49,99,0.1);
+        footer {
+            background: var(--secondary-color);
+            color: var(--accent-color);
+            padding: 1rem;
+            text-align: center;
+            margin-top: 3rem;
+            border-top: 3px double var(--primary-color);
         }
     </style>
 </head>
 <body>
-    <header class="mdc-top-app-bar">
-        <div class="mdc-top-app-bar__row">
-            <section class="mdc-top-app-bar__section">
-                <span class="mdc-top-app-bar__title">Lolita Material Design</span>
-            </section>
-        </div>
-    </header>
+    <nav class="nav-bar">
+        <h1 style="text-align: center; color: var(--secondary-color);">🖼️ 玫瑰画框屋</h1>
+    </nav>
 
-    <main class="container">
-        <div class="mdc-card mdc-card--lace">
-            <h2 class="mdc-typography--headline4" style="color: var(--md-lolita-accent);">
-                <span class="material-symbols-outlined">celebration</span>
-                ✨ Enchanted Tools
-            </h2>
-            <p style="color: var(--md-lolita-accent); font-family: 'Berkshire Swash';">
-                Where modern design meets vintage charm. Crafted with love and lace.
-            </p>
+    <div class="frame-container">
+        <div class="decorative-border top-left-decor"></div>
+        <div class="main-frame">
+            <img src="default-frame.jpg" alt="维多利亚相框" class="frame-image" id="mainImage">
         </div>
+        <div class="decorative-border bottom-right-decor"></div>
+    </div>
 
-        <div class="mdc-card mdc-card--lace">
-            <a class="mdc-button mdc-button--raised" href="#">
-                <span class="mdc-button__label">Rose Music Box</span>
-            </a>
-            <!-- 更多按钮... -->
-        </div>
+    <div class="control-panel">
+        <button class="control-btn" onclick="changeFrame('vintage')">
+            <i class="fas fa-seedling"></i> 复古滤镜
+        </button>
+        <button class="control-btn" onclick="changeFrame('gold')">
+            <i class="fas fa-crown"></i> 鎏金边框
+        </button>
+        <button class="control-btn" onclick="changeFrame('floral')">
+            <i class="fas fa-feather"></i> 花卉纹样
+        </button>
+        <button class="control-btn" onclick="changeFrame('pearl')">
+            <i class="fas fa-gem"></i> 珍珠装饰
+        </button>
+    </div>
 
-        <div class="mdc-card music-frame">
-            <iframe...></iframe>
-        </div>
-    </main>
+    <footer>
+        <p>© 2024 维多利亚相框馆 - 保留所有古典权利</p>
+    </footer>
+
+    <script>
+        function changeFrame(style) {
+            const frame = document.getElementById('mainImage');
+            const styles = {
+                vintage: { filter: 'sepia(0.8) contrast(1.2)', border: '15px solid #E6D5B8' },
+                gold: { filter: 'brightness(1.1)', border: '20px double #D4AF37' },
+                floral: { filter: 'contrast(1.3)', border: '15px inset #FFB7C5' },
+                pearl: { filter: 'saturate(1.5)', border: '15px groove white' }
+            };
+            Object.assign(frame.style, styles[style]);
+        }
+    </script>
 </body>
 </html>
