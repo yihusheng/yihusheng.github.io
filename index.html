@@ -1,232 +1,284 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Lolita 工具箱 - 甜蜜升级版</title>
-	<style>
-		:root {
-		    --main-pink: #ffb3c6;
-		    --vintage-red: #c71585;
-		    --lace-white: #fff0f5;
-		}
-		
-		* {
-		    margin: 0;
-		    padding: 0;
-		    box-sizing: border-box;
-		}
-		
-		body {
-		    background: linear-gradient(45deg, #ffb3c6, #ffd1dc);
-		    font-family: 'Times New Roman', serif;
-		    color: #4d2e2e;
-		    min-height: 100vh;
-		    position: relative;
-		    overflow-x: hidden;
-		}
-		
-		/* 飘落花瓣 */
-		.petal {
-		    position: absolute;
-		    width: 15px;
-		    height: 15px;
-		    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHBhdGggZD0iTTggMGM0IDAgNCA0IDggNCAwIDQtNCA0LTggOC00IDAtOC00LTgtOCAwLTQgNC00IDgtOHoiIGZpbGw9IiNmZmYwZjUiLz48L3N2Zz4=');
-		    pointer-events: none;
-		    animation: fall linear infinite;
-		}
-		
-		@keyframes fall {
-		    0% { transform: translateY(-10vh) rotate(0deg); }
-		    100% { transform: translateY(110vh) rotate(360deg); }
-		}
-		
-		/* 蕾丝容器 */
-		.lace-container {
-		    background: 
-		        radial-gradient(circle at 10px 10px, var(--lace-white) 3%, transparent 3%),
-		        repeating-linear-gradient(45deg, 
-		            transparent 0px, 
-		            transparent 10px,
-		            var(--lace-white) 10px,
-		            var(--lace-white) 20px);
-		    border: 3px solid #ffffff;
-		    padding: 40px;
-		    position: relative;
-		    box-shadow: 0 0 20px rgba(199,21,133,0.1);
-		    margin: 50px auto;
-		    max-width: 1200px;
-		    border-radius: 15px;
-		}
-		
-		/* 动态标题 */
-		.header {
-		    text-align: center;
-		    padding: 40px;
-		    position: relative;
-		    animation: float 3s ease-in-out infinite;
-		}
-		
-		@keyframes float {
-		    0%, 100% { transform: translateY(0); }
-		    50% { transform: translateY(-10px); }
-		}
-		
-		.header h1 {
-		    font-family: 'Dancing Script', cursive;
-		    font-size: 4em;
-		    color: var(--vintage-red);
-		    text-shadow: 2px 2px 0px #ffffff;
-		    position: relative;
-		    display: inline-block;
-		}
-		
-		/* 蝴蝶结装饰 */
-		.bow-tie {
-		    position: absolute;
-		    width: 80px;
-		    height: 60px;
-		    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNODAgMzBjLTEwIDAtMjAgMTAtMjAgMjBsMTAgMTBjMTAgMCAyMC0xMCAyMC0yMHMtMTAtMjAtMjAtMjB6TTIwIDMwcC0xMCAwLTIwIDEwLTIwIDIwczEwIDIwIDIwIDIwIDIwLTEwIDIwLTIwLTEwLTIwLTIwLTIweiIgZmlsbD0iI2ZmNWI5OSIvPjwvc3ZnPg==');
-		    animation: bowScale 2s ease-in-out infinite;
-		}
-		
-		@keyframes bowScale {
-		    0%, 100% { transform: scale(1); }
-		    50% { transform: scale(1.1); }
-		}
-		
-		/* 工具卡片 */
-		.tool-card {
-		    background: rgba(255,255,255,0.9);
-		    border-radius: 20px;
-		    padding: 25px;
-		    position: relative;
-		    transition: all 0.3s;
-		    backdrop-filter: blur(5px);
-		    border: 2px solid white;
-		    /* 新增描边效果 */
-		    outline: 2px solid rgba(255, 182, 193, 0.5); /* 粉红色描边 */
-		    outline-offset: 1px; /* 描边与边框的间距 */
-		}
-		
-		.tool-card:hover {
-		    transform: translateY(-10px) rotate(2deg);
-		    box-shadow: 0 15px 30px rgba(199,21,133,0.2);
-		    /* 悬停时增强描边效果 */
-		    outline: 3px solid rgba(255, 105, 180, 0.8); /* 更深的粉红色描边 */
-		    outline-offset: 1px; /* 增加描边间距 */
-		}
-		
-		/* 按钮增强 */
-		.btn {
-		    background: linear-gradient(45deg, #ff69b4, #ff1493);
-		    padding: 10px 25px;
-		    border-radius: 30px;
-		    border: 2px solid white;
-		    font-family: 'Dancing Script', cursive;
-		    font-size: 1.2em;
-		    position: relative;
-		    overflow: hidden;
-		    transition: 0.3s;
-		}
-		
-		.btn::after {
-		    content: '';
-		    position: absolute;
-		    top: -50%;
-		    left: -50%;
-		    width: 200%;
-		    height: 200%;
-		    background: rgba(255,255,255,0.1);
-		    transform: rotate(45deg);
-		    transition: 0.3s;
-		}
-		
-		.btn:hover {
-		    transform: scale(1.05);
-		    box-shadow: 0 5px 15px rgba(255,105,180,0.4);
-		}
-		
-		/* 响应式设计 */
-		@media (max-width: 768px) {
-		    .lace-container {
-		        margin: 20px;
-		        padding: 20px;
-		    }
-		    
-		    .header h1 {
-		        font-size: 2.5em;
-		    }
-		    
-		    .nav-menu {
-		        flex-wrap: wrap;
-		    }
-		}
-	</style>
-	<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lolita 工具箱 - 繁复甜美版</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --main-pink: #ffb3c6;
+      --vintage-red: #c71585;
+      --lace-white: #fff0f5;
+      --soft-pink: #ffe4ec;
+      --accent-purple: #d8b7dd;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(45deg, #ffe4ec, #ffd1dc);
+      font-family: 'Times New Roman', serif;
+      color: #4d2e2e;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 飘落物件：花瓣与蝴蝶 */
+    .floating {
+      position: absolute;
+      pointer-events: none;
+      animation: floatObj linear infinite;
+    }
+    .floating img {
+      width: 25px;
+      opacity: 0.8;
+    }
+    @keyframes floatObj {
+      0% { transform: translateY(-10vh) rotate(0deg); }
+      100% { transform: translateY(110vh) rotate(360deg); }
+    }
+
+    /* 外层蕾丝容器（使用实际蕾丝素材） */
+    .lace-container {
+      position: relative;
+      background: 
+        url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x top/auto 50px,
+        url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x bottom/auto 50px,
+        radial-gradient(circle, var(--soft-pink) 50%, transparent 51%);
+      border: 5px double var(--lace-white);
+      padding: 80px 50px;
+      box-shadow: 0 0 25px rgba(199,21,133,0.2);
+      margin: 50px auto;
+      max-width: 1200px;
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    /* 内层装饰——增加类似裙摆花边效果 */
+    .lace-container::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat;
+      opacity: 0.1;
+      z-index: 0;
+    }
+
+    /* header 区域添加花朵和洋伞装饰 */
+    .header {
+      text-align: center;
+      padding: 40px;
+      position: relative;
+      animation: float 3s ease-in-out infinite;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: -50px;
+      width: 100px;
+      height: 100px;
+      background: url('https://cdn.pixabay.com/photo/2017/08/30/14/49/umbrella-2690922_1280.png') no-repeat center/contain;
+      opacity: 0.8;
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      right: -40px;
+      width: 80px;
+      height: 80px;
+      background: url('https://cdn.pixabay.com/photo/2013/07/12/17/25/rose-152225_1280.png') no-repeat center/contain;
+      opacity: 0.7;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .header h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 4em;
+      color: var(--vintage-red);
+      text-shadow: 2px 2px 0px #ffffff;
+      position: relative;
+      display: inline-block;
+      background: linear-gradient(45deg, #ff69b4, #c71585);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* 导航菜单区域，增加袜子图标装饰 */
+    .nav-menu {
+      position: relative;
+      padding: 25px 0;
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+    }
+    .nav-menu::after {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 25px;
+      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x center/auto 100%;
+      filter: invert(1) opacity(0.8);
+    }
+    .nav-item {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5em;
+      padding: 12px 25px;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.95);
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      border: 1px dashed var(--accent-purple);
+    }
+    /* 在每个导航项上添加袜子图标 */
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 30px;
+      background: url('https://cdn.pixabay.com/photo/2018/03/04/13/36/socks-3193837_1280.png') no-repeat center/contain;
+    }
+    .nav-item:hover {
+      transform: rotate(2deg) scale(1.1);
+      background: linear-gradient(45deg, #ffb3c6, #ffffff);
+    }
+
+    /* 工具卡片区域，增加裙摆花边装饰 */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      padding: 40px 0;
+    }
+    .tool-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 25px;
+      position: relative;
+      transition: all 0.3s;
+      backdrop-filter: blur(6px);
+      border: 3px dashed #ffe4ec;
+      outline: 2px solid rgba(255, 182, 193, 0.5);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x;
+      filter: invert(1) opacity(0.6);
+    }
+    .tool-card:hover {
+      transform: translateY(-10px) rotate(2deg);
+      box-shadow: 0 15px 30px rgba(199,21,133,0.2);
+      outline: 3px solid rgba(255, 105, 180, 0.8);
+    }
+
+    /* 洛丽塔按钮：加入蝴蝶结装饰 */
+    .btn {
+      background: linear-gradient(45deg, #ff69b4, #ff1493);
+      padding: 12px 30px;
+      border-radius: 30px;
+      border: 2px solid white;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.4em;
+      color: white;
+      margin-top: 15px;
+      transition: 0.3s;
+      position: relative;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: -15px;
+      right: -15px;
+      width: 30px;
+      height: 30px;
+      background: url('https://cdn.pixabay.com/photo/2014/04/03/11/50/bow-312463_1280.png') no-repeat center/contain;
+    }
+    .btn:hover {
+      transform: scale(1.05) rotate(2deg);
+      box-shadow: 0 5px 15px rgba(255,105,180,0.4);
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .lace-container { padding: 30px 15px; }
+      .header h1 { font-size: 2.8em; }
+      .nav-menu { flex-wrap: wrap; gap: 15px; }
+      .tool-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-	<!-- 飘落花瓣 -->
-	<div class="petal" style="left:10%;animation-duration:8s;"></div>
-	<div class="petal" style="left:30%;animation-duration:10s;"></div>
-	<div class="petal" style="left:70%;animation-duration:12s;"></div>
-	<div class="lace-container">
-		<!-- 蝴蝶结装饰 -->
-		<div class="bow-tie" style="top:-30px;left:-40px;"></div>
-		<div class="bow-tie" style="top:-30px;right:-40px;transform: scaleX(-1);"></div>
-		<div class="header">
-			<h1>Sweet Lolita Tools</h1>
-		</div>
-		<!-- 导航菜单 -->
-		<nav class="nav-menu">
-			<div class="nav-item">🩰 图片工坊</div>
-			<div class="nav-item">🎀 文字魔法</div>
-			<div class="nav-item">🎠 格式转换</div>
-			<div class="nav-item">🔮 秘密花园</div>
-		</nav>
-		<!-- 工具卡片 -->
-		<div class="tool-grid">
-			<div class="tool-card">
-				<h3>🎀 图片压缩</h3>
-				<p>保持可爱的清晰度</p>
-				<button class="btn">马上使用</button>
-			</div>
-			<div class="tool-card">
-				<h3>🌸 文字加密</h3>
-				<p>公主专属密码</p>
-				<button class="btn">马上使用</button>
-			</div>
-			<div class="tool-card">
-				<h3>🍰 PDF转换</h3>
-				<p>甜蜜格式转换</p>
-				<button class="btn">马上使用</button>
-			</div>
-		</div>
-	</div>
-	<script>
-		// 生成更多花瓣
-		function createPetals() {
-		    const container = document.body;
-		    for(let i = 0; i < 15; i++) {
-		        const petal = document.createElement('div');
-		        petal.className = 'petal';
-		        petal.style.left = Math.random() * 100 + '%';
-		        petal.style.animationDuration = Math.random() * 5 + 5 + 's';
-		        petal.style.animationDelay = Math.random() * 5 + 's';
-		        container.appendChild(petal);
-		    }
-		}
-		createPetals();
-		
-		// 卡片点击效果
-		document.querySelectorAll('.tool-card').forEach(card => {
-		    card.addEventListener('click', () => {
-		        card.style.transform = 'rotate(-2deg) scale(0.95)';
-		        setTimeout(() => {
-		            card.style.transform = '';
-		        }, 500);
-		    });
-		});
-	</script>
+  <!-- 飘落物件：蝴蝶和花瓣 -->
+  <div class="floating" style="left:10%;animation-duration:8s;">
+    <img src="https://cdn.pixabay.com/photo/2017/01/31/17/44/butterfly-2023617_1280.png" alt="蝴蝶">
+  </div>
+  <div class="floating" style="left:30%;animation-duration:10s;">
+    <img src="https://cdn.pixabay.com/photo/2013/07/13/12/47/petal-157859_1280.png" alt="花瓣">
+  </div>
+  <div class="floating" style="left:70%;animation-duration:12s;">
+    <img src="https://cdn.pixabay.com/photo/2017/01/31/17/44/butterfly-2023617_1280.png" alt="蝴蝶">
+  </div>
+
+  <div class="lace-container">
+    <div class="header">
+      <h1>Sweet Lolita Tools</h1>
+    </div>
+
+    <nav class="nav-menu">
+      <div class="nav-item">🩰 图片工坊</div>
+      <div class="nav-item">🎀 文字魔法</div>
+      <div class="nav-item">🎠 格式转换</div>
+      <div class="nav-item">🔮 秘密花园</div>
+    </nav>
+
+    <div class="tool-grid">
+      <div class="tool-card">
+        <h3>🎀 图片压缩</h3>
+        <p>保持可爱的清晰度</p>
+        <button class="btn">马上使用</button>
+      </div>
+      <div class="tool-card">
+        <h3>🌸 文字加密</h3>
+        <p>公主专属密码</p>
+        <button class="btn">马上使用</button>
+      </div>
+      <div class="tool-card">
+        <h3>🍰 PDF转换</h3>
+        <p>甜蜜格式转换</p>
+        <button class="btn">马上使用</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
