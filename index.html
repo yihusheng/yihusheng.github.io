@@ -110,37 +110,292 @@
         <!-- 秘密画廊 -->
         <div class="md3-grid">
             <div class="md3-col-12 md3-col-sm-6">
-                <div class="md3-card" style="position: relative;">
-                    <img src="https://via.placeholder.com/300x400/FFFFFF/FFB6C1?text=👗+古董洋装" 
-                         class="md3-card-media">
-                    <div class="md3-card-content">
-                        <h3>维多利亚的叹息</h3>
-                        <p>1890年手工刺绣的丝绸长裙，袖口藏着褪色的家族徽记...</p>
-                    </div>
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ 甜梦密语 · Lolita Secret</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kodchasan:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* 全局样式 */
+        :root {
+            --bg-star: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0) 70%);
+            --clouds: url('data:image/svg+xml,%3Csvg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 400Q200 300 400 400T600 300 800 400V0H0Z" fill="%23FFF8F0"/%3E%3C/svg%3E');
+            --cloud-color: rgba(255,255,255,0.8);
+            --card-bg: rgba(255,255,255,0.9);
+            --border-radius: 20px;
+            --primary-color: #FF6F91;
+            --text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            --glow: 0 0 15px rgba(255,105,180,0.5);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Kodchasan', cursive;
+            background: var(--bg-star), url(var(--clouds)) repeat-x;
+            background-size: auto, 800px 400px;
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            perspective: 1000px;
+        }
+
+        /* 主容器 */
+        .sweet-container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* 标题设计 */
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #FF6F91, #FFC0CB);
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: var(--text-shadow);
+            animation: twinkle 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes twinkle {
+            from { opacity: 0.9; }
+            to { opacity: 1; filter: drop-shadow(0 0 10px #FF6F91); }
+        }
+
+        /* 动态星空 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 10%, transparent 10.01%) 0 0 / 20px 20px,
+                        radial-gradient(circle, rgba(255,255,255,0.8) 15%, transparent 15.01%) 10px 10px / 25px 25px;
+            pointer-events: none;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        @keyframes stars {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 1000px; }
+        }
+
+        /* 秘密入口（可点击云朵） */
+        .secret-door {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            width: 200px;
+            height: 150px;
+            background: var(--card-bg);
+            border-radius: 50% 50% 0 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            cursor: pointer;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .secret-door:hover {
+            transform: translateX(-50%) scale(1) rotateY(360deg);
+        }
+
+        .secret-door img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50% 50% 0 0;
+        }
+
+        /* 日记系统 */
+        .diary {
+            margin: 2rem 0;
+        }
+
+        .diary-entry {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin: 1rem auto;
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .diary-entry:hover {
+            transform: scale(1);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        }
+
+        .diary-entry button {
+            background: linear-gradient(45deg, #FF6F91, #FFC0CB);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .diary-entry button:hover {
+            background: linear-gradient(45deg, #FFC0CB, #FF6F91);
+            transform: scale(1.1);
+        }
+
+        .diary-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .diary-content img {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        /* 服饰画廊（3D旋转衣架） */
+        .gallery-3d {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            perspective: 1000px;
+            margin: 2rem 0;
+        }
+
+        .gallery-item {
+            position: absolute;
+            width: 180px;
+            height: 280px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 1s ease, box-shadow 0.5s ease;
+        }
+
+        .gallery-item:hover {
+            transform: rotateY(360deg) scale(1.1);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 预设衣架位置 */
+        .gallery-item:nth-child(1) { transform: rotateY(0deg) translateZ(300px); }
+        .gallery-item:nth-child(2) { transform: rotateY(45deg) translateZ(300px); }
+        .gallery-item:nth-child(3) { transform: rotateY(90deg) translateZ(300px); }
+        .gallery-item:nth-child(4) { transform: rotateY(135deg) translateZ(300px); }
+
+        /* 动态装饰 */
+        .floating {
+            position: absolute;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .floating:nth-child(5) { top: 10%; left: 20%; animation-delay: 2s; }
+        .floating:nth-child(6) { top: 50%; right: 10%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.05); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .secret-door { transform: translateX(-50%) scale(0.6); }
+            .gallery-item { width: 150px; height: 230px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态装饰 -->
+    <div class="floating"><img src="https://via.placeholder.com/40/FFFFFF/FF6F91?text=🌸" alt="飘动花瓣"></div>
+    <div class="floating"><img src="https://via.placeholder.com/30/FFFFFF/FFF0F5?text=🍭" alt="糖果装饰"></div>
+
+    <!-- 主容器 -->
+    <div class="sweet-container">
+        <h1>✨ 甜梦密语</h1>
+        
+        <!-- 秘密入口（点击云朵） -->
+        <div class="secret-door" onclick="toggleSecret()">
+            <img src="https://via.placeholder.com/200x150/FFFFFF/FFF0F5?text=☁️+点击进入" alt="秘密入口">
+        </div>
+
+        <!-- 日记系统 -->
+        <div class="diary">
+            <article class="diary-entry">
+                <button onclick="toggleDiary(0)">📖 打开日记</button>
+                <div class="diary-content" id="diary1">
+                    <p>✒️ 1923年5月12日，晴...</p>
+                    <p>今天在花园发现了母亲留下的蕾丝手帕，上面绣着小小的蔷薇花...</p>
+                    <img src="https://via.placeholder.com/600x400/FFFFFF/FFF0F5?text=📜+家族记忆" alt="日记图片">
                 </div>
-            </div>
-            <!-- 更多画廊项... -->
+            </article>
+            <article class="diary-entry">
+                <button onclick="toggleDiary(1)">📜 另一篇日记</button>
+                <div class="diary-content" id="diary2" style="display: block;">
+                    <p>✒️ 1925年冬，雪夜...</p>
+                    <p>炉火旁缝制了第一件洛丽塔裙子，蕾丝边总是卷起来...</p>
+                    <img src="https://via.placeholder.com/600x400/FFFFFF/FFF0F5?text=🧵+手作时光" alt="日记图片">
+                </div>
+            </article>
+        </div>
+
+        <!-- 服饰画廊 -->
+        <h2>👗 甜美衣帽间</h2>
+        <div class="gallery-3d">
+            <div class="gallery-item"><img src="https://via.placeholder.com/180x280/FFFFFF/FFF0F5?text=🎀+洛丽塔裙"></div>
+            <div class="gallery-item"><img src="https://via.placeholder.com/180x280/FFFFFF/FFF0F5?text=🌸+蕾丝披肩"></div>
+            <div class="gallery-item"><img src="https://via.placeholder.com/180x280/FFFFFF/FFF0F5?text=🍭+甜心发带"></div>
+            <div class="gallery-item"><img src="https://via.placeholder.com/180x280/FFFFFF/FFF0F5?text=✨+珍珠项链"></div>
         </div>
     </div>
 
     <script>
-        // 门锁交互
-        const secretDoor = document.getElementById('secretDoor');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 200) {
-                secretDoor.classList.add('active');
-            } else {
-                secretDoor.classList.remove('active');
-            }
-        });
-
-        // 日记解锁功能
-        function toggleDiary() {
-            const content = document.getElementById('diaryContent');
-            content.classList.toggle('visible');
-            document.querySelector('.lolita-button').innerHTML = 
-                content.classList.contains('visible') ? '🔒 重新上锁' : '🔓 解锁记忆';
+        // 日记交互逻辑
+        const diaries = document.querySelectorAll('.diary-content');
+        function toggleDiary(index) {
+            diaries.forEach((diary, i) => {
+                diary.style.display = i === index ? (diary.style.display === 'block' ? 'none' : 'block') : 'none';
+            });
         }
+
+        // 秘密入口交互
+        function toggleSecret() {
+            alert('🎉 你发现了隐藏的秘密房间！');
+            // 可扩展为跳转页面或显示隐藏内容
+        }
+
+        // 动态装饰（可扩展为粒子效果）
+        document.addEventListener('DOMContentLoaded', () => {
+            const decor = document.querySelectorAll('.floating');
+            decor.forEach(item => {
+                item.style.left = `${Math.random() * 90}%`;
+                item.style.top = `${Math.random() * 80}vh`;
+                item.style.animationDuration = `${Math.random() * 5 + 5}s`;
+            });
+        });
     </script>
 </body>
 </html>
+
