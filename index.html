@@ -1,284 +1,146 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lolita 工具箱 - 繁复甜美版</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --main-pink: #ffb3c6;
-      --vintage-red: #c71585;
-      --lace-white: #fff0f5;
-      --soft-pink: #ffe4ec;
-      --accent-purple: #d8b7dd;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>少女密室·Lolita Secret</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://unpkg.com/@mui/material@latest/umd/material-ui.production.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --secret-pink: #FFB6C1;
+            --secret-lavender: #E6E6FA;
+            --material-primary: #1976D2;
+            --glow-text: 0 0 15px rgba(255,182,193,0.3);
+        }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        body {
+            font-family: 'EB Garamond', serif;
+            background: linear-gradient(145deg, var(--secret-lavender) 30%, var(--secret-pink) 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
 
-    body {
-      background: linear-gradient(45deg, #ffe4ec, #ffd1dc);
-      font-family: 'Times New Roman', serif;
-      color: #4d2e2e;
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
+        .secret-door {
+            position: fixed;
+            right: -200px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 150px;
+            height: 300px;
+            background: white;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+        }
 
-    /* 飘落物件：花瓣与蝴蝶 */
-    .floating {
-      position: absolute;
-      pointer-events: none;
-      animation: floatObj linear infinite;
-    }
-    .floating img {
-      width: 25px;
-      opacity: 0.8;
-    }
-    @keyframes floatObj {
-      0% { transform: translateY(-10vh) rotate(0deg); }
-      100% { transform: translateY(110vh) rotate(360deg); }
-    }
+        .secret-door.active {
+            right: 20px;
+        }
 
-    /* 外层蕾丝容器（使用实际蕾丝素材） */
-    .lace-container {
-      position: relative;
-      background: 
-        url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x top/auto 50px,
-        url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x bottom/auto 50px,
-        radial-gradient(circle, var(--soft-pink) 50%, transparent 51%);
-      border: 5px double var(--lace-white);
-      padding: 80px 50px;
-      box-shadow: 0 0 25px rgba(199,21,133,0.2);
-      margin: 50px auto;
-      max-width: 1200px;
-      border-radius: 20px;
-      overflow: hidden;
-      position: relative;
-      z-index: 1;
-    }
-    /* 内层装饰——增加类似裙摆花边效果 */
-    .lace-container::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat;
-      opacity: 0.1;
-      z-index: 0;
-    }
+        .lolita-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
 
-    /* header 区域添加花朵和洋伞装饰 */
-    .header {
-      text-align: center;
-      padding: 40px;
-      position: relative;
-      animation: float 3s ease-in-out infinite;
-    }
-    .header::before {
-      content: '';
-      position: absolute;
-      top: -50px;
-      left: -50px;
-      width: 100px;
-      height: 100px;
-      background: url('https://cdn.pixabay.com/photo/2017/08/30/14/49/umbrella-2690922_1280.png') no-repeat center/contain;
-      opacity: 0.8;
-    }
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: -30px;
-      right: -40px;
-      width: 80px;
-      height: 80px;
-      background: url('https://cdn.pixabay.com/photo/2013/07/12/17/25/rose-152225_1280.png') no-repeat center/contain;
-      opacity: 0.7;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    .header h1 {
-      font-family: 'Dancing Script', cursive;
-      font-size: 4em;
-      color: var(--vintage-red);
-      text-shadow: 2px 2px 0px #ffffff;
-      position: relative;
-      display: inline-block;
-      background: linear-gradient(45deg, #ff69b4, #c71585);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
+        .diary-entry {
+            background: rgba(255,255,255,0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin: 1rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
 
-    /* 导航菜单区域，增加袜子图标装饰 */
-    .nav-menu {
-      position: relative;
-      padding: 25px 0;
-      margin: 30px 0;
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-    }
-    .nav-menu::after {
-      content: '';
-      position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      height: 25px;
-      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x center/auto 100%;
-      filter: invert(1) opacity(0.8);
-    }
-    .nav-item {
-      font-family: 'Dancing Script', cursive;
-      font-size: 1.5em;
-      padding: 12px 25px;
-      border-radius: 30px;
-      background: rgba(255,255,255,0.95);
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
-      border: 1px dashed var(--accent-purple);
-    }
-    /* 在每个导航项上添加袜子图标 */
-    .nav-item::before {
-      content: '';
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 30px;
-      background: url('https://cdn.pixabay.com/photo/2018/03/04/13/36/socks-3193837_1280.png') no-repeat center/contain;
-    }
-    .nav-item:hover {
-      transform: rotate(2deg) scale(1.1);
-      background: linear-gradient(45deg, #ffb3c6, #ffffff);
-    }
+        .diary-entry:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(255,182,193,0.2);
+        }
 
-    /* 工具卡片区域，增加裙摆花边装饰 */
-    .tool-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 30px;
-      padding: 40px 0;
-    }
-    .tool-card {
-      background: rgba(255,255,255,0.95);
-      border-radius: 20px;
-      padding: 25px;
-      position: relative;
-      transition: all 0.3s;
-      backdrop-filter: blur(6px);
-      border: 3px dashed #ffe4ec;
-      outline: 2px solid rgba(255, 182, 193, 0.5);
-      min-height: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .tool-card::before {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: 0;
-      right: 0;
-      height: 20px;
-      background: url('https://cdn.pixabay.com/photo/2016/11/21/15/22/lace-1845835_1280.png') repeat-x;
-      filter: invert(1) opacity(0.6);
-    }
-    .tool-card:hover {
-      transform: translateY(-10px) rotate(2deg);
-      box-shadow: 0 15px 30px rgba(199,21,133,0.2);
-      outline: 3px solid rgba(255, 105, 180, 0.8);
-    }
+        .lock-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
 
-    /* 洛丽塔按钮：加入蝴蝶结装饰 */
-    .btn {
-      background: linear-gradient(45deg, #ff69b4, #ff1493);
-      padding: 12px 30px;
-      border-radius: 30px;
-      border: 2px solid white;
-      font-family: 'Dancing Script', cursive;
-      font-size: 1.4em;
-      color: white;
-      margin-top: 15px;
-      transition: 0.3s;
-      position: relative;
-    }
-    .btn::after {
-      content: '';
-      position: absolute;
-      top: -15px;
-      right: -15px;
-      width: 30px;
-      height: 30px;
-      background: url('https://cdn.pixabay.com/photo/2014/04/03/11/50/bow-312463_1280.png') no-repeat center/contain;
-    }
-    .btn:hover {
-      transform: scale(1.05) rotate(2deg);
-      box-shadow: 0 5px 15px rgba(255,105,180,0.4);
-    }
+        .hidden-content {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
 
-    /* 响应式设计 */
-    @media (max-width: 768px) {
-      .lace-container { padding: 30px 15px; }
-      .header h1 { font-size: 2.8em; }
-      .nav-menu { flex-wrap: wrap; gap: 15px; }
-      .tool-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+        .visible {
+            opacity: 1;
+            max-height: 500px;
+        }
+    </style>
 </head>
 <body>
-  <!-- 飘落物件：蝴蝶和花瓣 -->
-  <div class="floating" style="left:10%;animation-duration:8s;">
-    <img src="https://cdn.pixabay.com/photo/2017/01/31/17/44/butterfly-2023617_1280.png" alt="蝴蝶">
-  </div>
-  <div class="floating" style="left:30%;animation-duration:10s;">
-    <img src="https://cdn.pixabay.com/photo/2013/07/13/12/47/petal-157859_1280.png" alt="花瓣">
-  </div>
-  <div class="floating" style="left:70%;animation-duration:12s;">
-    <img src="https://cdn.pixabay.com/photo/2017/01/31/17/44/butterfly-2023617_1280.png" alt="蝴蝶">
-  </div>
-
-  <div class="lace-container">
-    <div class="header">
-      <h1>Sweet Lolita Tools</h1>
+    <!-- 秘密入口 -->
+    <div class="secret-door" id="secretDoor">
+        <img src="https://via.placeholder.com/150x300/FFFFFF/FFB6C1?text=🔒+入口" 
+             class="lock-icon" 
+             alt="秘密入口">
     </div>
 
-    <nav class="nav-menu">
-      <div class="nav-item">🩰 图片工坊</div>
-      <div class="nav-item">🎀 文字魔法</div>
-      <div class="nav-item">🎠 格式转换</div>
-      <div class="nav-item">🔮 秘密花园</div>
-    </nav>
+    <!-- 主内容区 -->
+    <div class="lolita-container">
+        <h1 class="md3-typography--headline6" style="text-shadow: var(--glow-text)">少女的蔷薇手札</h1>
+        
+        <!-- 互动式日记 -->
+        <div class="diary-entry">
+            <div class="hidden-content" id="diaryContent">
+                <p>✒️ 1923年5月12日，雨...</p>
+                <p>在阁楼的旧木箱里发现了母亲的日记，泛黄的纸页记载着关于蕾丝与秘密的传承...</p>
+                <img src="https://via.placeholder.com/600x400/FFFFFF/FFB6C1?text=📖+日记内容" 
+                     style="border-radius: 10px; margin: 1rem 0;">
+            </div>
+            <button class="md3-button lolita-button" onclick="toggleDiary()">
+                🔓 解锁记忆
+            </button>
+        </div>
 
-    <div class="tool-grid">
-      <div class="tool-card">
-        <h3>🎀 图片压缩</h3>
-        <p>保持可爱的清晰度</p>
-        <button class="btn">马上使用</button>
-      </div>
-      <div class="tool-card">
-        <h3>🌸 文字加密</h3>
-        <p>公主专属密码</p>
-        <button class="btn">马上使用</button>
-      </div>
-      <div class="tool-card">
-        <h3>🍰 PDF转换</h3>
-        <p>甜蜜格式转换</p>
-        <button class="btn">马上使用</button>
-      </div>
+        <!-- 秘密画廊 -->
+        <div class="md3-grid">
+            <div class="md3-col-12 md3-col-sm-6">
+                <div class="md3-card" style="position: relative;">
+                    <img src="https://via.placeholder.com/300x400/FFFFFF/FFB6C1?text=👗+古董洋装" 
+                         class="md3-card-media">
+                    <div class="md3-card-content">
+                        <h3>维多利亚的叹息</h3>
+                        <p>1890年手工刺绣的丝绸长裙，袖口藏着褪色的家族徽记...</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 更多画廊项... -->
+        </div>
     </div>
-  </div>
+
+    <script>
+        // 门锁交互
+        const secretDoor = document.getElementById('secretDoor');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                secretDoor.classList.add('active');
+            } else {
+                secretDoor.classList.remove('active');
+            }
+        });
+
+        // 日记解锁功能
+        function toggleDiary() {
+            const content = document.getElementById('diaryContent');
+            content.classList.toggle('visible');
+            document.querySelector('.lolita-button').innerHTML = 
+                content.classList.contains('visible') ? '🔒 重新上锁' : '🔓 解锁记忆';
+        }
+    </script>
 </body>
 </html>
