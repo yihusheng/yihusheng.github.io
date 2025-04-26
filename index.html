@@ -72,12 +72,18 @@
                 return;
             }
 
+            console.log('开始处理磁力链接:', magnetURI);
+
             client.add(magnetURI, torrent => {
+                console.log('Torrent 信息:', torrent);
+
                 const file = torrent.files.find(file => file.name.endsWith('.mp4') || file.name.endsWith('.webm') || file.name.endsWith('.ogg'));
 
                 if (file) {
+                    console.log('找到视频文件:', file.name);
                     file.renderTo(videoPlayer, { autoplay: true });
                 } else {
+                    console.log('未找到可播放的视频文件！支持的格式：MP4, WebM, OGG');
                     alert('未找到可播放的视频文件！支持的格式：MP4, WebM, OGG');
                 }
             });
