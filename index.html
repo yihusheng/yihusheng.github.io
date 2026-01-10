@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具 (单代理版)</title>
+    <title>MAC 地址深度查询工具 (公网部署版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,7 @@
                 <i class="fa-solid fa-globe text-2xl"></i>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">使用 corsproxy.io 代理服务</p>
+            <p class="text-sm text-onSurfaceVariant">公网部署优化版</p>
         </header>
 
         <!-- Input Section -->
@@ -243,7 +243,7 @@
             }
         });
 
-        // --- 核心查询逻辑 (仅使用 corsproxy.io) ---
+        // --- 核心查询逻辑 (使用 allorigins.win，兼容 HTTPS) ---
         
         function isValidMac(mac) {
             const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -286,9 +286,6 @@
             addressContainer.classList.add('hidden');
             vendorNameEl.classList.remove('text-error');
 
-            // 定义唯一的代理
-            const PROXY_URL = "https://corsproxy.io/?";
-
             try {
                 // --- 策略 1: 尝试 maclookup.app (详细信息) ---
                 loadingText.textContent = "正在从 maclookup.app 获取详细信息...";
@@ -299,9 +296,9 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-                    // 直接拼接 URL
+                    // 使用 allorigins.win 代理，必须对目标 URL 进行 encodeURIComponent
                     const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
-                    const proxyUrl = PROXY_URL + targetUrl;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                     
                     const response = await fetch(proxyUrl, { signal: controller.signal });
                     
@@ -325,7 +322,7 @@
                     source = "macvendors.co";
                     
                     const targetUrl = `https://api.macvendors.com/${mac}`;
-                    const proxyUrl = PROXY_URL + targetUrl;
+                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                     
                     const fallbackResponse = await fetch(proxyUrl);
                     
@@ -368,7 +365,7 @@
                 console.error("Detailed Error:", error);
                 let errorText = "查询失败";
                 if (error.name === 'AbortError') errorText = "请求超时";
-                else if (error.message.includes('Failed to fetch')) errorText = "网络连接异常 (代理不可用)";
+                else if (error.message.includes('Failed to fetch')) errorText = "网络连接异常";
                 
                 vendorNameEl.textContent = errorText;
                 vendorNameEl.classList.add('text-error');
