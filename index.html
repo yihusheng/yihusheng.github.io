@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具 (公网部署版)</title>
+    <title>MAC 地址深度查询工具 (MacLookup版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,7 @@
                 <i class="fa-solid fa-globe text-2xl"></i>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">公网部署优化版</p>
+            <p class="text-sm text-onSurfaceVariant">数据源: maclookup.app</p>
         </header>
 
         <!-- Input Section -->
@@ -93,7 +93,7 @@
                     <input 
                         type="text" 
                         id="macInput" 
-                        placeholder="A1-B2-C3-D4-E5-F6" 
+                        placeholder="例如: A1:B2:C3:D4:E5:F6" 
                         class="w-full bg-surfaceVariant text-onSurface px-5 py-4 rounded-2xl outline-none border-2 border-transparent focus:border-primary focus:bg-surface transition-all duration-300 placeholder:text-onSurfaceVariant/50 text-lg font-mono tracking-wider shadow-inner"
                         maxlength="17"
                     >
@@ -165,7 +165,7 @@
                         </div>
                     </div>
 
-                    <!-- Full Address (Only for maclookup.app) -->
+                    <!-- Full Address -->
                     <div id="addressContainer" class="mt-4 pt-3 border-t border-white/40 hidden">
                         <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">详细地址</span>
                         <p id="fullAddress" class="text-xs text-onSurface leading-relaxed"></p>
@@ -187,7 +187,7 @@
         <!-- Footer -->
         <footer class="p-6 text-center border-t border-surfaceVariant">
             <p class="text-xs text-onSurfaceVariant/70">
-                数据来源: IEEE OUI • maclookup.app • macvendors.co
+                数据来源: IEEE OUI • maclookup.app
             </p>
         </footer>
     </main>
@@ -213,14 +213,22 @@
         const fullAddressEl = document.getElementById('fullAddress');
 
         // --- 优化的输入处理逻辑 ---
+        
+        // 核心格式化函数：将横线转为冒号，并统一格式
         function formatMacValue(value) {
-            const clean = value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
-            return clean.match(/.{1,2}/g)?.join(':') || '';
+            // 1. 将所有横线替换为冒号
+            let clean = value.replace(/-/g, ':');
+            // 2. 移除非十六进制字符和冒号
+            clean = clean.replace(/[^a-fA-F0-9:]/g, '').toUpperCase();
+            // 3. 重新组合，确保每两位一个冒号
+            const hexOnly = clean.replace(/:/g, '');
+            return hexOnly.match(/.{1,2}/g)?.join(':') || '';
         }
 
         macInput.addEventListener('input', (e) => {
             const originalValue = e.target.value;
-            const cleanValue = originalValue.replace(/[^a-fA-F0-9:]/gi, '').toUpperCase();
+            // 允许输入横线和冒号，但移除其他非法字符
+            const cleanValue = originalValue.replace(/[^a-fA-F0-9:-]/gi, '').toUpperCase();
             if (originalValue !== cleanValue) {
                 e.target.value = cleanValue;
             }
@@ -243,7 +251,7 @@
             }
         });
 
-        // --- 核心查询逻辑 (使用 allorigins.win，兼容 HTTPS) ---
+        // --- 核心查询逻辑 (仅使用 maclookup.app) ---
         
         function isValidMac(mac) {
             const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -273,11 +281,12 @@
         }
 
         async function performSearch() {
+            // 1. 格式化输入（横线转冒号）
             normalizeMac();
             const mac = macInput.value.trim();
 
             if (!isValidMac(mac)) {
-                showError("格式无效，请输入如 00:1A:2B:3C:4D:5E");
+                showError("格式无效，请输入如 A1-B2-C3-D4-E5-F6");
                 return;
             }
 
@@ -287,78 +296,58 @@
             vendorNameEl.classList.remove('text-error');
 
             try {
-                // --- 策略 1: 尝试 maclookup.app (详细信息) ---
                 loadingText.textContent = "正在从 maclookup.app 获取详细信息...";
-                let data = null;
-                let source = "maclookup.app";
-
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-                    // 使用 allorigins.win 代理，必须对目标 URL 进行 encodeURIComponent
-                    const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                    
-                    const response = await fetch(proxyUrl, { signal: controller.signal });
-                    
-                    clearTimeout(timeoutId);
-
-                    if (response.ok) {
-                        const json = await response.json();
-                        if (json && json.company) {
-                            data = json;
-                        } else {
-                            throw new Error('Invalid data structure');
-                        }
-                    } else {
-                        throw new Error('API returned non-OK status');
-                    }
-                } catch (e) {
-                    console.log("Primary API failed, switching to macvendors.co...");
-                    
-                    // --- 策略 2: 降级到 macvendors.co (仅厂商名) ---
-                    loadingText.textContent = "正在从 macvendors.co 获取厂商信息...";
-                    source = "macvendors.co";
-                    
-                    const targetUrl = `https://api.macvendors.com/${mac}`;
-                    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-                    
-                    const fallbackResponse = await fetch(proxyUrl);
-                    
-                    if (fallbackResponse.ok) {
-                        const vendorText = await fallbackResponse.text();
-                        if (vendorText) {
-                            data = {
-                                company: vendorText,
-                                country: "未知",
-                                address: null
-                            };
-                        } else {
-                            throw new Error('Empty response');
-                        }
-                    } else {
-                        throw new Error('Fallback API failed');
-                    }
-                }
-
-                // 更新 UI
-                vendorNameEl.textContent = data.company || "未知厂商";
-                ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
-                addressTypeEl.textContent = getAddressType(mac);
-                apiSourceEl.textContent = source;
                 
-                if (data.country && data.country !== "未知") {
-                    countryNameEl.textContent = data.country;
-                    countryNameEl.classList.remove('text-onSurfaceVariant');
-                } else {
-                    countryNameEl.textContent = "暂无数据";
-                    countryNameEl.classList.add('text-onSurfaceVariant');
-                }
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-                if (data.address) {
-                    addressContainer.classList.remove('hidden');
-                    fullAddressEl.textContent = data.address;
+                // 使用 allorigins.win 代理，确保公网兼容性
+                const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const json = await response.json();
+                    
+                    // 检查是否返回了特定的错误格式
+                    if (json && json.errors && json.errors.detail === "Not Found") {
+                        // 情况1: API 明确返回未找到
+                        vendorNameEl.textContent = "暂无数据";
+                        vendorNameEl.classList.add('text-onSurfaceVariant');
+                        ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
+                        countryNameEl.textContent = "暂无数据";
+                        countryNameEl.classList.add('text-onSurfaceVariant');
+                        addressContainer.classList.add('hidden');
+                    } else if (json && json.company) {
+                        // 情况2: 正常返回数据
+                        vendorNameEl.textContent = json.company;
+                        vendorNameEl.classList.remove('text-onSurfaceVariant');
+                        ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
+                        addressTypeEl.textContent = getAddressType(mac);
+                        apiSourceEl.textContent = "maclookup.app";
+                        
+                        if (json.country) {
+                            countryNameEl.textContent = json.country;
+                            countryNameEl.classList.remove('text-onSurfaceVariant');
+                        } else {
+                            countryNameEl.textContent = "暂无数据";
+                            countryNameEl.classList.add('text-onSurfaceVariant');
+                        }
+
+                        if (json.address) {
+                            addressContainer.classList.remove('hidden');
+                            fullAddressEl.textContent = json.address;
+                        } else {
+                            addressContainer.classList.add('hidden');
+                        }
+                    } else {
+                        throw new Error('Invalid data structure');
+                    }
+                } else {
+                    throw new Error('API returned non-OK status');
                 }
 
             } catch (error) {
@@ -369,6 +358,9 @@
                 
                 vendorNameEl.textContent = errorText;
                 vendorNameEl.classList.add('text-error');
+                ouiPrefixEl.textContent = "--";
+                countryNameEl.textContent = "--";
+                addressContainer.classList.add('hidden');
                 
             } finally {
                 loadingState.classList.add('hidden');
@@ -385,4 +377,3 @@
     </script>
 </body>
 </html>
-
