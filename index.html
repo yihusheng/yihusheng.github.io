@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具 (CORS版)</title>
+    <title>MAC 地址深度查询工具 (修复版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,7 @@
                 <i class="fa-solid fa-globe text-2xl"></i>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">已启用 CORS 代理，解决跨域限制</p>
+            <p class="text-sm text-onSurfaceVariant">已修复代理请求逻辑</p>
         </header>
 
         <!-- Input Section -->
@@ -93,7 +93,7 @@
                     <input 
                         type="text" 
                         id="macInput" 
-                        placeholder="例如: BC:5F:F4:XX:XX:XX" 
+                        placeholder="例如: a4:c3:be:d4:bf:0f" 
                         class="w-full bg-surfaceVariant text-onSurface px-5 py-4 rounded-2xl outline-none border-2 border-transparent focus:border-primary focus:bg-surface transition-all duration-300 placeholder:text-onSurfaceVariant/50 text-lg font-mono tracking-wider shadow-inner"
                         maxlength="17"
                     >
@@ -253,7 +253,7 @@
             return "Unicast";
         }
 
-        // Logic: Fetch with CORS Proxy & Fallback
+        // Logic: Fetch with Fixed Proxy Logic
         async function performSearch() {
             const mac = macInput.value.trim();
             if (!isValidMac(mac)) {
@@ -266,25 +266,21 @@
             addressContainer.classList.add('hidden');
             vendorNameEl.classList.remove('text-error');
 
-            // 定义公共 CORS 代理 (使用 corsproxy.io，通常较稳定)
-            const corsProxy = "https://corsproxy.io/?";
-
             try {
-                // Strategy 1: Try maclookup.app via Proxy (Rich Data)
-                loadingText.textContent = "正在连接数据源 (代理模式)...";
+                // Strategy 1: Try maclookup.app via corsproxy.io (Direct Concatenation)
+                loadingText.textContent = "正在连接 maclookup.app...";
                 let data = null;
                 let source = "maclookup.app";
 
                 try {
                     const controller = new AbortController();
-                    // 增加超时时间以适应代理延迟
-                    const timeoutId = setTimeout(() => controller.abort(), 10000); 
+                    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-                    // 将 URL 编码后附加到代理地址
+                    // 修复点：直接拼接 URL，不使用 encodeURIComponent，模拟浏览器地址栏行为
                     const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
-                    const response = await fetch(corsProxy + encodeURIComponent(targetUrl), { 
-                        signal: controller.signal 
-                    });
+                    const proxyUrl = `https://corsproxy.io/?${targetUrl}`; 
+                    
+                    const response = await fetch(proxyUrl, { signal: controller.signal });
                     
                     clearTimeout(timeoutId);
 
@@ -294,13 +290,17 @@
                         throw new Error('API returned non-OK status');
                     }
                 } catch (e) {
-                    // Strategy 2: Fallback to macvendors.co via Proxy (Simple Text)
-                    console.log("Primary API failed, trying fallback via proxy...");
+                    // Strategy 2: Fallback to macvendors.co via api.allorigins.win
+                    // 使用 allorigins 作为备用，因为它对 URL 编码的容错性更好
+                    console.log("Primary API failed, trying fallback via allorigins...");
                     loadingText.textContent = "尝试备用数据源...";
                     source = "macvendors.co";
                     
                     const targetUrl = `https://api.macvendors.com/${mac}`;
-                    const fallbackResponse = await fetch(corsProxy + encodeURIComponent(targetUrl));
+                    // allorigins 需要使用 url 参数
+                    const fallbackProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                    
+                    const fallbackResponse = await fetch(fallbackProxyUrl);
                     
                     if (fallbackResponse.ok) {
                         const vendorText = await fallbackResponse.text();
@@ -310,7 +310,7 @@
                             address: null
                         };
                     } else {
-                        throw new Error('All APIs failed via proxy');
+                        throw new Error('All APIs failed');
                     }
                 }
 
@@ -318,7 +318,7 @@
                 vendorNameEl.textContent = data.company || "未知厂商";
                 ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
                 addressTypeEl.textContent = getAddressType(mac);
-                apiSourceEl.textContent = source + " (Proxy)";
+                apiSourceEl.textContent = source;
                 
                 if (data.country) {
                     countryNameEl.textContent = data.country;
@@ -337,10 +337,9 @@
                 let errorText = "查询失败";
                 
                 if (error.name === 'AbortError') {
-                    errorText = "请求超时，代理服务器响应慢";
+                    errorText = "请求超时，请稍后重试";
                 } else if (error.message.includes('Failed to fetch')) {
-                    // 这里如果还是 Failed to fetch，可能是代理服务也挂了
-                    errorText = "跨域/网络限制，代理服务不可用";
+                    errorText = "网络或代理服务异常";
                 } else {
                     errorText = "数据源无响应";
                 }
