@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具</title>
+    <title>MAC 地址深度查询工具 (CORS版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,7 @@
                 <i class="fa-solid fa-globe text-2xl"></i>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">集成 maclookup.app 与 macvendors.co 数据源</p>
+            <p class="text-sm text-onSurfaceVariant">已启用 CORS 代理，解决跨域限制</p>
         </header>
 
         <!-- Input Section -->
@@ -181,7 +181,7 @@
         <!-- Loading State -->
         <div id="loadingState" class="hidden absolute inset-0 bg-surface/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
             <div class="loader mb-3"></div>
-            <span id="loadingText" class="text-sm font-medium text-onSurfaceVariant animate-pulse">正在连接 maclookup.app...</span>
+            <span id="loadingText" class="text-sm font-medium text-onSurfaceVariant animate-pulse">正在连接数据源...</span>
         </div>
 
         <!-- Footer -->
@@ -253,7 +253,7 @@
             return "Unicast";
         }
 
-        // Logic: Fetch with Fallback
+        // Logic: Fetch with CORS Proxy & Fallback
         async function performSearch() {
             const mac = macInput.value.trim();
             if (!isValidMac(mac)) {
@@ -263,20 +263,26 @@
 
             loadingState.classList.remove('hidden');
             resultSection.classList.add('hidden');
-            addressContainer.classList.add('hidden'); // Reset address visibility
-            vendorNameEl.classList.remove('text-error'); // Reset error style
+            addressContainer.classList.add('hidden');
+            vendorNameEl.classList.remove('text-error');
+
+            // 定义公共 CORS 代理 (使用 corsproxy.io，通常较稳定)
+            const corsProxy = "https://corsproxy.io/?";
 
             try {
-                // Strategy 1: Try maclookup.app (Rich Data)
-                loadingText.textContent = "正在从 maclookup.app 获取详细信息...";
+                // Strategy 1: Try maclookup.app via Proxy (Rich Data)
+                loadingText.textContent = "正在连接数据源 (代理模式)...";
                 let data = null;
                 let source = "maclookup.app";
 
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout for primary
+                    // 增加超时时间以适应代理延迟
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); 
 
-                    const response = await fetch(`https://api.maclookup.app/v2/macs/${mac}`, { 
+                    // 将 URL 编码后附加到代理地址
+                    const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
+                    const response = await fetch(corsProxy + encodeURIComponent(targetUrl), { 
                         signal: controller.signal 
                     });
                     
@@ -285,15 +291,17 @@
                     if (response.ok) {
                         data = await response.json();
                     } else {
-                        throw new Error('Lookup failed');
+                        throw new Error('API returned non-OK status');
                     }
                 } catch (e) {
-                    // Strategy 2: Fallback to macvendors.co (Simple Text)
-                    console.log("Primary API failed or timed out, falling back to macvendors.co");
-                    loadingText.textContent = "尝试备用数据源 macvendors.co...";
+                    // Strategy 2: Fallback to macvendors.co via Proxy (Simple Text)
+                    console.log("Primary API failed, trying fallback via proxy...");
+                    loadingText.textContent = "尝试备用数据源...";
                     source = "macvendors.co";
                     
-                    const fallbackResponse = await fetch(`https://api.macvendors.com/${mac}`);
+                    const targetUrl = `https://api.macvendors.com/${mac}`;
+                    const fallbackResponse = await fetch(corsProxy + encodeURIComponent(targetUrl));
+                    
                     if (fallbackResponse.ok) {
                         const vendorText = await fallbackResponse.text();
                         data = {
@@ -302,7 +310,7 @@
                             address: null
                         };
                     } else {
-                        throw new Error('All APIs failed');
+                        throw new Error('All APIs failed via proxy');
                     }
                 }
 
@@ -310,9 +318,8 @@
                 vendorNameEl.textContent = data.company || "未知厂商";
                 ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
                 addressTypeEl.textContent = getAddressType(mac);
-                apiSourceEl.textContent = source;
+                apiSourceEl.textContent = source + " (Proxy)";
                 
-                // Handle Rich Data Fields
                 if (data.country) {
                     countryNameEl.textContent = data.country;
                 } else {
@@ -327,15 +334,15 @@
             } catch (error) {
                 console.error("Detailed Error:", error);
                 
-                // 更详细的错误提示
                 let errorText = "查询失败";
                 
                 if (error.name === 'AbortError') {
-                    errorText = "请求超时，请稍后重试";
+                    errorText = "请求超时，代理服务器响应慢";
                 } else if (error.message.includes('Failed to fetch')) {
-                    errorText = "网络连接错误，请检查网络";
-                } else if (error.message.includes('All APIs failed')) {
-                    errorText = "数据源无响应，该MAC可能未注册";
+                    // 这里如果还是 Failed to fetch，可能是代理服务也挂了
+                    errorText = "跨域/网络限制，代理服务不可用";
+                } else {
+                    errorText = "数据源无响应";
                 }
 
                 vendorNameEl.textContent = errorText;
