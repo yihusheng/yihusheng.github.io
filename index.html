@@ -303,7 +303,7 @@
 
                 // 使用 allorigins.win 代理，确保公网兼容性
                 const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+                const proxyUrl = `https://corsproxy.io/${encodeURIComponent(targetUrl)}`;
                 
                 const response = await fetch(proxyUrl, { signal: controller.signal });
                 
@@ -377,3 +377,4 @@
     </script>
 </body>
 </html>
+
