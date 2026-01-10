@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具 (修复版)</title>
+    <title>MAC 地址深度查询工具 (最终优化版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -82,7 +82,7 @@
                 <i class="fa-solid fa-globe text-2xl"></i>
             </div>
             <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">已修复代理请求逻辑</p>
+            <p class="text-sm text-onSurfaceVariant">已优化输入体验与数据源稳定性</p>
         </header>
 
         <!-- Input Section -->
@@ -93,7 +93,7 @@
                     <input 
                         type="text" 
                         id="macInput" 
-                        placeholder="例如: a4:c3:be:d4:bf:0f" 
+                        placeholder="例如: a4c3bed4bf0f" 
                         class="w-full bg-surfaceVariant text-onSurface px-5 py-4 rounded-2xl outline-none border-2 border-transparent focus:border-primary focus:bg-surface transition-all duration-300 placeholder:text-onSurfaceVariant/50 text-lg font-mono tracking-wider shadow-inner"
                         maxlength="17"
                     >
@@ -212,19 +212,48 @@
         const addressContainer = document.getElementById('addressContainer');
         const fullAddressEl = document.getElementById('fullAddress');
 
-        // Helper: Format MAC Address
+        // --- 优化的输入处理逻辑 ---
+
+        // 格式化函数：将字符串转为 XX:XX:XX 格式
+        function formatMacValue(value) {
+            // 移除非十六进制字符
+            const clean = value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
+            // 每两位加一个冒号
+            return clean.match(/.{1,2}/g)?.join(':') || '';
+        }
+
+        // 输入事件：只允许输入十六进制字符，不强制格式化（为了更好的编辑体验）
         macInput.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
-            let formattedValue = '';
-            for (let i = 0; i < value.length; i++) {
-                if (i > 0 && i % 2 === 0) formattedValue += ':';
-                formattedValue += value[i];
+            const originalValue = e.target.value;
+            // 移除非十六进制字符，保留冒号（方便用户粘贴带冒号的MAC）
+            // 但这里我们只做过滤，不做重组，避免光标跳动
+            const cleanValue = originalValue.replace(/[^a-fA-F0-9:]/gi, '').toUpperCase();
+            
+            if (originalValue !== cleanValue) {
+                e.target.value = cleanValue;
             }
-            e.target.value = formattedValue;
             hideError();
         });
 
-        // Helper: Validate MAC
+        // 失去焦点或回车时：进行格式化校验
+        function normalizeMac() {
+            const raw = macInput.value;
+            const formatted = formatMacValue(raw);
+            if (formatted !== raw) {
+                macInput.value = formatted;
+            }
+        }
+
+        macInput.addEventListener('blur', normalizeMac);
+        macInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                normalizeMac();
+                performSearch();
+            }
+        });
+
+        // --- 业务逻辑 ---
+
         function isValidMac(mac) {
             const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
             return regex.test(mac);
@@ -243,7 +272,6 @@
             macInput.classList.remove('text-error');
         }
 
-        // Logic: Determine Address Type
         function getAddressType(mac) {
             const firstByte = parseInt(mac.substring(0, 2), 16);
             const isMulticast = (firstByte & 1) === 1;
@@ -253,9 +281,11 @@
             return "Unicast";
         }
 
-        // Logic: Fetch with Fixed Proxy Logic
         async function performSearch() {
+            // 先格式化
+            normalizeMac();
             const mac = macInput.value.trim();
+
             if (!isValidMac(mac)) {
                 showError("格式无效，请输入如 00:1A:2B:3C:4D:5E");
                 return;
@@ -267,8 +297,8 @@
             vendorNameEl.classList.remove('text-error');
 
             try {
-                // Strategy 1: Try maclookup.app via corsproxy.io (Direct Concatenation)
-                loadingText.textContent = "正在连接 maclookup.app...";
+                // --- 策略 1: 尝试 maclookup.app (通过 corsproxy.io) ---
+                loadingText.textContent = "正在从 maclookup.app 获取详细信息...";
                 let data = null;
                 let source = "maclookup.app";
 
@@ -276,7 +306,6 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-                    // 修复点：直接拼接 URL，不使用 encodeURIComponent，模拟浏览器地址栏行为
                     const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
                     const proxyUrl = `https://corsproxy.io/?${targetUrl}`; 
                     
@@ -285,28 +314,35 @@
                     clearTimeout(timeoutId);
 
                     if (response.ok) {
-                        data = await response.json();
+                        const json = await response.json();
+                        // 检查返回的数据是否有效
+                        if (json && json.company) {
+                            data = json;
+                        } else {
+                            throw new Error('Invalid data structure');
+                        }
                     } else {
                         throw new Error('API returned non-OK status');
                     }
                 } catch (e) {
-                    // Strategy 2: Fallback to macvendors.co via api.allorigins.win
-                    // 使用 allorigins 作为备用，因为它对 URL 编码的容错性更好
-                    console.log("Primary API failed, trying fallback via allorigins...");
-                    loadingText.textContent = "尝试备用数据源...";
+                    console.log("Primary API failed, switching to macvendors.co...");
+                    
+                    // --- 策略 2: 降级到 macvendors.co (通过 api.allorigins.win) ---
+                    // 这个接口只返回厂商名，不返回国家，所以我们需要手动处理国家显示
+                    loadingText.textContent = "正在从 macvendors.co 获取厂商信息...";
                     source = "macvendors.co";
                     
                     const targetUrl = `https://api.macvendors.com/${mac}`;
-                    // allorigins 需要使用 url 参数
                     const fallbackProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
                     
                     const fallbackResponse = await fetch(fallbackProxyUrl);
                     
                     if (fallbackResponse.ok) {
                         const vendorText = await fallbackResponse.text();
+                        // 构造标准数据结构
                         data = {
                             company: vendorText,
-                            country: "未知",
+                            country: "未知", // macvendors.co 不提供国家信息
                             address: null
                         };
                     } else {
@@ -314,18 +350,22 @@
                     }
                 }
 
-                // Update UI
+                // 更新 UI
                 vendorNameEl.textContent = data.company || "未知厂商";
                 ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
                 addressTypeEl.textContent = getAddressType(mac);
                 apiSourceEl.textContent = source;
                 
-                if (data.country) {
+                // 处理国家显示
+                if (data.country && data.country !== "未知") {
                     countryNameEl.textContent = data.country;
+                    countryNameEl.classList.remove('text-onSurfaceVariant');
                 } else {
-                    countryNameEl.textContent = "N/A";
+                    countryNameEl.textContent = "暂无数据";
+                    countryNameEl.classList.add('text-onSurfaceVariant');
                 }
 
+                // 处理详细地址
                 if (data.address) {
                     addressContainer.classList.remove('hidden');
                     fullAddressEl.textContent = data.address;
@@ -333,17 +373,10 @@
 
             } catch (error) {
                 console.error("Detailed Error:", error);
-                
                 let errorText = "查询失败";
+                if (error.name === 'AbortError') errorText = "请求超时";
+                else if (error.message.includes('Failed to fetch')) errorText = "网络连接异常";
                 
-                if (error.name === 'AbortError') {
-                    errorText = "请求超时，请稍后重试";
-                } else if (error.message.includes('Failed to fetch')) {
-                    errorText = "网络或代理服务异常";
-                } else {
-                    errorText = "数据源无响应";
-                }
-
                 vendorNameEl.textContent = errorText;
                 vendorNameEl.classList.add('text-error');
                 
@@ -354,7 +387,6 @@
         }
 
         searchBtn.addEventListener('click', performSearch);
-        macInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
         resetBtn.addEventListener('click', () => {
             macInput.value = '';
             resultSection.classList.add('hidden');
