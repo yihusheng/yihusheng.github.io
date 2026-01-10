@@ -26,6 +26,7 @@
                         onSurfaceVariant: '#49454F',
                         outline: '#79747E',
                         error: '#B3261E',
+                        errorContainer: '#F9DEDC',
                     },
                     fontFamily: {
                         sans: ['"Noto Sans SC"', '"Roboto"', 'sans-serif'],
@@ -263,6 +264,7 @@
             loadingState.classList.remove('hidden');
             resultSection.classList.add('hidden');
             addressContainer.classList.add('hidden'); // Reset address visibility
+            vendorNameEl.classList.remove('text-error'); // Reset error style
 
             try {
                 // Strategy 1: Try maclookup.app (Rich Data)
@@ -271,7 +273,15 @@
                 let source = "maclookup.app";
 
                 try {
-                    const response = await fetch(`https://api.maclookup.app/v2/macs/${mac}`);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout for primary
+
+                    const response = await fetch(`https://api.maclookup.app/v2/macs/${mac}`, { 
+                        signal: controller.signal 
+                    });
+                    
+                    clearTimeout(timeoutId);
+
                     if (response.ok) {
                         data = await response.json();
                     } else {
@@ -279,7 +289,7 @@
                     }
                 } catch (e) {
                     // Strategy 2: Fallback to macvendors.co (Simple Text)
-                    console.log("Primary API failed, falling back to macvendors.co");
+                    console.log("Primary API failed or timed out, falling back to macvendors.co");
                     loadingText.textContent = "尝试备用数据源 macvendors.co...";
                     source = "macvendors.co";
                     
@@ -305,7 +315,6 @@
                 // Handle Rich Data Fields
                 if (data.country) {
                     countryNameEl.textContent = data.country;
-                    // Simple icon mapping based on country code could go here
                 } else {
                     countryNameEl.textContent = "N/A";
                 }
@@ -316,9 +325,22 @@
                 }
 
             } catch (error) {
-                console.error(error);
-                vendorNameEl.textContent = "查询失败";
+                console.error("Detailed Error:", error);
+                
+                // 更详细的错误提示
+                let errorText = "查询失败";
+                
+                if (error.name === 'AbortError') {
+                    errorText = "请求超时，请稍后重试";
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorText = "网络连接错误，请检查网络";
+                } else if (error.message.includes('All APIs failed')) {
+                    errorText = "数据源无响应，该MAC可能未注册";
+                }
+
+                vendorNameEl.textContent = errorText;
                 vendorNameEl.classList.add('text-error');
+                
             } finally {
                 loadingState.classList.add('hidden');
                 resultSection.classList.remove('hidden');
