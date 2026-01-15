@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Serafina MD3 Dynamic</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -38,7 +38,7 @@
         }
 
         .phone-screen {
-            width: 375px; height: 812px;
+            width: 375px; height: 812px; /* 默认桌面尺寸 */
             background-color: var(--md-sys-color-surface-container);
             border-radius: 48px;
             overflow: hidden; position: relative;
@@ -46,9 +46,44 @@
             color: var(--md-sys-color-on-surface);
         }
 
+        /* --- 移动端适配 (屏幕宽度小于 600px 时) --- */
+        @media (max-width: 600px) {
+            body {
+                /* 移除居中，直接铺满 */
+                justify-content: flex-start;
+                align-items: flex-start;
+            }
+
+            .phone-screen {
+                /* 全屏适配 */
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0; /* 去除圆角，像原生App */
+                box-shadow: none; /* 去除阴影 */
+            }
+
+            .album-art {
+                /* 封面自适应宽度，不超过300px */
+                width: 60vw; 
+                height: 60vw; 
+                max-width: 300px;
+                max-height: 300px;
+            }
+
+            .player-content {
+                /* 减小顶部内边距，防止小屏溢出 */
+                padding: 100px 24px 0; 
+            }
+            
+            /* 针对刘海屏的安全区域适配 */
+            .dynamic-island {
+                top: max(12px, env(safe-area-inset-top));
+            }
+        }
+
         /* --- 动态灵动岛 --- */
         .dynamic-island {
-            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            position: absolute; left: 50%; transform: translateX(-50%);
             width: 120px; height: 36px; 
             background-color: var(--island-bg);
             border-radius: 20px;
@@ -70,9 +105,9 @@
         .island-cover {
             width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
             margin-right: 10px; flex-shrink: 0;
-            transition: opacity 0.2s; /* 刷新动画 */
+            transition: opacity 0.2s;
         }
-        .island-cover.updating { opacity: 0.5; } /* 用于强制刷新 */
+        .island-cover.updating { opacity: 0.5; }
         
         .island-info {
             display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 10px;
@@ -481,10 +516,8 @@
             const coverUrl = song.cover;
             
             // 确保图片严格同步
-            // 1. 设置主封面
             mainCover.src = coverUrl;
             
-            // 2. 设置灵动岛封面
             // 添加动画类强制重绘，防止缓存问题
             islandCover.classList.add('updating');
             islandCover.src = coverUrl;
