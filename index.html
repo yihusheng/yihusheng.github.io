@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- 关键：添加沉浸式全屏meta标签 -->
+    <!-- 沉浸式全屏支持 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#141218">
@@ -52,7 +52,7 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（包含 1200x2670 这类超高分辨率）--- */
+        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示 --- */
         @media (max-width: 600px) and (orientation: portrait) {
             body {
                 justify-content: flex-start;
@@ -61,14 +61,12 @@
 
             .phone-screen {
                 width: 100vw;
-                /* 关键：移除固定高度，改用 min-height 确保铺满屏幕 */
                 min-height: 100vh;
                 border-radius: 0;
                 box-shadow: none;
             }
 
             .album-art {
-                /* 封面使用视口宽度比例，保证在大屏上不会太小，小屏不会溢出 */
                 width: 60vw;
                 height: 60vw;
                 max-width: 360px;
@@ -76,15 +74,15 @@
             }
 
             .player-content {
-                /* 减小顶部内边距，避免被状态栏遮挡 */
-                padding: 80px 20px 0; 
+                /* 关键：使用安全区域适配状态栏 */
+                padding-top: env(safe-area-inset-top) + 80px;
             }
 
             .dynamic-island {
-                top: max(12px, env(safe-area-inset-top));
+                top: env(safe-area-inset-top);
             }
 
-            /* 针对超高竖屏，适当加大一些内边距和字体，避免显得太"空" */
+            /* 动态调整字体大小 */
             .song-title-main {
                 font-size: clamp(1.4rem, 4vw, 2rem);
             }
@@ -95,7 +93,7 @@
 
         /* --- 额外兜底：宽屏（width >= 600）但在横屏时，仍然用外框桌面模式 --- */
         @media (min-width: 600px) {
-            /* 保持默认的 .phone-screen 样式（外框+固定尺寸）即可，不需要额外覆盖 */
+            /* 保持默认的 .phone-screen 样式（外框+固定尺寸）即可 */
         }
 
         /* --- 动态灵动岛 --- */
@@ -321,7 +319,6 @@
     <div class="phone-screen" id="app">
         <div class="dynamic-island" id="island">
             <div class="island-content">
-                <!-- 添加 crossorigin 保证与大封面加载行为一致 -->
                 <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
                 <div class="island-info">
                     <span id="islandTitle" class="island-title">Song Title</span>
@@ -522,6 +519,14 @@
         const app = document.getElementById('app');
         const island = document.getElementById('island');
 
+        // 媒体会话控制
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => playSong());
+            navigator.mediaSession.setActionHandler('pause', () => pauseSong());
+            navigator.mediaSession.setActionHandler('previoustrack', () => prevBtn.click());
+            navigator.mediaSession.setActionHandler('nexttrack', () => nextBtn.click());
+        }
+
         loadSong(songs[currentSongIndex]);
 
         function loadSong(song) {
@@ -552,6 +557,22 @@
                 const theme = ColorUtils.generateTheme(rgb);
                 applyTheme(theme);
             });
+
+            // 更新媒体会话元数据
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: song.artist,
+                    artwork: [
+                        { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
+                        { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
+                    ]
+                });
+            }
         }
 
         function applyTheme(themeColors) {
