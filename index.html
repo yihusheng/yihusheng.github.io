@@ -125,16 +125,31 @@
        /* --- 进度条 (使用 Primary 色) --- */
         .m3-slider-root { width: 100%; height: 48px; position: relative; display: flex; align-items: center; margin-bottom: 5px; }
         .m3-slider-track-inactive { position: absolute; right: 0; height: 4px; background-color: var(--md-sys-color-surface-variant); border-radius: 2px; z-index: 1; width: 100%; }
+        /* 底部未播放轨道 */
+        .m3-slider-track-inactive { 
+            position: absolute; width: 100%; height: 4px; 
+            background-color: #fff; opacity: 0.15; 
+            border-radius: 2px; z-index: 1; 
+        }
         .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; }
         /* 这里的 stroke 改为 primary */
         .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
-        
         @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
         .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
         
-        .m3-slider-thumb { position: absolute; width: 4px; height: 24px; background-color: var(--md-sys-color-primary); border-radius: 2px; z-index: 3; left: 0%; transform: translateX(-50%); pointer-events: none; }
-        .m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; background: transparent; z-index: 4; cursor: pointer; outline: none; }
-        
+           /* 竖线滑块指示器 */
+        .m3-slider-thumb { 
+            position: absolute; width: 2px; height: 24px; 
+            background-color: var(--dynamic-accent); 
+            border-radius: 1px; z-index: 3; left: 0%; 
+            transform: translateX(-50%); pointer-events: none; 
+            transition: height 0.2s, width 0.2s, stroke 0.5s;
+        }        
+         .m3-slider-input { 
+            position: absolute; width: 100%; height: 100%; 
+            -webkit-appearance: none; background: transparent; 
+            z-index: 4; cursor: pointer; outline: none; 
+        }        
         .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
 
         
