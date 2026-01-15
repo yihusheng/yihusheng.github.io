@@ -37,8 +37,10 @@
             min-height: 100vh; overflow: hidden;
         }
 
+        /* 默认：桌面 / 宽屏模式（包含外框） */
         .phone-screen {
-            width: 375px; height: 812px; /* 默认桌面尺寸 */
+            width: 375px;
+            height: 812px;
             background-color: var(--md-sys-color-surface-container);
             border-radius: 48px;
             overflow: hidden; position: relative;
@@ -46,39 +48,48 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 移动端适配 (屏幕宽度小于 600px 时) --- */
-        @media (max-width: 600px) {
+        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（包含 1200x2670 这类超高分辨率） --- */
+        @media (max-width: 600px) and (orientation: portrait) {
             body {
-                /* 移除居中，直接铺满 */
                 justify-content: flex-start;
                 align-items: flex-start;
             }
 
             .phone-screen {
-                /* 全屏适配 */
                 width: 100vw;
                 height: 100vh;
-                border-radius: 0; /* 去除圆角，像原生App */
-                box-shadow: none; /* 去除阴影 */
+                border-radius: 0;
+                box-shadow: none;
             }
 
             .album-art {
-                /* 封面自适应宽度，不超过300px */
-                width: 60vw; 
-                height: 60vw; 
-                max-width: 300px;
-                max-height: 300px;
+                /* 封面使用视口宽度比例，保证在大屏上不会太小，小屏不会溢出 */
+                width: 60vw;
+                height: 60vw;
+                max-width: 360px;
+                max-height: 360px;
             }
 
             .player-content {
-                /* 减小顶部内边距，防止小屏溢出 */
-                padding: 100px 24px 0; 
+                padding: 100px 20px 0; /* 稍减小横向边距，给大屏内容更多空间 */
             }
-            
-            /* 针对刘海屏的安全区域适配 */
+
             .dynamic-island {
                 top: max(12px, env(safe-area-inset-top));
             }
+
+            /* 针对超高竖屏，适当加大一些内边距和字体，避免显得太“空” */
+            .song-title-main {
+                font-size: clamp(1.4rem, 4vw, 2rem);
+            }
+            .artist-name {
+                font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            }
+        }
+
+        /* --- 额外兜底：宽屏（width >= 600）但在横屏时，仍然用外框桌面模式 --- */
+        @media (min-width: 600px) {
+            /* 保持默认的 .phone-screen 样式（外框+固定尺寸）即可，不需要额外覆盖 */
         }
 
         /* --- 动态灵动岛 --- */
@@ -304,7 +315,7 @@
     <div class="phone-screen" id="app">
         <div class="dynamic-island" id="island">
             <div class="island-content">
-                <!-- 关键修复：添加 crossorigin="anonymous" 确保与大封面加载行为一致 -->
+                <!-- 添加 crossorigin 保证与大封面加载行为一致 -->
                 <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
                 <div class="island-info">
                     <span id="islandTitle" class="island-title">Song Title</span>
@@ -518,10 +529,8 @@
             // 确保图片严格同步
             mainCover.src = coverUrl;
             
-            // 添加动画类强制重绘，防止缓存问题
             islandCover.classList.add('updating');
             islandCover.src = coverUrl;
-            // 图片加载完后移除动画类
             islandCover.onload = () => {
                 islandCover.classList.remove('updating');
             };
@@ -599,17 +608,10 @@
         function updateUI(percent) {
             percent = isNaN(percent) ? 0 : percent;
             audioSlider.value = percent;
-            
-            // 1. 更新已播放波浪的宽度
             activeTrack.style.width = percent + "%";
-            
-            // 2. 更新未播放横线的位置和宽度
             inactiveTrack.style.left = percent + "%";
             inactiveTrack.style.width = (100 - percent) + "%";
-            
-            // 3. 更新竖线的位置
             sliderThumb.style.left = percent + "%";
-            
             document.getElementById('currTime').innerText = formatTime(isDragging ? (percent/100)*audio.duration : audio.currentTime);
             document.getElementById('durTime').innerText = formatTime(audio.duration);
         }
