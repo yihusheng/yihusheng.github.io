@@ -1,1 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            /* MD3 Color Tokens (Light Mode Default) */
+            --md-sys-color-primary: #005ac1;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #d8e2ff;
+            --md-sys-color-on-primary-container: #001a41;
+            --md-sys-color-background: #fdfbff;
+            --md-sys-color-on-background: #1b1b1f;
+            --md-sys-color-surface: #fdfbff;
+            --md-sys-color-surface-container: #f0f4fa;
+            --md-sys-color-surface-container-high: #e8edf4;
+            --md-sys-color-on-surface: #1b1b1f;
+            --md-sys-color-outline-variant: #c4c6cf;
+            
+            /* Typography */
+            --font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #adc6ff;
+                --md-sys-color-on-primary: #002e69;
+                --md-sys-color-primary-container: #004494;
+                --md-sys-color-on-primary-container: #d8e2ff;
+                --md-sys-color-background: #1b1b1f;
+                --md-sys-color-on-background: #e3e2e6;
+                --md-sys-color-surface: #1b1b1f;
+                --md-sys-color-surface-container: #23232a;
+                --md-sys-color-surface-container-high: #2d2d35;
+                --md-sys-color-on-surface: #e3e2e6;
+                --md-sys-color-outline-variant: #44474f;
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            line-height: 1.5;
+            padding: 24px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            opacity: 0.7;
+            font-size: 1.1rem;
+        }
+
+        /* Section Styling */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title span {
+            font-size: 1.5rem;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        /* Card Styling */
+        .card {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: var(--border-radius-md);
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface);
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            background-color: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--md-sys-color-surface-container-high);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .card:hover .icon-box {
+            background-color: rgba(255,255,255, 0.4);
+        }
+
+        .material-symbols-rounded {
+            font-size: 24px;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: block;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Dashboard</h1>
+            <p class="subtitle">Quick access to your local tools and media</p>
+        </header>
+
+        <div class="section-title">
+            <span class="material-symbols-rounded">build</span>
+            Tools
+        </div>
+        
+        <div class="grid">
+            <a href="./Tools/Double" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">folder_copy</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Double</span>
+                    <span class="card-desc">/Tools/Double</span>
+                </div>
+            </a>
+
+            <a href="./Tools/MAC" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">desktop_mac</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">MAC</span>
+                    <span class="card-desc">/Tools/MAC</span>
+                </div>
+            </a>
+
+            <a href="./Tools/Metacubexd" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">hub</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Metacubexd</span>
+                    <span class="card-desc">/Tools/Metacubexd</span>
+                </div>
+            </a>
+
+            <a href="./Tools/Webp2jpg" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">imagesmode</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">Webp2jpg</span>
+                    <span class="card-desc">Image Converter</span>
+                </div>
+            </a>
+
+            <a href="./Tools/
 
