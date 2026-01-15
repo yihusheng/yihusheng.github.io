@@ -18,7 +18,7 @@
             --md-sys-color-surface-container: #f0f4fa;
             --md-sys-color-surface-container-high: #e8edf4;
             --md-sys-color-on-surface: #1b1b1f;
-            --md-sys-color-outline-variant: #c4c6cf;
+            --md-sys-color-outline-variant: #74777f; /* 稍微加深以便阅读 */
             
             /* Typography */
             --font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
@@ -39,7 +39,7 @@
                 --md-sys-color-surface-container: #23232a;
                 --md-sys-color-surface-container-high: #2d2d35;
                 --md-sys-color-on-surface: #e3e2e6;
-                --md-sys-color-outline-variant: #44474f;
+                --md-sys-color-outline-variant: #8e918f;
             }
         }
 
@@ -55,6 +55,9 @@
             color: var(--md-sys-color-on-background);
             line-height: 1.5;
             padding: 24px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             transition: background-color 0.3s, color 0.3s;
         }
 
@@ -62,6 +65,8 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            width: 100%;
+            flex: 1; /* 推送 footer 到底部 */
         }
 
         /* Header */
@@ -167,6 +172,48 @@
             display: block;
         }
 
+        /* Footer Styling */
+        footer {
+            margin-top: 60px;
+            text-align: center;
+            padding-bottom: 20px;
+            border-top: 1px solid var(--md-sys-color-surface-container-high);
+            padding-top: 30px;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .footer-sub {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-outline-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Secret Emoji Button */
+        .secret-btn {
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.2; /* 默认很淡 */
+            filter: grayscale(100%); /* 默认黑白 */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .secret-btn:hover {
+            opacity: 1; /* 悬停可见 */
+            filter: grayscale(75%); /* 恢复彩色 */
+            transform: scale(1.5) rotate(15deg); /* 放大且微转 */
+        }
+
     </style>
 </head>
 <body>
@@ -189,7 +236,7 @@
                 </div>
                 <div class="card-content">
                     <span class="card-title">Double</span>
-                    <span class="card-desc">/Tools/Double</span>
+                    <span class="card-desc">双浮点计算器</span>
                 </div>
             </a>
 
@@ -199,7 +246,7 @@
                 </div>
                 <div class="card-content">
                     <span class="card-title">MAC</span>
-                    <span class="card-desc">/Tools/MAC</span>
+                    <span class="card-desc">MAC地址查询</span>
                 </div>
             </a>
 
@@ -209,7 +256,7 @@
                 </div>
                 <div class="card-content">
                     <span class="card-title">Metacubexd</span>
-                    <span class="card-desc">/Tools/Metacubexd</span>
+                    <span class="card-desc">Metacubexd面板</span>
                 </div>
             </a>
 
@@ -219,9 +266,48 @@
                 </div>
                 <div class="card-content">
                     <span class="card-title">Webp2jpg</span>
-                    <span class="card-desc">Image Converter</span>
+                    <span class="card-desc">图片转换器</span>
                 </div>
             </a>
 
-            <a href="./Tools/
+            <a href="./Tools/zashboard" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">space_dashboard</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">zashboard</span>
+                    <span class="card-desc">zashboard面板</span>
+                </div>
+            </a>
+        </div>
 
+        <div class="section-title">
+            <span class="material-symbols-rounded">library_music</span>
+            Media
+        </div>
+
+        <div class="grid">
+            <a href="./X" class="card">
+                <div class="icon-box">
+                    <span class="material-symbols-rounded">music_note</span>
+                </div>
+                <div class="card-content">
+                    <span class="card-title">X</span>
+                    <span class="card-desc">Media</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="copyright">
+            &copy; 2026 Personal Dashboard. All Rights Reserved.
+        </div>
+        <div class="footer-sub">
+            <span>Powered by Material Design 3</span>
+            <a href="./music" class="secret-btn" title="Secret Passage">✕</a>
+        </div>
+    </footer>
+
+</body>
+</html>
