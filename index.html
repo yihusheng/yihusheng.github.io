@@ -48,7 +48,7 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（包含 1200x2670 这类超高分辨率） --- */
+        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（包含 1200x2670 这类超高分辨率）--- */
         @media (max-width: 600px) and (orientation: portrait) {
             body {
                 justify-content: flex-start;
@@ -57,7 +57,8 @@
 
             .phone-screen {
                 width: 100vw;
-                height: 100vh;
+                /* 关键：移除固定高度，改用 min-height 确保铺满屏幕 */
+                min-height: 100vh;
                 border-radius: 0;
                 box-shadow: none;
             }
@@ -71,7 +72,8 @@
             }
 
             .player-content {
-                padding: 100px 20px 0; /* 稍减小横向边距，给大屏内容更多空间 */
+                /* 减小顶部内边距，避免被状态栏遮挡 */
+                padding: 80px 20px 0; 
             }
 
             .dynamic-island {
