@@ -3,311 +3,356 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <title>Serafina MD3 Refined</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* MD3 Color Tokens (Light Mode Default) */
-            --md-sys-color-primary: #005ac1;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #d8e2ff;
-            --md-sys-color-on-primary-container: #001a41;
-            --md-sys-color-background: #fdfbff;
-            --md-sys-color-on-background: #1b1b1f;
-            --md-sys-color-surface: #fdfbff;
-            --md-sys-color-surface-container: #f0f4fa;
-            --md-sys-color-surface-container-high: #e8edf4;
-            --md-sys-color-on-surface: #1b1b1f;
-            --md-sys-color-outline-variant: #74777f; /* 稍微加深以便阅读 */
+            /* --- MD3 模拟动态取色系统 (基于薰衣草紫/深色模式) --- */
             
-            /* Typography */
-            --font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
-            --border-radius-lg: 24px;
-            --border-radius-md: 16px;
+            /* 基础色板 */
+            --md-sys-color-background: #141218;
+            --md-sys-color-surface: #141218;
+            --md-sys-color-surface-container: #211f26; /* 播放器背景 */
+            --md-sys-color-surface-container-high: #2b2930; /* 卡片背景 */
+            
+            --md-sys-color-primary: #d0bcff; /* 主色调 (滑块/图标) */
+            --md-sys-color-on-primary: #381e72;
+            
+            --md-sys-color-primary-container: #4f378b; /* 播放按钮背景 */
+            --md-sys-color-on-primary-container: #eaddff; /* 播放按钮图标 */
+            
+            --md-sys-color-secondary-container: #4a4458; /* 侧边按钮背景 */
+            --md-sys-color-on-secondary-container: #e8def8; /* 侧边按钮图标 */
+            
+            --md-sys-color-on-surface: #e6e1e5; /* 主要文字 */
+            --md-sys-color-on-surface-variant: #cac4d0; /* 次要文字 */
+            --md-sys-color-outline: #938f99;
+
+            --island-bg: #000000;
         }
 
-        /* Dark Mode Support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --md-sys-color-primary: #adc6ff;
-                --md-sys-color-on-primary: #002e69;
-                --md-sys-color-primary-container: #004494;
-                --md-sys-color-on-primary-container: #d8e2ff;
-                --md-sys-color-background: #1b1b1f;
-                --md-sys-color-on-background: #e3e2e6;
-                --md-sys-color-surface: #1b1b1f;
-                --md-sys-color-surface-container: #23232a;
-                --md-sys-color-surface-container-high: #2d2d35;
-                --md-sys-color-on-surface: #e3e2e6;
-                --md-sys-color-outline-variant: #8e918f;
-            }
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: var(--font-family);
-            background-color: var(--md-sys-color-background);
-            color: var(--md-sys-color-on-background);
-            line-height: 1.5;
-            padding: 24px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
         }
 
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            flex: 1; /* 推送 footer 到底部 */
+        .phone-screen {
+            width: 375px; height: 812px;
+            /* 使用 MD3 Surface Container */
+            background-color: var(--md-sys-color-surface-container);
+            border-radius: 48px;
+            overflow: hidden; position: relative;
+            box-shadow: 0 0 0 10px #333, 0 30px 60px rgba(0,0,0,0.5);
+            color: var(--md-sys-color-on-surface);
         }
 
-        /* Header */
-        header {
-            margin-bottom: 40px;
-            padding: 20px 0;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 400;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            opacity: 0.7;
-            font-size: 1.1rem;
-        }
-
-        /* Section Styling */
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin-bottom: 20px;
-            color: var(--md-sys-color-primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        /* --- 动态灵动岛 (更短更紧凑) --- */
+        .dynamic-island {
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 36px; 
+            background-color: var(--island-bg); border-radius: 20px;
+            z-index: 500; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 6px; overflow: hidden;
         }
         
-        .section-title span {
-            font-size: 1.5rem;
+        /* 展开宽度缩减至 210px */
+        .dynamic-island.active { width: 210px; height: 44px; padding: 0 8px; }
+
+        .island-content {
+            display: flex; align-items: center; width: 100%; justify-content: space-between;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        }
+        .dynamic-island.active .island-content { opacity: 1; pointer-events: auto; transition-delay: 0.2s; }
+
+        .island-cover {
+            width: 28px; height: 28px; border-radius: 14px; object-fit: cover;
+            /* 旋转动画 */
+            animation: spin 4s linear infinite; animation-play-state: paused;
+        }
+        .playing .island-cover { animation-play-state: running; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* 灵动岛声波 (保持不变) */
+        .island-waveform { display: flex; gap: 3px; align-items: center; height: 16px; margin-left: auto; margin-right: 8px;}
+        .island-bar { width: 3px; background: var(--md-sys-color-primary); border-radius: 2px; height: 4px; }
+        .dynamic-island.active .island-bar { animation: bounce 0.8s infinite ease-in-out; }
+        .island-bar:nth-child(1) { animation-delay: 0s; }
+        .island-bar:nth-child(2) { animation-delay: 0.2s; }
+        .island-bar:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 100% { height: 4px; } 50% { height: 16px; } }
+
+        /* --- 播放器主体 --- */
+        .player-content { 
+            padding: 120px 24px 0; 
+            display: flex; flex-direction: column; align-items: center; 
+            height: 100%;
         }
 
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 48px;
+        /* 封面改为 MD3 圆角矩形 */
+        .album-art {
+            width: 300px; height: 300px; object-fit: cover;
+            border-radius: 28px; /* MD3 标准圆角 */
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            /* 移除 clip-path */
         }
 
-        /* Card Styling */
-        .card {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background-color: var(--md-sys-color-surface-container);
-            border-radius: var(--border-radius-md);
-            text-decoration: none;
-            color: var(--md-sys-color-on-surface);
-            transition: all 0.2s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid transparent;
+        .song-info { text-align: center; margin-bottom: 30px; }
+        .song-title-main { 
+            font-family: 'Roboto', sans-serif; font-weight: 700; 
+            font-size: 1.8rem; color: var(--md-sys-color-on-surface); 
+            margin-bottom: 8px; 
+        }
+        .artist-name {
+            font-size: 1.1rem; color: var(--md-sys-color-on-surface-variant);
         }
 
-        .card:hover {
-            background-color: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        /* --- 进度条 (使用 Primary 色) --- */
+        .m3-slider-root { width: 100%; height: 48px; position: relative; display: flex; align-items: center; margin-bottom: 5px; }
+        .m3-slider-track-inactive { position: absolute; right: 0; height: 4px; background-color: var(--md-sys-color-surface-variant); border-radius: 2px; z-index: 1; width: 100%; }
+        .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; }
+        /* 这里的 stroke 改为 primary */
+        .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
+        
+        @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+        .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
+        
+        .m3-slider-thumb { position: absolute; width: 4px; height: 24px; background-color: var(--md-sys-color-primary); border-radius: 2px; z-index: 3; left: 0%; transform: translateX(-50%); pointer-events: none; }
+        .m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; background: transparent; z-index: 4; cursor: pointer; outline: none; }
+        
+        .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
+
+        /* --- 播放按钮组 (MD3 容器色) --- */
+        .controls { display: flex; gap: 24px; align-items: center; }
+        
+        /* 侧边按钮：Secondary Container */
+        .btn { 
+            background: var(--md-sys-color-secondary-container); 
+            color: var(--md-sys-color-on-secondary-container); 
+            border: none; cursor: pointer; border-radius: 24px; /* MD3 较小的圆角 */
+            width: 64px; height: 64px; 
+            display: flex; align-items: center; justify-content: center; 
+            transition: transform 0.1s, background 0.2s; 
+        }
+        .btn:active { transform: scale(0.95); }
+        
+        /* 播放按钮：Primary Container */
+        .btn-play { 
+            width: 80px; height: 80px; border-radius: 32px; /* MD3 较大的圆角 */
+            background: var(--md-sys-color-primary-container); 
+            color: var(--md-sys-color-on-primary-container); 
+        }
+        .btn span { font-size: 2rem; }
+        .btn-play span { font-size: 2.5rem; }
+
+        /* --- 底部抽屉 --- */
+        .bottom-drawer {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: 92%; 
+            background: var(--md-sys-color-surface); /* 抽屉使用纯 Surface 色 */
+            border-radius: 28px 28px 0 0;
+            transform: translateY(calc(100% - 30px));
+            transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+            z-index: 1000;
+            display: flex; flex-direction: column;
+            box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
+        }
+        .bottom-drawer.open { transform: translateY(0); }
+
+        .nav-handle-area {
+            width: 100%; height: 30px; padding-top: 12px;
+            display: flex; justify-content: center;
+            flex-shrink: 0; cursor: pointer;
+        }
+        .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
+
+        /* 关键：使用 Flex 布局管理垂直空间 */
+        .drawer-scroll-view {
+            flex: 1; overflow-y: auto; 
+            display: flex; flex-direction: column; /* 垂直排列 */
+            padding: 10px 24px 0;
+        }
+        .drawer-scroll-view::-webkit-scrollbar { display: none; }
+
+        .drawer-title { 
+            font-size: 1.25rem; color: var(--md-sys-color-on-surface); 
+            margin: 10px 0 20px; font-weight: 500;
         }
 
-        .card:active {
-            transform: scale(0.98);
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { 
+            /* 使用 Surface Container High */
+            background: var(--md-sys-color-surface-container-high); 
+            border-radius: 16px; padding: 20px; 
+            text-decoration: none; color: var(--md-sys-color-on-surface); 
+            display: flex; flex-direction: column; gap: 12px; 
         }
+        .card .material-symbols-rounded { font-size: 1.8rem; color: var(--md-sys-color-primary); }
+        .card span:last-child { font-size: 0.9rem; font-weight: 500; }
 
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: var(--md-sys-color-surface-container-high);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 16px;
-            transition: background-color 0.2s;
-        }
-
-        .card:hover .icon-box {
-            background-color: rgba(255,255,255, 0.4);
-        }
-
-        .material-symbols-rounded {
-            font-size: 24px;
-        }
-
-        .card-content {
-            flex: 1;
-        }
-
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 500;
-            display: block;
-        }
-
-        .card-desc {
-            font-size: 0.85rem;
-            opacity: 0.7;
-            margin-top: 4px;
-            display: block;
-        }
-
-        /* Footer Styling */
-        footer {
-            margin-top: 60px;
+        /* --- 底部版权 (下移逻辑) --- */
+        .drawer-footer-copyright {
+            margin-top: auto; /* 关键：自动填充上方空间，推到底部 */
+            padding: 60px 0 50px; /* 增加底部 Padding，确保不贴边 */
             text-align: center;
-            padding-bottom: 20px;
-            border-top: 1px solid var(--md-sys-color-surface-container-high);
-            padding-top: 30px;
+            border-top: 1px solid var(--md-sys-color-surface-variant);
+            opacity: 0.6;
+            margin-bottom: 20px;
         }
-
-        .copyright {
-            font-size: 0.9rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--md-sys-color-on-surface);
+        .copyright-text { font-size: 0.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; }
+        
+        .powered-row { 
+            display: flex; align-items: center; justify-content: center; gap: 6px; 
+            font-size: 0.7rem; color: var(--md-sys-color-outline); 
         }
-
-        .footer-sub {
-            font-size: 0.75rem;
-            color: var(--md-sys-color-outline-variant);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        /* Secret Emoji Button */
-        .secret-btn {
-            text-decoration: none;
-            font-size: 1rem;
-            cursor: pointer;
-            opacity: 0.2; /* 默认很淡 */
-            filter: grayscale(100%); /* 默认黑白 */
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
-        }
-
-        .secret-btn:hover {
-            opacity: 1; /* 悬停可见 */
-            filter: grayscale(75%); /* 恢复彩色 */
-            transform: scale(1.5) rotate(15deg); /* 放大且微转 */
-        }
+        .secret-x { text-decoration: none; color: inherit; opacity: 0.2; transition: opacity 0.2s; padding: 4px; }
+        .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
 
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Dashboard</h1>
-            <p class="subtitle">Quick access to your local tools and media</p>
-        </header>
-
-        <div class="section-title">
-            <span class="material-symbols-rounded">build</span>
-            Tools
-        </div>
-        
-        <div class="grid">
-            <a href="./Tools/Double" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">folder_copy</span>
+    <div class="phone-screen" id="app">
+        <div class="dynamic-island" id="island">
+            <div class="island-content">
+                <img src="https://picsum.photos/200?8" class="island-cover" alt="cover">
+                <div class="island-waveform">
+                    <div class="island-bar"></div>
+                    <div class="island-bar"></div>
+                    <div class="island-bar"></div>
                 </div>
-                <div class="card-content">
-                    <span class="card-title">Double</span>
-                    <span class="card-desc">双浮点计算器</span>
-                </div>
-            </a>
-
-            <a href="./Tools/MAC" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">desktop_mac</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-title">MAC</span>
-                    <span class="card-desc">MAC地址查询</span>
-                </div>
-            </a>
-
-            <a href="./Tools/Metacubexd" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">hub</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-title">Metacubexd</span>
-                    <span class="card-desc">Metacubexd面板</span>
-                </div>
-            </a>
-
-            <a href="./Tools/Webp2jpg" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">imagesmode</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-title">Webp2jpg</span>
-                    <span class="card-desc">图片转换器</span>
-                </div>
-            </a>
-
-            <a href="./Tools/zashboard" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">space_dashboard</span>
-                </div>
-                <div class="card-content">
-                    <span class="card-title">zashboard</span>
-                    <span class="card-desc">zashboard面板</span>
-                </div>
-            </a>
+            </div>
         </div>
 
-        <div class="section-title">
-            <span class="material-symbols-rounded">library_music</span>
-            Media
+        <div class="player-content">
+            <img src="https://picsum.photos/600/600?8" class="album-art">
+            
+            <div class="song-info">
+                <h1 class="song-title-main">Serafina</h1>
+                <p class="artist-name">Bambi • Highs in the Minuses</p>
+            </div>
+            
+            <div class="m3-slider-root">
+                <div class="m3-slider-track-active-container" id="activeTrack">
+                    <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
+                        <path class="m3-slider-wavy-path" d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 T420,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10" />
+                    </svg>
+                </div>
+                <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
+                <div class="m3-slider-thumb" id="sliderThumb"></div>
+                <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0">
+            </div>
+            
+            <div class="time-labels">
+                <span id="currTime">0:00</span>
+                <span id="durTime">3:20</span>
+            </div>
+
+            <div class="controls">
+                <button class="btn"><span class="material-symbols-rounded">skip_previous</span></button>
+                <button class="btn btn-play" id="playBtn">
+                    <span class="material-symbols-rounded" id="playIcon">play_arrow</span>
+                </button>
+                <button class="btn"><span class="material-symbols-rounded">skip_next</span></button>
+            </div>
         </div>
 
-        <div class="grid">
-            <a href="./X" class="card">
-                <div class="icon-box">
-                    <span class="material-symbols-rounded">music_note</span>
+        <div class="bottom-drawer" id="drawer">
+            <div class="nav-handle-area" onclick="toggleDrawer()">
+                <div class="md3-nav-bar"></div>
+            </div>
+            
+            <div class="drawer-scroll-view">
+                <h3 class="drawer-title">Dashboard</h3>
+                <div class="grid">
+                    <div class="card"><span class="material-symbols-rounded">calculate</span><span>Double</span></div>
+                    <div class="card"><span class="material-symbols-rounded">lan</span><span>MAC Info</span></div>
+                    <div class="card"><span class="material-symbols-rounded">imagesmode</span><span>Webp2jpg</span></div>
+                    <div class="card"><span class="material-symbols-rounded">hub</span><span>Metacubexd</span></div>
+                    <div class="card"><span class="material-symbols-rounded">dns</span><span>DNS Prefetch</span></div>
+                    <div class="card"><span class="material-symbols-rounded">terminal</span><span>CMD Line</span></div>
                 </div>
-                <div class="card-content">
-                    <span class="card-title">X</span>
-                    <span class="card-desc">Media</span>
+
+                <div class="drawer-footer-copyright">
+                    <div class="copyright-text">
+                        &copy; 2026 Personal Dashboard. All Rights Reserved.
+                    </div>
+                    <div class="powered-row">
+                        <span>Powered by Material Design 3</span>
+                        <a href="music.html" class="secret-x">✕</a>
+                    </div>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
 
-    <footer>
-        <div class="copyright">
-            &copy; 2026 Personal Dashboard. All Rights Reserved.
-        </div>
-        <div class="footer-sub">
-            <span>Powered by Material Design 3</span>
-            <a href="./music" class="secret-btn" title="Secret Passage">✕</a>
-        </div>
-    </footer>
+    <audio id="audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
+    <script>
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('playBtn');
+        const playIcon = document.getElementById('playIcon');
+        const activeTrack = document.getElementById('activeTrack');
+        const inactiveTrack = document.getElementById('inactiveTrack');
+        const sliderThumb = document.getElementById('sliderThumb');
+        const audioSlider = document.getElementById('audioSlider');
+        const app = document.getElementById('app');
+        const island = document.getElementById('island');
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play(); 
+                playIcon.innerText = "pause";
+                app.classList.add('playing');
+                island.classList.add('active'); 
+            } else {
+                audio.pause(); 
+                playIcon.innerText = "play_arrow";
+                app.classList.remove('playing');
+                island.classList.remove('active'); 
+            }
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            if (!isDragging) updateUI((audio.currentTime / audio.duration) * 100);
+        });
+
+        let isDragging = false;
+        audioSlider.addEventListener('input', () => {
+            isDragging = true; 
+            updateUI(audioSlider.value);
+        });
+
+        audioSlider.addEventListener('change', () => {
+            isDragging = false; 
+            audio.currentTime = (audioSlider.value / 100) * audio.duration;
+        });
+
+        function updateUI(percent) {
+            percent = isNaN(percent) ? 0 : percent;
+            audioSlider.value = percent;
+            activeTrack.style.width = percent + "%";
+            inactiveTrack.style.width = (100 - percent) + "%";
+            sliderThumb.style.left = percent + "%";
+            document.getElementById('currTime').innerText = formatTime(isDragging ? (percent/100)*audio.duration : audio.currentTime);
+        }
+
+        function formatTime(s) {
+            if (isNaN(s)) return "0:00";
+            const m = Math.floor(s/60), r = Math.floor(s%60);
+            return `${m}:${r<10?'0':''}${r}`;
+        }
+
+        function toggleDrawer() {
+            document.getElementById('drawer').classList.toggle('open');
+        }
+    </script>
 </body>
 </html>
