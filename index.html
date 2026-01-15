@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serafina MD3 Ultimate</title>
+    <title>Serafina MD3 Dynamic</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- MD3 动态取色系统 (基于薰衣草紫) --- */
+            /* --- 初始默认值 --- */
             --md-sys-color-surface: #141218;
             --md-sys-color-surface-container: #211f26; 
             --md-sys-color-surface-container-high: #2b2930; 
             
-            /* 关键色：主色 */
             --md-sys-color-primary: #d0bcff; 
             --md-sys-color-on-primary: #381e72;
-            
             --md-sys-color-primary-container: #4f378b; 
             --md-sys-color-on-primary-container: #eaddff; 
-            
             --md-sys-color-secondary-container: #4a4458; 
             --md-sys-color-on-secondary-container: #e8def8; 
-            
             --md-sys-color-on-surface: #e6e1e5; 
             --md-sys-color-on-surface-variant: #cac4d0; 
             --md-sys-color-outline: #938f99;
             --island-bg: #000000;
+        }
+
+        body, .phone-screen, .btn, .btn-play, .bottom-drawer, .card {
+            transition: background-color 0.6s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,11 +46,11 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 动态灵动岛 (适配配色版) --- */
+        /* --- 动态灵动岛 --- */
         .dynamic-island {
             position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
             width: 120px; height: 36px; 
-            background-color: var(--island-bg); /* 适配取色 */
+            background-color: var(--island-bg);
             border-radius: 20px;
             z-index: 500; 
             transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -59,7 +59,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         
-        /* 展开状态 */
         .dynamic-island.active { width: 260px; height: 50px; padding: 0 10px; border-radius: 25px; }
 
         .island-content {
@@ -71,13 +70,15 @@
         .island-cover {
             width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
             margin-right: 10px; flex-shrink: 0;
+            transition: opacity 0.2s; /* 刷新动画 */
         }
+        .island-cover.updating { opacity: 0.5; } /* 用于强制刷新 */
         
         .island-info {
             display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 10px;
         }
         .island-title { 
-            font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-primary); /* 适配主色 */
+            font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-primary); 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
         }
         .island-artist { 
@@ -107,7 +108,6 @@
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        /* 切换歌曲时的简单动画类 */
         .album-art.change { transform: scale(0.9); opacity: 0.8; }
 
         .song-info { text-align: center; margin-bottom: 30px; width: 100%; }
@@ -118,38 +118,75 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .artist-name {
-            font-size: 1.1rem; color: var(--md-sys-color-primary); /* 适配主色 */
+            font-size: 1.1rem; color: var(--md-sys-color-primary); 
             font-weight: 500;
         }
 
-       /* --- 进度条 (使用 Primary 色) --- */
+       /* --- 进度条 (分离式布局：不重叠) --- */
         .m3-slider-root { width: 100%; height: 48px; position: relative; display: flex; align-items: center; margin-bottom: 5px; }
-        .m3-slider-track-inactive { position: absolute; right: 0; height: 4px; background-color: var(--md-sys-color-surface-variant); border-radius: 2px; z-index: 1; width: 100%; }
-        /* 底部未播放轨道 */
-        .m3-slider-track-inactive { 
-            position: absolute; width: 100%; height: 4px; 
-            background-color: #fff; opacity: 0.15; 
-            border-radius: 2px; z-index: 1; 
-        }
-        .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; }
-        /* 这里的 stroke 改为 primary */
-        .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
-        @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
-        .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
         
-           /* 竖线滑块指示器 */
-        .m3-slider-thumb { 
-            position: absolute; width: 2px; height: 24px; 
-            background-color: var(--dynamic-accent); 
-            border-radius: 1px; z-index: 3; left: 0%; 
-            transform: translateX(-50%); pointer-events: none; 
-            transition: height 0.2s, width 0.2s, stroke 0.5s;
-        }        
-         .m3-slider-input { 
+        /* 1. 未播放区域：横线 (位置动态跟随) */
+        .m3-slider-track-inactive {
+            position: absolute;
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.2); /* 淡白色横线 */
+            border-radius: 2px;
+            z-index: 1;
+            top: 22px; /* 垂直居中 */
+            
+            /* 关键：由 JS 控制 left 和 width */
+            left: 0%; 
+            width: 100%;
+        }
+
+        /* 2. 已播放区域：波浪线 */
+        .m3-slider-track-active-container {
+            position: absolute; 
+            left: 0; 
+            height: 20px; /* 波浪高度 */
+            overflow: hidden; 
+            z-index: 2; 
+            width: 0%; /* JS 控制 */
+            top: 14px; /* 垂直居中 (48-20)/2 */
+        }
+        .m3-slider-wavy-path { 
+            fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; 
+        }
+        
+        @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+        .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }     
+
+        /* 3. 竖线指示标 */
+        .m3-slider-thumb-vertical {
+            position: absolute;
+            top: 50%;
+            left: 0%; /* JS 控制 */
+            width: 4px; 
+            height: 20px; 
+            background-color: #fff; 
+            border-radius: 2px;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        /* 4. 隐藏原生 input */
+        .m3-slider-input { 
             position: absolute; width: 100%; height: 100%; 
-            -webkit-appearance: none; background: transparent; 
+            -webkit-appearance: none; 
+            appearance: none;
+            background: transparent; 
             z-index: 4; cursor: pointer; outline: none; 
-        }        
+        }
+        .m3-slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none;
+        }
+        .m3-slider-input::-moz-range-thumb {
+            width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none;
+        }
+
         .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
 
         
@@ -211,12 +248,10 @@
             display: flex; flex-direction: column; gap: 12px; 
         }
 
-        /* --- 底部版权 (修复位置，更靠下) --- */
         .drawer-footer-copyright {
-            margin-top: auto; /* 推到最底部 */
-            padding: 20px 0 20px; /* 顶部留白大一点，底部留白防止被手势条遮挡 */
+            margin-top: auto;
+            padding: 20px 0 20px;
             text-align: center;
-            
             width: 100%;
         }
         .copyright-text { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 6px; }
@@ -227,7 +262,6 @@
         }
         .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
-
     </style>
 </head>
 <body>
@@ -235,7 +269,8 @@
     <div class="phone-screen" id="app">
         <div class="dynamic-island" id="island">
             <div class="island-content">
-                <img id="islandCover" src="" class="island-cover" alt="cover">
+                <!-- 关键修复：添加 crossorigin="anonymous" 确保与大封面加载行为一致 -->
+                <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
                 <div class="island-info">
                     <span id="islandTitle" class="island-title">Song Title</span>
                     <span id="islandArtist" class="island-artist">Artist</span>
@@ -249,21 +284,28 @@
         </div>
 
         <div class="player-content">
-            <img id="mainCover" src="" class="album-art">
+            <img id="mainCover" crossorigin="anonymous" src="" class="album-art">
             
             <div class="song-info">
                 <h1 id="mainTitle" class="song-title-main">Title</h1>
                 <p id="mainArtist" class="artist-name">Artist</p>
             </div>
             
+             <!-- 进度条：分离式布局 -->
              <div class="m3-slider-root">
+                <!-- 底层：未播放横线 (位置动态) -->
+                <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
+
+                <!-- 中层：已播放波浪 -->
                 <div class="m3-slider-track-active-container" id="activeTrack">
                     <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
                         <path class="m3-slider-wavy-path" d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 T420,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10" />
                     </svg>
                 </div>
-                <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
-                <div class="m3-slider-thumb" id="sliderThumb"></div>
+
+                <!-- 顶层：竖线指示标 -->
+                <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
+
                 <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0">
             </div>
             
@@ -301,16 +343,97 @@
                     <div class="copyright-text">
                         &copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <audio id="audio"></audio>
+    <canvas id="colorCanvas" style="display: none;"></canvas>
 
     <script>
-        // 歌曲数据配置
+        const ColorUtils = {
+            hexToRgb: (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            },
+            rgbToHsl: (r, g, b) => {
+                r /= 255, g /= 255, b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+                if (max === min) { h = s = 0; } else {
+                    const d = max - min;
+                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) {
+                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                        case g: h = (b - r) / d + 2; break;
+                        case b: h = (r - g) / d + 4; break;
+                    }
+                    h /= 6;
+                }
+                return { h: h * 360, s: s * 100, l: l * 100 };
+            },
+            hslToString: (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`,
+            
+            extractColorFromUrl: (imageUrl, callback) => {
+                const canvas = document.getElementById('colorCanvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; 
+                img.src = imageUrl;
+
+                img.onload = function() {
+                    canvas.width = 100;
+                    canvas.height = 100;
+                    ctx.drawImage(img, 0, 0, 100, 100);
+                    try {
+                        const imageData = ctx.getImageData(0, 0, 100, 100).data;
+                        let r = 0, g = 0, b = 0, count = 0;
+                        for (let i = 0; i < imageData.length; i += 4) {
+                            r += imageData[i];
+                            g += imageData[i + 1];
+                            b += imageData[i + 2];
+                            count++;
+                        }
+                        callback({ r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) });
+                    } catch (e) {
+                        console.warn("无法提取颜色，使用默认值", e);
+                        callback({ r: 76, g: 55, b: 139 }); 
+                    }
+                };
+                
+                img.onerror = function() {
+                    console.warn("图片加载失败，使用默认颜色");
+                    callback({ r: 76, g: 55, b: 139 });
+                }
+            },
+
+            generateTheme: (sourceRgb) => {
+                const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
+                const h = hsl.h;
+                const s = Math.max(20, Math.min(100, hsl.s));
+                const l = hsl.l;
+
+                const primary = ColorUtils.hslToString(h, Math.min(100, s + 10), Math.max(40, Math.min(60, l + 10)));
+                const surfaceContainer = ColorUtils.hslToString(h, s / 3, 12);
+                const surfaceContainerHigh = ColorUtils.hslToString(h, s / 2.5, 18);
+                const primaryContainer = ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l));
+                const surface = ColorUtils.hslToString(h, s / 4, 8);
+
+                return {
+                    '--md-sys-color-primary': primary,
+                    '--md-sys-color-surface-container': surfaceContainer,
+                    '--md-sys-color-surface-container-high': surfaceContainerHigh,
+                    '--md-sys-color-primary-container': primaryContainer,
+                    '--md-sys-color-surface': surface
+                };
+            }
+        };
+
         const songs = [
             {
                 title: "Serafina",
@@ -333,13 +456,13 @@
         ];
 
         let currentSongIndex = 0;
-
         const audio = document.getElementById('audio');
+        const mainCover = document.getElementById('mainCover');
+        const islandCover = document.getElementById('islandCover');
         const playBtn = document.getElementById('playBtn');
         const playIcon = document.getElementById('playIcon');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        
         const activeTrack = document.getElementById('activeTrack');
         const inactiveTrack = document.getElementById('inactiveTrack');
         const sliderThumb = document.getElementById('sliderThumb');
@@ -347,27 +470,47 @@
         const app = document.getElementById('app');
         const island = document.getElementById('island');
 
-        // 初始化加载第一首歌
         loadSong(songs[currentSongIndex]);
 
         function loadSong(song) {
             document.getElementById('mainTitle').innerText = song.title;
             document.getElementById('mainArtist').innerText = song.artist;
-            document.getElementById('mainCover').src = song.cover;
-            
-            // 灵动岛信息
             document.getElementById('islandTitle').innerText = song.title;
-            document.getElementById('islandArtist').innerText = song.artist.split('•')[0].trim(); // 简化歌手名
-            document.getElementById('islandCover').src = song.cover;
+            document.getElementById('islandArtist').innerText = song.artist.split('•')[0].trim();
             
+            const coverUrl = song.cover;
+            
+            // 确保图片严格同步
+            // 1. 设置主封面
+            mainCover.src = coverUrl;
+            
+            // 2. 设置灵动岛封面
+            // 添加动画类强制重绘，防止缓存问题
+            islandCover.classList.add('updating');
+            islandCover.src = coverUrl;
+            // 图片加载完后移除动画类
+            islandCover.onload = () => {
+                islandCover.classList.remove('updating');
+            };
+
             audio.src = song.src;
-            
-            // 封面切换动画效果
-            const cover = document.getElementById('mainCover');
-            cover.classList.remove('change');
-            void cover.offsetWidth; // 触发重绘
-            cover.classList.add('change');
-            setTimeout(() => cover.classList.remove('change'), 400);
+
+            mainCover.classList.remove('change');
+            void mainCover.offsetWidth;
+            mainCover.classList.add('change');
+            setTimeout(() => mainCover.classList.remove('change'), 400);
+
+            ColorUtils.extractColorFromUrl(coverUrl, (rgb) => {
+                const theme = ColorUtils.generateTheme(rgb);
+                applyTheme(theme);
+            });
+        }
+
+        function applyTheme(themeColors) {
+            const root = document.documentElement;
+            for (const [property, value] of Object.entries(themeColors)) {
+                root.style.setProperty(property, value);
+            }
         }
 
         function playSong() {
@@ -385,47 +528,31 @@
         }
 
         playBtn.addEventListener('click', () => {
-            if (audio.paused) {
-                playSong();
-            } else {
-                pauseSong();
-            }
+            if (audio.paused) playSong();
+            else pauseSong();
         });
 
-        // 切换下一首
         nextBtn.addEventListener('click', () => {
-            currentSongIndex++;
-            if (currentSongIndex > songs.length - 1) {
-                currentSongIndex = 0;
-            }
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
             loadSong(songs[currentSongIndex]);
             playSong();
         });
 
-        // 切换上一首
         prevBtn.addEventListener('click', () => {
-            currentSongIndex--;
-            if (currentSongIndex < 0) {
-                currentSongIndex = songs.length - 1;
-            }
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
             loadSong(songs[currentSongIndex]);
             playSong();
         });
 
-        // 进度条逻辑
+        let isDragging = false;
         audio.addEventListener('timeupdate', () => {
             const { duration, currentTime } = audio;
             if (isNaN(duration)) return;
             const percent = (currentTime / duration) * 100;
             if (!isDragging) updateUI(percent);
-            
-            // 自动播放下一首
-            if (currentTime >= duration) {
-                nextBtn.click();
-            }
+            if (currentTime >= duration) nextBtn.click();
         });
 
-        let isDragging = false;
         audioSlider.addEventListener('input', () => {
             isDragging = true; 
             updateUI(audioSlider.value);
@@ -439,10 +566,16 @@
         function updateUI(percent) {
             percent = isNaN(percent) ? 0 : percent;
             audioSlider.value = percent;
+            
+            // 1. 更新已播放波浪的宽度
             activeTrack.style.width = percent + "%";
+            
+            // 2. 更新未播放横线的位置和宽度
+            inactiveTrack.style.left = percent + "%";
             inactiveTrack.style.width = (100 - percent) + "%";
-            // 移除了 left 偏移的 thumb 圆点，现在不需要这一行，或者如果保留极细线条
-            // sliderThumb.style.left = percent + "%"; 
+            
+            // 3. 更新竖线的位置
+            sliderThumb.style.left = percent + "%";
             
             document.getElementById('currTime').innerText = formatTime(isDragging ? (percent/100)*audio.duration : audio.currentTime);
             document.getElementById('durTime').innerText = formatTime(audio.duration);
