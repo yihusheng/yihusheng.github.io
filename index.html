@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <!-- 沉浸式全屏支持 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#141218">
@@ -12,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- 初始默认值 --- */
             --md-sys-color-surface: #141218;
             --md-sys-color-surface-container: #211f26; 
             --md-sys-color-surface-container-high: #2b2930; 
@@ -74,7 +72,7 @@
             }
 
             .player-content {
-                /* 关键：使用安全区域适配状态栏 */
+                /* 使用安全区域适配状态栏 */
                 padding-top: env(safe-area-inset-top) + 80px;
             }
 
@@ -527,6 +525,38 @@
             navigator.mediaSession.setActionHandler('nexttrack', () => nextBtn.click());
         }
 
+        // 动态适配手机页面
+        function adjustForMobile() {
+            // 处理地址栏变化
+            let lastKnownScrollPosition = 0;
+            let ticking = false;
+            
+            function doSomething(scrollPos) {
+                // 根据滚动位置调整布局
+                const addressBarHeight = window.innerHeight - document.documentElement.clientHeight;
+                if (addressBarHeight > 0) {
+                    // 地址栏显示时，调整内容位置
+                    document.body.style.paddingTop = `${addressBarHeight}px`;
+                } else {
+                    document.body.style.paddingTop = '0';
+                }
+            }
+            
+            window.addEventListener('scroll', function(e) {
+                lastKnownScrollPosition = window.scrollY;
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        doSomething(lastKnownScrollPosition);
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            // 初始化
+            doSomething(0);
+        }
+
         loadSong(songs[currentSongIndex]);
 
         function loadSong(song) {
@@ -652,6 +682,10 @@
         function toggleDrawer() {
             document.getElementById('drawer').classList.toggle('open');
         }
+
+        // 初始化手机适配
+        adjustForMobile();
+        window.addEventListener('resize', adjustForMobile);
     </script>
 </body>
 </html>
