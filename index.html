@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* --- 初始默认值 --- */
             --md-sys-color-surface: #141218;
             --md-sys-color-surface-container: #211f26; 
             --md-sys-color-surface-container-high: #2b2930; 
@@ -50,7 +51,7 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示 --- */
+        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（不显示刘海）--- */
         @media (max-width: 600px) and (orientation: portrait) {
             body {
                 justify-content: flex-start;
@@ -72,12 +73,13 @@
             }
 
             .player-content {
-                /* 使用安全区域适配状态栏 */
-                padding-top: env(safe-area-inset-top) + 80px;
+                /* 关键：移除安全区域，直接从顶部开始 */
+                padding-top: 80px;
             }
 
             .dynamic-island {
-                top: env(safe-area-inset-top);
+                /* 关键：移除安全区域，直接从顶部开始 */
+                top: 0;
             }
 
             /* 动态调整字体大小 */
@@ -454,7 +456,7 @@
                 };
                 
                 img.onerror = function() {
-                    console.warn("图片加载失败，使用默认颜色");
+                    console.warn("图片加载失败，使用默认值");
                     callback({ r: 76, g: 55, b: 139 });
                 }
             },
@@ -523,38 +525,6 @@
             navigator.mediaSession.setActionHandler('pause', () => pauseSong());
             navigator.mediaSession.setActionHandler('previoustrack', () => prevBtn.click());
             navigator.mediaSession.setActionHandler('nexttrack', () => nextBtn.click());
-        }
-
-        // 动态适配手机页面
-        function adjustForMobile() {
-            // 处理地址栏变化
-            let lastKnownScrollPosition = 0;
-            let ticking = false;
-            
-            function doSomething(scrollPos) {
-                // 根据滚动位置调整布局
-                const addressBarHeight = window.innerHeight - document.documentElement.clientHeight;
-                if (addressBarHeight > 0) {
-                    // 地址栏显示时，调整内容位置
-                    document.body.style.paddingTop = `${addressBarHeight}px`;
-                } else {
-                    document.body.style.paddingTop = '0';
-                }
-            }
-            
-            window.addEventListener('scroll', function(e) {
-                lastKnownScrollPosition = window.scrollY;
-                if (!ticking) {
-                    window.requestAnimationFrame(function() {
-                        doSomething(lastKnownScrollPosition);
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            });
-
-            // 初始化
-            doSomething(0);
         }
 
         loadSong(songs[currentSongIndex]);
@@ -682,10 +652,6 @@
         function toggleDrawer() {
             document.getElementById('drawer').classList.toggle('open');
         }
-
-        // 初始化手机适配
-        adjustForMobile();
-        window.addEventListener('resize', adjustForMobile);
     </script>
 </body>
 </html>
