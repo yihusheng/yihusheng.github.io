@@ -444,30 +444,69 @@
 
         async function fetchWeather() {
             // 从Cookie中获取保存的位置信息，如果没有则使用默认值
-            let lat = parseFloat(CookieUtils.get('weather_lat')) || 39.9042;
-            let lon = parseFloat(CookieUtils.get('weather_lon')) || 116.4074;
+            let lat = parseFloat(CookieUtils.get('weather_lat')) || null;
+            let lon = parseFloat(CookieUtils.get('weather_lon')) || null;
             
-            if ('geolocation' in navigator) {
-                try {
-                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-                    lat = position.coords.latitude; 
-                    lon = position.coords.longitude;
-                    
-                    // 将获取到的位置信息保存到Cookie中
-                    CookieUtils.set('weather_lat', lat, 30);
-                    CookieUtils.set('weather_lon', lon, 30);
-                } catch (e) {
-                    console.log("无法获取地理位置，使用上次保存的位置信息");
+            // 如果没有存储的位置信息，则尝试获取当前位置
+            if (!lat || !lon) {
+                if ('geolocation' in navigator) {
+                    try {
+                        document.getElementById('locationDisplay').textContent = "定位中...";
+                        
+                        const position = await new Promise((resolve, reject) => {
+                            // 设置较短的超时时间并启用高精度定位
+                            navigator.geolocation.getCurrentPosition(resolve, reject, { 
+                                timeout: 10000,
+                                enableHighAccuracy: true,
+                                maximumAge: 5 * 60 * 1000 // 5分钟内的缓存位置可接受
+                            });
+                        });
+                        
+                        lat = position.coords.latitude; 
+                        lon = position.coords.longitude;
+                        
+                        // 将获取到的位置信息保存到Cookie中
+                        CookieUtils.set('weather_lat', lat, 30);
+                        CookieUtils.set('weather_lon', lon, 30);
+                        
+                        // 显示正在获取位置的提示
+                        document.getElementById('locationDisplay').textContent = "获取位置成功...";
+                    } catch (e) {
+                        console.log("无法获取地理位置: ", e.message);
+                        // 获取失败时使用默认北京位置
+                        lat = 39.9042;
+                        lon = 116.4074;
+                        document.getElementById('locationDisplay').textContent = "定位失败，使用默认位置";
+                    }
+                } else {
+                    console.log("浏览器不支持地理定位");
+                    lat = 39.9042;
+                    lon = 116.4074;
+                    document.getElementById('locationDisplay').textContent = "不支持定位，使用默认位置";
                 }
             }
             
             try {
-                // 获取城市名称
+                // 获取城市名称 - 修改为更可靠的位置解析方式
                 const locationResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`);
                 const locationData = await locationResponse.json();
-                const city = locationData.city || locationData.locality || locationData.principalSubdivision || "未知位置";
                 
-                document.getElementById('locationDisplay').textContent = city;
+                // 改进位置显示逻辑，优先级：城市 > 地区 > 州/省份 > 国家 > 坐标
+                let locationName = "未知位置";
+                if (locationData && locationData.city) {
+                    locationName = locationData.city;
+                } else if (locationData && locationData.locality) {
+                    locationName = locationData.locality;
+                } else if (locationData && locationData.principalSubdivision) {
+                    locationName = locationData.principalSubdivision;
+                } else if (locationData && locationData.countryName) {
+                    locationName = locationData.countryName;
+                } else {
+                    // 如果无法获取具体地名，显示坐标
+                    locationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                }
+                
+                document.getElementById('locationDisplay').textContent = locationName;
                 
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
                 const data = await response.json();
@@ -487,7 +526,7 @@
                 document.getElementById('detailHumidity').textContent = `💧 ${current.relative_humidity_2m}%`;
             } catch (e) {
                 console.error("获取天气数据失败:", e);
-                document.getElementById('locationDisplay').textContent = "获取位置失败";
+                document.getElementById('locationDisplay').textContent = "获取天气失败";
             }
         }
 
