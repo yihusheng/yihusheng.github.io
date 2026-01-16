@@ -50,6 +50,8 @@
             color: var(--md-sys-color-on-surface);
         }
 
+        
+
         /* --- 动态灵动岛容器 --- */
         .dynamic-island {
             position: absolute; left: 50%; transform: translateX(-50%);
@@ -125,6 +127,9 @@
         .detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
         .detail-desc { font-size: 1rem; font-weight: 500; color: #fff; }
         .detail-meta { font-size: 0.75rem; color: #ccc; display: flex; flex-direction: column; gap: 2px; }
+        
+        /* 新增：显示位置信息 */
+        .location-display { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
 
         /* --- 3. 播放状态：歌曲信息 (中展开，横排布局) --- */
         .island-content {
@@ -241,6 +246,7 @@
                     </div>
                 </div>
                 <div class="detail-right">
+                    <div class="location-display" id="locationDisplay">获取中...</div>
                     <div class="detail-desc" id="detailDesc">晴朗</div>
                     <div class="detail-meta">
                         <span id="detailWind">💨 12km/h</span>
@@ -362,6 +368,31 @@
             }
         };
 
+        // Cookie操作工具函数
+        const CookieUtils = {
+            set: (name, value, days = 30) => {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            },
+            
+            get: (name) => {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            },
+            
+            remove: (name) => {
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/";
+            }
+        };
+
         const songs = [
              {
                 title: "Serafina",
@@ -412,14 +443,32 @@
         }
 
         async function fetchWeather() {
-            let lat = 39.9042, lon = 116.4074;
+            // 从Cookie中获取保存的位置信息，如果没有则使用默认值
+            let lat = parseFloat(CookieUtils.get('weather_lat')) || 39.9042;
+            let lon = parseFloat(CookieUtils.get('weather_lon')) || 116.4074;
+            
             if ('geolocation' in navigator) {
                 try {
                     const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-                    lat = position.coords.latitude; lon = position.coords.longitude;
-                } catch (e) {}
+                    lat = position.coords.latitude; 
+                    lon = position.coords.longitude;
+                    
+                    // 将获取到的位置信息保存到Cookie中
+                    CookieUtils.set('weather_lat', lat, 30);
+                    CookieUtils.set('weather_lon', lon, 30);
+                } catch (e) {
+                    console.log("无法获取地理位置，使用上次保存的位置信息");
+                }
             }
+            
             try {
+                // 获取城市名称
+                const locationResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`);
+                const locationData = await locationResponse.json();
+                const city = locationData.city || locationData.locality || locationData.principalSubdivision || "未知位置";
+                
+                document.getElementById('locationDisplay').textContent = city;
+                
                 const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
                 const data = await response.json();
                 const current = data.current_weather || data.current;
@@ -436,7 +485,10 @@
                 document.getElementById('detailRange').textContent = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
                 document.getElementById('detailWind').textContent = `💨 ${Math.round(current.wind_speed_10m)}km/h`;
                 document.getElementById('detailHumidity').textContent = `💧 ${current.relative_humidity_2m}%`;
-            } catch (e) {}
+            } catch (e) {
+                console.error("获取天气数据失败:", e);
+                document.getElementById('locationDisplay').textContent = "获取位置失败";
+            }
         }
 
         function toggleIsland() {
@@ -540,5 +592,3 @@
     </script>
 </body>
 </html>
-
-
