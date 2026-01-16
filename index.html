@@ -24,7 +24,7 @@
             --md-sys-color-on-surface: #e6e1e5; 
             --md-sys-color-on-surface-variant: #cac4d0; 
             --md-sys-color-outline: #938f99;
-            --island-bg: #000000;
+            --island-bg: #000000; /* 修改默认灵动岛背景为黑色 */
             --phone-screen-bg: #000000; /* 添加这个新变量 */
             --player-bg: #000000; /* 新增播放器背景颜色变量 */
         }
@@ -40,9 +40,6 @@
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; overflow: hidden;
             touch-action: manipulation; /* 启用快速触摸反馈 */
-            /* 动态计算屏幕大小 */
-            width: 100%;
-            height: 100%;
         }
 
         /* 默认：桌面 / 宽屏模式 */
@@ -57,8 +54,6 @@
             /* 添加移动端适配 */
             max-width: 100vw;
             max-height: 100vh;
-            /* 确保手机屏幕始终居中 */
-            position: relative;
         }
 
         /* 移动端适配：当屏幕小于设备宽度时，按比例缩放 */
@@ -92,16 +87,11 @@
         */
         
         /* 默认激活状态（用于天气的大展开） */
-        .dynamic-island { 
-            width: 120px; 
-            height: 36px; 
-            border-radius: 20px; 
-        }
-        
         .dynamic-island.active { 
             width: 300px; 
             height: 140px; 
             border-radius: 35px; 
+            background-color: var(--md-sys-color-surface-container); /* 展开时使用系统颜色 */
         }
 
         /* --- 1. 默认状态：时间和天气 --- */
@@ -195,7 +185,12 @@
         .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
 
         /* --- 控件 --- */
-        .controls { display: flex; gap: 24px; align-items: center; }
+        .controls { 
+            display: flex; 
+            gap: 24px; 
+            align-items: center; 
+            margin-bottom: 20px; /* 添加底部间距，防止与抽屉重叠 */
+        }
         .btn { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .btn:active { transform: scale(0.9); filter: brightness(1.1); }
         .btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
@@ -298,6 +293,8 @@
 
         <div class="bottom-drawer" id="drawer">
             <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
+            <!-- 添加空隙，防止内容被抽屉遮挡 -->
+            <div style="height: 100px; flex-shrink: 0;"></div>
             <div class="drawer-scroll-view">
                 <h3 class="drawer-title">Dashboard</h3>
                 <div class="grid">
@@ -724,41 +721,9 @@
             if(isMobile) {
                 // 在移动设备上增加额外的触摸事件监听
                 document.addEventListener('touchstart', handleFirstInteraction, { once: true });
-                
-                // 动态调整屏幕大小以适应不同设备
-                const adjustScreenSize = () => {
-                    const screenWidth = window.innerWidth;
-                    const screenHeight = window.innerHeight;
-                    
-                    // 根据屏幕大小调整手机模拟器的尺寸
-                    const phoneScreen = document.querySelector('.phone-screen');
-                    if (phoneScreen) {
-                        // 以iPhone SE 2nd Gen (375x667)为基础设计
-                        const baseWidth = 355;
-                        const baseHeight = 820;
-                        
-                        // 计算缩放比例
-                        const widthScale = (screenWidth * 0.95) / baseWidth;
-                        const heightScale = (screenHeight * 0.95) / baseHeight;
-                        
-                        // 取较小的缩放比以确保完全显示
-                        const scale = Math.min(widthScale, heightScale, 1); // 最大不放大
-                        
-                        // 应用缩放和居中
-                        phoneScreen.style.transform = `scale(${scale})`;
-                        phoneScreen.style.margin = `${(screenHeight - (baseHeight * scale)) / 2}px 0`;
-                    }
-                };
-                
-                // 初始化和窗口大小改变时调整
-                adjustScreenSize();
-                window.addEventListener('resize', adjustScreenSize);
             }
 
-            const handleScroll = () => { 
-                const h = window.innerHeight - document.documentElement.clientHeight; 
-                document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; 
-            };
+            const handleScroll = () => { const h = window.innerHeight - document.documentElement.clientHeight; document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; };
             window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
             handleScroll();
         }
@@ -776,6 +741,4 @@
     </script>
 </body>
 </html>
-
-
 
