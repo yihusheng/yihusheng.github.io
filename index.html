@@ -37,6 +37,7 @@
             background-color: #000;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; overflow: hidden;
+            touch-action: manipulation; /* 启用快速触摸反馈 */
         }
 
         /* 默认：桌面 / 宽屏模式 */
@@ -48,9 +49,19 @@
             overflow: hidden; position: relative;
             box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
             color: var(--md-sys-color-on-surface);
+            /* 添加移动端适配 */
+            max-width: 100vw;
+            max-height: 100vh;
         }
 
-        
+        /* 移动端适配：当屏幕小于设备宽度时，按比例缩放 */
+        @media screen and (max-width: 400px) {
+            .phone-screen {
+                width: 95vw;
+                height: calc(95vw * 812 / 375);
+                border-radius: 30px;
+            }
+        }
 
         /* --- 动态灵动岛容器 --- */
         .dynamic-island {
@@ -622,10 +633,26 @@
         init();
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
         function adjustForMobile() {
+            // 检测是否为移动设备
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            if(isMobile) {
+                // 在移动设备上增加额外的触摸事件监听
+                document.addEventListener('touchstart', handleFirstInteraction, { once: true });
+            }
+
             const handleScroll = () => { const h = window.innerHeight - document.documentElement.clientHeight; document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; };
             window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
             handleScroll();
         }
+
+        // 处理首次交互以启用音频播放
+        function handleFirstInteraction() {
+            if (audio.paused) {
+                // 暂停状态下预加载音频资源，但不实际播放
+                audio.load();
+            }
+        }
+
         adjustForMobile();
         window.addEventListener('resize', adjustForMobile);
     </script>
