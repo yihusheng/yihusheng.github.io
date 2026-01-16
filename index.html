@@ -53,14 +53,15 @@
             color: var(--md-sys-color-on-surface);
             /* 添加移动端适配 */
             max-width: 100vw;
-            max-height: 100vh;
+            max-height: calc(100vh - env(safe-area-inset-bottom, 0px)); /* 考虑安全区域，防止被底部导航栏遮挡 */
+            height: calc(min(812px, 100svh)); /* 使用较小值，适应不同屏幕尺寸，同时考虑安全区域 */
         }
 
         /* 移动端适配：当屏幕小于设备宽度时，按比例缩放 */
         @media screen and (max-width: 400px) {
             .phone-screen {
                 width: 95vw;
-                height: calc(95vw * 812 / 375);
+                height: calc(min(812px, 95svh)); /* 使用视口安全高度单位 */
                 border-radius: 30px;
             }
         }
@@ -207,6 +208,7 @@
             flex-direction: column; 
             padding: 10px 24px 0; 
             margin-bottom: 80px; /* 增加底部边距，为固定版权信息留出更多空间 */
+            padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px); /* 确保内容不会被安全区域遮挡 */
         }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
         .drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
@@ -236,6 +238,7 @@
             background: var(--md-sys-color-surface);
             z-index: 1001; /* 设置更高z-index保证显示在最顶层 */
             border-radius: 28px 28px 0 0; /* 添加圆角匹配抽屉样式 */
+            padding-bottom: env(safe-area-inset-bottom, 0px); /* 考虑到安全区域，防止被底部导航栏遮挡 */
         }
         .copyright-text { 
             font-size: 0.7rem; 
