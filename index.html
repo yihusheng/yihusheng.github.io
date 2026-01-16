@@ -42,21 +42,7 @@
             touch-action: manipulation; /* 启用快速触摸反馈 */
         }
 
-/* 移动端适配：移动优先 */
-.phone-screen {
-    /* 改为使用视口单位 (vw/vh)，让尺寸随屏幕变化 */
-    width: 90vw; 
-    /* 保持 iPhone X 的 375:812 比例 */
-    height: calc(90vw * 812 / 375); 
-    max-width: 400px; /* 限制最大宽度，防止在平板上过大 */
-    max-height: 90vh; /* 限制最大高度，防止在电视上过大 */
-    background-color: var(--phone-screen-bg);
-    border-radius: 48px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
-    color: var(--md-sys-color-on-surface);
-}
+
 
 /* 桌面/宽屏模式：仅在大屏幕上应用固定尺寸 */
 @media screen and (min-width: 401px) {
