@@ -25,6 +25,8 @@
             --md-sys-color-on-surface-variant: #cac4d0; 
             --md-sys-color-outline: #938f99;
             --island-bg: #000000;
+            --phone-screen-bg: #000000; /* 添加这个新变量 */
+            --player-bg: #000000; /* 新增播放器背景颜色变量 */
         }
 
         body, .phone-screen, .btn, .btn-play, .bottom-drawer, .card {
@@ -44,7 +46,7 @@
         .phone-screen {
             width: 375px;
             height: 812px;
-            background-color: var(--md-sys-color-surface-container);
+            background-color: var(--phone-screen-bg); /* 修改这里使用动态颜色变量 */
             border-radius: 48px;
             overflow: hidden; position: relative;
             box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
@@ -82,7 +84,6 @@
            状态定义：
            1. 默认: 120x36
            2. 天气展开: 300x140 (大展开)
-           3. 音乐展开: 260x50 (中展开，原始逻辑)
         */
         
         /* 默认激活状态（用于天气的大展开） */
@@ -90,13 +91,6 @@
             width: 300px; 
             height: 140px; 
             border-radius: 35px; 
-        }
-
-        /* 播放时的激活状态（覆盖上面的尺寸，变为中展开） */
-        .app.playing .dynamic-island.active { 
-            width: 260px; 
-            height: 50px; 
-            border-radius: 25px;
         }
 
         /* --- 1. 默认状态：时间和天气 --- */
@@ -142,52 +136,30 @@
         /* 新增：显示位置信息 */
         .location-display { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
 
-        /* --- 3. 播放状态：歌曲信息 (中展开，横排布局) --- */
-        .island-content {
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%; padding: 0 10px;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-            position: absolute; top: 0; height: 100%;
-            z-index: 20;
-        }
-        /* 逻辑：Active AND Playing */
-        .app.playing .dynamic-island.active .island-content { 
-            opacity: 1; pointer-events: auto; 
-        }
 
-        .music-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
-        
-        .island-cover {
-            width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
-            margin-right: 10px; flex-shrink: 0; transition: opacity 0.2s;
-        }
-        .island-cover.updating { opacity: 0.5; }
-        
-        .island-info {
-            display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 8px;
-        }
-        .island-title { 
-            font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-primary); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;
-        }
-        .island-artist { 
-            font-size: 0.65rem; color: var(--md-sys-color-on-surface-variant); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .island-waveform { display: flex; gap: 3px; align-items: center; height: 100%; flex-shrink: 0; padding-left: 5px;}
-        .island-bar { width: 3px; background: var(--md-sys-color-primary); border-radius: 2px; height: 4px; }
-        .app.playing .island-bar { animation: bounce 0.8s infinite ease-in-out; }
-        .island-bar:nth-child(1) { animation-delay: 0s; }
-        .island-bar:nth-child(2) { animation-delay: 0.2s; }
-        .island-bar:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { 0%, 100% { height: 4px; } 50% { height: 18px; } }
-
+ 
         /* --- 播放器主体 --- */
         .player-content { 
             padding: 120px 24px 0; 
             display: flex; flex-direction: column; align-items: center; height: 100%;
+            position: relative; /* 添加相对定位 */
+            z-index: 1; /* 确保内容在背景层之上 */
         }
+        
+        /* 新增：播放器背景层 */
+        .player-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-color: var(--player-bg);
+            filter: blur(50px);
+            transform: scale(1.2);
+            opacity: 0.6;
+        }
+
         .album-art {
             width: 300px; height: 300px; object-fit: cover; border-radius: 28px; 
             margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
@@ -265,10 +237,8 @@
                     </div>
                 </div>
             </div>
-
-            <!-- 3. 播放状态 (播放时展开 - 中尺寸横条) -->
             <div class="island-content">
-                <div class="music-left">
+                <div class="island-music">
                     <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
                     <div class="island-info">
                         <span id="islandTitle" class="island-title">Song Title</span>
@@ -284,6 +254,9 @@
         </div>
 
         <div class="player-content">
+            <!-- 新增：播放器背景层 -->
+            <div class="player-background"></div>
+            
             <img id="mainCover" crossorigin="anonymous" src="" class="album-art">
             <div class="song-info">
                 <h1 id="mainTitle" class="song-title-main">Title</h1>
@@ -353,28 +326,91 @@
             },
             hslToString: (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`,
             extractColorFromUrl: (imageUrl, callback) => {
-                const canvas = document.getElementById('colorCanvas'); const ctx = canvas.getContext('2d');
-                const img = new Image(); img.crossOrigin = "Anonymous"; img.src = imageUrl;
+                const canvas = document.getElementById('colorCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 创建一个临时图片对象
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = imageUrl;
+                
                 img.onload = function() {
-                    canvas.width = 100; canvas.height = 100; ctx.drawImage(img, 0, 0, 100, 100);
+                    // 调整画布大小以提高性能
+                    canvas.width = 50;
+                    canvas.height = 50;
+                    
+                    // 绘制缩小的图像
+                    ctx.drawImage(img, 0, 0, 50, 50);
+                    
                     try {
-                        const imageData = ctx.getImageData(0, 0, 100, 100).data;
-                        let r = 0, g = 0, b = 0, count = 0;
-                        for (let i = 0; i < imageData.length; i += 4) { r += imageData[i]; g += imageData[i + 1]; b += imageData[i + 2]; count++; }
-                        callback({ r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) });
-                    } catch (e) { callback({ r: 76, g: 55, b: 139 }); }
+                        const imageData = ctx.getImageData(0, 0, 50, 50).data;
+                        
+                        // 分析图像的主要颜色
+                        let r = 0, g = 0, b = 0, totalWeight = 0;
+                        
+                        // 更准确的颜色提取算法
+                        for (let i = 0; i < imageData.length; i += 4) {
+                            const pixelR = imageData[i];
+                            const pixelG = imageData[i + 1];
+                            const pixelB = imageData[i + 2];
+                            
+                            // 计算像素亮度
+                            const brightness = (0.299 * pixelR + 0.587 * pixelG + 0.114 * pixelB);
+                            
+                            // 忽略过于暗淡的像素（通常是边框或背景）
+                            if (brightness > 20) {
+                                const weight = brightness / 255; // 根据亮度加权
+                                r += pixelR * weight;
+                                g += pixelG * weight;
+                                b += pixelB * weight;
+                                totalWeight += weight;
+                            }
+                        }
+                        
+                        if (totalWeight > 0) {
+                            r = Math.floor(r / totalWeight);
+                            g = Math.floor(g / totalWeight);
+                            b = Math.floor(b / totalWeight);
+                        } else {
+                            // 如果所有像素都很暗，则使用平均值
+                            r = Math.floor(imageData.reduce((sum, val, idx) => idx % 4 === 0 ? sum + val : sum, 0) / (imageData.length / 4));
+                            g = Math.floor(imageData.reduce((sum, val, idx) => idx % 4 === 1 ? sum + val : sum, 0) / (imageData.length / 4));
+                            b = Math.floor(imageData.reduce((sum, val, idx) => idx % 4 === 2 ? sum + val : sum, 0) / (imageData.length / 4));
+                        }
+                        
+                        callback({ r, g, b });
+                    } catch (e) {
+                        console.error("颜色提取错误:", e);
+                        callback({ r: 76, g: 55, b: 139 }); // 默认颜色
+                    }
                 };
-                img.onerror = function() { callback({ r: 76, g: 55, b: 139 }); }
+                
+                img.onerror = function() {
+                    console.error("图片加载失败:", imageUrl);
+                    callback({ r: 76, g: 55, b: 139 }); // 默认颜色
+                };
             },
+            
             generateTheme: (sourceRgb) => {
                 const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
-                const h = hsl.h; const s = Math.max(20, Math.min(100, hsl.s)); const l = hsl.l;
+                const h = hsl.h;
+                const s = Math.max(20, Math.min(100, hsl.s));
+                const l = hsl.l;
+                
+                // 改进的主题生成算法，确保有足够的对比度
                 return {
-                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s + 10), Math.max(40, Math.min(60, l + 10))),
+                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s + 15), Math.max(40, Math.min(60, l + 15))),
+                    '--md-sys-color-on-primary': ColorUtils.hslToString(h, Math.min(100, s + 20), Math.min(20, l - 40)),
+                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l - 15)),
+                    '--md-sys-color-on-primary-container': ColorUtils.hslToString(h, Math.min(50, s - 20), Math.max(80, l + 30)),
+                    '--md-sys-color-secondary-container': ColorUtils.hslToString(h, Math.max(15, s - 15), Math.min(30, l - 20)),
+                    '--md-sys-color-on-secondary-container': ColorUtils.hslToString(h, Math.min(100, s + 30), Math.max(70, l + 20)),
+                    '--md-sys-color-surface': ColorUtils.hslToString(h, s / 4, 8),
                     '--md-sys-color-surface-container': ColorUtils.hslToString(h, s / 3, 12),
                     '--md-sys-color-surface-container-high': ColorUtils.hslToString(h, s / 2.5, 18),
-                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l)),
-                    '--md-sys-color-surface': ColorUtils.hslToString(h, s / 4, 8)
+                    '--island-bg': ColorUtils.hslToString(h, s / 2, 10),
+                    '--phone-screen-bg': ColorUtils.hslToString(h, s / 3, 5), // 添加这行，为手机屏幕背景添加动态颜色
+                    '--player-bg': ColorUtils.hslToString(h, s / 2, l / 3) // 新增播放器背景颜色
                 };
             }
         };
@@ -584,13 +620,52 @@
             const coverUrl = song.cover;
             document.getElementById('mainCover').src = coverUrl;
             const iCover = document.getElementById('islandCover');
-            iCover.classList.add('updating'); iCover.src = coverUrl; iCover.onload = () => iCover.classList.remove('updating');
+            iCover.classList.add('updating'); 
+            iCover.src = coverUrl; 
+            iCover.onload = () => {
+                iCover.classList.remove('updating');
+                
+                // 图片加载完成后立即开始提取颜色
+                setTimeout(() => {
+                    ColorUtils.extractColorFromUrl(coverUrl, (rgb) => {
+                        const theme = ColorUtils.generateTheme(rgb);
+                        for (const [k, v] of Object.entries(theme)) {
+                            document.documentElement.style.setProperty(k, v);
+                        }
+                        console.log("颜色主题已更新:", theme);
+                    });
+                }, 100); // 短暂延迟确保图片完全渲染
+            };
+            
             audio.src = song.src;
-            ColorUtils.extractColorFromUrl(coverUrl, (rgb) => {
-                const theme = ColorUtils.generateTheme(rgb);
-                for (const [k, v] of Object.entries(theme)) document.documentElement.style.setProperty(k, v);
-            });
-            if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }] });
+            
+            // 在主封面加载完成后设置媒体会话
+            document.getElementById('mainCover').onload = () => {
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: song.title,
+                        artist: song.artist,
+                        album: song.artist.split('•')[1]?.trim() || 'Unknown Album',
+                        artwork: [
+                            { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
+                        ]
+                    });
+                }
+            };
+            
+            // 立即设置媒体会话（即使图片还没加载完成）
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: song.artist,
+                    artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }]
+                });
+            }
         }
 
         let isDragging = false;
@@ -658,3 +733,4 @@
     </script>
 </body>
 </html>
+
