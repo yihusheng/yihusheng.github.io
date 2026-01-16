@@ -200,14 +200,54 @@
         .bottom-drawer.open { transform: translateY(0); }
         .nav-handle-area { width: 100%; height: 30px; padding-top: 12px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
-        .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 24px 0; }
+        .drawer-scroll-view { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 10px 24px 0; 
+            margin-bottom: 80px; /* 增加底部边距，为固定版权信息留出更多空间 */
+        }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
         .drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 20px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 12px; }
-        .drawer-footer-copyright { margin-top: auto; padding: 20px 0 20px; text-align: center; width: 100%; }
-        .copyright-text { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 6px; }
-        .powered-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; color: var(--md-sys-color-outline); }
+        /* 添加MD3风格的链接样式 */
+        .card a { 
+            text-decoration: none; 
+            color: var(--md-sys-color-primary); 
+            font-weight: 500;
+            display: block;
+            padding: 4px 0;
+        }
+        .card a:hover { 
+            text-decoration: underline; 
+            text-decoration-thickness: 2px;
+            text-underline-offset: 2px;
+        }
+        /* 修改版权信息样式使其固定在底部 */
+        .drawer-footer-copyright { 
+            padding: 10px 0 10px; 
+            text-align: center; 
+            width: 100%; 
+            position: fixed; /* 改为fixed定位 */
+            bottom: 0;
+            left: 0;
+            background: var(--md-sys-color-surface);
+            z-index: 1001; /* 设置更高z-index保证显示在最顶层 */
+            border-radius: 28px 28px 0 0; /* 添加圆角匹配抽屉样式 */
+        }
+        .copyright-text { 
+            font-size: 0.7rem; 
+            color: var(--md-sys-color-on-surface-variant); 
+            margin-bottom: 4px; 
+        }
+        .powered-row { 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 4px; 
+            font-size: 0.65rem; 
+            color: var(--md-sys-color-outline); 
+        }
         .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
     </style>
@@ -293,17 +333,15 @@
 
         <div class="bottom-drawer" id="drawer">
             <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
-            <!-- 添加空隙，防止内容被抽屉遮挡 -->
-            <div style="height: 100px; flex-shrink: 0;"></div>
             <div class="drawer-scroll-view">
                 <h3 class="drawer-title">Dashboard</h3>
                 <div class="grid">
-                    <div class="card"><span class="material-symbols-rounded">calculate</span><span>Double</span></div>
-                    <div class="card"><span class="material-symbols-rounded">lan</span><span>MAC Info</span></div>
-                    <div class="card"><span class="material-symbols-rounded">imagesmode</span><span>Webp2jpg</span></div>
-                    <div class="card"><span class="material-symbols-rounded">hub</span><span>Metacubexd</span></div>
-                    <div class="card"><span class="material-symbols-rounded">dns</span><span>DNS Prefetch</span></div>
-                    <div class="card"><span class="material-symbols-rounded">terminal</span><span>CMD Line</span></div>
+                    <div class="card"><span class="material-symbols-rounded">calculate</span><span><a href="/Tools/Double">Double</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">hub</span><span><a href="/Tools/zashboard">Webp2jpg</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">hub</span><span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Webp2jpg">DNS Prefetch</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">imagesmode</span><span><a href="/Tools/Webp2jpg">Webp2jpg</a></span></div>
                 </div>
                 <div class="drawer-footer-copyright">
                     <div class="copyright-text">&copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a></div>
