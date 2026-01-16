@@ -53,7 +53,7 @@
             color: var(--md-sys-color-on-surface);
             /* 添加移动端适配 */
             max-width: 100vw;
-            max-height: calc(100vh - env(safe-area-inset-bottom, 0px)); /* 考虑安全区域，防止被底部导航栏遮挡 */
+            max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)); /* 考虑安全区域，防止被顶部和底部导航栏遮挡 */
             height: calc(min(812px, 100svh)); /* 使用较小值，适应不同屏幕尺寸，同时考虑安全区域 */
         }
 
@@ -143,7 +143,7 @@
         /* --- 播放器主体 --- */
         .player-content { 
             padding: 120px 24px 0; 
-            display: flex; flex-direction: column; align-items: center; height: 100%;
+            display: flex; flex-direction: column; align-items: center; height: calc(100% - 120px); /* 减去上方padding的高度 */
             position: relative; /* 添加相对定位 */
             z-index: 1; /* 确保内容在背景层之上 */
         }
@@ -764,7 +764,19 @@
                 document.addEventListener('touchstart', handleFirstInteraction, { once: true });
             }
 
-            const handleScroll = () => { const h = window.innerHeight - document.documentElement.clientHeight; document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; };
+            // 更新视口高度以适应实际可用空间
+            const updateViewportHeight = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+            updateViewportHeight();
+            window.addEventListener('resize', updateViewportHeight);
+
+            // 处理滚动时的视口变化
+            const handleScroll = () => { 
+                const h = window.innerHeight - document.documentElement.clientHeight; 
+                document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; 
+            };
             window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
             handleScroll();
         }
