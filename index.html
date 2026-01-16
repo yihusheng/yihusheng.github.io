@@ -50,19 +50,6 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 手机模式适配 --- */
-        @media (max-width: 370px) and (orientation: portrait) {
-            body { justify-content: flex-start; align-items: flex-start; }
-            .phone-screen {
-                width: 100vw; min-height: 100vh; border-radius: 0; box-shadow: none;
-            }
-            .album-art { width: 60vw; height: 60vw; max-width: 360px; max-height: 360px; }
-            .player-content { padding-top: env(safe-area-inset-top) + 100px; }
-            .dynamic-island { top: calc(env(safe-area-inset-top) + 12px); }
-            .song-title-main { font-size: clamp(1.4rem, 4vw, 2rem); }
-            .artist-name { font-size: clamp(0.9rem, 2.5vw, 1.2rem); }
-        }
-
         /* --- 动态灵动岛容器 --- */
         .dynamic-island {
             position: absolute; left: 50%; transform: translateX(-50%);
@@ -553,4 +540,5 @@
     </script>
 </body>
 </html>
+
 
