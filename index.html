@@ -51,15 +51,85 @@
             color: var(--md-sys-color-on-surface);
             /* 添加移动端适配 */
             max-width: 100vw;
-            max-height: 100vh;
+            max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)); /* 考虑安全区域 */
+            /* 使元素可以滚动而不是被裁剪 */
+            display: flex;
+            flex-direction: column;
         }
 
         /* 移动端适配：当屏幕小于设备宽度时，按比例缩放 */
         @media screen and (max-width: 400px) {
             .phone-screen {
                 width: 95vw;
-                height: calc(95vw * 812 / 375);
+                height: calc(95vh - 50px); /* 调整高度计算方式 */
                 border-radius: 30px;
+            }
+            
+            /* 调整灵动岛位置以适应较小屏幕 */
+            .dynamic-island {
+                top: 8px;
+                width: 100px;
+                height: 30px;
+            }
+            
+            .dynamic-island.active { 
+                width: 280px; 
+                height: 130px; 
+            }
+
+            /* 调整播放器内容区域 */
+            .player-content { 
+                padding-top: 100px; 
+                overflow-y: auto; /* 允许滚动 */
+                -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+            }
+            
+            /* 调整专辑图片大小 */
+            .album-art {
+                width: 220px; 
+                height: 220px; 
+                margin-bottom: 20px;
+            }
+            
+            /* 调整字体大小以适应小屏幕 */
+            .song-title-main { 
+                font-size: 1.4rem; 
+            }
+            
+            .controls { 
+                margin-top: 20px;
+                gap: 18px;
+            }
+            
+            .btn { 
+                width: 56px; 
+                height: 56px; 
+            }
+            
+            .btn-play { 
+                width: 70px; 
+                height: 70px; 
+            }
+        }
+        
+        /* 额外的移动设备适配 */
+        @media screen and (max-width: 350px) {
+            .phone-screen {
+                width: 90vw;
+                height: calc(90vh - 40px);
+            }
+            
+            .album-art {
+                width: 180px; 
+                height: 180px; 
+            }
+            
+            .song-title-main { 
+                font-size: 1.2rem; 
+            }
+            
+            .artist-name { 
+                font-size: 1rem; 
             }
         }
 
@@ -187,6 +257,7 @@
         .player-content { 
             padding: 120px 24px 0; 
             display: flex; flex-direction: column; align-items: center; height: 100%;
+            overflow-y: auto; /* 添加滚动支持 */
         }
         .album-art {
             width: 300px; height: 300px; object-fit: cover; border-radius: 28px; 
