@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* --- 初始默认值 --- */
             --md-sys-color-surface: #141218;
             --md-sys-color-surface-container: #211f26; 
             --md-sys-color-surface-container-high: #2b2930; 
@@ -40,7 +39,7 @@
             min-height: 100vh; overflow: hidden;
         }
 
-        /* 默认：桌面 / 宽屏模式（包含外框） */
+        /* 默认：桌面 / 宽屏模式 */
         .phone-screen {
             width: 375px;
             height: 812px;
@@ -51,94 +50,131 @@
             color: var(--md-sys-color-on-surface);
         }
 
-        /* --- 竖屏 + 宽度小于 600px 时，视为手机，全屏显示（不显示刘海）--- */
-        @media (max-width: 600px) and (orientation: portrait) {
-            body {
-                justify-content: flex-start;
-                align-items: flex-start;
-            }
-
+        /* --- 手机模式适配 --- */
+        @media (max-width: 390px) and (orientation: portrait) {
+            body { justify-content: flex-start; align-items: flex-start; }
             .phone-screen {
-                width: 100vw;
-                min-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
+                width: 100vw; min-height: 100vh; border-radius: 0; box-shadow: none;
             }
-
-            .album-art {
-                width: 60vw;
-                height: 60vw;
-                max-width: 360px;
-                max-height: 360px;
-            }
-
-            .player-content {
-                /* 关键：移除安全区域，直接从顶部开始 */
-                padding-top: 80px;
-            }
-
-            .dynamic-island {
-                /* 关键：移除安全区域，直接从顶部开始 */
-                top: 0;
-            }
-
-            /* 动态调整字体大小 */
-            .song-title-main {
-                font-size: clamp(1.4rem, 4vw, 2rem);
-            }
-            .artist-name {
-                font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-            }
+            .album-art { width: 60vw; height: 60vw; max-width: 360px; max-height: 360px; }
+            .player-content { padding-top: env(safe-area-inset-top) + 100px; }
+            .dynamic-island { top: calc(env(safe-area-inset-top) + 12px); }
+            .song-title-main { font-size: clamp(1.4rem, 4vw, 2rem); }
+            .artist-name { font-size: clamp(0.9rem, 2.5vw, 1.2rem); }
         }
 
-        /* --- 额外兜底：宽屏（width >= 600）但在横屏时，仍然用外框桌面模式 --- */
-        @media (min-width: 600px) {
-            /* 保持默认的 .phone-screen 样式（外框+固定尺寸）即可 */
-        }
-
-        /* --- 动态灵动岛 --- */
+        /* --- 动态灵动岛容器 --- */
         .dynamic-island {
             position: absolute; left: 50%; transform: translateX(-50%);
             width: 120px; height: 36px; 
             background-color: var(--island-bg);
             border-radius: 20px;
             z-index: 500; 
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 6px; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            top: 12px;
         }
         
-        .dynamic-island.active { width: 260px; height: 50px; padding: 0 10px; border-radius: 25px; }
-
-        .island-content {
-            display: flex; align-items: center; width: 100%; justify-content: space-between;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        /* 
+           状态定义：
+           1. 默认: 120x36
+           2. 天气展开: 300x140 (大展开)
+           3. 音乐展开: 260x50 (中展开，原始逻辑)
+        */
+        
+        /* 默认激活状态（用于天气的大展开） */
+        .dynamic-island.active { 
+            width: 300px; 
+            height: 140px; 
+            border-radius: 35px; 
         }
-        .dynamic-island.active .island-content { opacity: 1; pointer-events: auto; transition-delay: 0.15s; }
 
+        /* 播放时的激活状态（覆盖上面的尺寸，变为中展开） */
+        .app.playing .dynamic-island.active { 
+            width: 260px; 
+            height: 50px; 
+            border-radius: 25px;
+        }
+
+        /* --- 1. 默认状态：时间和天气 --- */
+        .island-default {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 0 12px; gap: 8px;
+            opacity: 1; pointer-events: auto; transition: opacity 0.2s ease;
+            position: absolute; height: 100%;
+            z-index: 10;
+        }
+        /* 激活时隐藏 */
+        .dynamic-island.active .island-default { opacity: 0; pointer-events: none; }
+
+        .island-time { font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .island-weather { display: flex; align-items: center; gap: 4px; }
+        .island-weather-icon { font-size: 1rem; }
+        .island-weather-temp { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+        /* --- 2. 天气详情状态 (大展开) --- */
+        .island-weather-detail {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 16px 20px;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+            position: absolute; top: 0; height: 100%;
+            z-index: 20;
+        }
+        /* 逻辑：Active AND NOT Playing */
+        .dynamic-island.active:not(.playing) .island-weather-detail { 
+            opacity: 1; pointer-events: auto; 
+        }
+
+        .detail-left { display: flex; flex-direction: column; align-items: flex-start; }
+        .detail-icon-lg { font-size: 2.5rem; line-height: 1; margin-bottom: 8px; }
+        .detail-temp-wrap { display: flex; flex-direction: column; }
+        /* 强制白色，解决黑屏看不见问题 */
+        .detail-temp-now { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1; }
+        .detail-temp-range { font-size: 0.75rem; color: #ccc; margin-top: 4px; }
+        
+        .detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
+        .detail-desc { font-size: 1rem; font-weight: 500; color: #fff; }
+        .detail-meta { font-size: 0.75rem; color: #ccc; display: flex; flex-direction: column; gap: 2px; }
+
+        /* --- 3. 播放状态：歌曲信息 (中展开，横排布局) --- */
+        .island-content {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; padding: 0 10px;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+            position: absolute; top: 0; height: 100%;
+            z-index: 20;
+        }
+        /* 逻辑：Active AND Playing */
+        .app.playing .dynamic-island.active .island-content { 
+            opacity: 1; pointer-events: auto; 
+        }
+
+        .music-left { display: flex; align-items: center; flex: 1; overflow: hidden; }
+        
         .island-cover {
             width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
-            margin-right: 10px; flex-shrink: 0;
-            transition: opacity 0.2s;
+            margin-right: 10px; flex-shrink: 0; transition: opacity 0.2s;
         }
         .island-cover.updating { opacity: 0.5; }
         
         .island-info {
-            display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 10px;
+            display: flex; flex-direction: column; overflow: hidden; flex: 1; margin-right: 8px;
         }
         .island-title { 
             font-size: 0.8rem; font-weight: 700; color: var(--md-sys-color-primary); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1;
         }
         .island-artist { 
             font-size: 0.65rem; color: var(--md-sys-color-on-surface-variant); 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        .island-waveform { display: flex; gap: 3px; align-items: center; height: 16px; flex-shrink: 0;}
+        .island-waveform { display: flex; gap: 3px; align-items: center; height: 100%; flex-shrink: 0; padding-left: 5px;}
         .island-bar { width: 3px; background: var(--md-sys-color-primary); border-radius: 2px; height: 4px; }
-        .dynamic-island.active .island-bar { animation: bounce 0.8s infinite ease-in-out; }
+        .app.playing .island-bar { animation: bounce 0.8s infinite ease-in-out; }
         .island-bar:nth-child(1) { animation-delay: 0s; }
         .island-bar:nth-child(2) { animation-delay: 0.2s; }
         .island-bar:nth-child(3) { animation-delay: 0.4s; }
@@ -147,169 +183,50 @@
         /* --- 播放器主体 --- */
         .player-content { 
             padding: 120px 24px 0; 
-            display: flex; flex-direction: column; align-items: center; 
-            height: 100%;
+            display: flex; flex-direction: column; align-items: center; height: 100%;
         }
-
         .album-art {
-            width: 300px; height: 300px; object-fit: cover;
-            border-radius: 28px; 
-            margin-bottom: 40px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            width: 300px; height: 300px; object-fit: cover; border-radius: 28px; 
+            margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .album-art.change { transform: scale(0.9); opacity: 0.8; }
-
         .song-info { text-align: center; margin-bottom: 30px; width: 100%; }
-        .song-title-main { 
-            font-family: 'Roboto', sans-serif; font-weight: 700; 
-            font-size: 1.8rem; color: var(--md-sys-color-on-surface); 
-            margin-bottom: 8px; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .artist-name {
-            font-size: 1.1rem; color: var(--md-sys-color-primary); 
-            font-weight: 500;
-        }
+        .song-title-main { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--md-sys-color-on-surface); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-name { font-size: 1.1rem; color: var(--md-sys-color-primary); font-weight: 500; }
 
-       /* --- 进度条 (分离式布局：不重叠) --- */
+       /* --- 进度条 --- */
         .m3-slider-root { width: 100%; height: 48px; position: relative; display: flex; align-items: center; margin-bottom: 5px; }
-        
-        /* 1. 未播放区域：横线 (位置动态跟随) */
-        .m3-slider-track-inactive {
-            position: absolute;
-            height: 4px;
-            background-color: rgba(255, 255, 255, 0.2); /* 淡白色横线 */
-            border-radius: 2px;
-            z-index: 1;
-            top: 22px; /* 垂直居中 */
-            
-            /* 关键：由 JS 控制 left 和 width */
-            left: 0%; 
-            width: 100%;
-        }
-
-        /* 2. 已播放区域：波浪线 */
-        .m3-slider-track-active-container {
-            position: absolute; 
-            left: 0; 
-            height: 20px; /* 波浪高度 */
-            overflow: hidden; 
-            z-index: 2; 
-            width: 0%; /* JS 控制 */
-            top: 14px; /* 垂直居中 (48-20)/2 */
-        }
-        .m3-slider-wavy-path { 
-            fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; 
-        }
-        
+        .m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 2px; z-index: 1; top: 22px; left: 0%; width: 100%; }
+        .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 14px; }
+        .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
         @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
         .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }     
-
-        /* 3. 竖线指示标 */
-        .m3-slider-thumb-vertical {
-            position: absolute;
-            top: 50%;
-            left: 0%; /* JS 控制 */
-            width: 4px; 
-            height: 20px; 
-            background-color: #fff; 
-            border-radius: 2px;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-            pointer-events: none; 
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        /* 4. 隐藏原生 input */
-        .m3-slider-input { 
-            position: absolute; width: 100%; height: 100%; 
-            -webkit-appearance: none; 
-            appearance: none;
-            background: transparent; 
-            z-index: 4; cursor: pointer; outline: none; 
-        }
-        .m3-slider-input::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none;
-        }
-        .m3-slider-input::-moz-range-thumb {
-            width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none;
-        }
-
+        .m3-slider-thumb-vertical { position: absolute; top: 50%; left: 0%; width: 4px; height: 20px; background-color: #fff; border-radius: 2px; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; appearance: none; background: transparent; z-index: 4; cursor: pointer; outline: none; }
+        .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
+        .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
         .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
 
-        
         /* --- 控件 --- */
         .controls { display: flex; gap: 24px; align-items: center; }
-        .btn { 
-            background: var(--md-sys-color-secondary-container); 
-            color: var(--md-sys-color-on-secondary-container); 
-            border: none; cursor: pointer; border-radius: 24px;
-            width: 64px; height: 64px; 
-            display: flex; align-items: center; justify-content: center; 
-            transition: all 0.2s; 
-        }
+        .btn { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .btn:active { transform: scale(0.9); filter: brightness(1.1); }
-        .btn-play { 
-            width: 80px; height: 80px; border-radius: 32px;
-            background: var(--md-sys-color-primary-container); 
-            color: var(--md-sys-color-on-primary-container); 
-        }
+        .btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
 
         /* --- 底部抽屉 --- */
-        .bottom-drawer {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            height: 92%; 
-            background: var(--md-sys-color-surface);
-            border-radius: 28px 28px 0 0;
-            transform: translateY(calc(100% - 30px));
-            transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1);
-            z-index: 1000;
-            display: flex; flex-direction: column;
-            box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
-        }
+        .bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 28px 28px 0 0; transform: translateY(calc(100% - 30px)); transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -10px 50px rgba(0,0,0,0.5); }
         .bottom-drawer.open { transform: translateY(0); }
-
-        .nav-handle-area {
-            width: 100%; height: 30px; padding-top: 12px;
-            display: flex; justify-content: center;
-            flex-shrink: 0; cursor: pointer;
-        }
+        .nav-handle-area { width: 100%; height: 30px; padding-top: 12px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
-
-        .drawer-scroll-view {
-            flex: 1; overflow-y: auto; 
-            display: flex; flex-direction: column;
-            padding: 10px 24px 0;
-        }
+        .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 24px 0; }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
-
-        .drawer-title { 
-            font-size: 1.25rem; color: var(--md-sys-color-on-surface); 
-            margin: 10px 0 20px; font-weight: 500;
-        }
-
+        .drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { 
-            background: var(--md-sys-color-surface-container-high); 
-            border-radius: 16px; padding: 20px; 
-            text-decoration: none; color: var(--md-sys-color-on-surface); 
-            display: flex; flex-direction: column; gap: 12px; 
-        }
-
-        .drawer-footer-copyright {
-            margin-top: auto;
-            padding: 20px 0 20px;
-            text-align: center;
-            width: 100%;
-        }
+        .card { background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 20px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 12px; }
+        .drawer-footer-copyright { margin-top: auto; padding: 20px 0 20px; text-align: center; width: 100%; }
         .copyright-text { font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 6px; }
-        
-        .powered-row { 
-            display: flex; align-items: center; justify-content: center; gap: 6px; 
-            font-size: 0.7rem; color: var(--md-sys-color-outline); 
-        }
+        .powered-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; color: var(--md-sys-color-outline); }
         .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
     </style>
@@ -318,11 +235,41 @@
 
     <div class="phone-screen" id="app">
         <div class="dynamic-island" id="island">
+            <!-- 1. 默认状态 -->
+            <div class="island-default">
+                <span class="island-time" id="islandTime">12:00</span>
+                <div class="island-weather">
+                    <span class="island-weather-icon" id="islandWeatherIcon">☀️</span>
+                    <span class="island-weather-temp" id="islandWeatherTemp">--°</span>
+                </div>
+            </div>
+            
+            <!-- 2. 天气详情 (暂停时展开 - 大尺寸) -->
+            <div class="island-weather-detail">
+                <div class="detail-left">
+                    <span class="detail-icon-lg" id="detailIcon">☀️</span>
+                    <div class="detail-temp-wrap">
+                        <span class="detail-temp-now" id="detailTemp">25°</span>
+                        <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
+                    </div>
+                </div>
+                <div class="detail-right">
+                    <div class="detail-desc" id="detailDesc">晴朗</div>
+                    <div class="detail-meta">
+                        <span id="detailWind">💨 12km/h</span>
+                        <span id="detailHumidity">💧 45%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 播放状态 (播放时展开 - 中尺寸横条) -->
             <div class="island-content">
-                <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
-                <div class="island-info">
-                    <span id="islandTitle" class="island-title">Song Title</span>
-                    <span id="islandArtist" class="island-artist">Artist</span>
+                <div class="music-left">
+                    <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
+                    <div class="island-info">
+                        <span id="islandTitle" class="island-title">Song Title</span>
+                        <span id="islandArtist" class="island-artist">Artist</span>
+                    </div>
                 </div>
                 <div class="island-waveform">
                     <div class="island-bar"></div>
@@ -334,35 +281,24 @@
 
         <div class="player-content">
             <img id="mainCover" crossorigin="anonymous" src="" class="album-art">
-            
             <div class="song-info">
                 <h1 id="mainTitle" class="song-title-main">Title</h1>
                 <p id="mainArtist" class="artist-name">Artist</p>
             </div>
-            
-             <!-- 进度条：分离式布局 -->
              <div class="m3-slider-root">
-                <!-- 底层：未播放横线 (位置动态) -->
                 <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
-
-                <!-- 中层：已播放波浪 -->
                 <div class="m3-slider-track-active-container" id="activeTrack">
                     <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
                         <path class="m3-slider-wavy-path" d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 T420,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10" />
                     </svg>
                 </div>
-
-                <!-- 顶层：竖线指示标 -->
                 <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
-
                 <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0">
             </div>
-            
             <div class="time-labels">
                 <span id="currTime">0:00</span>
                 <span id="durTime">0:00</span>
             </div>
-
             <div class="controls">
                 <button class="btn" id="prevBtn"><span class="material-symbols-rounded">skip_previous</span></button>
                 <button class="btn btn-play" id="playBtn">
@@ -373,10 +309,7 @@
         </div>
 
         <div class="bottom-drawer" id="drawer">
-            <div class="nav-handle-area" onclick="toggleDrawer()">
-                <div class="md3-nav-bar"></div>
-            </div>
-            
+            <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
             <div class="drawer-scroll-view">
                 <h3 class="drawer-title">Dashboard</h3>
                 <div class="grid">
@@ -387,11 +320,8 @@
                     <div class="card"><span class="material-symbols-rounded">dns</span><span>DNS Prefetch</span></div>
                     <div class="card"><span class="material-symbols-rounded">terminal</span><span>CMD Line</span></div>
                 </div>
-
                 <div class="drawer-footer-copyright">
-                    <div class="copyright-text">
-                        &copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a>
-                    </div>
+                    <div class="copyright-text">&copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a></div>
                 </div>
             </div>
         </div>
@@ -404,91 +334,53 @@
         const ColorUtils = {
             hexToRgb: (hex) => {
                 const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : null;
+                return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
             },
             rgbToHsl: (r, g, b) => {
                 r /= 255, g /= 255, b /= 255;
                 const max = Math.max(r, g, b), min = Math.min(r, g, b);
                 let h, s, l = (max + min) / 2;
                 if (max === min) { h = s = 0; } else {
-                    const d = max - min;
-                    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch (max) {
-                        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                        case g: h = (b - r) / d + 2; break;
-                        case b: h = (r - g) / d + 4; break;
-                    }
+                    const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; }
                     h /= 6;
                 }
                 return { h: h * 360, s: s * 100, l: l * 100 };
             },
             hslToString: (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`,
-            
             extractColorFromUrl: (imageUrl, callback) => {
-                const canvas = document.getElementById('colorCanvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                img.crossOrigin = "Anonymous"; 
-                img.src = imageUrl;
-
+                const canvas = document.getElementById('colorCanvas'); const ctx = canvas.getContext('2d');
+                const img = new Image(); img.crossOrigin = "Anonymous"; img.src = imageUrl;
                 img.onload = function() {
-                    canvas.width = 100;
-                    canvas.height = 100;
-                    ctx.drawImage(img, 0, 0, 100, 100);
+                    canvas.width = 100; canvas.height = 100; ctx.drawImage(img, 0, 0, 100, 100);
                     try {
                         const imageData = ctx.getImageData(0, 0, 100, 100).data;
                         let r = 0, g = 0, b = 0, count = 0;
-                        for (let i = 0; i < imageData.length; i += 4) {
-                            r += imageData[i];
-                            g += imageData[i + 1];
-                            b += imageData[i + 2];
-                            count++;
-                        }
+                        for (let i = 0; i < imageData.length; i += 4) { r += imageData[i]; g += imageData[i + 1]; b += imageData[i + 2]; count++; }
                         callback({ r: Math.floor(r / count), g: Math.floor(g / count), b: Math.floor(b / count) });
-                    } catch (e) {
-                        console.warn("无法提取颜色，使用默认值", e);
-                        callback({ r: 76, g: 55, b: 139 }); 
-                    }
+                    } catch (e) { callback({ r: 76, g: 55, b: 139 }); }
                 };
-                
-                img.onerror = function() {
-                    console.warn("图片加载失败，使用默认值");
-                    callback({ r: 76, g: 55, b: 139 });
-                }
+                img.onerror = function() { callback({ r: 76, g: 55, b: 139 }); }
             },
-
             generateTheme: (sourceRgb) => {
                 const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
-                const h = hsl.h;
-                const s = Math.max(20, Math.min(100, hsl.s));
-                const l = hsl.l;
-
-                const primary = ColorUtils.hslToString(h, Math.min(100, s + 10), Math.max(40, Math.min(60, l + 10)));
-                const surfaceContainer = ColorUtils.hslToString(h, s / 3, 12);
-                const surfaceContainerHigh = ColorUtils.hslToString(h, s / 2.5, 18);
-                const primaryContainer = ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l));
-                const surface = ColorUtils.hslToString(h, s / 4, 8);
-
+                const h = hsl.h; const s = Math.max(20, Math.min(100, hsl.s)); const l = hsl.l;
                 return {
-                    '--md-sys-color-primary': primary,
-                    '--md-sys-color-surface-container': surfaceContainer,
-                    '--md-sys-color-surface-container-high': surfaceContainerHigh,
-                    '--md-sys-color-primary-container': primaryContainer,
-                    '--md-sys-color-surface': surface
+                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s + 10), Math.max(40, Math.min(60, l + 10))),
+                    '--md-sys-color-surface-container': ColorUtils.hslToString(h, s / 3, 12),
+                    '--md-sys-color-surface-container-high': ColorUtils.hslToString(h, s / 2.5, 18),
+                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l)),
+                    '--md-sys-color-surface': ColorUtils.hslToString(h, s / 4, 8)
                 };
             }
         };
 
         const songs = [
              {
-                title: "Follow YourDream's",
-                artist: "MerOne Record's",
-                cover: "/src/Follow YourDream's.jpg",
-                src: "/src/MerOne Record's - Follow YourDream's.mp3"
+                title: "Serafina",
+                artist: "Bambi • Highs in the Minuses",
+                cover: "https://maxcloud.pages.dev/src/Follow%20YourDream's.jpg",
+                src: "https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3"
             },
             {
                 title: "Ocean Breeze",
@@ -506,131 +398,128 @@
 
         let currentSongIndex = 0;
         const audio = document.getElementById('audio');
-        const mainCover = document.getElementById('mainCover');
-        const islandCover = document.getElementById('islandCover');
-        const playBtn = document.getElementById('playBtn');
-        const playIcon = document.getElementById('playIcon');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const activeTrack = document.getElementById('activeTrack');
-        const inactiveTrack = document.getElementById('inactiveTrack');
-        const sliderThumb = document.getElementById('sliderThumb');
-        const audioSlider = document.getElementById('audioSlider');
         const app = document.getElementById('app');
         const island = document.getElementById('island');
 
-        // 媒体会话控制
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.setActionHandler('play', () => playSong());
-            navigator.mediaSession.setActionHandler('pause', () => pauseSong());
-            navigator.mediaSession.setActionHandler('previoustrack', () => prevBtn.click());
-            navigator.mediaSession.setActionHandler('nexttrack', () => nextBtn.click());
+        const weatherCodeMap = {
+            0: { desc: "晴朗", icon: "☀️" }, 1: { desc: "多云", icon: "🌤️" }, 2: { desc: "少云", icon: "⛅" }, 3: { desc: "阴天", icon: "☁️" },
+            45: { desc: "雾", icon: "🌫️" }, 48: { desc: "冻雾", icon: "🌫️" }, 51: { desc: "毛毛雨", icon: "🌦️" }, 53: { desc: "中毛毛雨", icon: "🌦️" },
+            55: { desc: "大毛毛雨", icon: "🌧️" }, 61: { desc: "小雨", icon: "🌧️" }, 63: { desc: "中雨", icon: "🌧️" }, 65: { desc: "大雨", icon: "🌧️" },
+            66: { desc: "冻雨", icon: "🌨️" }, 67: { desc: "冻雨", icon: "🌨️" }, 71: { desc: "小雪", icon: "🌨️" }, 73: { desc: "中雪", icon: "🌨️" },
+            75: { desc: "大雪", icon: "❄️" }, 77: { desc: "雪粒", icon: "❄️" }, 80: { desc: "阵雨", icon: "🌧️" }, 81: { desc: "阵雨", icon: "🌧️" },
+            82: { desc: "暴雨", icon: "⛈️" }, 85: { desc: "阵雪", icon: "🌨️" }, 86: { desc: "阵雪", icon: "🌨️" },
+            95: { desc: "雷暴", icon: "⛈️" }, 96: { desc: "雷暴", icon: "⛈️" }, 99: { desc: "强雷暴", icon: "⛈️" }
+        };
+
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            fetchWeather();
+            setInterval(fetchWeather, 10 * 60 * 1000);
+            island.addEventListener('click', toggleIsland);
         }
 
-        loadSong(songs[currentSongIndex]);
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('islandTime').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        }
+
+        async function fetchWeather() {
+            let lat = 39.9042, lon = 116.4074;
+            if ('geolocation' in navigator) {
+                try {
+                    const position = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                    lat = position.coords.latitude; lon = position.coords.longitude;
+                } catch (e) {}
+            }
+            try {
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+                const data = await response.json();
+                const current = data.current_weather || data.current;
+                const daily = data.daily;
+                const temp = Math.round(current.temperature_2m);
+                const code = current.weather_code;
+                const weather = weatherCodeMap[code] || { desc: "未知", icon: "🌡️" };
+                
+                document.getElementById('islandWeatherTemp').textContent = `${temp}°`;
+                document.getElementById('islandWeatherIcon').textContent = weather.icon;
+                document.getElementById('detailIcon').textContent = weather.icon;
+                document.getElementById('detailTemp').textContent = `${temp}°`;
+                document.getElementById('detailDesc').textContent = weather.desc;
+                document.getElementById('detailRange').textContent = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
+                document.getElementById('detailWind').textContent = `💨 ${Math.round(current.wind_speed_10m)}km/h`;
+                document.getElementById('detailHumidity').textContent = `💧 ${current.relative_humidity_2m}%`;
+            } catch (e) {}
+        }
+
+        function toggleIsland() {
+            island.classList.toggle('active');
+        }
+
+        function playSong() {
+            audio.play();
+            app.classList.add('playing');
+            // 播放时强制收起，然后如果用户想看，用户会再次点击
+            island.classList.remove('active'); 
+            document.getElementById('playIcon').innerText = 'pause';
+        }
+
+        function pauseSong() {
+            audio.pause();
+            app.classList.remove('playing');
+            island.classList.remove('active');
+            document.getElementById('playIcon').innerText = 'play_arrow';
+        }
+
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (audio.paused) playSong(); else pauseSong();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(songs[currentSongIndex]);
+            playSong();
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(songs[currentSongIndex]);
+            playSong();
+        });
 
         function loadSong(song) {
             document.getElementById('mainTitle').innerText = song.title;
             document.getElementById('mainArtist').innerText = song.artist;
             document.getElementById('islandTitle').innerText = song.title;
             document.getElementById('islandArtist').innerText = song.artist.split('•')[0].trim();
-            
             const coverUrl = song.cover;
-            
-            // 确保图片严格同步
-            mainCover.src = coverUrl;
-            
-            islandCover.classList.add('updating');
-            islandCover.src = coverUrl;
-            islandCover.onload = () => {
-                islandCover.classList.remove('updating');
-            };
-
+            document.getElementById('mainCover').src = coverUrl;
+            const iCover = document.getElementById('islandCover');
+            iCover.classList.add('updating'); iCover.src = coverUrl; iCover.onload = () => iCover.classList.remove('updating');
             audio.src = song.src;
-
-            mainCover.classList.remove('change');
-            void mainCover.offsetWidth;
-            mainCover.classList.add('change');
-            setTimeout(() => mainCover.classList.remove('change'), 400);
-
             ColorUtils.extractColorFromUrl(coverUrl, (rgb) => {
                 const theme = ColorUtils.generateTheme(rgb);
-                applyTheme(theme);
+                for (const [k, v] of Object.entries(theme)) document.documentElement.style.setProperty(k, v);
             });
-
-            // 更新媒体会话元数据
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: song.title,
-                    artist: song.artist,
-                    artwork: [
-                        { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
-                        { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
-                        { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
-                        { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
-                        { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
-                        { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
-                    ]
-                });
-            }
+            if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }] });
         }
-
-        function applyTheme(themeColors) {
-            const root = document.documentElement;
-            for (const [property, value] of Object.entries(themeColors)) {
-                root.style.setProperty(property, value);
-            }
-        }
-
-        function playSong() {
-            app.classList.add('playing');
-            island.classList.add('active');
-            playIcon.innerText = "pause";
-            audio.play();
-        }
-
-        function pauseSong() {
-            app.classList.remove('playing');
-            island.classList.remove('active');
-            playIcon.innerText = "play_arrow";
-            audio.pause();
-        }
-
-        playBtn.addEventListener('click', () => {
-            if (audio.paused) playSong();
-            else pauseSong();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            currentSongIndex = (currentSongIndex + 1) % songs.length;
-            loadSong(songs[currentSongIndex]);
-            playSong();
-        });
-
-        prevBtn.addEventListener('click', () => {
-            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-            loadSong(songs[currentSongIndex]);
-            playSong();
-        });
 
         let isDragging = false;
+        const audioSlider = document.getElementById('audioSlider');
+        const activeTrack = document.getElementById('activeTrack');
+        const inactiveTrack = document.getElementById('inactiveTrack');
+        const sliderThumb = document.getElementById('sliderThumb');
+
         audio.addEventListener('timeupdate', () => {
             const { duration, currentTime } = audio;
             if (isNaN(duration)) return;
             const percent = (currentTime / duration) * 100;
             if (!isDragging) updateUI(percent);
-            if (currentTime >= duration) nextBtn.click();
+            if (currentTime >= duration) document.getElementById('nextBtn').click();
         });
 
-        audioSlider.addEventListener('input', () => {
-            isDragging = true; 
-            updateUI(audioSlider.value);
-        });
-
-        audioSlider.addEventListener('change', () => {
-            isDragging = false; 
-            audio.currentTime = (audioSlider.value / 100) * audio.duration;
-        });
+        audioSlider.addEventListener('input', () => { isDragging = true; updateUI(audioSlider.value); });
+        audioSlider.addEventListener('change', () => { isDragging = false; audio.currentTime = (audioSlider.value / 100) * audio.duration; });
 
         function updateUI(percent) {
             percent = isNaN(percent) ? 0 : percent;
@@ -639,20 +528,28 @@
             inactiveTrack.style.left = percent + "%";
             inactiveTrack.style.width = (100 - percent) + "%";
             sliderThumb.style.left = percent + "%";
-            document.getElementById('currTime').innerText = formatTime(isDragging ? (percent/100)*audio.duration : audio.currentTime);
-            document.getElementById('durTime').innerText = formatTime(audio.duration);
+            const cur = isDragging ? (percent/100)*audio.duration : audio.currentTime;
+            document.getElementById('currTime').innerText = isNaN(cur)?"0:00":`${Math.floor(cur/60)}:${String(Math.floor(cur%60)).padStart(2,'0')}`;
+            document.getElementById('durTime').innerText = isNaN(audio.duration)?"0:00":`${Math.floor(audio.duration/60)}:${String(Math.floor(audio.duration%60)).padStart(2,'0')}`;
         }
 
-        function formatTime(s) {
-            if (isNaN(s)) return "0:00";
-            const m = Math.floor(s/60), r = Math.floor(s%60);
-            return `${m}:${r<10?'0':''}${r}`;
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('play', () => playSong());
+            navigator.mediaSession.setActionHandler('pause', () => pauseSong());
+            navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prevBtn').click());
+            navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('nextBtn').click());
         }
-
-        function toggleDrawer() {
-            document.getElementById('drawer').classList.toggle('open');
+        
+        loadSong(songs[currentSongIndex]);
+        init();
+        function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
+        function adjustForMobile() {
+            const handleScroll = () => { const h = window.innerHeight - document.documentElement.clientHeight; document.body.style.paddingTop = h > 0 ? `${h}px` : '0'; };
+            window.addEventListener('scroll', () => requestAnimationFrame(handleScroll));
+            handleScroll();
         }
+        adjustForMobile();
+        window.addEventListener('resize', adjustForMobile);
     </script>
 </body>
 </html>
-
