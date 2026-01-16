@@ -734,12 +734,12 @@
                     const phoneScreen = document.querySelector('.phone-screen');
                     if (phoneScreen) {
                         // 以iPhone SE 2nd Gen (375x667)为基础设计
-                        const baseWidth = 375;
-                        const baseHeight = 812;
+                        const baseWidth = 400;
+                        const baseHeight = 850;
                         
                         // 计算缩放比例
                         const widthScale = (screenWidth * 0.95) / baseWidth;
-                        const heightScale = (screenHeight * 1) / baseHeight;
+                        const heightScale = (screenHeight * 0.95) / baseHeight;
                         
                         // 取较小的缩放比以确保完全显示
                         const scale = Math.min(widthScale, heightScale, 1); // 最大不放大
@@ -776,4 +776,5 @@
     </script>
 </body>
 </html>
+
 
