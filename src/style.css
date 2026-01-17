@@ -1,0 +1,224 @@
+:root {
+    --md-sys-color-surface: #141218;
+    --md-sys-color-surface-container: #211f26; 
+    --md-sys-color-surface-container-high: #2b2930; 
+    
+    --md-sys-color-primary: #d0bcff; 
+    --md-sys-color-on-primary: #381e72;
+    --md-sys-color-primary-container: #4f378b; 
+    --md-sys-color-on-primary-container: #eaddff; 
+    --md-sys-color-secondary-container: #4a4458; 
+    --md-sys-color-on-secondary-container: #e8def8; 
+    --md-sys-color-on-surface: #e6e1e5; 
+    --md-sys-color-on-surface-variant: #cac4d0; 
+    --md-sys-color-outline: #938f99;
+    --island-bg: #000000;
+    --phone-screen-bg: #000000;
+    --player-bg: #000000;
+}
+
+body, .phone-screen, .btn, .btn-play, .bottom-drawer, .card {
+    transition: background-color 0.6s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #000;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    min-height: 100vh; 
+    overflow: hidden;
+    touch-action: manipulation;
+}
+
+/* 手机屏幕容器 - 保持固定原始尺寸 */
+.phone-screen {
+    width: 375px; 
+    height: 820px; 
+    background-color: var(--phone-screen-bg);
+    border-radius: 24px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
+    color: var(--md-sys-color-on-surface);
+    transform-origin: center center;
+    will-change: transform;
+}
+
+/* 桌面模式：保持原始尺寸，不缩放 */
+@media screen and (min-width: 450px) {
+    .phone-screen {
+        transform: scale(1) !important;
+    }
+}
+
+/* --- 动态灵动岛容器 --- */
+.dynamic-island {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 36px; 
+    background-color: var(--island-bg);
+    border-radius: 20px;
+    z-index: 500; 
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    cursor: pointer;
+    top: 12px;
+}
+
+.dynamic-island.active { 
+    width: 300px; 
+    height: 140px; 
+    border-radius: 35px; 
+    background-color: var(--md-sys-color-surface-container);
+}
+
+/* --- 1. 默认状态：时间和天气 --- */
+.island-default {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 0 12px; gap: 8px;
+    opacity: 1; pointer-events: auto; transition: opacity 0.2s ease;
+    position: absolute; height: 100%;
+    z-index: 10;
+}
+.dynamic-island.active .island-default { opacity: 0; pointer-events: none; }
+
+.island-time { font-size: 0.85rem; font-weight: 600; color: #fff; }
+.island-weather { display: flex; align-items: center; gap: 4px; }
+.island-weather-icon { font-size: 1rem; }
+.island-weather-temp { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+/* --- 2. 天气详情状态 --- */
+.island-weather-detail {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 16px 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    position: absolute; top: 0; height: 100%;
+    z-index: 20;
+}
+.dynamic-island.active:not(.playing) .island-weather-detail { 
+    opacity: 1; pointer-events: auto; 
+}
+
+.detail-left { display: flex; flex-direction: column; align-items: flex-start; }
+.detail-icon-lg { font-size: 2.5rem; line-height: 1; margin-bottom: 8px; }
+.detail-temp-wrap { display: flex; flex-direction: column; }
+.detail-temp-now { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1; }
+.detail-temp-range { font-size: 0.75rem; color: #ccc; margin-top: 4px; }
+
+.detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
+.detail-desc { font-size: 1rem; font-weight: 500; color: #fff; }
+.detail-meta { font-size: 0.75rem; color: #ccc; display: flex; flex-direction: column; gap: 2px; }
+.location-display { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
+
+/* --- 播放器主体 --- */
+.player-content { 
+    padding: 120px 24px 0; 
+    display: flex; flex-direction: column; align-items: center; height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.player-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: var(--player-bg);
+    filter: blur(50px);
+    transform: scale(1.2);
+    opacity: 0.6;
+}
+
+.album-art {
+    width: 300px; height: 300px; object-fit: cover; border-radius: 28px; 
+    margin-bottom: 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.album-art.change { transform: scale(0.9); opacity: 0.8; }
+.song-info { text-align: center; margin-bottom: 30px; width: 100%; }
+.song-title-main { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--md-sys-color-on-surface); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.artist-name { font-size: 1.1rem; color: var(--md-sys-color-primary); font-weight: 500; }
+
+/* --- 进度条 --- */
+.m3-slider-root { width: 100%; height: 48px; position: relative; display: flex; align-items: center; margin-bottom: 5px; }
+.m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(255, 255, 255, 0.2); border-radius: 2px; z-index: 1; top: 22px; left: 0%; width: 100%; }
+.m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 14px; }
+.m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
+@keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+.playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }     
+.m3-slider-thumb-vertical { position: absolute; top: 50%; left: 0%; width: 4px; height: 20px; background-color: #fff; border-radius: 2px; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+.m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; appearance: none; background: transparent; z-index: 4; cursor: pointer; outline: none; }
+.m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
+.m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
+.time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
+
+/* --- 控件 --- */
+.controls { 
+    display: flex; 
+    gap: 24px; 
+    align-items: center; 
+    margin-bottom: 20px;
+}
+.btn { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.btn:active { transform: scale(0.9); filter: brightness(1.1); }
+.btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+
+/* --- 底部抽屉 --- */
+.bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 28px 28px 0 0; transform: translateY(calc(100% - 30px)); transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -10px 50px rgba(0,0,0,0.5); }
+.bottom-drawer.open { transform: translateY(0); }
+.nav-handle-area { width: 100%; height: 30px; padding-top: 12px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; }
+.md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
+.drawer-scroll-view { 
+    flex: 1; 
+    overflow-y: auto; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 10px 24px 0; 
+    margin-bottom: 80px;
+}
+.drawer-scroll-view::-webkit-scrollbar { display: none; }
+.drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.card { background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 20px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 12px; }
+.card a { 
+    text-decoration: none; 
+    color: var(--md-sys-color-primary); 
+    font-weight: 500;
+    display: block;
+    padding: 4px 0;
+}
+.card a:hover { 
+    text-decoration: underline; 
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+.drawer-footer-copyright { 
+    padding: 10px 0 10px; 
+    text-align: center; 
+    width: 100%; 
+    position: fixed; 
+    bottom: 0;
+    left: 0;
+    background: var(--md-sys-color-surface);
+    z-index: 1001;
+    border-radius: 28px 28px 0 0;
+}
+.copyright-text { 
+    font-size: 0.7rem; 
+    color: var(--md-sys-color-on-surface-variant); 
+    margin-bottom: 4px; 
+}
+.powered-row { 
+    display: flex; align-items: center; justify-content: center; 
+    gap: 4px; 
+    font-size: 0.65rem; 
+    color: var(--md-sys-color-outline); 
+}
+.secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
+.secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
