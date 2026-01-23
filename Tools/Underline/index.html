@@ -666,69 +666,56 @@
         }
 
         // ============================================
-        // 核心功能：复制带格式的富文本
+        // 核心功能：复制带格式的富文本 (重写版)
         // ============================================
-        function copyRichText() {
+        async function copyRichText() {
             try {
-                // 创建临时元素
-                const tempDiv = document.createElement('div');
-                tempDiv.style.position = 'absolute';
-                tempDiv.style.left = '-9999px';
-                tempDiv.style.top = '0';
-                
-                // 构建样式
-                const styles = {
-                    color: state.tColor,
-                    fontSize: state.fSize + 'px',
-                    fontFamily: 'Roboto, sans-serif'
-                };
-                
-                // 如果不是组合字符下划线，添加文本装饰样式
-                if (state.style !== 'combining') {
-                    styles.textDecorationLine = 'underline';
-                    styles.textDecorationStyle = state.style;
-                    styles.textDecorationColor = state.lColor;
-                    styles.textDecorationThickness = state.thick + 'px';
-                    styles.textUnderlineOffset = state.off + 'px';
-                }
-                
-                // 应用样式
-                Object.assign(tempDiv.style, styles);
-                
-                // 处理文本内容
-                let displayText = state.text;
+                // 1. 准备基础样式
+                const styles = [
+                    `color: ${state.tColor}`,
+                    `font-size: ${state.fSize}px`,
+                    `font-family: 'Roboto', sans-serif`,
+                    `line-height: 1.5`
+                ];
+
+                let textToCopy = state.text;
+
+                // 2. 根据不同模式添加特定的 CSS 样式
                 if (state.style === 'combining') {
-                    displayText = addCombiningUnderline(state.text);
-                }
-                
-                tempDiv.textContent = displayText;
-                
-                // 添加到文档
-                document.body.appendChild(tempDiv);
-                
-                // 创建选区
-                const range = document.createRange();
-                range.selectNodeContents(tempDiv);
-                
-                const selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
-                
-                // 执行复制命令
-                const success = document.execCommand('copy');
-                
-                // 清理
-                selection.removeAllRanges();
-                document.body.removeChild(tempDiv);
-                
-                if (success) {
-                    showToast('已复制带下划线文本');
+                    // 组合字符模式：下划线在文本内容中，但通过 HTML 标签保留颜色和字号
+                    textToCopy = addCombiningUnderline(state.text);
+                    // 组合字符本身不需要 text-decoration 样式，避免重复渲染
                 } else {
-                    showToast('复制失败，请手动选择复制');
+                    // 标准 CSS 下划线模式：显式添加所有 text-decoration 属性
+                    // 这些内联样式将确保在 Word 或其他富文本编辑器中尽可能保留样式
+                    styles.push(`text-decoration-line: underline`);
+                    styles.push(`text-decoration-style: ${state.style}`);
+                    styles.push(`text-decoration-color: ${state.lColor}`);
+                    styles.push(`text-decoration-thickness: ${state.thick}px`);
+                    styles.push(`text-underline-offset: ${state.off}px`);
                 }
+
+                // 3. 构造 HTML 字符串
+                // 使用 span 包裹，确保样式通过内联方式应用，兼容性最好
+                const styleAttr = styles.join('; ');
+                const htmlContent = `<span style="${styleAttr}">${escapeHtml(textToCopy)}</span>`;
+
+                // 4. 使用现代 Clipboard API 写入数据
+                // 同时提供 text/html 和 text/plain，确保粘贴时有回退方案
+                const blobHtml = new Blob([htmlContent], { type: 'text/html' });
+                const blobText = new Blob([textToCopy], { type: 'text/plain' });
+                const data = [new ClipboardItem({
+                    'text/html': blobHtml,
+                    'text/plain': blobText
+                })];
+
+                await navigator.clipboard.write(data);
+                showToast('已复制带下划线文本');
+
             } catch (err) {
+                // 错误处理：如果用户环境不支持 Clipboard API (如非 HTTPS) 或发生错误
                 console.error('复制出错:', err);
-                showToast('复制失败，请手动选择复制');
+                showToast('复制失败，请使用下方按钮复制代码');
             }
         }
 
