@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD3 文本下划线工具 - 组合字符版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           MD3 设计令牌
+           ============================================ */
+        :root {
+            /* 主色调 */
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            
+            /* 次要色调 */
+            --md-sys-color-secondary: #625B71;
+            --md-sys-color-secondary-container: #E8DEF8;
+            --md-sys-color-on-secondary-container: #1D192B;
+            
+            /* 背景与表面 */
+            --md-sys-color-background: #FFFBFE;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+            
+            /* 形状 */
+            --md-corner-radius-small: 8px;
+            --md-corner-radius-medium: 12px;
+            --md-corner-radius-large: 16px;
+            --md-corner-radius-full: 9999px;
+        }
+
+        /* ============================================
+           全局重置
+           ============================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           布局
+           ============================================ */
+        .app-bar {
+            background-color: var(--md-sys-color-surface);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--md-sys-color-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-bar h1 {
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .main-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 850px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           组件：卡片
+           ============================================ */
+        .card {
+            background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-surface-variant);
+            border-radius: var(--md-corner-radius-large);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: fit-content;
+        }
+
+        .card-header {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--md-sys-color-surface-variant);
+        }
+
+        /* ============================================
+           表单元素
+           ============================================ */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .md-input, .md-select {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface);
+            background-color: transparent;
+            transition: border-color 0.2s;
+        }
+
+        /* 固定宽度输入框 */
+        .md-input {
+            width: 300px;
+            max-width: 300px;
+        }
+
+        .md-input:focus, .md-select:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 11px; 
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .col {
+            flex: 1;
+        }
+
+        /* 滑块样式 */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            margin: 8px 0;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 2px;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: var(--md-sys-color-primary);
+            margin-top: -8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* 颜色选择器 */
+        .color-input-group {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 4px;
+            padding: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .color-input-group:focus-within {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 7px;
+        }
+
+        input[type="color"] {
+            border: none;
+            width: 24px;
+            height: 24px;
+            background: none;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 8px;
+        }
+
+        /* ============================================
+           预览区域
+           ============================================ */
+        .preview-box {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-corner-radius-medium);
+            padding: 48px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 200px;
+            overflow: hidden;
+            position: relative;
+            user-select: text;
+        }
+
+        .preview-text {
+            font-weight: 500;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        /* ============================================
+           按钮组
+           ============================================ */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--md-corner-radius-full);
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-filled {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        
+        .btn-filled:hover {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            opacity: 0.95;
+        }
+
+        .btn-outlined {
+            background-color: transparent;
+            border: 1px solid var(--md-sys-color-outline);
+            color: var(--md-sys-color-primary);
+        }
+        
+        .btn-outlined:hover {
+            background-color: rgba(103, 80, 164, 0.08); 
+        }
+
+        .btn-tonal {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        /* ============================================
+           代码块
+           ============================================ */
+        .code-section {
+            background-color: #1E1E1E;
+            color: #D4D4D4;
+            padding: 16px;
+            border-radius: var(--md-sys-color-outline);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .code-label {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #333;
+            color: #aaa;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* ============================================
+           Toast
+           ============================================ */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #323232;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 14px;
+            position: fixed;
+            z-index: 10;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+        
+        /* Checkbox wrapper */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-bar">
+        <h1>文本下划线生成器</h1>
+        <span style="font-size: 14px; color: var(--md-sys-color-primary);">支持组合字符</span>
+    </header>
+
+    <main class="main-container">
+        
+        <!-- 左侧：设置面板 -->
+        <aside class="card">
+            <div class="card-header">设置</div>
+
+            <!-- 文本输入 - 固定宽度 -->
+            <div class="form-group">
+                <label class="form-label">输入内容</label>
+                <textarea id="inputText" class="md-input" rows="3" placeholder="在此输入文本...">点击这里添加下划线</textarea>
+            </div>
+
+            <!-- 样式选择 -->
+            <div class="row">
+                <div class="col form-group">
+                    <label class="form-label">线条样式</label>
+                    <select id="lineStyle" class="md-select">
+                        <option value="solid">实线</option>
+                        <option value="dashed">虚线</option>
+                        <option value="dotted">点线</option>
+                        <option value="wavy">波浪线</option>
+                        <option value="double">双线</option>
+                        <option value="combining">组合字符下划线</option>
+                    </select>
+                </div>
+                <div class="col form-group" style="justify-content: center;">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="isLink">
+                        <span>作为链接 &lt;a&gt;</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 颜色 -->
+            <div class="row">
+                <div class="col form-group">
+                    <label class="form-label">文本颜色</label>
+                    <label class="color-input-group">
+                        <input type="color" id="textColor" value="#1C1B1F">
+                        <span id="textColorVal">#1C1B1F</span>
+                    </label>
+                </div>
+                <div class="col form-group">
+                    <label class="form-label">线条颜色</label>
+                    <label class="color-input-group">
+                        <input type="color" id="lineColor" value="#6750A4">
+                        <span id="lineColorVal">#6750A4</span>
+                    </label>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--md-sys-color-surface-variant);">
+
+            <!-- 粗细与偏移 -->
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between;">
+                    <label class="form-label">线条粗细</label>
+                    <span class="form-label" id="thicknessVal">1px</span>
+                </div>
+                <input type="range" id="thickness" min="0.5" max="10" step="0.5" value="1">
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between;">
+                    <label class="form-label">下划线偏移</label>
+                    <span class="form-label" id="offsetVal">3px</span>
+                </div>
+                <input type="range" id="offset" min="0" max="20" step="1" value="3">
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between;">
+                    <label class="form-label">字体大小</label>
+                    <span class="form-label" id="fontSizeVal">24px</span>
+                </div>
+                <input type="range" id="fontSize" min="12" max="64" step="1" value="24">
+            </div>
+        </aside>
+
+        <!-- 右侧：结果与代码 -->
+        <section class="card" style="height: 100%;">
+            <div class="card-header">预览与导出</div>
+
+            <!-- 预览区 -->
+            <div class="preview-box">
+                <span id="preview" class="preview-text">点击这里添加下划线</span>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="btn-group">
+                <button class="btn btn-filled" onclick="copyRichText()">
+                    复制带下划线文本
+                </button>
+                <button class="btn btn-outlined" onclick="copyCode('html')">
+                    复制 HTML 代码
+                </button>
+                <button class="btn btn-tonal" onclick="copyCode('css')">
+                    复制 CSS 代码
+                </button>
+            </div>
+
+            <div style="margin-top: 32px;">
+                <div class="card-header" style="border: none; padding-bottom: 0;">生成代码</div>
+                
+                <div class="form-group">
+                    <label class="form-label">CSS 样式</label>
+                    <div class="code-section">
+                        <div class="code-label">CSS</div>
+                        <code id="cssOutput">
+.underline-style {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: #6750A4;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  color: #1C1B1F;
+}</code>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">HTML 结构</label>
+                    <div class="code-section">
+                        <div class="code-label">HTML</div>
+                        <code id="htmlOutput">&lt;span class="underline-style"&gt;...&lt;/span&gt;</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast">已复制到剪贴板</div>
+
+    <script>
+        // 元素引用
+        const els = {
+            input: document.getElementById('inputText'),
+            style: document.getElementById('lineStyle'),
+            isLink: document.getElementById('isLink'),
+            txtColor: document.getElementById('textColor'),
+            lineColor: document.getElementById('lineColor'),
+            thickness: document.getElementById('thickness'),
+            offset: document.getElementById('offset'),
+            fontSize: document.getElementById('fontSize'),
+            
+            // 值显示标签
+            txtColorVal: document.getElementById('textColorVal'),
+            lineColorVal: document.getElementById('lineColorVal'),
+            thickVal: document.getElementById('thicknessVal'),
+            offVal: document.getElementById('offsetVal'),
+            fontVal: document.getElementById('fontSizeVal'),
+            
+            // 输出
+            preview: document.getElementById('preview'),
+            cssOut: document.getElementById('cssOutput'),
+            htmlOut: document.getElementById('htmlOutput'),
+            toast: document.getElementById('toast')
+        };
+
+        // 状态管理
+        let state = {
+            text: els.input.value,
+            style: els.style.value,
+            isLink: els.isLink.checked,
+            tColor: els.txtColor.value,
+            lColor: els.lineColor.value,
+            thick: els.thickness.value,
+            off: els.offset.value,
+            fSize: els.fontSize.value
+        };
+
+        // 组合字符下划线转换函数
+        function addCombiningUnderline(text) {
+            const combiningChar = '\u0332'; // U+0332 COMBINING LOW LINE
+            return text.split('').join(combiningChar);
+        }
+
+        // 初始化事件监听 - 修复版本
+        function initListeners() {
+            // 单独处理 textarea，确保正确监听输入变化
+            els.input.addEventListener('input', function(e) {
+                state.text = e.target.value || "请输入文本";
+                updateView();
+            });
+            
+            // 其他表单元素
+            els.style.addEventListener('change', function(e) {
+                state.style = e.target.value;
+                updateView();
+            });
+            
+            els.isLink.addEventListener('change', function(e) {
+                state.isLink = e.target.checked;
+                updateView();
+            });
+            
+            els.txtColor.addEventListener('input', function(e) {
+                state.tColor = e.target.value;
+                updateView();
+            });
+            
+            els.lineColor.addEventListener('input', function(e) {
+                state.lColor = e.target.value;
+                updateView();
+            });
+            
+            els.thickness.addEventListener('input', function(e) {
+                state.thick = e.target.value;
+                updateView();
+            });
+            
+            els.offset.addEventListener('input', function(e) {
+                state.off = e.target.value;
+                updateView();
+            });
+            
+            els.fontSize.addEventListener('input', function(e) {
+                state.fSize = e.target.value;
+                updateView();
+            });
+        }
+
+        // 更新视图
+        function updateView() {
+            // 更新数值标签
+            els.txtColorVal.textContent = state.tColor;
+            els.lineColorVal.textContent = state.lColor;
+            els.thickVal.textContent = state.thick + 'px';
+            els.offVal.textContent = state.off + 'px';
+            els.fontVal.textContent = state.fSize + 'px';
+
+            // 处理组合字符下划线
+            let displayText = state.text;
+            if (state.style === 'combining') {
+                displayText = addCombiningUnderline(state.text);
+            }
+
+            // 更新预览
+            applyStyleToElement(els.preview);
+            els.preview.textContent = displayText;
+            
+            // 生成代码
+            generateCode();
+        }
+
+        function applyStyleToElement(el) {
+            if (state.style === 'combining') {
+                // 组合字符下划线不需要CSS样式，但保留其他样式
+                el.style.textDecorationLine = 'none';
+                el.style.textDecorationStyle = 'solid';
+                el.style.textDecorationColor = 'currentColor';
+                el.style.textDecorationThickness = 'auto';
+                el.style.textUnderlineOffset = 'auto';
+            } else {
+                el.style.textDecorationLine = 'underline';
+                el.style.textDecorationStyle = state.style;
+                el.style.textDecorationColor = state.lColor;
+                el.style.textDecorationThickness = `${state.thick}px`;
+                el.style.textUnderlineOffset = `${state.off}px`;
+            }
+            
+            el.style.color = state.tColor;
+            el.style.fontSize = `${state.fSize}px`;
+        }
+
+        function generateCode() {
+            const cssClass = 'custom-underline';
+            
+            let cssString = '';
+            
+            if (state.style === 'combining') {
+                cssString = `.${cssClass} {
+  /* 组合字符下划线 - 不需要额外的CSS */
+  color: ${state.tColor};
+}`;
+            } else {
+                cssString = `.${cssClass} {
+  text-decoration-line: underline;
+  text-decoration-style: ${state.style};
+  text-decoration-color: ${state.lColor};
+  text-decoration-thickness: ${state.thick}px;
+  text-underline-offset: ${state.off}px;
+  color: ${state.tColor}
+}`;
+            }
+            
+            els.cssOut.textContent = cssString;
+
+            let styleAttr = '';
+            if (state.style === 'combining') {
+                styleAttr = `style="color: ${state.tColor};"`;
+            } else {
+                styleAttr = `style="text-decoration-line: underline; text-decoration-style: ${state.style}; text-decoration-color: ${state.lColor}; text-decoration-thickness: ${state.thick}px; text-underline-offset: ${state.off}px; color: ${state.tColor};"`;
+            }
+            
+            const displayText = state.style === 'combining' ? addCombiningUnderline(state.text) : state.text;
+            const tag = state.isLink ? 'a href="#"' : 'span';
+            const htmlString = `<${tag} class="${cssClass}" ${styleAttr}>${escapeHtml(displayText)}</${tag.split(' ')[0]}>`;
+            els.htmlOut.textContent = htmlString;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;")
+                       .replace(/</g, "&lt;")
+                       .replace(/>/g, "&gt;")
+                       .replace(/"/g, "&quot;")
+                       .replace(/'/g, "&#039;");
+        }
+
+        // ============================================
+        // 核心功能：复制带格式的富文本
+        // ============================================
+        function copyRichText() {
+            try {
+                // 创建临时元素
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.left = '-9999px';
+                tempDiv.style.top = '0';
+                
+                // 构建样式
+                const styles = {
+                    color: state.tColor,
+                    fontSize: state.fSize + 'px',
+                    fontFamily: 'Roboto, sans-serif'
+                };
+                
+                // 如果不是组合字符下划线，添加文本装饰样式
+                if (state.style !== 'combining') {
+                    styles.textDecorationLine = 'underline';
+                    styles.textDecorationStyle = state.style;
+                    styles.textDecorationColor = state.lColor;
+                    styles.textDecorationThickness = state.thick + 'px';
+                    styles.textUnderlineOffset = state.off + 'px';
+                }
+                
+                // 应用样式
+                Object.assign(tempDiv.style, styles);
+                
+                // 处理文本内容
+                let displayText = state.text;
+                if (state.style === 'combining') {
+                    displayText = addCombiningUnderline(state.text);
+                }
+                
+                tempDiv.textContent = displayText;
+                
+                // 添加到文档
+                document.body.appendChild(tempDiv);
+                
+                // 创建选区
+                const range = document.createRange();
+                range.selectNodeContents(tempDiv);
+                
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                // 执行复制命令
+                const success = document.execCommand('copy');
+                
+                // 清理
+                selection.removeAllRanges();
+                document.body.removeChild(tempDiv);
+                
+                if (success) {
+                    showToast('已复制带下划线文本');
+                } else {
+                    showToast('复制失败，请手动选择复制');
+                }
+            } catch (err) {
+                console.error('复制出错:', err);
+                showToast('复制失败，请手动选择复制');
+            }
+        }
+
+        // 复制纯代码文本
+        function copyCode(type) {
+            let content = '';
+            let msg = '';
+
+            switch(type) {
+                case 'html':
+                    content = els.htmlOut.textContent;
+                    msg = 'HTML 代码已复制';
+                    break;
+                case 'css':
+                    content = els.cssOut.textContent;
+                    msg = 'CSS 代码已复制';
+                    break;
+            }
+
+            // 使用临时 textarea 进行复制
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = content;
+            tempTextArea.style.position = 'absolute';
+            tempTextArea.style.left = '-9999px';
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            
+            try {
+                const success = document.execCommand('copy');
+                if (success) {
+                    showToast(msg);
+                } else {
+                    showToast('复制失败');
+                }
+            } catch (err) {
+                console.error('复制出错:', err);
+                showToast('复制失败');
+            }
+            
+            document.body.removeChild(tempTextArea);
+        }
+
+        function showToast(message) {
+            els.toast.textContent = message;
+            els.toast.className = 'show';
+            setTimeout(() => {
+                els.toast.className = els.toast.className.replace('show', '');
+            }, 3000);
+        }
+
+        // 启动
+        initListeners();
+        updateView();
+    </script>
+</body>
+</html>
