@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
-    <title>Tools Music (Optimized & Fixed)</title>
+    <title>Tools Music (Fixed Layout)</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -45,12 +45,13 @@
             touch-action: manipulation;
         }
 
+        /* 手机屏幕容器 - 增加高度确保内容完整显示 */
         .phone-screen {
             width: 375px; 
-            height: 820px; 
+            height: 900px; /* 增加高度以容纳完整内容 */
             background-color: var(--phone-screen-bg);
             border-radius: 24px;
-            overflow: hidden;
+            overflow: visible; /* 改为 visible 确保内容不被截断 */
             position: relative;
             box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
             color: var(--md-sys-color-on-surface);
@@ -205,12 +206,12 @@
         .card a { text-decoration: none; color: var(--md-sys-color-primary); font-weight: 500; display: block; padding: 4px 0; }
         .card a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
         
-        /* 修复：移除 position: fixed，改为流式布局，避免在缩放容器中定位错误导致截断 */
+        /* 修复：移除 position: fixed，改为流式布局 */
         .drawer-footer-copyright { 
             padding: 20px 0; 
             text-align: center; 
             width: 100%; 
-            margin-top: auto; /* Push to bottom if space allows */
+            margin-top: auto;
             border-top: 1px solid rgba(255,255,255,0.1);
         }
         .copyright-text { font-size: 0.7rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 4px; }
@@ -452,7 +453,7 @@
                     <div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/zashboard">zashboard</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
-                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Webp2jpg">DNS Prefetch</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Underline">Underline</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">imagesmode</span><span><a href="/Tools/Webp2jpg">Webp2jpg</a></span></div>
                 </div>
                 <div class="drawer-footer-copyright">
@@ -525,7 +526,7 @@
         };
 
         const ORIGINAL_WIDTH = 375;
-        const ORIGINAL_HEIGHT = 812;
+        const ORIGINAL_HEIGHT = 900; // 增加高度
         
         function applyScale() {
             const screenWidth = window.innerWidth;
