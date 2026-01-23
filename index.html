@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
-    <title>Tools Music (Optimized)</title>
+    <title>Tools Music (Optimized & Fixed)</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -193,31 +193,37 @@
         .btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
 
         /* --- 底部抽屉 --- */
-        .bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 28px 28px 0 0; transform: translateY(calc(100% - 30px)); transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -10px 50px rgba(0,0,0,0.5); will-change: transform; }
+        .bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 28px 28px 0 0; transform: translateY(calc(100% - 30px)); transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -10px 50px rgba(0,0,0,0.5); }
         .bottom-drawer.open { transform: translateY(0); }
         .nav-handle-area { width: 100%; height: 30px; padding-top: 12px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
-        .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 24px 0; margin-bottom: 80px; }
+        .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 24px 0; margin-bottom: 20px; }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
         .drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 20px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 12px; }
         .card a { text-decoration: none; color: var(--md-sys-color-primary); font-weight: 500; display: block; padding: 4px 0; }
         .card a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
-        .drawer-footer-copyright { padding: 10px 0 10px; text-align: center; width: 100%; position: fixed; bottom: 0; left: 0; background: var(--md-sys-color-surface); z-index: 1001; border-radius: 28px 28px 0 0; }
+        
+        /* 修复：移除 position: fixed，改为流式布局，避免在缩放容器中定位错误导致截断 */
+        .drawer-footer-copyright { 
+            padding: 20px 0; 
+            text-align: center; 
+            width: 100%; 
+            margin-top: auto; /* Push to bottom if space allows */
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
         .copyright-text { font-size: 0.7rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 4px; }
         .powered-row { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.65rem; color: var(--md-sys-color-outline); }
         .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
     </style>
     
-    <!-- Web Worker 脚本: 处理繁重的计算和后台逻辑 -->
+    <!-- Web Worker 脚本 -->
     <script id="app-worker" type="javascript/worker">
-        // ==================== Worker 状态管理与逻辑 ====================
         let songs = [];
         let currentIndex = 0;
 
-        // 工具函数：颜色处理
         const ColorUtils = {
             hexToRgb: (hex) => {
                 const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -258,7 +264,6 @@
             }
         };
 
-        // 天气代码映射
         const weatherCodeMap = {
             0: { desc: "晴朗", icon: "☀️" }, 1: { desc: "多云", icon: "🌤️" }, 2: { desc: "少云", icon: "⛅" }, 3: { desc: "阴天", icon: "☁️" },
             45: { desc: "雾", icon: "🌫️" }, 48: { desc: "冻雾", icon: "🌫️" }, 51: { desc: "毛毛雨", icon: "🌦️" }, 53: { desc: "中毛毛雨", icon: "🌦️" },
@@ -269,7 +274,6 @@
             95: { desc: "雷暴", icon: "⛈️" }, 96: { desc: "雷暴", icon: "⛈️" }, 99: { desc: "强雷暴", icon: "⛈️" }
         };
 
-        // Worker 消息处理
         self.onmessage = async function(e) {
             const { type, payload } = e.data;
 
@@ -280,7 +284,6 @@
                     break;
 
                 case 'GET_SONG':
-                    // 处理音乐播放逻辑 (下一首/上一首)
                     if (payload.action === 'next') {
                         currentIndex = (currentIndex + 1) % songs.length;
                     } else if (payload.action === 'prev') {
@@ -290,7 +293,6 @@
                     break;
 
                 case 'EXTRACT_COLOR':
-                    // 处理图片取色 (OffscreenCanvas)
                     try {
                         const { imageBlob } = payload;
                         const bitmap = await createImageBitmap(imageBlob);
@@ -318,15 +320,13 @@
                             throw new Error("No data");
                         }
                     } catch (err) {
-                        self.postMessage({ type: 'THEME_READY', payload: null }); // Fallback handled in main
+                        self.postMessage({ type: 'THEME_READY', payload: null });
                     }
                     break;
 
                 case 'FETCH_WEATHER':
-                    // 处理天气 API 请求 (网络 I/O 和 JSON 解析)
                     try {
                         const { lat, lon } = payload;
-                        // 并行请求以提高速度
                         const [locRes, weatherRes] = await Promise.all([
                             fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`),
                             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`)
@@ -452,7 +452,7 @@
                     <div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/zashboard">zashboard</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
-                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Underline">文本下划线</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Webp2jpg">DNS Prefetch</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">imagesmode</span><span><a href="/Tools/Webp2jpg">Webp2jpg</a></span></div>
                 </div>
                 <div class="drawer-footer-copyright">
@@ -465,7 +465,6 @@
     <audio id="audio" crossorigin="anonymous"></audio>
 
     <script>
-        // ==================== 1. Worker 初始化 ====================
         const workerBlob = new Blob([document.getElementById('app-worker').textContent], { type: "application/javascript" });
         const worker = new Worker(URL.createObjectURL(workerBlob));
 
@@ -490,17 +489,14 @@
             }
         ];
 
-        // 向 Worker 初始化歌曲列表
         worker.postMessage({ type: 'INIT', payload: { songs: songs } });
 
-        // ==================== 2. 核心逻辑与 UI 交互 ====================
         const app = document.getElementById('app');
         const island = document.getElementById('island');
         const audio = document.getElementById('audio');
         let currentSongData = null;
         let isDragging = false;
         
-        // UI 元素缓存
         const els = {
             mainTitle: document.getElementById('mainTitle'),
             mainArtist: document.getElementById('mainArtist'),
@@ -528,7 +524,6 @@
             }
         };
 
-        // ==================== 缩放适配 ====================
         const ORIGINAL_WIDTH = 375;
         const ORIGINAL_HEIGHT = 812;
         
@@ -547,34 +542,25 @@
         window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(applyScale, 100); });
         window.addEventListener('orientationchange', () => { setTimeout(applyScale, 200); });
 
-        // ==================== 播放器控制 (Logic <-> Worker) ====================
         function loadSong(song) {
             currentSongData = song;
-            
-            // 更新 UI 文本
             els.mainTitle.innerText = song.title;
             els.mainArtist.innerText = song.artist;
             els.islandTitle.innerText = song.title;
             els.islandArtist.innerText = song.artist.split('•')[0].trim();
 
-            // 预加载图片以获取 Blob 用于 Worker 分析
             fetch(song.cover)
                 .then(res => res.blob())
                 .then(blob => {
-                    // 设置 UI 图片
                     const url = URL.createObjectURL(blob);
                     els.mainCover.src = url;
                     els.islandCover.src = url;
-
-                    // 发送 Blob 给 Worker 进行取色 (OffscreenCanvas)
                     worker.postMessage({ type: 'EXTRACT_COLOR', payload: { imageBlob: blob } });
                 })
                 .catch(() => console.error("Image Load Error"));
 
-            // 设置音频源
             audio.src = song.src;
 
-            // Media Session
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
@@ -594,11 +580,10 @@
         function pauseSong() {
             audio.pause();
             app.classList.remove('playing');
-            island.classList.remove('active'); // 收起灵动岛
+            island.classList.remove('active');
             els.playIcon.innerText = 'play_arrow';
         }
 
-        // 事件监听
         document.getElementById('playBtn').addEventListener('click', () => {
             if (audio.paused) playSong(); else pauseSong();
         });
@@ -615,7 +600,6 @@
             worker.postMessage({ type: 'GET_SONG', payload: { action: 'next' } });
         });
 
-        // Worker 消息响应
         worker.onmessage = (e) => {
             const { type, payload } = e.data;
             if (type === 'SONG_READY') {
@@ -634,7 +618,6 @@
             }
         };
 
-        // ==================== 进度条渲染优化 ====================
         function formatTime(seconds) {
             if (isNaN(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
@@ -648,33 +631,25 @@
             els.inactiveTrack.style.left = percent + "%";
             els.inactiveTrack.style.width = (100 - percent) + "%";
             els.sliderThumb.style.left = percent + "%";
-            
             const currentTime = isDragging ? (percent / 100) * audio.duration : audio.currentTime;
             els.currTime.innerText = formatTime(currentTime);
             els.durTime.innerText = formatTime(audio.duration);
         }
 
-        // 使用 requestAnimationFrame 实现 60fps 平滑进度条
         function renderLoop() {
             if (!isDragging && !audio.paused) {
                 const percent = (audio.currentTime / audio.duration) * 100;
                 updateSliderUI(percent);
             } else if (!isNaN(audio.duration)) {
-                 // 暂停时也要保持更新（比如拖动时的时间显示）
-                 updateSliderUI((audio.currentTime / audio.duration) * 100);
+                updateSliderUI((audio.currentTime / audio.duration) * 100);
             }
             requestAnimationFrame(renderLoop);
         }
         requestAnimationFrame(renderLoop);
 
-        // 拖动逻辑
         els.slider.addEventListener('input', () => { isDragging = true; updateSliderUI(els.slider.value); });
-        els.slider.addEventListener('change', () => { 
-            isDragging = false; 
-            audio.currentTime = (els.slider.value / 100) * audio.duration; 
-        });
+        els.slider.addEventListener('change', () => { isDragging = false; audio.currentTime = (els.slider.value / 100) * audio.duration; });
 
-        // ==================== 天气模块 ====================
         const CookieUtils = {
             set: (name, value, days = 30) => {
                 const date = new Date(); date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
@@ -707,7 +682,6 @@
         async function initWeather() {
             let lat = parseFloat(CookieUtils.get('weather_lat')) || null;
             let lon = parseFloat(CookieUtils.get('weather_lon')) || null;
-            
             if (!lat || !lon) {
                 if ('geolocation' in navigator) {
                     try {
@@ -720,16 +694,14 @@
                         CookieUtils.set('weather_lat', lat, 30);
                         CookieUtils.set('weather_lon', lon, 30);
                     } catch (e) {
-                        lat = 39.9042; lon = 116.4074; // 默认北京
+                        lat = 39.9042; lon = 116.4074;
                         els.weather.location.innerText = "定位失败，使用默认位置";
                     }
                 }
             }
-            // 发送给 Worker 处理网络请求
             if (lat && lon) worker.postMessage({ type: 'FETCH_WEATHER', payload: { lat, lon } });
         }
 
-        // ==================== 初始化 ====================
         function updateTime() {
             const now = new Date();
             document.getElementById('islandTime').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -740,25 +712,14 @@
             setInterval(updateTime, 1000);
             initWeather();
             setInterval(initWeather, 10 * 60 * 1000);
-            
             island.addEventListener('click', toggleIsland);
-            
-            // 加载第一首歌
-            worker.postMessage({ type: 'GET_SONG', payload: { action: 'init' } }); // worker 内部会处理初始索引
-            // 但我们需要知道初始索引，或者直接由 Worker 返回第一首
-            // 简单起见，这里直接加载第一首，后续交给 Worker
             loadSong(songs[0]);
         }
 
-        function toggleIsland() {
-            island.classList.toggle('active');
-        }
+        function toggleIsland() { island.classList.toggle('active'); }
 
-        window.toggleDrawer = function() {
-            document.getElementById('drawer').classList.toggle('open');
-        };
+        window.toggleDrawer = function() { document.getElementById('drawer').classList.toggle('open'); };
 
-        // Media Session Handlers
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler('play', playSong);
             navigator.mediaSession.setActionHandler('pause', pauseSong);
