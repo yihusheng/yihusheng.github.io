@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    <!-- 状态栏颜色固定为纯黑 -->
     <meta name="theme-color" content="#000000">
-    <title>Tools Music (Fixed Layout)</title>
+    <title>Tools Music</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -45,13 +46,13 @@
             touch-action: manipulation;
         }
 
-        /* 手机屏幕容器 - 增加高度确保内容完整显示 */
+        /* 手机屏幕容器 - 保持固定原始尺寸 */
         .phone-screen {
             width: 375px; 
-            height: 900px; /* 增加高度以容纳完整内容 */
+            height: 820px; 
             background-color: var(--phone-screen-bg);
             border-radius: 24px;
-            overflow: visible; /* 改为 visible 确保内容不被截断 */
+            overflow: hidden;
             position: relative;
             box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
             color: var(--md-sys-color-on-surface);
@@ -59,11 +60,14 @@
             will-change: transform;
         }
 
+        /* 桌面模式：保持原始尺寸，不缩放 */
         @media screen and (min-width: 450px) {
-            .phone-screen { transform: scale(1) !important; }
+            .phone-screen {
+                transform: scale(1) !important;
+            }
         }
 
-        /* --- 动态灵动岛 --- */
+        /* --- 动态灵动岛容器 --- */
         .dynamic-island {
             position: absolute; left: 50%; transform: translateX(-50%);
             width: 120px; height: 36px; 
@@ -76,7 +80,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             cursor: pointer;
             top: 12px;
-            will-change: width, height, border-radius, background-color;
         }
         
         .dynamic-island.active { 
@@ -86,7 +89,7 @@
             background-color: var(--md-sys-color-surface-container);
         }
 
-        /* 状态 1: 默认时间天气 */
+        /* --- 1. 默认状态：时间和天气 --- */
         .island-default {
             display: flex; align-items: center; justify-content: space-between;
             width: 100%; padding: 0 12px; gap: 8px;
@@ -101,7 +104,7 @@
         .island-weather-icon { font-size: 1rem; }
         .island-weather-temp { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.9); }
 
-        /* 状态 2: 天气详情 */
+        /* --- 2. 天气详情状态 --- */
         .island-weather-detail {
             display: flex; align-items: center; justify-content: space-between;
             width: 100%; padding: 16px 20px;
@@ -124,26 +127,6 @@
         .detail-meta { font-size: 0.75rem; color: #ccc; display: flex; flex-direction: column; gap: 2px; }
         .location-display { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
 
-        /* 状态 3: 音乐播放 */
-        .island-content {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; padding: 0 16px; gap: 12px;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-            z-index: 30;
-        }
-        .dynamic-island.active.playing .island-content { opacity: 1; pointer-events: none; }
-        
-        .island-cover { width: 100px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .island-info { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
-        .island-title { font-size: 0.9rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .island-artist { font-size: 0.75rem; color: rgba(255,255,255,0.8); margin-top: 4px; }
-        
-        .island-waveform { display: flex; align-items: flex-end; gap: 2px; height: 12px; margin-left: 8px; }
-        .island-bar { width: 3px; background: #fff; border-radius: 2px; animation: wave 0.8s infinite ease-in-out; }
-        .island-bar:nth-child(2) { animation-delay: 0.2s; }
-        .island-bar:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes wave { 0%, 100% { height: 4px; } 50% { height: 10px; } }
-
         /* --- 播放器主体 --- */
         .player-content { 
             padding: 120px 24px 0; 
@@ -154,13 +137,15 @@
         
         .player-background {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
             background-color: var(--player-bg);
             filter: blur(50px);
             transform: scale(1.2);
             opacity: 0.6;
-            will-change: background-color;
         }
 
         .album-art {
@@ -169,9 +154,8 @@
             transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .album-art.change { transform: scale(0.9); opacity: 0.8; }
-        
         .song-info { text-align: center; margin-bottom: 30px; width: 100%; }
-        .song-title-main { font-weight: 700; font-size: 1.8rem; color: var(--md-sys-color-on-surface); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-title-main { font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 1.8rem; color: var(--md-sys-color-on-surface); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .artist-name { font-size: 1.1rem; color: var(--md-sys-color-primary); font-weight: 500; }
 
         /* --- 进度条 --- */
@@ -188,7 +172,12 @@
         .time-labels { width: 100%; display: flex; justify-content: space-between; margin-bottom: 40px; color: var(--md-sys-color-on-surface-variant); font-size: 0.8rem; font-weight: 500; }
 
         /* --- 控件 --- */
-        .controls { display: flex; gap: 24px; align-items: center; margin-bottom: 20px; }
+        .controls { 
+            display: flex; 
+            gap: 24px; 
+            align-items: center; 
+            margin-bottom: 20px;
+        }
         .btn { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
         .btn:active { transform: scale(0.9); filter: brightness(1.1); }
         .btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
@@ -198,177 +187,55 @@
         .bottom-drawer.open { transform: translateY(0); }
         .nav-handle-area { width: 100%; height: 30px; padding-top: 12px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; }
         .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.4; }
-        .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 24px 0; margin-bottom: 20px; }
+        .drawer-scroll-view { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 10px 24px 0; 
+            margin-bottom: 80px;
+        }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
         .drawer-title { font-size: 1.25rem; color: var(--md-sys-color-on-surface); margin: 10px 0 20px; font-weight: 500; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--md-sys-color-surface-container-high); border-radius: 16px; padding: 20px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 12px; }
-        .card a { text-decoration: none; color: var(--md-sys-color-primary); font-weight: 500; display: block; padding: 4px 0; }
-        .card a:hover { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 2px; }
-        
-        /* 修复：移除 position: fixed，改为流式布局 */
+        .card a { 
+            text-decoration: none; 
+            color: var(--md-sys-color-primary); 
+            font-weight: 500;
+            display: block;
+            padding: 4px 0;
+        }
+        .card a:hover { 
+            text-decoration: underline; 
+            text-decoration-thickness: 2px;
+            text-underline-offset: 2px;
+        }
         .drawer-footer-copyright { 
-            padding: 20px 0; 
+            padding: 10px 0 10px; 
             text-align: center; 
             width: 100%; 
-            margin-top: auto;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            position: fixed; 
+            bottom: 0;
+            left: 0;
+            background: var(--md-sys-color-surface);
+            z-index: 1001;
+            border-radius: 28px 28px 0 0;
         }
-        .copyright-text { font-size: 0.7rem; color: var(--md-sys-color-on-surface-variant); margin-bottom: 4px; }
-        .powered-row { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 0.65rem; color: var(--md-sys-color-outline); }
+        .copyright-text { 
+            font-size: 0.7rem; 
+            color: var(--md-sys-color-on-surface-variant); 
+            margin-bottom: 4px; 
+        }
+        .powered-row { 
+            display: flex; align-items: center; justify-content: center; 
+            gap: 4px; 
+            font-size: 0.65rem; 
+            color: var(--md-sys-color-outline); 
+        }
         .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
     </style>
-    
-    <!-- Web Worker 脚本 -->
-    <script id="app-worker" type="javascript/worker">
-        let songs = [];
-        let currentIndex = 0;
-
-        const ColorUtils = {
-            hexToRgb: (hex) => {
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
-            },
-            rgbToHsl: (r, g, b) => {
-                r /= 255, g /= 255, b /= 255;
-                const max = Math.max(r, g, b), min = Math.min(r, g, b);
-                let h, s, l = (max + min) / 2;
-                if (max === min) { h = s = 0; } else {
-                    const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                    switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; }
-                    h /= 6;
-                }
-                return { h: h * 360, s: s * 100, l: l * 100 };
-            },
-            hslToString: (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`,
-            generateTheme: (sourceRgb) => {
-                const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
-                const h = hsl.h;
-                const s = Math.max(20, Math.min(100, hsl.s));
-                const l = hsl.l;
-                
-                return {
-                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s + 15), Math.max(40, Math.min(60, l + 15))),
-                    '--md-sys-color-on-primary': ColorUtils.hslToString(h, Math.min(100, s + 20), Math.min(20, l - 40)),
-                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l - 15)),
-                    '--md-sys-color-on-primary-container': ColorUtils.hslToString(h, Math.min(50, s - 20), Math.max(80, l + 30)),
-                    '--md-sys-color-secondary-container': ColorUtils.hslToString(h, Math.max(15, s - 15), Math.min(30, l - 20)),
-                    '--md-sys-color-on-secondary-container': ColorUtils.hslToString(h, Math.min(100, s + 30), Math.max(70, l + 20)),
-                    '--md-sys-color-surface': ColorUtils.hslToString(h, s / 4, 8),
-                    '--md-sys-color-surface-container': ColorUtils.hslToString(h, s / 3, 12),
-                    '--md-sys-color-surface-container-high': ColorUtils.hslToString(h, s / 2.5, 18),
-                    '--island-bg': ColorUtils.hslToString(h, s / 2, 10),
-                    '--phone-screen-bg': ColorUtils.hslToString(h, s / 3, 5),
-                    '--player-bg': ColorUtils.hslToString(h, s / 2, l / 3)
-                };
-            }
-        };
-
-        const weatherCodeMap = {
-            0: { desc: "晴朗", icon: "☀️" }, 1: { desc: "多云", icon: "🌤️" }, 2: { desc: "少云", icon: "⛅" }, 3: { desc: "阴天", icon: "☁️" },
-            45: { desc: "雾", icon: "🌫️" }, 48: { desc: "冻雾", icon: "🌫️" }, 51: { desc: "毛毛雨", icon: "🌦️" }, 53: { desc: "中毛毛雨", icon: "🌦️" },
-            55: { desc: "大毛毛雨", icon: "🌧️" }, 61: { desc: "小雨", icon: "🌧️" }, 63: { desc: "中雨", icon: "🌧️" }, 65: { desc: "大雨", icon: "🌧️" },
-            66: { desc: "冻雨", icon: "🌨️" }, 67: { desc: "冻雨", icon: "🌨️" }, 71: { desc: "小雪", icon: "🌨️" }, 73: { desc: "中雪", icon: "🌨️" },
-            75: { desc: "大雪", icon: "❄️" }, 77: { desc: "雪粒", icon: "❄️" }, 80: { desc: "阵雨", icon: "🌧️" }, 81: { desc: "阵雨", icon: "🌧️" },
-            82: { desc: "暴雨", icon: "⛈️" }, 85: { desc: "阵雪", icon: "🌨️" }, 86: { desc: "阵雪", icon: "🌨️" },
-            95: { desc: "雷暴", icon: "⛈️" }, 96: { desc: "雷暴", icon: "⛈️" }, 99: { desc: "强雷暴", icon: "⛈️" }
-        };
-
-        self.onmessage = async function(e) {
-            const { type, payload } = e.data;
-
-            switch (type) {
-                case 'INIT':
-                    songs = payload.songs;
-                    currentIndex = payload.index || 0;
-                    break;
-
-                case 'GET_SONG':
-                    if (payload.action === 'next') {
-                        currentIndex = (currentIndex + 1) % songs.length;
-                    } else if (payload.action === 'prev') {
-                        currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-                    }
-                    self.postMessage({ type: 'SONG_READY', payload: { index: currentIndex, song: songs[currentIndex] } });
-                    break;
-
-                case 'EXTRACT_COLOR':
-                    try {
-                        const { imageBlob } = payload;
-                        const bitmap = await createImageBitmap(imageBlob);
-                        const canvas = new OffscreenCanvas(50, 50);
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(bitmap, 0, 0, 50, 50);
-                        const imageData = ctx.getImageData(0, 0, 50, 50).data;
-                        
-                        let r = 0, g = 0, b = 0, totalWeight = 0;
-                        for (let i = 0; i < imageData.length; i += 4) {
-                            const pixelR = imageData[i];
-                            const pixelG = imageData[i + 1];
-                            const pixelB = imageData[i + 2];
-                            const brightness = (0.299 * pixelR + 0.587 * pixelG + 0.114 * pixelB);
-                            let weight = 1;
-                            if (brightness < 50) weight = 2;
-                            r += pixelR * weight; g += pixelG * weight; b += pixelB * weight; totalWeight += weight;
-                        }
-                        
-                        if (totalWeight > 0) {
-                            r = Math.floor(r / totalWeight); g = Math.floor(g / totalWeight); b = Math.floor(b / totalWeight);
-                            const theme = ColorUtils.generateTheme({ r, g, b });
-                            self.postMessage({ type: 'THEME_READY', payload: theme });
-                        } else {
-                            throw new Error("No data");
-                        }
-                    } catch (err) {
-                        self.postMessage({ type: 'THEME_READY', payload: null });
-                    }
-                    break;
-
-                case 'FETCH_WEATHER':
-                    try {
-                        const { lat, lon } = payload;
-                        const [locRes, weatherRes] = await Promise.all([
-                            fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`),
-                            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`)
-                        ]);
-                        
-                        const locationData = await locRes.json();
-                        const weatherData = await weatherRes.json();
-
-                        let locationName = "未知位置";
-                        if (locationData.city) locationName = locationData.city;
-                        else if (locationData.locality) locationName = locationData.locality;
-                        else if (locationData.principalSubdivision) locationName = locationData.principalSubdivision;
-                        else if (locationData.countryName) locationName = locationData.countryName;
-                        else locationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
-
-                        const current = weatherData.current_weather || weatherData.current;
-                        const daily = weatherData.daily;
-                        const temp = Math.round(current.temperature_2m);
-                        const code = current.weather_code;
-                        const weather = weatherCodeMap[code] || { desc: "未知", icon: "🌡️" };
-
-                        self.postMessage({
-                            type: 'WEATHER_READY',
-                            payload: {
-                                location: locationName,
-                                temp: temp,
-                                icon: weather.icon,
-                                desc: weather.desc,
-                                range: `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`,
-                                wind: `💨 ${Math.round(current.wind_speed_10m)}km/h`,
-                                humidity: `💧 ${current.relative_humidity_2m}%`
-                            }
-                        });
-                    } catch (err) {
-                        console.error("Worker Weather Error:", err);
-                        self.postMessage({ type: 'WEATHER_ERROR' });
-                    }
-                    break;
-            }
-        };
-    </script>
 </head>
 <body>
 
@@ -400,10 +267,12 @@
                 </div>
             </div>
             <div class="island-content">
-                <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
-                <div class="island-info">
-                    <span id="islandTitle" class="island-title">Song Title</span>
-                    <span id="islandArtist" class="island-artist">Artist</span>
+                <div class="island-music">
+                    <img id="islandCover" crossorigin="anonymous" src="" class="island-cover" alt="cover">
+                    <div class="island-info">
+                        <span id="islandTitle" class="island-title">Song Title</span>
+                        <span id="islandArtist" class="island-artist">Artist</span>
+                    </div>
                 </div>
                 <div class="island-waveform">
                     <div class="island-bar"></div>
@@ -453,7 +322,7 @@
                     <div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/zashboard">zashboard</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">dashboard</span><span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
-                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Underline">Underline</a></span></div>
+                    <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Webp2jpg">DNS Prefetch</a></span></div>
                     <div class="card"><span class="material-symbols-rounded">imagesmode</span><span><a href="/Tools/Webp2jpg">Webp2jpg</a></span></div>
                 </div>
                 <div class="drawer-footer-copyright">
@@ -463,11 +332,162 @@
         </div>
     </div>
 
-    <audio id="audio" crossorigin="anonymous"></audio>
+    <audio id="audio"></audio>
+    <canvas id="colorCanvas" style="display: none;"></canvas>
 
     <script>
-        const workerBlob = new Blob([document.getElementById('app-worker').textContent], { type: "application/javascript" });
-        const worker = new Worker(URL.createObjectURL(workerBlob));
+        // ==================== 缩放适配核心代码 ====================
+        const ORIGINAL_WIDTH = 375;
+        const ORIGINAL_HEIGHT = 812;
+        
+        function applyScale() {
+            const app = document.getElementById('app');
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            const availableWidth = screenWidth * 0.95;
+            const availableHeight = screenHeight * 0.95;
+            
+            const scaleX = availableWidth / ORIGINAL_WIDTH;
+            const scaleY = availableHeight / ORIGINAL_HEIGHT;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const finalScale = Math.min(scale, 1.15);
+            
+            app.style.transform = `scale(${finalScale})`;
+            
+            console.log(`屏幕: ${screenWidth}x${screenHeight}, 缩放比例: ${finalScale.toFixed(3)}`);
+        }
+        
+        applyScale();
+        
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(applyScale, 100);
+        });
+        
+        window.addEventListener('orientationchange', () => {
+            setTimeout(applyScale, 200);
+        });
+
+        // ==================== 以下是原有代码 ====================
+        const ColorUtils = {
+            hexToRgb: (hex) => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
+            },
+            rgbToHsl: (r, g, b) => {
+                r /= 255, g /= 255, b /= 255;
+                const max = Math.max(r, g, b), min = Math.min(r, g, b);
+                let h, s, l = (max + min) / 2;
+                if (max === min) { h = s = 0; } else {
+                    const d = max - min; s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                    switch (max) { case r: h = (g - b) / d + (g < b ? 6 : 0); break; case g: h = (b - r) / d + 2; break; case b: h = (r - g) / d + 4; break; }
+                    h /= 6;
+                }
+                return { h: h * 360, s: s * 100, l: l * 100 };
+            },
+            hslToString: (h, s, l) => `hsl(${h}, ${s}%, ${l}%)`,
+            extractColorFromUrl: (imageUrl, callback) => {
+                const canvas = document.getElementById('colorCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.src = imageUrl;
+                
+                img.onload = function() {
+                    canvas.width = 50;
+                    canvas.height = 50;
+                    ctx.drawImage(img, 0, 0, 50, 50);
+                    
+                    try {
+                        const imageData = ctx.getImageData(0, 0, 50, 50).data;
+                        let r = 0, g = 0, b = 0, totalWeight = 0;
+                        
+                        // 优化：增强深色像素权重，确保深紫色封面主色调被提取
+                        for (let i = 0; i < imageData.length; i += 4) {
+                            const pixelR = imageData[i];
+                            const pixelG = imageData[i + 1];
+                            const pixelB = imageData[i + 2];
+                            const brightness = (0.299 * pixelR + 0.587 * pixelG + 0.114 * pixelB);
+                            
+                            // 对深色像素（亮度 < 50）给予更高权重，避免被高光部分干扰
+                            let weight = 1;
+                            if (brightness < 50) {
+                                weight = 2; // 深色像素权重加倍
+                            }
+                            
+                            r += pixelR * weight;
+                            g += pixelG * weight;
+                            b += pixelB * weight;
+                            totalWeight += weight;
+                        }
+                        
+                        if (totalWeight > 0) {
+                            r = Math.floor(r / totalWeight);
+                            g = Math.floor(g / totalWeight);
+                            b = Math.floor(b / totalWeight);
+                        }
+                        
+                        callback({ r, g, b });
+                    } catch (e) {
+                        console.error("颜色提取错误:", e);
+                        callback({ r: 76, g: 55, b: 139 });
+                    }
+                };
+                
+                img.onerror = function() {
+                    console.error("图片加载失败:", imageUrl);
+                    callback({ r: 76, g: 55, b: 139 });
+                };
+            },
+            
+            generateTheme: (sourceRgb) => {
+                const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
+                const h = hsl.h;
+                const s = Math.max(20, Math.min(100, hsl.s));
+                const l = hsl.l;
+                
+                return {
+                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s + 15), Math.max(40, Math.min(60, l + 15))),
+                    '--md-sys-color-on-primary': ColorUtils.hslToString(h, Math.min(100, s + 20), Math.min(20, l - 40)),
+                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l - 15)),
+                    '--md-sys-color-on-primary-container': ColorUtils.hslToString(h, Math.min(50, s - 20), Math.max(80, l + 30)),
+                    '--md-sys-color-secondary-container': ColorUtils.hslToString(h, Math.max(15, s - 15), Math.min(30, l - 20)),
+                    '--md-sys-color-on-secondary-container': ColorUtils.hslToString(h, Math.min(100, s + 30), Math.max(70, l + 20)),
+                    '--md-sys-color-surface': ColorUtils.hslToString(h, s / 4, 8),
+                    '--md-sys-color-surface-container': ColorUtils.hslToString(h, s / 3, 12),
+                    '--md-sys-color-surface-container-high': ColorUtils.hslToString(h, s / 2.5, 18),
+                    '--island-bg': ColorUtils.hslToString(h, s / 2, 10),
+                    '--phone-screen-bg': ColorUtils.hslToString(h, s / 3, 5),
+                    '--player-bg': ColorUtils.hslToString(h, s / 2, l / 3)
+                };
+            }
+        };
+
+        const CookieUtils = {
+            set: (name, value, days = 30) => {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            },
+            get: (name) => {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            },
+            remove: (name) => {
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/";
+            }
+        };
 
         const songs = [
             {
@@ -490,78 +510,192 @@
             }
         ];
 
-        worker.postMessage({ type: 'INIT', payload: { songs: songs } });
-
+        let currentSongIndex = 0;
+        const audio = document.getElementById('audio');
         const app = document.getElementById('app');
         const island = document.getElementById('island');
-        const audio = document.getElementById('audio');
-        let currentSongData = null;
-        let isDragging = false;
-        
-        const els = {
-            mainTitle: document.getElementById('mainTitle'),
-            mainArtist: document.getElementById('mainArtist'),
-            mainCover: document.getElementById('mainCover'),
-            islandTitle: document.getElementById('islandTitle'),
-            islandArtist: document.getElementById('islandArtist'),
-            islandCover: document.getElementById('islandCover'),
-            playIcon: document.getElementById('playIcon'),
-            slider: document.getElementById('audioSlider'),
-            activeTrack: document.getElementById('activeTrack'),
-            inactiveTrack: document.getElementById('inactiveTrack'),
-            sliderThumb: document.getElementById('sliderThumb'),
-            currTime: document.getElementById('currTime'),
-            durTime: document.getElementById('durTime'),
-            weather: {
-                icon: document.getElementById('islandWeatherIcon'),
-                temp: document.getElementById('islandWeatherTemp'),
-                detailIcon: document.getElementById('detailIcon'),
-                detailTemp: document.getElementById('detailTemp'),
-                detailDesc: document.getElementById('detailDesc'),
-                detailRange: document.getElementById('detailRange'),
-                detailWind: document.getElementById('detailWind'),
-                detailHumidity: document.getElementById('detailHumidity'),
-                location: document.getElementById('locationDisplay')
-            }
+
+        const weatherCodeMap = {
+            0: { desc: "晴朗", icon: "☀️" }, 1: { desc: "多云", icon: "🌤️" }, 2: { desc: "少云", icon: "⛅" }, 3: { desc: "阴天", icon: "☁️" },
+            45: { desc: "雾", icon: "🌫️" }, 48: { desc: "冻雾", icon: "🌫️" }, 51: { desc: "毛毛雨", icon: "🌦️" }, 53: { desc: "中毛毛雨", icon: "🌦️" },
+            55: { desc: "大毛毛雨", icon: "🌧️" }, 61: { desc: "小雨", icon: "🌧️" }, 63: { desc: "中雨", icon: "🌧️" }, 65: { desc: "大雨", icon: "🌧️" },
+            66: { desc: "冻雨", icon: "🌨️" }, 67: { desc: "冻雨", icon: "🌨️" }, 71: { desc: "小雪", icon: "🌨️" }, 73: { desc: "中雪", icon: "🌨️" },
+            75: { desc: "大雪", icon: "❄️" }, 77: { desc: "雪粒", icon: "❄️" }, 80: { desc: "阵雨", icon: "🌧️" }, 81: { desc: "阵雨", icon: "🌧️" },
+            82: { desc: "暴雨", icon: "⛈️" }, 85: { desc: "阵雪", icon: "🌨️" }, 86: { desc: "阵雪", icon: "🌨️" },
+            95: { desc: "雷暴", icon: "⛈️" }, 96: { desc: "雷暴", icon: "⛈️" }, 99: { desc: "强雷暴", icon: "⛈️" }
         };
 
-        const ORIGINAL_WIDTH = 375;
-        const ORIGINAL_HEIGHT = 900; // 增加高度
-        
-        function applyScale() {
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            const availableWidth = screenWidth * 0.95;
-            const availableHeight = screenHeight * 0.95;
-            const scaleX = availableWidth / ORIGINAL_WIDTH;
-            const scaleY = availableHeight / ORIGINAL_HEIGHT;
-            const scale = Math.min(scaleX, scaleY);
-            app.style.transform = `scale(${Math.min(scale, 1.15)})`;
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            fetchWeather();
+            setInterval(fetchWeather, 10 * 60 * 1000);
+            island.addEventListener('click', toggleIsland);
         }
-        applyScale();
-        let resizeTimeout;
-        window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(applyScale, 100); });
-        window.addEventListener('orientationchange', () => { setTimeout(applyScale, 200); });
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('islandTime').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        }
+
+        async function fetchWeather() {
+            let lat = parseFloat(CookieUtils.get('weather_lat')) || null;
+            let lon = parseFloat(CookieUtils.get('weather_lon')) || null;
+            
+            if (!lat || !lon) {
+                if ('geolocation' in navigator) {
+                    try {
+                        document.getElementById('locationDisplay').textContent = "定位中...";
+                        
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, { 
+                                timeout: 10000,
+                                enableHighAccuracy: true,
+                                maximumAge: 5 * 60 * 1000
+                            });
+                        });
+                        
+                        lat = position.coords.latitude; 
+                        lon = position.coords.longitude;
+                        
+                        CookieUtils.set('weather_lat', lat, 30);
+                        CookieUtils.set('weather_lon', lon, 30);
+                        
+                        document.getElementById('locationDisplay').textContent = "获取位置成功...";
+                    } catch (e) {
+                        console.log("无法获取地理位置: ", e.message);
+                        lat = 39.9042;
+                        lon = 116.4074;
+                        document.getElementById('locationDisplay').textContent = "定位失败，使用默认位置";
+                    }
+                } else {
+                    console.log("浏览器不支持地理定位");
+                    lat = 39.9042;
+                    lon = 116.4074;
+                    document.getElementById('locationDisplay').textContent = "不支持定位，使用默认位置";
+                }
+            }
+            
+            try {
+                const locationResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`);
+                const locationData = await locationResponse.json();
+                
+                let locationName = "未知位置";
+                if (locationData && locationData.city) {
+                    locationName = locationData.city;
+                } else if (locationData && locationData.locality) {
+                    locationName = locationData.locality;
+                } else if (locationData && locationData.principalSubdivision) {
+                    locationName = locationData.principalSubdivision;
+                } else if (locationData && locationData.countryName) {
+                    locationName = locationData.countryName;
+                } else {
+                    locationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                }
+                
+                document.getElementById('locationDisplay').textContent = locationName;
+                
+                const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
+                const data = await response.json();
+                const current = data.current_weather || data.current;
+                const daily = data.daily;
+                const temp = Math.round(current.temperature_2m);
+                const code = current.weather_code;
+                const weather = weatherCodeMap[code] || { desc: "未知", icon: "🌡️" };
+                
+                document.getElementById('islandWeatherTemp').textContent = `${temp}°`;
+                document.getElementById('islandWeatherIcon').textContent = weather.icon;
+                document.getElementById('detailIcon').textContent = weather.icon;
+                document.getElementById('detailTemp').textContent = `${temp}°`;
+                document.getElementById('detailDesc').textContent = weather.desc;
+                document.getElementById('detailRange').textContent = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
+                document.getElementById('detailWind').textContent = `💨 ${Math.round(current.wind_speed_10m)}km/h`;
+                document.getElementById('detailHumidity').textContent = `💧 ${current.relative_humidity_2m}%`;
+            } catch (e) {
+                console.error("获取天气数据失败:", e);
+                document.getElementById('locationDisplay').textContent = "获取天气失败";
+            }
+        }
+
+        function toggleIsland() {
+            island.classList.toggle('active');
+        }
+
+        function playSong() {
+            audio.play();
+            app.classList.add('playing');
+            island.classList.remove('active'); 
+            document.getElementById('playIcon').innerText = 'pause';
+        }
+
+        function pauseSong() {
+            audio.pause();
+            app.classList.remove('playing');
+            island.classList.remove('active');
+            document.getElementById('playIcon').innerText = 'play_arrow';
+        }
+
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (audio.paused) playSong(); else pauseSong();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+            loadSong(songs[currentSongIndex]);
+            playSong();
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+            loadSong(songs[currentSongIndex]);
+            playSong();
+        });
 
         function loadSong(song) {
-            currentSongData = song;
-            els.mainTitle.innerText = song.title;
-            els.mainArtist.innerText = song.artist;
-            els.islandTitle.innerText = song.title;
-            els.islandArtist.innerText = song.artist.split('•')[0].trim();
+            document.getElementById('mainTitle').innerText = song.title;
+            document.getElementById('mainArtist').innerText = song.artist;
+            document.getElementById('islandTitle').innerText = song.title;
+            document.getElementById('islandArtist').innerText = song.artist.split('•')[0].trim();
+            const coverUrl = song.cover;
 
-            fetch(song.cover)
-                .then(res => res.blob())
-                .then(blob => {
-                    const url = URL.createObjectURL(blob);
-                    els.mainCover.src = url;
-                    els.islandCover.src = url;
-                    worker.postMessage({ type: 'EXTRACT_COLOR', payload: { imageBlob: blob } });
-                })
-                .catch(() => console.error("Image Load Error"));
+            // 修复：先绑定事件，再设置 src，确保缓存图片也能触发 onload
+            const iCover = document.getElementById('islandCover');
+            iCover.classList.add('updating'); 
+            
+            iCover.onload = () => {
+                iCover.classList.remove('updating');
+                // 移除 setTimeout，直接应用颜色，确保即时生效
+                ColorUtils.extractColorFromUrl(coverUrl, (rgb) => {
+                    const theme = ColorUtils.generateTheme(rgb);
+                    for (const [k, v] of Object.entries(theme)) {
+                        document.documentElement.style.setProperty(k, v);
+                    }
+                });
+            };
+            iCover.src = coverUrl;
 
+            const mainCover = document.getElementById('mainCover');
+            mainCover.onload = () => {
+                if ('mediaSession' in navigator) {
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: song.title,
+                        artist: song.artist,
+                        album: song.artist.split('•')[1]?.trim() || 'Unknown Album',
+                        artwork: [
+                            { src: song.cover, sizes: '96x96', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '128x128', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '192x192', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '384x384', type: 'image/jpeg' },
+                            { src: song.cover, sizes: '512x512', type: 'image/jpeg' }
+                        ]
+                    });
+                }
+            };
+            mainCover.src = coverUrl;
+            
             audio.src = song.src;
-
+            
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
@@ -571,164 +705,45 @@
             }
         }
 
-        function playSong() {
-            audio.play();
-            app.classList.add('playing');
-            island.classList.remove('active');
-            els.playIcon.innerText = 'pause';
-        }
+        let isDragging = false;
+        const audioSlider = document.getElementById('audioSlider');
+        const activeTrack = document.getElementById('activeTrack');
+        const inactiveTrack = document.getElementById('inactiveTrack');
+        const sliderThumb = document.getElementById('sliderThumb');
 
-        function pauseSong() {
-            audio.pause();
-            app.classList.remove('playing');
-            island.classList.remove('active');
-            els.playIcon.innerText = 'play_arrow';
-        }
-
-        document.getElementById('playBtn').addEventListener('click', () => {
-            if (audio.paused) playSong(); else pauseSong();
+        audio.addEventListener('timeupdate', () => {
+            const { duration, currentTime } = audio;
+            if (isNaN(duration)) return;
+            const percent = (currentTime / duration) * 100;
+            if (!isDragging) updateUI(percent);
+            if (currentTime >= duration) document.getElementById('nextBtn').click();
         });
 
-        document.getElementById('nextBtn').addEventListener('click', () => {
-            worker.postMessage({ type: 'GET_SONG', payload: { action: 'next' } });
-        });
+        audioSlider.addEventListener('input', () => { isDragging = true; updateUI(audioSlider.value); });
+        audioSlider.addEventListener('change', () => { isDragging = false; audio.currentTime = (audioSlider.value / 100) * audio.duration; });
 
-        document.getElementById('prevBtn').addEventListener('click', () => {
-            worker.postMessage({ type: 'GET_SONG', payload: { action: 'prev' } });
-        });
-
-        audio.addEventListener('ended', () => {
-            worker.postMessage({ type: 'GET_SONG', payload: { action: 'next' } });
-        });
-
-        worker.onmessage = (e) => {
-            const { type, payload } = e.data;
-            if (type === 'SONG_READY') {
-                loadSong(payload.song);
-                playSong();
-            } else if (type === 'THEME_READY') {
-                if (payload) {
-                    for (const [k, v] of Object.entries(payload)) {
-                        document.documentElement.style.setProperty(k, v);
-                    }
-                }
-            } else if (type === 'WEATHER_READY') {
-                updateWeatherUI(payload);
-            } else if (type === 'WEATHER_ERROR') {
-                els.weather.location.innerText = "获取天气失败";
-            }
-        };
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const m = Math.floor(seconds / 60);
-            const s = Math.floor(seconds % 60);
-            return `${m}:${String(s).padStart(2, '0')}`;
+        function updateUI(percent) {
+            percent = isNaN(percent) ? 0 : percent;
+            audioSlider.value = percent;
+            activeTrack.style.width = percent + "%";
+            inactiveTrack.style.left = percent + "%";
+            inactiveTrack.style.width = (100 - percent) + "%";
+            sliderThumb.style.left = percent + "%";
+            const cur = isDragging ? (percent/100)*audio.duration : audio.currentTime;
+            document.getElementById('currTime').innerText = isNaN(cur)?"0:00":`${Math.floor(cur/60)}:${String(Math.floor(cur%60)).padStart(2,'0')}`;
+            document.getElementById('durTime').innerText = isNaN(audio.duration)?"0:00":`${Math.floor(audio.duration/60)}:${String(Math.floor(audio.duration%60)).padStart(2,'0')}`;
         }
-
-        function updateSliderUI(percent) {
-            els.slider.value = percent;
-            els.activeTrack.style.width = percent + "%";
-            els.inactiveTrack.style.left = percent + "%";
-            els.inactiveTrack.style.width = (100 - percent) + "%";
-            els.sliderThumb.style.left = percent + "%";
-            const currentTime = isDragging ? (percent / 100) * audio.duration : audio.currentTime;
-            els.currTime.innerText = formatTime(currentTime);
-            els.durTime.innerText = formatTime(audio.duration);
-        }
-
-        function renderLoop() {
-            if (!isDragging && !audio.paused) {
-                const percent = (audio.currentTime / audio.duration) * 100;
-                updateSliderUI(percent);
-            } else if (!isNaN(audio.duration)) {
-                updateSliderUI((audio.currentTime / audio.duration) * 100);
-            }
-            requestAnimationFrame(renderLoop);
-        }
-        requestAnimationFrame(renderLoop);
-
-        els.slider.addEventListener('input', () => { isDragging = true; updateSliderUI(els.slider.value); });
-        els.slider.addEventListener('change', () => { isDragging = false; audio.currentTime = (els.slider.value / 100) * audio.duration; });
-
-        const CookieUtils = {
-            set: (name, value, days = 30) => {
-                const date = new Date(); date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                document.cookie = name + "=" + value + ";expires=" + date.toUTCString() + ";path=/";
-            },
-            get: (name) => {
-                const nameEQ = name + "=";
-                const ca = document.cookie.split(';');
-                for(let i = 0; i < ca.length; i++) {
-                    let c = ca[i];
-                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-                }
-                return null;
-            }
-        };
-
-        function updateWeatherUI(data) {
-            els.weather.temp.innerText = `${data.temp}°`;
-            els.weather.icon.innerText = data.icon;
-            els.weather.detailIcon.innerText = data.icon;
-            els.weather.detailTemp.innerText = `${data.temp}°`;
-            els.weather.detailDesc.innerText = data.desc;
-            els.weather.detailRange.innerText = data.range;
-            els.weather.detailWind.innerText = data.wind;
-            els.weather.detailHumidity.innerText = data.humidity;
-            els.weather.location.innerText = data.location;
-        }
-
-        async function initWeather() {
-            let lat = parseFloat(CookieUtils.get('weather_lat')) || null;
-            let lon = parseFloat(CookieUtils.get('weather_lon')) || null;
-            if (!lat || !lon) {
-                if ('geolocation' in navigator) {
-                    try {
-                        els.weather.location.innerText = "定位中...";
-                        const position = await new Promise((resolve, reject) => {
-                            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
-                        });
-                        lat = position.coords.latitude; 
-                        lon = position.coords.longitude;
-                        CookieUtils.set('weather_lat', lat, 30);
-                        CookieUtils.set('weather_lon', lon, 30);
-                    } catch (e) {
-                        lat = 39.9042; lon = 116.4074;
-                        els.weather.location.innerText = "定位失败，使用默认位置";
-                    }
-                }
-            }
-            if (lat && lon) worker.postMessage({ type: 'FETCH_WEATHER', payload: { lat, lon } });
-        }
-
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('islandTime').textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        }
-
-        function init() {
-            updateTime();
-            setInterval(updateTime, 1000);
-            initWeather();
-            setInterval(initWeather, 10 * 60 * 1000);
-            island.addEventListener('click', toggleIsland);
-            loadSong(songs[0]);
-        }
-
-        function toggleIsland() { island.classList.toggle('active'); }
-
-        window.toggleDrawer = function() { document.getElementById('drawer').classList.toggle('open'); };
 
         if ('mediaSession' in navigator) {
-            navigator.mediaSession.setActionHandler('play', playSong);
-            navigator.mediaSession.setActionHandler('pause', pauseSong);
+            navigator.mediaSession.setActionHandler('play', () => playSong());
+            navigator.mediaSession.setActionHandler('pause', () => pauseSong());
             navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prevBtn').click());
             navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('nextBtn').click());
         }
-
+        
+        loadSong(songs[currentSongIndex]);
         init();
+        function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
     </script>
 </body>
 </html>
