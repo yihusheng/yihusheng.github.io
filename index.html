@@ -5,36 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#e8ebe6">
     <title>Tools Music</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --md-sys-color-surface: #141218;
-            --md-sys-color-surface-container: #211f26;
-            --md-sys-color-surface-container-high: #2b2930;
-            --md-sys-color-primary: #d0bcff;
-            --md-sys-color-on-primary: #381e72;
-            --md-sys-color-primary-container: #4f378b;
-            --md-sys-color-on-primary-container: #eaddff;
-            --md-sys-color-secondary-container: #4a4458;
-            --md-sys-color-on-secondary-container: #e8def8;
-            --md-sys-color-on-surface: #e6e1e5;
-            --md-sys-color-on-surface-variant: #cac4d0;
-            --md-sys-color-outline: #938f99;
-            --island-bg: #000000;
-            --island-expand-bg: #211f26;
-            --phone-screen-bg: #000000;
-            --player-bg: #000000;
+            --wise-primary: #9fe870;
+            --wise-on-primary: #0e0f0c;
+            --wise-primary-active: #cdffad;
+            --wise-primary-pale: #e2f6d5;
+            --wise-ink: #0e0f0c;
+            --wise-ink-deep: #163300;
+            --wise-body: #454745;
+            --wise-mute: #868685;
+            --wise-canvas: #ffffff;
+            --wise-canvas-soft: #e8ebe6;
+            --wise-canvas-soft-darker: #d8dbd6;
+            --wise-positive: #2ead4b;
+            --wise-negative: #d03238;
+            --wise-negative-bg: #320707;
+
+            --md-sys-color-primary: #9fe870;
+            --md-sys-color-on-primary: #0e0f0c;
+            --md-sys-color-primary-container: #0e0f0c;
+            --md-sys-color-on-primary-container: #9fe870;
+            --md-sys-color-secondary-container: #e8ebe6;
+            --md-sys-color-on-secondary-container: #0e0f0c;
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-surface-container: #e8ebe6;
+            --md-sys-color-on-surface: #0e0f0c;
+            --md-sys-color-on-surface-variant: #868685;
+            --md-sys-color-outline: #868685;
+            --island-bg: #0e0f0c;
+            --island-expand-bg: #1a1c18;
+            --phone-screen-bg: #e8ebe6;
+            --player-bg: #e8ebe6;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #000;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-feature-settings: "calt";
+            background-color: #e8ebe6;
             overflow: hidden;
             touch-action: manipulation;
             -webkit-user-select: none;
@@ -61,18 +76,19 @@
             flex-direction: column;
             padding-top: env(safe-area-inset-top);
         }
-
         @supports (height: 100dvh) {
             .phone-screen { height: 100dvh; }
         }
 
-        /* 灵动岛 */
+        /* ══════════════════════════════════════
+           Dynamic Island — Wise hero-band-dark
+           ══════════════════════════════════════ */
         .dynamic-island {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 36px;
+            width: 126px;
+            height: 38px;
             background-color: var(--island-bg);
             border-radius: 20px;
             z-index: 500;
@@ -81,50 +97,142 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 16px rgba(14,15,12,0.3);
             cursor: pointer;
-            top: calc(env(safe-area-inset-top, 12px) + 8px);
+            top: calc(env(safe-area-inset-top, 12px) + 10px);
         }
-
         .dynamic-island.active {
-            width: 300px;
-            height: 140px;
-            border-radius: 35px;
+            width: 320px;
+            height: 150px;
+            border-radius: 36px;
             background-color: var(--island-expand-bg);
         }
 
         .island-default {
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%; padding: 0 12px; gap: 8px;
-            opacity: 1; pointer-events: auto; transition: opacity 0.2s ease;
-            position: absolute; height: 100%; z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 14px;
+            gap: 8px;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.2s ease;
+            position: absolute;
+            height: 100%;
+            z-index: 10;
         }
-        .dynamic-island.active .island-default { opacity: 0; pointer-events: none; }
-        .island-time { font-size: 0.85rem; font-weight: 600; color: #fff; }
-        .island-weather { display: flex; align-items: center; gap: 4px; }
-        .island-weather-icon { font-size: 1rem; }
-        .island-weather-temp { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.9); }
+        .dynamic-island.active .island-default {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .island-time {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            font-variant-numeric: tabular-nums;
+        }
+        .island-weather {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .island-weather-icon {
+            font-size: 1.15rem;
+            color: var(--md-sys-color-primary);
+            line-height: 1;
+        }
+        .island-weather-temp {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--md-sys-color-primary);
+            font-variant-numeric: tabular-nums;
+        }
 
         .island-weather-detail {
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%; padding: 16px 20px;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-            position: absolute; top: 0; height: 100%; z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 20px 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease 0.1s;
+            position: absolute;
+            top: 0;
+            height: 100%;
+            z-index: 20;
         }
-        .dynamic-island.active .island-weather-detail { opacity: 1; pointer-events: auto; }
-        .detail-left { display: flex; flex-direction: column; align-items: flex-start; }
-        .detail-icon-lg { font-size: 2.5rem; line-height: 1; margin-bottom: 8px; }
-        .detail-temp-wrap { display: flex; flex-direction: column; }
-        .detail-temp-now { font-size: 1.8rem; font-weight: 700; color: #fff; line-height: 1; }
-        .detail-temp-range { font-size: 0.75rem; color: #ccc; margin-top: 4px; }
-        .detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
-        .detail-desc { font-size: 1rem; font-weight: 500; color: #fff; }
-        .detail-meta { font-size: 0.75rem; color: #ccc; display: flex; flex-direction: column; gap: 2px; }
-        .location-display { font-size: 0.85rem; color: #aaa; margin-bottom: 4px; }
+        .dynamic-island.active .island-weather-detail {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-        /* 播放器主体 */
+        .detail-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .detail-icon-lg {
+            font-size: 2.8rem;
+            line-height: 1;
+            margin-bottom: 10px;
+            color: var(--md-sys-color-primary);
+        }
+        .detail-temp-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-temp-now {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--md-sys-color-primary);
+            line-height: 1;
+        }
+        .detail-temp-range {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+        .detail-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .detail-desc {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .location-display {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+        .detail-meta {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.38);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-weight: 400;
+        }
+        .detail-meta .material-symbols-rounded {
+            font-size: 0.85rem;
+            vertical-align: middle;
+            color: rgba(255,255,255,0.45);
+            margin-right: 2px;
+        }
+
+        /* ══════════════════════════════════════
+           Player — Wise canvas-soft surface
+           ══════════════════════════════════════ */
         .player-content {
-            padding: calc(env(safe-area-inset-top, 20px) + 90px) 24px 70px;
+            padding: calc(env(safe-area-inset-top, 20px) + 100px) 24px 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,47 +240,75 @@
             position: relative;
             z-index: 1;
         }
+
         .player-background {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background-color: var(--player-bg);
-            filter: blur(50px); transform: scale(1.2); opacity: 0.6;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background-color: var(--player-bg);
+            filter: blur(60px) saturate(1.2);
+            transform: scale(1.3);
+            opacity: 0.3;
+            transition: background-color 0.6s ease;
         }
+
         .album-art {
-            width: 300px; height: 300px; object-fit: cover; border-radius: 28px;
-            margin-bottom: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,12,0.05);
             transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
-            max-width: 80vw;
+            max-width: 75vw;
+            background: var(--wise-canvas);
         }
-        .album-art.change { transform: scale(0.9); opacity: 0.8; }
-        .song-info { text-align: center; margin-bottom: 10px; width: 100%; padding: 0 8px; }
-        .song-title-main { font-weight: 700; font-size: 1.8rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .artist-name { font-size: 1.1rem; color: var(--md-sys-color-primary); font-weight: 500; }
+        .album-art.change {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
 
-        .time-labels {
+        .song-info {
+            text-align: center;
+            margin-bottom: 12px;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2px;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 0.8rem;
-            font-weight: 500;
-            flex-shrink: 0;
+            padding: 0 8px;
+        }
+        .song-title-main {
+            font-weight: 900;
+            font-size: 1.75rem;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.5px;
+            line-height: 1.15;
+        }
+        .artist-name {
+            font-size: 1.05rem;
+            color: var(--wise-ink-deep);
+            font-weight: 600;
+            letter-spacing: -0.2px;
         }
 
+        /* ══════════════════════════════════════
+           Wavy Slider — 原有风格保留
+           ══════════════════════════════════════ */
         .m3-slider-root {
             width: 100%;
             height: 60px;
             position: relative;
             display: flex;
             align-items: center;
-            margin-bottom: 6px;
+            margin-bottom: 0;
             flex-shrink: 0;
         }
         .m3-slider-track-inactive {
             position: absolute;
             height: 4px;
-            background-color: rgba(255,255,255,0.2);
+            background-color: rgba(14,15,12,0.1);
             border-radius: 2px;
             z-index: 1;
             top: 28px;
@@ -188,21 +324,31 @@
             width: 0%;
             top: 20px;
         }
-        .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
-        @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
-        .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
+        .m3-slider-wavy-path {
+            fill: none;
+            stroke: var(--md-sys-color-primary);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+        @keyframes wavy-move {
+            from { transform: translateX(0); }
+            to { transform: translateX(-40px); }
+        }
+        .playing .m3-slider-wavy-path {
+            animation: wavy-move 1.5s linear infinite;
+        }
         .m3-slider-thumb-vertical {
             position: absolute;
             top: 30px;
             left: 0%;
             width: 4px;
             height: 20px;
-            background-color: #fff;
+            background-color: var(--md-sys-color-primary);
             border-radius: 2px;
             transform: translate(-50%, -50%);
             z-index: 3;
             pointer-events: none;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            box-shadow: 0 2px 8px rgba(14,15,12,0.15);
         }
         .m3-slider-input {
             position: absolute;
@@ -216,32 +362,109 @@
             outline: none;
             margin: 0;
         }
-        .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
-        .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
+        .m3-slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 0; width: 0;
+            border: none; background: transparent;
+            cursor: pointer; box-shadow: none;
+        }
+        .m3-slider-input::-moz-range-thumb {
+            width: 0; height: 0;
+            border: none; background: transparent;
+            cursor: pointer; box-shadow: none;
+        }
 
-        .controls {
-            display: flex; gap: 24px; align-items: center;
+        /* ── 进度时间：放在进度条下方，距离近 ── */
+        .time-labels {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.75rem;
+            font-weight: 600;
             flex-shrink: 0;
-            margin-top: 2px;
+            font-variant-numeric: tabular-nums;
         }
-        .btn { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .btn:active { transform: scale(0.9); filter: brightness(1.1); }
-        .btn-play { width: 80px; height: 80px; border-radius: 32px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
 
-        /* 底部抽屉 */
-        .bottom-drawer {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 92%;
-            background: var(--md-sys-color-surface); border-radius: 28px 28px 0 0;
-            transform: translateY(calc(100% - 14px));
-            transition: transform 0.5s cubic-bezier(0.2,0,0,1);
-            z-index: 1000; display: flex; flex-direction: column;
-            box-shadow: 0 -10px 50px rgba(0,0,0,0.5);
+        /* ══════════════════════════════════════
+           Controls — Wise Button System
+           ══════════════════════════════════════ */
+        .controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-shrink: 0;
+            margin-top: 8px;
         }
-        .bottom-drawer.open { transform: translateY(0); }
+        .btn {
+            background: var(--wise-canvas-soft-darker);
+            color: var(--md-sys-color-on-secondary-container);
+            border: none;
+            cursor: pointer;
+            border-radius: 24px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(14,15,12,0.06);
+        }
+        .btn:active {
+            transform: scale(0.92);
+            background: var(--wise-canvas-soft);
+        }
+        .btn .material-symbols-rounded {
+            font-size: 1.5rem;
+        }
+        .btn-play {
+            width: 72px;
+            height: 72px;
+            border-radius: 36px;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            box-shadow: 0 4px 16px rgba(159,232,112,0.35);
+        }
+        .btn-play:active {
+            background: var(--wise-primary-active);
+        }
+        .btn-play .material-symbols-rounded {
+            font-size: 2rem;
+        }
+        @keyframes pulse-play {
+            0%, 100% { box-shadow: 0 4px 16px rgba(159,232,112,0.35); transform: scale(1); }
+            50% { box-shadow: 0 6px 24px rgba(159,232,112,0.5); transform: scale(1.03); }
+        }
+        .playing .btn-play {
+            animation: pulse-play 2s ease-in-out infinite;
+        }
+
+        /* ══════════════════════════════════════
+           Bottom Drawer — Wise canvas + cards
+           ══════════════════════════════════════ */
+        .bottom-drawer {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 92%;
+            background: var(--md-sys-color-surface);
+            border-radius: 24px 24px 0 0;
+            transform: translateY(calc(100% - 16px));
+            transition: transform 0.5s cubic-bezier(0.2,0,0,1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -8px 40px rgba(14,15,12,0.08);
+        }
+        .bottom-drawer.open {
+            transform: translateY(0);
+        }
+
         .nav-handle-area {
             width: 100%;
-            height: 14px;
-            padding-top: 4px;
+            height: 16px;
+            padding-top: 6px;
             display: flex;
             justify-content: center;
             flex-shrink: 0;
@@ -249,25 +472,31 @@
             background: transparent;
         }
         .md3-nav-bar {
-            width: 20px;
-            height: 2px;
+            width: 32px;
+            height: 4px;
             background: var(--md-sys-color-outline);
-            border-radius: 1px;
-            opacity: 0.6;
+            border-radius: 2px;
+            opacity: 0.3;
         }
+
         .drawer-scroll-view {
-            flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             padding: 4px 24px 0;
         }
         .drawer-scroll-view::-webkit-scrollbar { display: none; }
+
         .drawer-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: var(--md-sys-color-on-surface);
             margin: 4px 0 16px;
-            font-weight: 500;
+            font-weight: 900;
             flex-shrink: 0;
-            letter-spacing: 0.2px;
+            letter-spacing: -0.5px;
         }
+
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -275,99 +504,82 @@
             padding-bottom: 16px;
         }
 
-        /* ----- MD3 细腻平面阴影卡片 (无凹凸感) ----- */
+        /* ── Wise Cards: surface contrast = elevation ── */
         .card {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: var(--md-sys-color-surface-container);
+            border-radius: 24px;
             padding: 18px 16px;
             text-decoration: none;
             color: var(--md-sys-color-on-surface);
             display: flex;
             flex-direction: column;
             gap: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: 
-                0 1px 2px rgba(0,0,0,0.2),
-                0 4px 8px rgba(0,0,0,0.1);
+            border: none;
+            box-shadow: none;
             transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
             position: relative;
             overflow: hidden;
         }
-
-        /* 柔和光晕叠加 (不影响阴影) */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 60%);
-            pointer-events: none;
-            transition: opacity 0.3s;
-            opacity: 0;
-        }
-
         .card:active {
             transform: scale(0.97);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--wise-primary-pale);
         }
-
-        .card:hover .card::before,
-        .card:active .card::before {
-            opacity: 1;
-        }
-
         .card .material-symbols-rounded {
-            font-size: 1.8rem;
-            color: var(--md-sys-color-primary);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            font-size: 1.7rem;
+            color: var(--wise-ink-deep);
         }
-
         .card a {
             text-decoration: none;
-            color: var(--md-sys-color-primary);
-            font-weight: 500;
-            font-size: 0.95rem;
+            color: var(--md-sys-color-on-surface);
+            font-weight: 600;
+            font-size: 0.9rem;
             display: block;
             padding: 2px 0;
             transition: color 0.2s;
             position: relative;
             z-index: 1;
         }
-
         .card a:hover {
-            color: #e9ddff;
+            color: var(--wise-ink-deep);
             text-decoration: none;
         }
 
-        /* 版权区域 */
+        /* ── Footer — Wise dark footer ── */
         .drawer-footer-copyright {
             flex-shrink: 0;
             padding: 12px 24px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
             text-align: center;
             width: 100%;
-            background: var(--md-sys-color-surface);
+            background: var(--wise-ink);
             z-index: 1;
-            backdrop-filter: blur(10px);
         }
         .copyright-text {
             font-size: 0.7rem;
-            color: var(--md-sys-color-on-surface-variant);
+            color: var(--wise-canvas-soft);
             margin-bottom: 4px;
-            opacity: 0.8;
+            opacity: 0.65;
+            font-weight: 400;
         }
-        .secret-x { text-decoration: none; color: inherit; opacity: 0.1; transition: opacity 0.3s; padding: 5px; font-weight: bold; }
-        .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
+        .secret-x {
+            text-decoration: none;
+            color: inherit;
+            opacity: 0.15;
+            transition: opacity 0.3s;
+            padding: 5px;
+            font-weight: 700;
+        }
+        .secret-x:hover {
+            opacity: 1;
+            color: var(--md-sys-color-primary);
+        }
 
-        /* 桌面端 */
+        /* ══════════════════════════════════════
+           Desktop
+           ══════════════════════════════════════ */
         @media screen and (min-width: 768px) {
             body {
-                background-color: #000;
+                background-color: var(--wise-canvas-soft);
                 background-size: cover;
                 background-position: center;
                 background-attachment: fixed;
@@ -377,38 +589,46 @@
                 padding: 20px;
             }
             .phone-screen {
-                width: 375px; height: 812px;
-                border-radius: 24px;
-                box-shadow: 0 0 0 12px #222, 0 30px 60px rgba(0,0,0,0.6);
+                width: 375px;
+                height: 812px;
+                border-radius: 40px;
+                box-shadow:
+                    0 0 0 10px var(--wise-ink),
+                    0 0 0 12px rgba(14,15,12,0.2),
+                    0 30px 60px rgba(14,15,12,0.15);
                 position: relative;
                 margin: 0;
                 padding-top: env(safe-area-inset-top);
                 transform: none;
                 align-self: flex-end;
             }
-            .player-content { padding-top: calc(env(safe-area-inset-top, 20px) + 90px); }
+            .player-content {
+                padding-top: calc(env(safe-area-inset-top, 20px) + 100px);
+            }
         }
-
         @media screen and (min-width: 1024px) {
             body { padding: 30px; }
-            .phone-screen { width: 390px; height: 844px; }
+            .phone-screen {
+                width: 390px;
+                height: 844px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="phone-screen" id="app">
-        <!-- 灵动岛 -->
+        <!-- 灵动岛 (Wise hero-band-dark: 墨底+绿字) -->
         <div class="dynamic-island" id="island">
             <div class="island-default">
                 <span class="island-time" id="islandTime">12:00</span>
                 <div class="island-weather">
-                    <span class="island-weather-icon" id="islandWeatherIcon">☀️</span>
+                    <span class="island-weather-icon material-symbols-rounded" id="islandWeatherIcon">wb_sunny</span>
                     <span class="island-weather-temp" id="islandWeatherTemp">--°</span>
                 </div>
             </div>
             <div class="island-weather-detail">
                 <div class="detail-left">
-                    <span class="detail-icon-lg" id="detailIcon">☀️</span>
+                    <span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
                     <div class="detail-temp-wrap">
                         <span class="detail-temp-now" id="detailTemp">25°</span>
                         <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
@@ -418,8 +638,8 @@
                     <div class="location-display" id="locationDisplay">获取中...</div>
                     <div class="detail-desc" id="detailDesc">晴朗</div>
                     <div class="detail-meta">
-                        <span id="detailWind">💨 12km/h</span>
-                        <span id="detailHumidity">💧 45%</span>
+                        <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
+                        <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
                     </div>
                 </div>
             </div>
@@ -433,10 +653,7 @@
                 <h1 id="mainTitle" class="song-title-main">Title</h1>
                 <p id="mainArtist" class="artist-name">Artist</p>
             </div>
-            <div class="time-labels">
-                <span id="currTime">0:00</span>
-                <span id="durTime">0:00</span>
-            </div>
+            <!-- 进度条（时间标签移到下方） -->
             <div class="m3-slider-root">
                 <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
                 <div class="m3-slider-track-active-container" id="activeTrack">
@@ -446,6 +663,11 @@
                 </div>
                 <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
                 <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="播放进度">
+            </div>
+            <!-- 时间标签：紧贴进度条下方 -->
+            <div class="time-labels">
+                <span id="currTime">0:00</span>
+                <span id="durTime">0:00</span>
             </div>
             <div class="controls">
                 <button class="btn" id="prevBtn" aria-label="上一首"><span class="material-symbols-rounded">skip_previous</span></button>
@@ -498,17 +720,18 @@
     <canvas id="colorCanvas" style="display: none;"></canvas>
 
     <script>
-        // 颜色工具、Cookie、歌曲、天气代码完全一致，未改动
+        /* ── Color Utilities (Wise light theme generation) ── */
         const ColorUtils = {
             hexToRgb: (hex) => {
                 const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
                 return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
             },
             rgbToHsl: (r, g, b) => {
-                r /= 255, g /= 255, b /= 255;
+                r /= 255; g /= 255; b /= 255;
                 const max = Math.max(r, g, b), min = Math.min(r, g, b);
                 let h, s, l = (max + min) / 2;
-                if (max === min) { h = s = 0; } else {
+                if (max === min) { h = s = 0; }
+                else {
                     const d = max - min;
                     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
                     switch (max) {
@@ -537,37 +760,56 @@
                             const pixelR = imageData[i], pixelG = imageData[i+1], pixelB = imageData[i+2];
                             const brightness = (0.299 * pixelR + 0.587 * pixelG + 0.114 * pixelB);
                             let weight = brightness < 50 ? 2 : 1;
-                            r += pixelR * weight; g += pixelG * weight; b += pixelB * weight; totalWeight += weight;
+                            r += pixelR * weight;
+                            g += pixelG * weight;
+                            b += pixelB * weight;
+                            totalWeight += weight;
                         }
-                        if (totalWeight > 0) { r = Math.floor(r / totalWeight); g = Math.floor(g / totalWeight); b = Math.floor(b / totalWeight); }
+                        if (totalWeight > 0) {
+                            r = Math.floor(r / totalWeight);
+                            g = Math.floor(g / totalWeight);
+                            b = Math.floor(b / totalWeight);
+                        }
                         callback({ r, g, b });
-                    } catch (e) { callback({ r: 76, g: 55, b: 139 }); }
+                    } catch (e) {
+                        callback({ r: 100, g: 145, b: 65 });
+                    }
                 };
-                img.onerror = () => callback({ r: 76, g: 55, b: 139 });
+                img.onerror = () => callback({ r: 100, g: 145, b: 65 });
             },
             generateTheme: (sourceRgb) => {
                 const hsl = ColorUtils.rgbToHsl(sourceRgb.r, sourceRgb.g, sourceRgb.b);
-                const h = hsl.h, s = Math.max(20, Math.min(100, hsl.s)), l = hsl.l;
+                const h = hsl.h;
+                const s = Math.max(20, Math.min(100, hsl.s));
+                const l = hsl.l;
+                const accentL = Math.max(55, Math.min(78, l + 20));
+                const accentS = Math.max(50, Math.min(95, s + 10));
                 return {
-                    '--md-sys-color-primary': ColorUtils.hslToString(h, Math.min(100, s+15), Math.max(40, Math.min(60, l+15))),
-                    '--md-sys-color-on-primary': ColorUtils.hslToString(h, Math.min(100, s+20), Math.min(20, l-40)),
-                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(30, s), Math.min(45, l-15)),
-                    '--md-sys-color-on-primary-container': ColorUtils.hslToString(h, Math.min(50, s-20), Math.max(80, l+30)),
-                    '--md-sys-color-secondary-container': ColorUtils.hslToString(h, Math.max(15, s-15), Math.min(30, l-20)),
-                    '--md-sys-color-on-secondary-container': ColorUtils.hslToString(h, Math.min(100, s+30), Math.max(70, l+20)),
-                    '--md-sys-color-surface': ColorUtils.hslToString(h, s/4, 8),
-                    '--md-sys-color-surface-container': ColorUtils.hslToString(h, s/3, 12),
-                    '--md-sys-color-surface-container-high': ColorUtils.hslToString(h, s/2.5, 18),
-                    '--phone-screen-bg': ColorUtils.hslToString(h, s/3, 5),
-                    '--player-bg': ColorUtils.hslToString(h, s/2, l/3)
+                    '--md-sys-color-primary': ColorUtils.hslToString(h, accentS, accentL),
+                    '--md-sys-color-on-primary': '#0e0f0c',
+                    '--md-sys-color-primary-container': ColorUtils.hslToString(h, Math.max(25, s - 5), Math.min(30, l - 15)),
+                    '--md-sys-color-on-primary-container': ColorUtils.hslToString(h, accentS, Math.min(85, accentL + 10)),
+                    '--md-sys-color-secondary-container': ColorUtils.hslToString(h, Math.max(5, s / 6), 91),
+                    '--md-sys-color-on-secondary-container': '#0e0f0c',
+                    '--md-sys-color-surface': '#ffffff',
+                    '--md-sys-color-surface-container': ColorUtils.hslToString(h, Math.max(4, s / 7), 91),
+                    '--md-sys-color-on-surface': '#0e0f0c',
+                    '--md-sys-color-on-surface-variant': '#868685',
+                    '--md-sys-color-outline': '#868685',
+                    '--phone-screen-bg': ColorUtils.hslToString(h, Math.max(3, s / 8), 91),
+                    '--player-bg': ColorUtils.hslToString(h, Math.max(5, s / 6), 88),
+                    '--island-expand-bg': ColorUtils.hslToString(h, Math.max(8, s / 3), 10),
+                    '--wise-primary-pale': ColorUtils.hslToString(h, Math.max(20, accentS - 30), Math.min(92, accentL + 15)),
+                    '--wise-ink-deep': ColorUtils.hslToString(h, Math.max(40, s), Math.max(12, Math.min(22, l - 10))),
+                    '--wise-canvas-soft-darker': ColorUtils.hslToString(h, Math.max(4, s / 5), 85)
                 };
             }
         };
 
         const CookieUtils = {
-            set: (n,v,d=30) => { const dt=new Date(); dt.setTime(dt.getTime()+d*864e5); document.cookie=n+"="+v+";expires="+dt.toUTCString()+";path=/"; },
-            get: (n) => { const v=document.cookie.match('(^|;) ?'+n+'=([^;]*)(;|$)'); return v?v[2]:null; },
-            remove: (n) => { document.cookie=n+"=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/"; }
+            set: (n, v, d = 30) => { const dt = new Date(); dt.setTime(dt.getTime() + d * 864e5); document.cookie = n + "=" + v + ";expires=" + dt.toUTCString() + ";path=/"; },
+            get: (n) => { const v = document.cookie.match('(^|;) ?' + n + '=([^;]*)(;|$)'); return v ? v[2] : null; },
+            remove: (n) => { document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/"; }
         };
 
         const songs = [
@@ -582,33 +824,34 @@
         const island = document.getElementById('island');
         const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
+        /* ── Weather: Material Symbols Rounded icons ── */
         const weatherCodeMap = {
-            0:  { desc: "晴朗", icon: "☀️", bg: "#2d1b00" },
-            1:  { desc: "多云", icon: "🌤️", bg: "#1e2329" },
-            2:  { desc: "少云", icon: "⛅", bg: "#202428" },
-            3:  { desc: "阴天", icon: "☁️", bg: "#1c1f23" },
-            45: { desc: "雾",   icon: "🌫️", bg: "#1a1d21" },
-            48: { desc: "冻雾", icon: "🌫️", bg: "#1b2028" },
-            51: { desc: "毛毛雨", icon: "🌦️", bg: "#1f2833" },
-            53: { desc: "中毛毛雨", icon: "🌦️", bg: "#212a35" },
-            55: { desc: "大毛毛雨", icon: "🌧️", bg: "#232d39" },
-            61: { desc: "小雨", icon: "🌧️", bg: "#1e2d3a" },
-            63: { desc: "中雨", icon: "🌧️", bg: "#1c2a37" },
-            65: { desc: "大雨", icon: "🌧️", bg: "#192632" },
-            66: { desc: "冻雨", icon: "🌨️", bg: "#2a313c" },
-            67: { desc: "冻雨", icon: "🌨️", bg: "#2a313c" },
-            71: { desc: "小雪", icon: "🌨️", bg: "#e0e5eb" },
-            73: { desc: "中雪", icon: "🌨️", bg: "#d4dbe3" },
-            75: { desc: "大雪", icon: "❄️", bg: "#cbd3dc" },
-            77: { desc: "雪粒", icon: "❄️", bg: "#d0d6df" },
-            80: { desc: "阵雨", icon: "🌧️", bg: "#212e3b" },
-            81: { desc: "阵雨", icon: "🌧️", bg: "#23313f" },
-            82: { desc: "暴雨", icon: "⛈️", bg: "#1b2835" },
-            85: { desc: "阵雪", icon: "🌨️", bg: "#cfd6de" },
-            86: { desc: "阵雪", icon: "🌨️", bg: "#cdd4dc" },
-            95: { desc: "雷暴", icon: "⛈️", bg: "#1c1f3a" },
-            96: { desc: "雷暴", icon: "⛈️", bg: "#1f2240" },
-            99: { desc: "强雷暴", icon: "⛈️", bg: "#1a1c35" }
+            0:  { desc: "晴朗",     icon: "wb_sunny",          bg: "#1a1c18" },
+            1:  { desc: "多云",     icon: "partly_cloudy_day", bg: "#1e2020" },
+            2:  { desc: "少云",     icon: "partly_cloudy_day", bg: "#1d1f1e" },
+            3:  { desc: "阴天",     icon: "cloud",             bg: "#1c1d1c" },
+            45: { desc: "雾",       icon: "foggy",             bg: "#1a1b1a" },
+            48: { desc: "冻雾",     icon: "foggy",             bg: "#1b1c1e" },
+            51: { desc: "毛毛雨",   icon: "rainy",             bg: "#1a1e22" },
+            53: { desc: "中毛毛雨", icon: "rainy",             bg: "#1b1f23" },
+            55: { desc: "大毛毛雨", icon: "rainy",             bg: "#1c2024" },
+            61: { desc: "小雨",     icon: "rainy",             bg: "#1a1e24" },
+            63: { desc: "中雨",     icon: "rainy",             bg: "#191d22" },
+            65: { desc: "大雨",     icon: "thunderstorm",      bg: "#171b20" },
+            66: { desc: "冻雨",     icon: "severe_cold",       bg: "#1e2126" },
+            67: { desc: "冻雨",     icon: "severe_cold",       bg: "#1e2126" },
+            71: { desc: "小雪",     icon: "ac_unit",           bg: "#1e2022" },
+            73: { desc: "中雪",     icon: "ac_unit",           bg: "#1d1f21" },
+            75: { desc: "大雪",     icon: "severe_cold",       bg: "#1c1e20" },
+            77: { desc: "雪粒",     icon: "severe_cold",       bg: "#1c1e20" },
+            80: { desc: "阵雨",     icon: "rainy",             bg: "#1a1e23" },
+            81: { desc: "阵雨",     icon: "rainy",             bg: "#1b1f24" },
+            82: { desc: "暴雨",     icon: "thunderstorm",      bg: "#181c22" },
+            85: { desc: "阵雪",     icon: "ac_unit",           bg: "#1d1f21" },
+            86: { desc: "阵雪",     icon: "ac_unit",           bg: "#1c1e20" },
+            95: { desc: "雷暴",     icon: "thunderstorm",      bg: "#1a1c22" },
+            96: { desc: "雷暴",     icon: "thunderstorm",      bg: "#1b1d23" },
+            99: { desc: "强雷暴",   icon: "thunderstorm",      bg: "#191b21" }
         };
 
         function updateThemeColor() {
@@ -634,8 +877,14 @@
                         lat = position.coords.latitude; lon = position.coords.longitude;
                         CookieUtils.set('weather_lat', lat, 30); CookieUtils.set('weather_lon', lon, 30);
                         document.getElementById('locationDisplay').textContent = "获取位置成功...";
-                    } catch (e) { lat = 39.9042; lon = 116.4074; document.getElementById('locationDisplay').textContent = "定位失败"; }
-                } else { lat = 39.9042; lon = 116.4074; document.getElementById('locationDisplay').textContent = "不支持定位"; }
+                    } catch (e) {
+                        lat = 39.9042; lon = 116.4074;
+                        document.getElementById('locationDisplay').textContent = "定位失败";
+                    }
+                } else {
+                    lat = 39.9042; lon = 116.4074;
+                    document.getElementById('locationDisplay').textContent = "不支持定位";
+                }
             }
             try {
                 const locRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`);
@@ -654,7 +903,7 @@
                 const daily = data.daily;
                 const temp = Math.round(current.temperature_2m);
                 const code = current.weather_code;
-                const weather = weatherCodeMap[code] || { desc: "未知", icon: "🌡️", bg: "#211f26" };
+                const weather = weatherCodeMap[code] || { desc: "未知", icon: "thermostat", bg: "#1a1c18" };
 
                 document.getElementById('islandWeatherTemp').textContent = `${temp}°`;
                 document.getElementById('islandWeatherIcon').textContent = weather.icon;
@@ -662,27 +911,22 @@
                 document.getElementById('detailTemp').textContent = `${temp}°`;
                 document.getElementById('detailDesc').textContent = weather.desc;
                 document.getElementById('detailRange').textContent = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
-                document.getElementById('detailWind').textContent = `💨 ${Math.round(current.wind_speed_10m)}km/h`;
-                document.getElementById('detailHumidity').textContent = `💧 ${current.relative_humidity_2m}%`;
-
+                document.getElementById('detailWind').innerHTML = `<span class="material-symbols-rounded">air</span> ${Math.round(current.wind_speed_10m)}km/h`;
+                document.getElementById('detailHumidity').innerHTML = `<span class="material-symbols-rounded">water_drop</span> ${current.relative_humidity_2m}%`;
                 document.documentElement.style.setProperty('--island-expand-bg', weather.bg);
-            } catch (e) { document.getElementById('locationDisplay').textContent = "天气获取失败"; }
+            } catch (e) {
+                document.getElementById('locationDisplay').textContent = "天气获取失败";
+            }
         }
 
         function toggleIsland() { island.classList.toggle('active'); }
 
-        function playSong() {
-            audio.play(); app.classList.add('playing');
-            document.getElementById('playIcon').innerText = 'pause';
-        }
-        function pauseSong() {
-            audio.pause(); app.classList.remove('playing');
-            document.getElementById('playIcon').innerText = 'play_arrow';
-        }
+        function playSong() { audio.play(); app.classList.add('playing'); document.getElementById('playIcon').innerText = 'pause'; }
+        function pauseSong() { audio.pause(); app.classList.remove('playing'); document.getElementById('playIcon').innerText = 'play_arrow'; }
 
-        document.getElementById('playBtn').addEventListener('click', ()=> audio.paused ? playSong() : pauseSong());
-        document.getElementById('nextBtn').addEventListener('click', ()=>{ currentSongIndex=(currentSongIndex+1)%songs.length; loadSong(songs[currentSongIndex]); playSong(); });
-        document.getElementById('prevBtn').addEventListener('click', ()=>{ currentSongIndex=(currentSongIndex-1+songs.length)%songs.length; loadSong(songs[currentSongIndex]); playSong(); });
+        document.getElementById('playBtn').addEventListener('click', () => audio.paused ? playSong() : pauseSong());
+        document.getElementById('nextBtn').addEventListener('click', () => { currentSongIndex = (currentSongIndex + 1) % songs.length; loadSong(songs[currentSongIndex]); playSong(); });
+        document.getElementById('prevBtn').addEventListener('click', () => { currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length; loadSong(songs[currentSongIndex]); playSong(); });
 
         function loadSong(song) {
             document.getElementById('mainTitle').innerText = song.title;
@@ -690,60 +934,56 @@
             const coverUrl = song.cover;
             ColorUtils.extractColorFromUrl(coverUrl, rgb => {
                 const theme = ColorUtils.generateTheme(rgb);
-                for (const [k,v] of Object.entries(theme)) document.documentElement.style.setProperty(k,v);
+                for (const [k, v] of Object.entries(theme)) document.documentElement.style.setProperty(k, v);
                 updateThemeColor();
             });
             const mainCover = document.getElementById('mainCover');
             mainCover.onload = () => {
-                if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({
-                    title: song.title, artist: song.artist, album: song.artist.split('•')[1]?.trim()||'Unknown Album',
-                    artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }]
-                });
+                if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, album: song.artist.split('•')[1]?.trim()||'Unknown Album', artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }] });
             };
             mainCover.src = coverUrl;
             audio.src = song.src;
-            if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({
-                title: song.title, artist: song.artist, artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }]
-            });
+            if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, artwork: [{ src: song.cover, sizes: '512x512', type: 'image/jpeg' }] });
         }
 
         let isDragging = false;
-        const audioSlider = document.getElementById('audioSlider'), activeTrack = document.getElementById('activeTrack'),
-              inactiveTrack = document.getElementById('inactiveTrack'), sliderThumb = document.getElementById('sliderThumb');
-        audio.addEventListener('timeupdate', ()=>{
+        const audioSlider = document.getElementById('audioSlider'), activeTrack = document.getElementById('activeTrack'), inactiveTrack = document.getElementById('inactiveTrack'), sliderThumb = document.getElementById('sliderThumb');
+
+        audio.addEventListener('timeupdate', () => {
             const { duration, currentTime } = audio;
             if (isNaN(duration)) return;
-            const percent = (currentTime/duration)*100;
+            const percent = (currentTime / duration) * 100;
             if (!isDragging) updateUI(percent);
-            if (currentTime >= duration && duration>0) document.getElementById('nextBtn').click();
+            if (currentTime >= duration && duration > 0) document.getElementById('nextBtn').click();
         });
-        audioSlider.addEventListener('input', ()=>{ isDragging=true; updateUI(audioSlider.value); });
-        audioSlider.addEventListener('change', ()=>{ isDragging=false; audio.currentTime = (audioSlider.value/100)*audio.duration; });
+        audioSlider.addEventListener('input', () => { isDragging = true; updateUI(audioSlider.value); });
+        audioSlider.addEventListener('change', () => { isDragging = false; audio.currentTime = (audioSlider.value / 100) * audio.duration; });
+
         function updateUI(percent) {
-            percent = isNaN(percent)?0:Math.max(0,Math.min(100,percent));
+            percent = isNaN(percent) ? 0 : Math.max(0, Math.min(100, percent));
             audioSlider.value = percent;
-            activeTrack.style.width = percent+'%';
-            inactiveTrack.style.left = percent+'%';
-            inactiveTrack.style.width = (100-percent)+'%';
-            sliderThumb.style.left = percent+'%';
-            const cur = isDragging ? (percent/100)*audio.duration : audio.currentTime;
-            document.getElementById('currTime').innerText = isNaN(cur)?'0:00':`${Math.floor(cur/60)}:${String(Math.floor(cur%60)).padStart(2,'0')}`;
-            document.getElementById('durTime').innerText = isNaN(audio.duration)?'0:00':`${Math.floor(audio.duration/60)}:${String(Math.floor(audio.duration%60)).padStart(2,'0')}`;
+            activeTrack.style.width = percent + '%';
+            inactiveTrack.style.left = percent + '%';
+            inactiveTrack.style.width = (100 - percent) + '%';
+            sliderThumb.style.left = percent + '%';
+            const cur = isDragging ? (percent / 100) * audio.duration : audio.currentTime;
+            document.getElementById('currTime').innerText = isNaN(cur) ? '0:00' : `${Math.floor(cur/60)}:${String(Math.floor(cur%60)).padStart(2,'0')}`;
+            document.getElementById('durTime').innerText = isNaN(audio.duration) ? '0:00' : `${Math.floor(audio.duration/60)}:${String(Math.floor(audio.duration%60)).padStart(2,'0')}`;
         }
 
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler('play', playSong);
             navigator.mediaSession.setActionHandler('pause', pauseSong);
-            navigator.mediaSession.setActionHandler('previoustrack', ()=>document.getElementById('prevBtn').click());
-            navigator.mediaSession.setActionHandler('nexttrack', ()=>document.getElementById('nextBtn').click());
+            navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prevBtn').click());
+            navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('nextBtn').click());
         }
 
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
 
         document.addEventListener('keydown', e => {
-            if (e.key===' ') { e.preventDefault(); audio.paused?playSong():pauseSong(); }
-            else if (e.key==='ArrowLeft') { e.preventDefault(); document.getElementById('prevBtn').click(); }
-            else if (e.key==='ArrowRight') { e.preventDefault(); document.getElementById('nextBtn').click(); }
+            if (e.key === ' ') { e.preventDefault(); audio.paused ? playSong() : pauseSong(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); document.getElementById('prevBtn').click(); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); document.getElementById('nextBtn').click(); }
         });
 
         async function loadBingWallpaper() {
@@ -753,8 +993,7 @@
                 const data = await response.json();
                 if (data.images && data.images.length > 0) {
                     const imgUrl = 'https://www.bing.com' + data.images[0].url;
-                    const img = new Image();
-                    img.src = imgUrl;
+                    const img = new Image(); img.src = imgUrl;
                     img.onload = () => { document.body.style.backgroundImage = `url(${imgUrl})`; };
                 }
             } catch (e) { console.warn('Bing壁纸加载失败'); }
@@ -762,10 +1001,10 @@
 
         function init() {
             updateTime(); setInterval(updateTime, 1000);
-            fetchWeather(); setInterval(fetchWeather, 10*60*1000);
+            fetchWeather(); setInterval(fetchWeather, 10 * 60 * 1000);
             island.addEventListener('click', toggleIsland);
             loadBingWallpaper();
-            window.addEventListener('resize', ()=>{ if (window.innerWidth>=768) loadBingWallpaper(); });
+            window.addEventListener('resize', () => { if (window.innerWidth >= 768) loadBingWallpaper(); });
             updateThemeColor();
         }
 
