@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盲文双向翻译器 - 增强中文支持</title>
+    <!-- 引入 pinyin-pro 拼音库 (轻量级，纯前端) -->
+    <script src="https://unpkg.com/pinyin-pro@3.19.0/dist/index.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 样式保持不变，与原版完全一致，此处省略完整样式以节省篇幅 */
+        :root {
+            --md-sys-color-primary: #6750A4;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #EADDFF;
+            --md-sys-color-on-primary-container: #21005D;
+            --md-sys-color-primary-fixed: #EADDFF;
+            --md-sys-color-primary-fixed-dim: #D0BCFF;
+            --md-sys-color-on-primary-fixed: #21005D;
+            --md-sys-color-on-primary-fixed-variant: #4F378B;
+            --md-sys-color-secondary: #625B71;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #E8DEF8;
+            --md-sys-color-on-secondary-container: #1D192B;
+            --md-sys-color-tertiary: #7D5260;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #FFD8E4;
+            --md-sys-color-on-tertiary-container: #31111D;
+            --md-sys-color-error: #B3261E;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #F9DEDC;
+            --md-sys-color-on-error-container: #410E0B;
+            --md-sys-color-surface: #FFFBFE;
+            --md-sys-color-on-surface: #1C1B1F;
+            --md-sys-color-surface-variant: #E7E0EC;
+            --md-sys-color-on-surface-variant: #49454F;
+            --md-sys-color-outline: #79747E;
+            --md-sys-color-outline-variant: #CAC4D0;
+            --md-sys-color-surface-dim: #D8D5DB;
+            --md-sys-color-surface-bright: #FFFBFE;
+            --md-sys-color-surface-container-lowest: #FFFFFF;
+            --md-sys-color-surface-container-low: #F7F2FA;
+            --md-sys-color-surface-container: #F3EDF7;
+            --md-sys-color-surface-container-high: #ECE6F0;
+            --md-sys-color-surface-container-highest: #E6E0E9;
+            --md-sys-color-inverse-surface: #313033;
+            --md-sys-color-inverse-on-surface: #F4EFF4;
+            --md-sys-color-scrim: #000000;
+            --md-sys-color-shadow: #000000;
+            --md-elevation-1: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+            --md-elevation-2: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+            --md-elevation-3: 0px 1px 3px rgba(0, 0, 0, 0.3), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
+            --md-elevation-4: 0px 2px 3px rgba(0, 0, 0, 0.3), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
+            --md-elevation-5: 0px 4px 4px rgba(0, 0, 0, 0.3), 0px 8px 12px 6px rgba(0, 0, 0, 0.15);
+            --transition-standard: 200ms cubic-bezier(0.2, 0, 0, 1);
+            --transition-emphasized: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-decelerated: 400ms cubic-bezier(0, 0, 0.2, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #D0BCFF;
+                --md-sys-color-on-primary: #381E72;
+                --md-sys-color-primary-container: #4F378B;
+                --md-sys-color-on-primary-container: #EADDFF;
+                --md-sys-color-primary-fixed: #EADDFF;
+                --md-sys-color-primary-fixed-dim: #D0BCFF;
+                --md-sys-color-on-primary-fixed: #21005D;
+                --md-sys-color-on-primary-fixed-variant: #4F378B;
+                --md-sys-color-secondary: #CCC2DC;
+                --md-sys-color-on-secondary: #332D41;
+                --md-sys-color-secondary-container: #4A4458;
+                --md-sys-color-on-secondary-container: #E8DEF8;
+                --md-sys-color-tertiary: #EFB8C8;
+                --md-sys-color-on-tertiary: #492532;
+                --md-sys-color-tertiary-container: #633B48;
+                --md-sys-color-on-tertiary-container: #FFD8E4;
+                --md-sys-color-error: #F2B8B5;
+                --md-sys-color-on-error: #601410;
+                --md-sys-color-error-container: #8C1D18;
+                --md-sys-color-on-error-container: #F9DEDC;
+                --md-sys-color-surface: #1C1B1F;
+                --md-sys-color-on-surface: #E6E1E5;
+                --md-sys-color-surface-variant: #49454F;
+                --md-sys-color-on-surface-variant: #CAC4D0;
+                --md-sys-color-outline: #938F99;
+                --md-sys-color-outline-variant: #49454F;
+                --md-sys-color-surface-dim: #141316;
+                --md-sys-color-surface-bright: #3A383C;
+                --md-sys-color-surface-container-lowest: #0F0D13;
+                --md-sys-color-surface-container-low: #1C1B1F;
+                --md-sys-color-surface-container: #201F24;
+                --md-sys-color-surface-container-high: #2B292E;
+                --md-sys-color-surface-container-highest: #363439;
+                --md-sys-color-inverse-surface: #E6E1E5;
+                --md-sys-color-inverse-on-surface: #313033;
+                --md-sys-color-scrim: #000000;
+                --md-sys-color-shadow: #000000;
+                --md-elevation-1: 0px 1px 2px rgba(0, 0, 0, 0.6), 0px 1px 3px 1px rgba(0, 0, 0, 0.3);
+                --md-elevation-2: 0px 1px 2px rgba(0, 0, 0, 0.6), 0px 2px 6px 2px rgba(0, 0, 0, 0.3);
+                --md-elevation-3: 0px 1px 3px rgba(0, 0, 0, 0.6), 0px 4px 8px 3px rgba(0, 0, 0, 0.3);
+                --md-elevation-4: 0px 2px 3px rgba(0, 0, 0, 0.6), 0px 6px 10px 4px rgba(0, 0, 0, 0.3);
+                --md-elevation-5: 0px 4px 4px rgba(0, 0, 0, 0.6), 0px 8px 12px 6px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            transition: background-color var(--transition-standard), color var(--transition-standard);
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .top-app-bar {
+            width: 100%;
+            max-width: 840px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 4px;
+            margin-bottom: 8px;
+        }
+        .top-app-bar .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+            transition: all var(--transition-standard);
+        }
+        .top-app-bar .title-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+        .top-app-bar h1 {
+            font-size: 1.35rem;
+            font-weight: 500;
+            line-height: 1.3;
+            color: var(--md-sys-color-on-surface);
+            letter-spacing: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .top-app-bar .subtitle {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--md-sys-color-on-surface-variant);
+            letter-spacing: 0.01em;
+        }
+
+        .chip-row {
+            width: 100%;
+            max-width: 840px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--md-sys-color-outline);
+            background: transparent;
+            color: var(--md-sys-color-on-surface);
+            transition: all var(--transition-standard);
+            white-space: nowrap;
+            letter-spacing: 0.01em;
+            font-family: inherit;
+            outline: none;
+            position: relative;
+        }
+        .chip:hover {
+            background: var(--md-sys-color-surface-container-highest);
+            border-color: var(--md-sys-color-on-surface-variant);
+        }
+        .chip:focus-visible {
+            outline: 3px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+            border-radius: 10px;
+        }
+        .chip.active {
+            background: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary-container);
+            font-weight: 600;
+            box-shadow: var(--md-elevation-1);
+        }
+        .chip .chip-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.6;
+            flex-shrink: 0;
+        }
+        .chip.active .chip-dot {
+            opacity: 1;
+            background: var(--md-sys-color-primary);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 840px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card {
+            background: var(--md-sys-color-surface-container-low);
+            border-radius: 28px;
+            padding: 20px 20px 16px;
+            box-shadow: var(--md-elevation-1);
+            transition: all var(--transition-standard);
+            position: relative;
+            border: 1px solid transparent;
+        }
+        .card:hover {
+            box-shadow: var(--md-elevation-2);
+            border-color: var(--md-sys-color-outline-variant);
+        }
+        .card.input-card {
+            background: var(--md-sys-color-surface-container-lowest);
+            box-shadow: var(--md-elevation-2);
+            border: 2px solid var(--md-sys-color-outline-variant);
+            transition: border-color var(--transition-standard), box-shadow var(--transition-standard);
+        }
+        .card.input-card:focus-within {
+            border-color: var(--md-sys-color-primary);
+            box-shadow: var(--md-elevation-3), 0 0 0 4px rgba(103, 80, 164, 0.12);
+        }
+        .card.output-card {
+            background: linear-gradient(135deg,
+                    var(--md-sys-color-primary-container) 0%,
+                    var(--md-sys-color-surface-container-low) 100%);
+            box-shadow: var(--md-elevation-2);
+            min-height: 80px;
+        }
+        .card-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-label .label-icon {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        .card-textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Roboto', 'Noto Sans SC', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            resize: vertical;
+            min-height: 70px;
+            max-height: 220px;
+            color: var(--md-sys-color-on-surface);
+            outline: none;
+            padding: 4px 0;
+            letter-spacing: 0.01em;
+            transition: color var(--transition-standard);
+        }
+        .card-textarea.braille-output {
+            font-family: 'Roboto Mono', 'Noto Sans SC', monospace;
+            font-size: 1.6rem;
+            line-height: 1.8;
+            letter-spacing: 0.04em;
+            word-spacing: 0.2em;
+            min-height: 60px;
+            color: var(--md-sys-color-on-primary-container);
+            cursor: default;
+            user-select: text;
+        }
+        .card-textarea::placeholder {
+            color: var(--md-sys-color-on-surface-variant);
+            opacity: 0.6;
+        }
+        .char-count {
+            font-size: 0.7rem;
+            color: var(--md-sys-color-on-surface-variant);
+            text-align: right;
+            margin-top: 6px;
+            opacity: 0.7;
+            transition: opacity var(--transition-standard);
+        }
+        .card:hover .char-count {
+            opacity: 1;
+        }
+
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 4px 0;
+        }
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            border: none;
+            background: var(--md-sys-color-surface-container-high);
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all var(--transition-standard);
+            position: relative;
+            outline: none;
+            flex-shrink: 0;
+        }
+        .icon-btn:hover {
+            background: var(--md-sys-color-surface-container-highest);
+            color: var(--md-sys-color-on-surface);
+            box-shadow: var(--md-elevation-1);
+            transform: translateY(-1px);
+        }
+        .icon-btn:active {
+            transform: scale(0.94);
+            transition: transform 100ms cubic-bezier(0.2, 0, 0, 1);
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+        .icon-btn:focus-visible {
+            outline: 3px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+        .icon-btn.swap-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            font-size: 1.6rem;
+            box-shadow: var(--md-elevation-2);
+        }
+        .icon-btn.swap-btn:hover {
+            background: var(--md-sys-color-primary-fixed-dim);
+            box-shadow: var(--md-elevation-3);
+            transform: translateY(-2px);
+        }
+        .icon-btn.swap-btn:active {
+            transform: scale(0.9) rotate(180deg);
+            transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-filled {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: all var(--transition-standard);
+            box-shadow: var(--md-elevation-1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn-filled:hover {
+            box-shadow: var(--md-elevation-3);
+            background: var(--md-sys-color-primary);
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+        .btn-filled:active {
+            box-shadow: var(--md-elevation-1);
+            transform: scale(0.96);
+            filter: brightness(0.94);
+            transition: all 100ms cubic-bezier(0.2, 0, 0, 1);
+        }
+        .btn-filled:focus-visible {
+            outline: 3px solid var(--md-sys-color-primary);
+            outline-offset: 3px;
+        }
+        .btn-tonal {
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            background: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            transition: all var(--transition-standard);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            outline: none;
+            white-space: nowrap;
+        }
+        .btn-tonal:hover {
+            box-shadow: var(--md-elevation-2);
+            filter: brightness(0.95);
+            transform: translateY(-1px);
+        }
+        .btn-tonal:active {
+            transform: scale(0.96);
+            filter: brightness(0.88);
+            transition: all 100ms cubic-bezier(0.2, 0, 0, 1);
+        }
+        .btn-tonal:focus-visible {
+            outline: 3px solid var(--md-sys-color-secondary);
+            outline-offset: 3px;
+        }
+
+        .braille-keyboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            padding: 8px 0;
+        }
+        .braille-keyboard .keyboard-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--md-sys-color-on-surface-variant);
+            text-align: center;
+        }
+        .dot-grid-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .dot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 12px;
+            background: var(--md-sys-color-surface-container);
+            border-radius: 20px;
+            box-shadow: var(--md-elevation-1);
+        }
+        .dot-cell {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 180ms cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: var(--md-sys-color-surface-variant);
+            border: 2px solid var(--md-sys-color-outline-variant);
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .dot-cell:hover {
+            border-color: var(--md-sys-color-primary);
+            background: var(--md-sys-color-primary-container);
+            box-shadow: 0 0 0 6px rgba(103, 80, 164, 0.1);
+            transform: scale(1.08);
+        }
+        .dot-cell:active {
+            transform: scale(0.9);
+            transition: transform 80ms cubic-bezier(0.2, 0, 0, 1);
+        }
+        .dot-cell:focus-visible {
+            outline: 3px solid var(--md-sys-color-primary);
+            outline-offset: 3px;
+            border-radius: 50%;
+        }
+        .dot-cell.active {
+            background: var(--md-sys-color-primary);
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 6px rgba(103, 80, 164, 0.2), var(--md-elevation-2);
+            transform: scale(1.05);
+            animation: dot-pop 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes dot-pop {
+            0% {
+                transform: scale(0.7);
+            }
+            60% {
+                transform: scale(1.15);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+        .dot-number {
+            position: absolute;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface-variant);
+            pointer-events: none;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.5;
+            transition: opacity var(--transition-standard);
+        }
+        .dot-cell.active .dot-number {
+            color: var(--md-sys-color-on-primary);
+            opacity: 0.9;
+        }
+        .braille-preview {
+            font-size: 2.8rem;
+            text-align: center;
+            min-height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 0.06em;
+            color: var(--md-sys-color-on-surface);
+            font-family: 'Roboto Mono', monospace;
+            transition: all var(--transition-standard);
+        }
+        .braille-char-info {
+            font-size: 0.8rem;
+            color: var(--md-sys-color-on-surface-variant);
+            text-align: center;
+            min-height: 20px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .braille-keyboard .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .braille-viz {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            padding: 4px 0;
+        }
+        .braille-viz-char {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 4px;
+            border-radius: 10px;
+            background: var(--md-sys-color-surface-container);
+            transition: all var(--transition-standard);
+            cursor: default;
+        }
+        .braille-viz-char .viz-dot-row {
+            display: flex;
+            gap: 4px;
+        }
+        .braille-viz-char .viz-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--md-sys-color-outline-variant);
+            transition: all var(--transition-standard);
+        }
+        .braille-viz-char .viz-dot.filled {
+            background: var(--md-sys-color-primary);
+            box-shadow: 0 0 4px rgba(103, 80, 164, 0.5);
+        }
+        .braille-viz-char .viz-label {
+            font-size: 0.6rem;
+            color: var(--md-sys-color-on-surface-variant);
+            letter-spacing: 0.04em;
+        }
+
+        .snackbar {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--md-sys-color-inverse-surface);
+            color: var(--md-sys-color-inverse-on-surface);
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            box-shadow: var(--md-elevation-4);
+            z-index: 1000;
+            transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .snackbar.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 8px;
+            }
+            .card {
+                border-radius: 20px;
+                padding: 14px 14px 12px;
+            }
+            .card-textarea {
+                font-size: 0.95rem;
+                min-height: 55px;
+                max-height: 150px;
+            }
+            .card-textarea.braille-output {
+                font-size: 1.3rem;
+                min-height: 48px;
+            }
+            .dot-cell {
+                width: 36px;
+                height: 36px;
+            }
+            .dot-grid {
+                gap: 7px;
+                padding: 10px;
+                border-radius: 16px;
+            }
+            .icon-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 20px;
+                font-size: 1.2rem;
+            }
+            .icon-btn.swap-btn {
+                width: 48px;
+                height: 48px;
+                border-radius: 24px;
+                font-size: 1.4rem;
+            }
+            .btn-filled,
+            .btn-tonal {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+                border-radius: 16px;
+            }
+            .top-app-bar h1 {
+                font-size: 1.15rem;
+            }
+            .chip {
+                padding: 6px 12px;
+                font-size: 0.78rem;
+                border-radius: 6px;
+            }
+            .braille-preview {
+                font-size: 2.2rem;
+                min-height: 44px;
+            }
+        }
+        @media (max-width: 380px) {
+            .dot-cell {
+                width: 30px;
+                height: 30px;
+            }
+            .dot-grid {
+                gap: 5px;
+                padding: 8px;
+                border-radius: 14px;
+            }
+            .card-textarea.braille-output {
+                font-size: 1.1rem;
+            }
+            .card {
+                border-radius: 16px;
+                padding: 10px 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-app-bar">
+        <div class="logo-icon" aria-hidden="true">⠿</div>
+        <div class="title-group">
+            <h1>盲文翻译器</h1>
+            <span class="subtitle">Braille Translator · 中文拼音盲文全覆盖</span>
+        </div>
+    </div>
+
+    <div class="chip-row" role="radiogroup" aria-label="翻译模式">
+        <button class="chip active" data-mode="auto" role="radio" aria-checked="true">
+            <span class="chip-dot"></span> 自动检测
+        </button>
+        <button class="chip" data-mode="en" role="radio" aria-checked="false">
+            <span class="chip-dot"></span> 英文盲文
+        </button>
+        <button class="chip" data-mode="zh" role="radio" aria-checked="false">
+            <span class="chip-dot"></span> 中文盲文
+        </button>
+    </div>
+
+    <div class="main-container">
+        <div class="card input-card" id="inputCard">
+            <div class="card-label">
+                <span class="label-icon">✏️</span> 输入文字
+            </div>
+            <textarea class="card-textarea" id="inputText" placeholder="在此输入文字或盲文字符…&#10;支持中文、英文、数字及盲文Unicode字符" rows="3" aria-label="输入文字区域"></textarea>
+            <div class="char-count" id="inputCharCount">0 字符</div>
+        </div>
+
+        <div class="action-row">
+            <button class="icon-btn swap-btn" id="swapBtn" aria-label="交换翻译方向" title="交换方向">⇅</button>
+            <button class="btn-filled" id="translateBtn">
+                <span>⟳</span> 翻译
+            </button>
+            <button class="btn-tonal" id="copyOutputBtn">
+                <span>📋</span> 复制结果
+            </button>
+            <button class="icon-btn" id="clearBtn" aria-label="清除所有" title="清除">✕</button>
+        </div>
+
+        <div class="card output-card" id="outputCard">
+            <div class="card-label">
+                <span class="label-icon">⠟</span> 盲文 / 翻译结果
+            </div>
+            <div class="card-textarea braille-output" id="outputText" tabindex="0" aria-label="翻译输出区域" aria-live="polite">等待输入…</div>
+            <div class="char-count" id="outputCharCount">0 盲符</div>
+        </div>
+
+        <div class="card" id="brailleKeyboardCard">
+            <div class="braille-keyboard">
+                <div class="keyboard-label">🎹 盲文点字键盘（点击圆点组合盲符）</div>
+                <div class="dot-grid-container">
+                    <div style="display:flex;flex-direction:column;gap:16px;font-size:0.7rem;color:var(--md-sys-color-on-surface-variant);font-weight:600;letter-spacing:0.04em;">
+                        <span>1</span><span>2</span><span>3</span>
+                    </div>
+                    <div class="dot-grid" id="dotGrid" role="group" aria-label="6点盲文键盘">
+                        <button class="dot-cell" data-dot="1" aria-label="点1" aria-pressed="false"></button>
+                        <button class="dot-cell" data-dot="4" aria-label="点4" aria-pressed="false"></button>
+                        <button class="dot-cell" data-dot="2" aria-label="点2" aria-pressed="false"></button>
+                        <button class="dot-cell" data-dot="5" aria-label="点5" aria-pressed="false"></button>
+                        <button class="dot-cell" data-dot="3" aria-label="点3" aria-pressed="false"></button>
+                        <button class="dot-cell" data-dot="6" aria-label="点6" aria-pressed="false"></button>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:16px;font-size:0.7rem;color:var(--md-sys-color-on-surface-variant);font-weight:600;letter-spacing:0.04em;">
+                        <span>4</span><span>5</span><span>6</span>
+                    </div>
+                </div>
+                <div class="braille-preview" id="braillePreview" aria-live="polite">⠿</div>
+                <div class="braille-char-info" id="brailleCharInfo">未选择点位</div>
+                <div class="btn-row">
+                    <button class="btn-filled" id="insertBrailleBtn">
+                        <span>＋</span> 插入盲符
+                    </button>
+                    <button class="btn-tonal" id="appendToOutputBtn">
+                        <span>↓</span> 添加到输出
+                    </button>
+                    <button class="icon-btn" id="resetDotsBtn" aria-label="重置点位" title="重置">↺</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="vizCard">
+            <div class="card-label">
+                <span class="label-icon">🔍</span> 盲文点阵可视化
+            </div>
+            <div class="braille-viz" id="brailleViz" aria-label="盲文点阵可视化区域">
+                <span style="color:var(--md-sys-color-on-surface-variant);font-size:0.85rem;">输入盲文字符后可在此查看点阵放大图</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="snackbar" id="snackbar" aria-live="assertive"></div>
+
+    <script>
+        (function() {
+            // DOM元素
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const inputCharCount = document.getElementById('inputCharCount');
+            const outputCharCount = document.getElementById('outputCharCount');
+            const swapBtn = document.getElementById('swapBtn');
+            const translateBtn = document.getElementById('translateBtn');
+            const copyOutputBtn = document.getElementById('copyOutputBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const dotGrid = document.getElementById('dotGrid');
+            const braillePreview = document.getElementById('braillePreview');
+            const brailleCharInfo = document.getElementById('brailleCharInfo');
+            const insertBrailleBtn = document.getElementById('insertBrailleBtn');
+            const appendToOutputBtn = document.getElementById('appendToOutputBtn');
+            const resetDotsBtn = document.getElementById('resetDotsBtn');
+            const brailleViz = document.getElementById('brailleViz');
+            const snackbar = document.getElementById('snackbar');
+            const modeChips = document.querySelectorAll('.chip');
+
+            let activeDots = new Set();
+            let currentMode = 'auto';
+            let snackbarTimeout = null;
+
+            // ---------- 英文盲文映射 (保持不变) ----------
+            const enToBraille = {
+                'a': '⠁','b': '⠃','c': '⠉','d': '⠙','e': '⠑','f': '⠋','g': '⠛','h': '⠓','i': '⠊','j': '⠚',
+                'k': '⠅','l': '⠇','m': '⠍','n': '⠝','o': '⠕','p': '⠏','q': '⠟','r': '⠗','s': '⠎','t': '⠞',
+                'u': '⠥','v': '⠧','w': '⠺','x': '⠭','y': '⠽','z': '⠵',
+                'A': '⠠⠁','B': '⠠⠃','C': '⠠⠉','D': '⠠⠙','E': '⠠⠑','F': '⠠⠋','G': '⠠⠛','H': '⠠⠓',
+                'I': '⠠⠊','J': '⠠⠚','K': '⠠⠅','L': '⠠⠇','M': '⠠⠍','N': '⠠⠝','O': '⠠⠕','P': '⠠⠏',
+                'Q': '⠠⠟','R': '⠠⠗','S': '⠠⠎','T': '⠠⠞','U': '⠠⠥','V': '⠠⠧','W': '⠠⠺','X': '⠠⠭',
+                'Y': '⠠⠽','Z': '⠠⠵',
+            };
+            const brailleToEnSimple = {
+                '⠁':'a','⠃':'b','⠉':'c','⠙':'d','⠑':'e','⠋':'f','⠛':'g','⠓':'h','⠊':'i','⠚':'j',
+                '⠅':'k','⠇':'l','⠍':'m','⠝':'n','⠕':'o','⠏':'p','⠟':'q','⠗':'r','⠎':'s','⠞':'t',
+                '⠥':'u','⠧':'v','⠺':'w','⠭':'x','⠽':'y','⠵':'z','⠠':''
+            };
+
+            const digitToBraille = { '0':'⠚','1':'⠁','2':'⠃','3':'⠉','4':'⠙','5':'⠑','6':'⠋','7':'⠛','8':'⠓','9':'⠊' };
+            const brailleDigitToNum = { '⠚':'0','⠁':'1','⠃':'2','⠉':'3','⠙':'4','⠑':'5','⠋':'6','⠛':'7','⠓':'8','⠊':'9' };
+
+            const punctToBraille = {
+                '.':'⠲',',':'⠂','?':'⠦','!':'⠖',';':'⠆',':':'⠒','-':'⠤',"'":'⠄','"':'⠦⠴','(':'⠐⠣',')':'⠐⠜',
+                '/':'⠌','@':'⠈⠁','&':'⠈⠯','*':'⠐⠔','#':'⠸⠹',' ':' ','\n':'\n',
+            };
+            const braillePunctToText = {
+                '⠲':'.','⠂':',','⠦':'?','⠖':'!','⠆':';','⠒':':','⠤':'-','⠄':"'",
+            };
+
+            // ---------- 中文拼音盲文映射 (全表) ----------
+            // 声母 → 盲文 (根据《中国盲文》GB/T 15720)
+            const initialMap = {
+                'b':'⠃', 'p':'⠏', 'm':'⠍', 'f':'⠋',
+                'd':'⠙', 't':'⠞', 'n':'⠝', 'l':'⠇',
+                'g':'⠛', 'k':'⠅', 'h':'⠓',
+                'j':'⠅', 'q':'⠟', 'x':'⠭',
+                'zh':'⠌', 'ch':'⠟', 'sh':'⠱', 'r':'⠚',
+                'z':'⠵', 'c':'⠉', 's':'⠎',
+                '':'' // 零声母
+            };
+            // 韵母 → 盲文
+            const finalMap = {
+                'a':'⠁', 'o':'⠕', 'e':'⠑', 'i':'⠊', 'u':'⠥', 'v':'⠧',
+                'ai':'⠪', 'ei':'⠣', 'ao':'⠖', 'ou':'⠷',
+                'an':'⠧', 'en':'⠢', 'ang':'⠦', 'eng':'⠴', 'ong':'⠲',
+                'ia':'⠫', 'ie':'⠬', 'iao':'⠭', 'iu':'⠽',
+                'ian':'⠯', 'in':'⠮', 'iang':'⠵', 'ing':'⠬', 'iong':'⠾',
+                'ua':'⠿', 'uo':'⠿', 'uai':'⠽', 'ui':'⠾',
+                'uan':'⠸', 'un':'⠸', 'uang':'⠺', 'ueng':'⠼',
+                've':'⠫', 'vn':'⠮',
+                'er':'⠜',
+                'ê':'⠣',
+                '-i':'⠄', // 特殊韵母 (zhi chi shi ri zi ci si)
+            };
+            // 声调 → 盲文
+            const toneMap = {
+                '1':'⠁', '2':'⠂', '3':'⠄', '4':'⠆', '5':'' // 轻声不加点
+            };
+
+            // 预处理声母列表，按长度降序匹配 (zh ch sh 优先)
+            const initialsSorted = Object.keys(initialMap).sort((a,b) => b.length - a.length);
+
+            // 将带声调拼音转为盲文序列 (使用 pinyin-pro 格式: 声母+韵母+声调数字)
+            function pinyinToBraille(pinyinWithTone) {
+                // pinyinWithTone 例如 "ni3" "hao3" "lv4" "nü3" -> 我们内部统一用 v 代替 ü
+                if (!pinyinWithTone) return '';
+                // 提取声调数字
+                const toneMatch = pinyinWithTone.match(/[1-5]$/);
+                const tone = toneMatch ? toneMatch[0] : '5';
+                const base = toneMatch ? pinyinWithTone.slice(0, -1) : pinyinWithTone;
+                // 统一 ü 为 v
+                let baseNormalized = base.replace(/ü/g, 'v').replace(/u:/g, 'v');
+                // 找出声母
+                let initial = '';
+                let final = baseNormalized;
+                for (let init of initialsSorted) {
+                    if (baseNormalized.startsWith(init)) {
+                        initial = init;
+                        final = baseNormalized.slice(init.length);
+                        break;
+                    }
+                }
+                // 特殊处理：i 行韵母前无声母时，i 变为 y (这里拼音库已经处理，我们只映射)
+                // 如果 final 以 i 开头且 initial 为空，final 保持不变
+                // 如果 final 以 u 开头且 initial 为空，final 保持不变
+                // 映射盲文
+                const initBraille = initialMap[initial] || '';
+                const finalBraille = finalMap[final] || '';
+                const toneBraille = toneMap[tone] || '';
+                return initBraille + finalBraille + toneBraille;
+            }
+
+            // 使用 pinyin-pro 将中文句子转为拼音数组，再转盲文
+            function chineseToBraille(text) {
+                if (!text) return '';
+                // 使用 pinyin-pro 获取带声调拼音数组 (如 ["nǐ", "hǎo"])
+                const pinyinArray = window.pinyinPro ? pinyinPro(text, { toneType: 'num', type: 'array' }) : [];
+                if (!pinyinArray.length) return text; // 降级：保留原文
+                let brailleResult = '';
+                for (let i = 0; i < pinyinArray.length; i++) {
+                    const py = pinyinArray[i];
+                    // 检查是否为标点或空格（拼音库会将非汉字原样返回）
+                    if (/^[\u4e00-\u9fff]+$/.test(py) || py.length === 0) continue;
+                    // 处理多音字分隔符 "，" 等
+                    if (/[，。！？；：“”‘’、《》]/.test(py)) {
+                        brailleResult += py; // 保留标点原文，后面统一处理
+                        continue;
+                    }
+                    // 转盲文
+                    const braille = pinyinToBraille(py);
+                    brailleResult += braille || py;
+                }
+                return brailleResult;
+            }
+
+            // ---------- 翻译引擎 ----------
+            function isBrailleChar(ch) {
+                const code = ch.codePointAt(0);
+                return code >= 0x2800 && code <= 0x28FF;
+            }
+
+            function hasBrailleChars(str) {
+                for (const ch of str) return isBrailleChar(ch) ? true : false;
+                return false;
+            }
+
+            function hasChineseChars(str) {
+                return /[\u4e00-\u9fff\u3400-\u4dbf]/.test(str);
+            }
+
+            function translateTextToBraille(text, mode) {
+                if (!text || text.trim() === '') return '';
+                let result = '';
+                let i = 0;
+                while (i < text.length) {
+                    const ch = text[i];
+                    if (ch === ' ' || ch === '\n') {
+                        result += ch;
+                        i++;
+                        continue;
+                    }
+                    // 中文汉字
+                    if (/[\u4e00-\u9fff\u3400-\u4dbf]/.test(ch)) {
+                        if (mode === 'en') {
+                            result += ch;
+                        } else {
+                            // 累积连续汉字，一次性调用 pinyin-pro 提高效率
+                            let j = i;
+                            while (j < text.length && /[\u4e00-\u9fff\u3400-\u4dbf]/.test(text[j])) j++;
+                            const hanziSegment = text.substring(i, j);
+                            result += chineseToBraille(hanziSegment);
+                            i = j;
+                            continue;
+                        }
+                        i++;
+                        continue;
+                    }
+                    // 数字
+                    if (/\d/.test(ch)) {
+                        const needNumSign = (i === 0 || !/\d/.test(text[i-1]) || text[i-1] === ' ' || text[i-1] === '\n');
+                        if (needNumSign) result += '⠼';
+                        result += digitToBraille[ch] || ch;
+                        i++;
+                        continue;
+                    }
+                    // 标点
+                    if (punctToBraille[ch]) {
+                        result += punctToBraille[ch];
+                        i++;
+                        continue;
+                    }
+                    // 英文字母
+                    if (enToBraille[ch]) {
+                        result += enToBraille[ch];
+                        i++;
+                        continue;
+                    }
+                    // 其他字符直接保留
+                    result += ch;
+                    i++;
+                }
+                return result;
+            }
+
+            function translateBrailleToText(brailleStr, mode) {
+                if (!brailleStr || brailleStr.trim() === '') return '';
+                let result = '';
+                let i = 0;
+                let inNumber = false;
+                let capitalNext = false;
+                // 尝试累积盲文序列进行中文反译 (简单模式：连续盲文可能为中文)
+                while (i < brailleStr.length) {
+                    const ch = brailleStr[i];
+                    if (ch === ' ' || ch === '\n') {
+                        result += ch;
+                        inNumber = false;
+                        capitalNext = false;
+                        i++;
+                        continue;
+                    }
+                    if (!isBrailleChar(ch)) {
+                        result += ch;
+                        inNumber = false;
+                        capitalNext = false;
+                        i++;
+                        continue;
+                    }
+                    // 数字符号
+                    if (ch === '⠼') { inNumber = true; i++; continue; }
+                    // 大写符号
+                    if (ch === '⠠') { capitalNext = true; i++; continue; }
+
+                    if (inNumber) {
+                        if (brailleDigitToNum[ch] !== undefined) {
+                            result += brailleDigitToNum[ch];
+                        } else {
+                            result += brailleToEnSimple[ch] || ch;
+                            inNumber = false;
+                        }
+                        i++;
+                        continue;
+                    }
+
+                    // 尝试中文反译 (此处简化，只反向查固定映射表，不做拼音盲文到汉字的复杂还原)
+                    // 由于拼音盲文有多音字，无法可靠还原为唯一汉字，因此反向翻译主要用于英文/数字/标点。
+                    // 如需中文反向，可显示盲文原文。
+                    if (mode === 'zh' || mode === 'auto') {
+                        // 简单标记：若连续盲文点字存在，暂且保留原文
+                        if (brailleToEnSimple[ch] !== undefined && brailleToEnSimple[ch] !== '') {
+                            if (capitalNext) {
+                                result += brailleToEnSimple[ch].toUpperCase();
+                                capitalNext = false;
+                            } else {
+                                result += brailleToEnSimple[ch];
+                            }
+                            i++;
+                            continue;
+                        }
+                        if (braillePunctToText[ch]) {
+                            result += braillePunctToText[ch];
+                            i++;
+                            continue;
+                        }
+                        // 其他情况保留盲文原字符
+                        result += ch;
+                        i++;
+                        continue;
+                    }
+
+                    // 英文模式
+                    if (brailleToEnSimple[ch] !== undefined && brailleToEnSimple[ch] !== '') {
+                        result += capitalNext ? brailleToEnSimple[ch].toUpperCase() : brailleToEnSimple[ch];
+                        capitalNext = false;
+                        i++;
+                        continue;
+                    }
+                    if (braillePunctToText[ch]) {
+                        result += braillePunctToText[ch];
+                        i++;
+                        continue;
+                    }
+                    result += ch;
+                    i++;
+                }
+                return result;
+            }
+
+            function autoDetectAndTranslate(text) {
+                if (!text || text.trim() === '') return { result: '', direction: 'none' };
+                const hasBraille = hasBrailleChars(text);
+                const hasChinese = hasChineseChars(text);
+                let direction = 'text-to-braille';
+                let result = '';
+                if (hasBraille && !hasChinese) {
+                    direction = 'braille-to-text';
+                    result = translateBrailleToText(text, currentMode === 'auto' ? 'en' : currentMode);
+                } else {
+                    result = translateTextToBraille(text, currentMode === 'auto' ? (hasChinese ? 'zh' : 'en') : currentMode);
+                }
+                return { result, direction };
+            }
+
+            function performTranslation() {
+                const text = inputText.value;
+                if (!text || text.trim() === '') {
+                    outputText.textContent = '等待输入…';
+                    outputCharCount.textContent = '0 盲符';
+                    updateBrailleViz('');
+                    return;
+                }
+                const { result, direction } = autoDetectAndTranslate(text);
+                outputText.textContent = result || '（无法翻译）';
+                const brailleCount = [...result].filter(ch => isBrailleChar(ch)).length;
+                outputCharCount.textContent = direction === 'text-to-braille' ? brailleCount + ' 盲符' : [...result].length + ' 字符';
+                updateBrailleViz(result);
+            }
+
+            function updateBrailleViz(brailleStr) {
+                if (!brailleStr || brailleStr.trim() === '' || brailleStr === '等待输入…') {
+                    brailleViz.innerHTML = '<span style="color:var(--md-sys-color-on-surface-variant);font-size:0.85rem;">输入盲文字符后可在此查看点阵放大图</span>';
+                    return;
+                }
+                const brailleChars = [...brailleStr].filter(ch => isBrailleChar(ch)).slice(0, 40);
+                if (brailleChars.length === 0) {
+                    brailleViz.innerHTML = '<span style="color:var(--md-sys-color-on-surface-variant);font-size:0.85rem;">当前输出不含盲文字符</span>';
+                    return;
+                }
+                let html = '';
+                for (const ch of brailleChars) {
+                    const dots = getDotsFromBrailleChar(ch);
+                    html += '<div class="braille-viz-char">';
+                    for (let row = 0; row < 3; row++) {
+                        const leftDot = row + 1;
+                        const rightDot = row + 4;
+                        html += '<div class="viz-dot-row">';
+                        html += `<span class="viz-dot${dots.includes(leftDot) ? ' filled' : ''}" style="width:10px;height:10px;border-radius:50%;"></span>`;
+                        html += `<span class="viz-dot${dots.includes(rightDot) ? ' filled' : ''}" style="width:10px;height:10px;border-radius:50%;"></span>`;
+                        html += '</div>';
+                    }
+                    html += `<span class="viz-label">${ch}</span></div>`;
+                }
+                if ([...brailleStr].filter(ch => isBrailleChar(ch)).length > 40) {
+                    html += '<span style="color:var(--md-sys-color-on-surface-variant);font-size:0.8rem;">…还有更多盲符</span>';
+                }
+                brailleViz.innerHTML = html;
+            }
+
+            function getDotsFromBrailleChar(ch) {
+                if (!isBrailleChar(ch)) return [];
+                const code = ch.codePointAt(0) - 0x2800;
+                const dots = [];
+                for (let i = 0; i < 6; i++) if (code & (1 << i)) dots.push(i + 1);
+                return dots;
+            }
+
+            function getBrailleCharFromDots(dots) {
+                let code = 0;
+                for (const dot of dots) if (dot >= 1 && dot <= 6) code |= (1 << (dot - 1));
+                return String.fromCodePoint(0x2800 + code);
+            }
+
+            function showSnackbar(msg, dur = 2200) {
+                if (snackbarTimeout) clearTimeout(snackbarTimeout);
+                snackbar.textContent = msg;
+                snackbar.classList.add('show');
+                snackbarTimeout = setTimeout(() => { snackbar.classList.remove('show'); }, dur);
+            }
+
+            // 点字键盘交互
+            function updateBraillePreview() {
+                const sorted = [...activeDots].sort((a,b)=>a-b);
+                if (sorted.length === 0) {
+                    braillePreview.textContent = '⠿';
+                    brailleCharInfo.textContent = '未选择点位';
+                } else {
+                    const ch = getBrailleCharFromDots(sorted);
+                    braillePreview.textContent = ch;
+                    const dotList = sorted.join('、');
+                    brailleCharInfo.textContent = `点${dotList} · U+${(0x2800 + [...activeDots].reduce((acc,d)=>acc|(1<<(d-1)),0)).toString(16).toUpperCase()}`;
+                }
+            }
+
+            function resetDots() {
+                activeDots.clear();
+                document.querySelectorAll('.dot-cell').forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed','false'); });
+                updateBraillePreview();
+            }
+
+            dotGrid.addEventListener('click', (e) => {
+                const cell = e.target.closest('.dot-cell');
+                if (!cell) return;
+                const dotNum = parseInt(cell.dataset.dot);
+                if (activeDots.has(dotNum)) {
+                    activeDots.delete(dotNum);
+                    cell.classList.remove('active');
+                    cell.setAttribute('aria-pressed','false');
+                } else {
+                    activeDots.add(dotNum);
+                    cell.classList.add('active');
+                    cell.setAttribute('aria-pressed','true');
+                    cell.classList.remove('active');
+                    void cell.offsetWidth;
+                    cell.classList.add('active');
+                }
+                updateBraillePreview();
+            });
+
+            dotGrid.addEventListener('keydown', (e) => {
+                const cell = e.target.closest('.dot-cell');
+                if (!cell) return;
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cell.click(); }
+            });
+
+            resetDotsBtn.addEventListener('click', resetDots);
+
+            insertBrailleBtn.addEventListener('click', () => {
+                const ch = getBrailleCharFromDots([...activeDots].sort((a,b)=>a-b));
+                if (!ch) { showSnackbar('请先选择至少一个点位'); return; }
+                const pos = inputText.selectionStart;
+                const text = inputText.value;
+                inputText.value = text.slice(0, pos) + ch + text.slice(pos);
+                inputText.focus();
+                inputText.setSelectionRange(pos + 1, pos + 1);
+                resetDots();
+                performTranslation();
+                showSnackbar('已插入盲符: ' + ch);
+            });
+
+            appendToOutputBtn.addEventListener('click', () => {
+                const ch = getBrailleCharFromDots([...activeDots].sort((a,b)=>a-b));
+                if (!ch) { showSnackbar('请先选择至少一个点位'); return; }
+                const cur = outputText.textContent;
+                outputText.textContent = (cur === '等待输入…' || cur === '（无法翻译）') ? ch : cur + ch;
+                updateBrailleViz(outputText.textContent);
+                outputCharCount.textContent = [...outputText.textContent].filter(c=>isBrailleChar(c)).length + ' 盲符';
+                resetDots();
+                showSnackbar('已添加到输出: ' + ch);
+            });
+
+            // 主要事件
+            inputText.addEventListener('input', () => {
+                inputCharCount.textContent = [...inputText.value].length + ' 字符';
+                requestAnimationFrame(() => performTranslation());
+            });
+
+            translateBtn.addEventListener('click', () => {
+                performTranslation();
+                if (inputText.value.trim()) showSnackbar('翻译完成 ✓');
+            });
+
+            swapBtn.addEventListener('click', () => {
+                const out = outputText.textContent;
+                if (out === '等待输入…' || out === '（无法翻译）' || !out.trim()) {
+                    showSnackbar('没有可交换的内容'); return;
+                }
+                const inp = inputText.value;
+                inputText.value = out;
+                outputText.textContent = inp;
+                inputCharCount.textContent = [...inputText.value].length + ' 字符';
+                outputCharCount.textContent = [...outputText.textContent].filter(c=>isBrailleChar(c)).length + ' 盲符';
+                updateBrailleViz(outputText.textContent);
+                showSnackbar('已交换输入和输出');
+            });
+
+            copyOutputBtn.addEventListener('click', () => {
+                const text = outputText.textContent;
+                if (text === '等待输入…' || text === '（无法翻译）' || !text.trim()) {
+                    showSnackbar('没有可复制的内容'); return;
+                }
+                navigator.clipboard.writeText(text).then(() => showSnackbar('已复制到剪贴板 📋'))
+                .catch(() => { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showSnackbar('已复制到剪贴板 📋'); });
+            });
+
+            clearBtn.addEventListener('click', () => {
+                inputText.value = '';
+                outputText.textContent = '等待输入…';
+                inputCharCount.textContent = '0 字符';
+                outputCharCount.textContent = '0 盲符';
+                resetDots();
+                updateBrailleViz('');
+                inputText.focus();
+                showSnackbar('已清除所有内容');
+            });
+
+            modeChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    modeChips.forEach(c => { c.classList.remove('active'); c.setAttribute('aria-checked','false'); });
+                    chip.classList.add('active');
+                    chip.setAttribute('aria-checked','true');
+                    currentMode = chip.dataset.mode;
+                    performTranslation();
+                });
+            });
+
+            outputText.addEventListener('click', () => {
+                const t = outputText.textContent;
+                if (t && t !== '等待输入…' && t !== '（无法翻译）') navigator.clipboard.writeText(t).then(()=>showSnackbar('已复制'));
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); performTranslation(); }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'X') { e.preventDefault(); swapBtn.click(); }
+            });
+
+            // 初始化
+            updateBraillePreview();
+            updateBrailleViz('');
+            inputCharCount.textContent = '0 字符';
+            outputCharCount.textContent = '0 盲符';
+            document.querySelector('.chip[data-mode="auto"]').classList.add('active');
+            setTimeout(() => inputText.focus(), 300);
+
+            console.log('⠿ 增强版盲文翻译器已启动 (拼音库已加载)');
+        })();
+    </script>
+</body>
+</html>
