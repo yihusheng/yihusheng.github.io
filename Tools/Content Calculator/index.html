@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>🥗 双产品配料表转换 · 如玉质感</title>
+  <style>
+    /* ===== Material Design 3 — 温润如玉的色调 ===== */
+    :root {
+      --md-primary: #6b8b7a;
+      --md-on-primary: #ffffff;
+      --md-primary-container: #dcebe3;
+      --md-on-primary-container: #0d1f18;
+      --md-secondary: #7a8b80;
+      --md-on-secondary: #ffffff;
+      --md-secondary-container: #e2ece5;
+      --md-on-secondary-container: #111a15;
+      --md-tertiary: #5f7d7a;
+      --md-on-tertiary: #ffffff;
+      --md-tertiary-container: #d2ece8;
+      --md-on-tertiary-container: #041917;
+      --md-error: #b84c4c;
+      --md-error-container: #ffded9;
+
+      --md-surface: #f7f9f6;
+      --md-surface-dim: #f0f4f0;
+      --md-surface-bright: #f7f9f6;
+      --md-surface-container-lowest: #fcfdfb;
+      --md-surface-container-low: #f3f6f2;
+      --md-surface-container: #eef2ed;
+      --md-surface-container-high: #e8ede8;
+      --md-surface-container-highest: #e3e8e3;
+
+      --md-on-surface: #1c211e;
+      --md-on-surface-variant: #434a45;
+      --md-outline: #8d958f;
+      --md-outline-variant: #cdd4ce;
+      --md-outline-subtle: #dde3dd;
+
+      --elevation-0: 0 0 0 0 transparent;
+      --elevation-1: 0 1px 3px rgba(107, 139, 122, 0.04), 0 1px 5px rgba(107, 139, 122, 0.03);
+      --elevation-2: 0 2px 6px rgba(107, 139, 122, 0.05), 0 3px 10px rgba(107, 139, 122, 0.03);
+      --elevation-3: 0 4px 12px rgba(107, 139, 122, 0.05), 0 6px 20px rgba(107, 139, 122, 0.03);
+      --elevation-4: 0 6px 18px rgba(107, 139, 122, 0.06), 0 10px 30px rgba(107, 139, 122, 0.03);
+      --elevation-5: 0 10px 28px rgba(107, 139, 122, 0.07), 0 14px 40px rgba(107, 139, 122, 0.03);
+
+      --surface-tint: rgba(107, 139, 122, 0.015);
+
+      --radius-xs: 8px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 20px;
+      --radius-xl: 26px;
+      --radius-2xl: 30px;
+
+      font-family: 'Inter', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, -apple-system, sans-serif;
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-tap-highlight-color: transparent;
+      letter-spacing: -0.01em;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 14px;
+      background:
+        linear-gradient(175deg,
+          #fafcfa 0%,
+          #f3f7f3 25%,
+          #f0f4f0 50%,
+          #f2f6f2 75%,
+          #f7faf7 100%);
+      background-attachment: fixed;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30%;
+      left: -15%;
+      width: 70%;
+      height: 80%;
+      background: radial-gradient(ellipse, rgba(140, 180, 160, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -25%;
+      right: -10%;
+      width: 60%;
+      height: 70%;
+      background: radial-gradient(ellipse, rgba(160, 195, 175, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+      align-items: stretch;
+    }
+
+    /* ===== Header — 左对齐 ===== */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding: 8px 0 4px;
+      width: 100%;
+    }
+    .header-icon {
+      font-size: 2.5rem;
+      background: linear-gradient(155deg,
+          rgba(220, 235, 227, 0.9) 0%,
+          rgba(200, 220, 210, 0.7) 100%);
+      color: var(--md-on-primary-container);
+      border-radius: 50%;
+      width: 58px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--elevation-3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6),
+        inset 0 -2px 4px rgba(107, 139, 122, 0.08);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .header-icon::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 11px;
+      width: 22px;
+      height: 15px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      transform: rotate(-12deg);
+      filter: blur(1px);
+    }
+    .header-text h1 {
+      font-size: 1.75rem;
+      font-weight: 450;
+      letter-spacing: -0.03em;
+      color: var(--md-on-surface);
+      line-height: 1.2;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+    .header-text span {
+      font-size: 0.82rem;
+      color: var(--md-on-surface-variant);
+      font-weight: 380;
+      letter-spacing: 0.02em;
+    }
+
+    /* ===== 双栏网格 ===== */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 12px 6px;
+    }
+
+    /* 移动端横向滚动 */
+    @media (max-width: 850px) {
+      .dual-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 14px;
+        overflow-x: auto;
+        overflow-y: visible;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        padding: 12px 8px 16px;
+        margin: 0 -4px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--md-outline-variant) transparent;
+      }
+      .dual-grid::-webkit-scrollbar { height: 3px; }
+      .dual-grid::-webkit-scrollbar-track { background: transparent; border-radius: 3px; }
+      .dual-grid::-webkit-scrollbar-thumb { background: var(--md-outline-variant); border-radius: 3px; }
+      .product-card {
+        flex: 0 0 86vw;
+        scroll-snap-align: start;
+        min-width: 290px;
+        max-width: 420px;
+      }
+      .header-text h1 { font-size: 1.35rem; }
+      .header-icon { width: 48px; height: 48px; font-size: 2rem; }
+    }
+    @media (max-width: 420px) {
+      .product-card { flex: 0 0 90vw; min-width: 265px; padding: 14px 12px; }
+      .dual-grid { gap: 10px; padding: 10px 4px 14px; }
+      body { padding: 8px; }
+    }
+
+    /* ===== 产品卡片 ===== */
+    .product-card {
+      background:
+        linear-gradient(160deg,
+          rgba(252, 253, 251, 0.75) 0%,
+          rgba(245, 249, 245, 0.7) 40%,
+          rgba(240, 245, 240, 0.65) 100%);
+      border-radius: var(--radius-2xl);
+      padding: 20px 17px 16px;
+      box-shadow: var(--elevation-2);
+      border: 1px solid rgba(205, 215, 208, 0.5);
+      transition: box-shadow 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.0),
+                  transform 0.4s cubic-bezier(0.25, 0.1, 0.15, 1.0);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background-image:
+        radial-gradient(ellipse at 45% 0%, rgba(255, 255, 255, 0.5) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 95%, rgba(180, 210, 190, 0.08) 0%, transparent 50%),
+        linear-gradient(160deg,
+          rgba(252, 253, 251, 0.75) 0%,
+          rgba(245, 249, 245, 0.7) 40%,
+          rgba(240, 245, 240, 0.65) 100%);
+      overflow: visible;
+    }
+
+    /* 卡片标题 — 已去除底部横线 */
+    .card-title {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 8px;
+    }
+    .card-title .product-icon {
+      width: 43px; height: 43px; border-radius: var(--radius-md);
+      background: linear-gradient(145deg,
+          rgba(220, 235, 227, 0.85) 0%,
+          rgba(195, 218, 205, 0.65) 100%);
+      color: var(--md-on-primary-container);
+      display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
+      box-shadow: var(--elevation-1), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(4px);
+    }
+    .card-title h2 { font-size: 1.1rem; font-weight: 480; letter-spacing: -0.02em; }
+    .chip {
+      background: rgba(226, 236, 229, 0.6); color: var(--md-on-secondary-container);
+      padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 480;
+      margin-left: auto; box-shadow: var(--elevation-0); letter-spacing: 0.02em;
+      backdrop-filter: blur(6px); border: 1px solid rgba(200, 215, 205, 0.35);
+    }
+
+    /* 每份含量行 — 提高层叠顺序 */
+    .serving-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: rgba(240, 246, 241, 0.5); border-radius: var(--radius-lg);
+      padding: 11px 15px; position: relative; z-index: 15;
+      box-shadow: inset 0 1px 2px rgba(107, 139, 122, 0.03);
+      border: 1px solid rgba(200, 212, 204, 0.35);
+      transition: all 0.3s; backdrop-filter: blur(6px);
+    }
+    .serving-row:focus-within {
+      border-color: rgba(140, 175, 155, 0.45);
+      box-shadow: var(--elevation-1), inset 0 1px 2px rgba(107, 139, 122, 0.02);
+      background: rgba(248, 252, 248, 0.7);
+    }
+    .serving-row .input-group { display: flex; align-items: center; gap: 5px; }
+    .serving-row label { font-weight: 450; font-size: 0.8rem; }
+    .serving-row input {
+      width: 66px; padding: 8px; border: 1.5px solid rgba(195, 208, 198, 0.5);
+      border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 450;
+      text-align: center; background: rgba(252, 253, 251, 0.7);
+      transition: all 0.3s; font-family: inherit; backdrop-filter: blur(4px);
+    }
+    .serving-row input:focus {
+      outline: none; border-color: rgba(107, 139, 122, 0.55);
+      box-shadow: 0 0 0 4px rgba(107, 139, 122, 0.06), inset 0 1px 3px rgba(107, 139, 122, 0.03);
+      background: rgba(255, 255, 255, 0.85);
+    }
+    .serving-row .unit { font-size: 0.72rem; color: var(--md-on-surface-variant); }
+
+    /* 弹出预设面板 — 提高 z-index 避免被总重快捷遮挡 */
+    .preset-popup {
+      display: none; position: absolute; top: calc(100% + 6px); left: 15px; right: 15px;
+      background: rgba(248, 252, 248, 0.92); border: 1px solid rgba(200, 215, 205, 0.5);
+      border-radius: var(--radius-lg); padding: 9px 11px; z-index: 30;
+      box-shadow: var(--elevation-5); flex-wrap: wrap; gap: 5px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .preset-popup.active { display: flex; }
+    .preset-popup .preset-chip {
+      background: rgba(252, 253, 251, 0.75); border: 1px solid rgba(195, 210, 200, 0.4);
+      padding: 5px 12px; border-radius: 18px; font-size: 0.72rem; cursor: pointer;
+      transition: all 0.22s; backdrop-filter: blur(6px);
+      color: var(--md-on-surface-variant); font-weight: 460; font-family: inherit;
+    }
+    .preset-popup .preset-chip:hover {
+      background: rgba(220, 235, 227, 0.8); border-color: transparent;
+      box-shadow: var(--elevation-2); transform: translateY(-1px);
+      color: var(--md-on-primary-container);
+    }
+
+    /* 总重快捷行 */
+    .total-weight-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; position: relative; z-index: 1; }
+    .total-weight-row .tw-label { font-weight: 430; font-size: 0.72rem; color: var(--md-on-surface-variant); }
+    .total-weight-row input {
+      width: 76px; padding: 7px 8px; border: 1.5px solid rgba(195, 208, 198, 0.5);
+      border-radius: var(--radius-sm); font-size: 0.85rem; background: rgba(252, 253, 251, 0.7);
+      transition: all 0.3s; backdrop-filter: blur(4px); font-family: inherit;
+      text-align: center; color: var(--md-on-surface);
+    }
+    .total-weight-row input:focus {
+      border-color: rgba(107, 139, 122, 0.55);
+      box-shadow: 0 0 0 4px rgba(107, 139, 122, 0.06);
+    }
+    .total-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
+    .total-chip {
+      background: rgba(252, 253, 251, 0.6); border: 1px solid rgba(195, 210, 200, 0.35);
+      padding: 4px 10px; border-radius: 16px; font-size: 0.66rem; cursor: pointer;
+      transition: all 0.22s; backdrop-filter: blur(6px);
+      color: var(--md-on-surface-variant); font-weight: 460; font-family: inherit;
+    }
+    .total-chip:hover { background: rgba(220, 235, 227, 0.65); border-color: transparent; color: var(--md-on-primary-container); }
+    .total-chip.active {
+      background: rgba(107, 139, 122, 0.8); color: var(--md-on-primary);
+      border-color: transparent; box-shadow: var(--elevation-2);
+    }
+
+    /* 营养成分输入 */
+    .nutrient-grid { display: flex; flex-direction: column; gap: 5px; }
+    .nutrient-row {
+      display: flex; align-items: center; gap: 7px; padding: 8px 11px;
+      background: rgba(240, 246, 241, 0.4); border-radius: var(--radius-sm);
+      border: 1px solid transparent; transition: all 0.3s; backdrop-filter: blur(4px);
+    }
+    .nutrient-row:focus-within {
+      border-color: rgba(195, 210, 200, 0.4); background: rgba(248, 252, 248, 0.6);
+      box-shadow: var(--elevation-1);
+    }
+    .nutrient-label { flex: 1; display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 460; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: inset 0 1px 2px rgba(0,0,0,0.12); }
+    .dot-sodium { background: #e8b860; } .dot-energy { background: #e08070; }
+    .dot-protein { background: #9a8ad4; } .dot-fat { background: #e896b0; }
+    .dot-carbs { background: #5db8c4; } .dot-fiber { background: #9cbc60; }
+    .nutrient-row input {
+      width: 68px; padding: 7px 8px; border: 1.5px solid rgba(195, 208, 198, 0.45);
+      border-radius: var(--radius-xs); font-size: 0.8rem; text-align: right;
+      background: rgba(252, 253, 251, 0.6); transition: all 0.3s; backdrop-filter: blur(4px);
+      font-family: inherit; color: var(--md-on-surface);
+    }
+    .nutrient-row input:focus {
+      border-color: rgba(107, 139, 122, 0.5);
+      box-shadow: 0 0 0 3px rgba(107, 139, 122, 0.06);
+    }
+    .nutrient-unit { font-size: 0.7rem; color: var(--md-on-surface-variant); min-width: 22px; }
+
+    /* 每克含量结果 */
+    .converted-section {
+      background: rgba(240, 246, 241, 0.45); border-radius: var(--radius-lg);
+      padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+      box-shadow: inset 0 1px 1px rgba(107, 139, 122, 0.02);
+      border: 1px solid rgba(200, 215, 205, 0.25); backdrop-filter: blur(4px);
+    }
+    .converted-title { font-size: 0.72rem; font-weight: 520; color: var(--md-on-surface-variant); letter-spacing: 0.06em; margin-bottom: 4px; text-transform: uppercase; }
+    .converted-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; }
+    .converted-label { font-size: 0.8rem; }
+    .converted-value {
+      font-size: 0.88rem; font-weight: 520; background: rgba(252, 253, 251, 0.65);
+      padding: 3px 10px; border-radius: var(--radius-xs); min-width: 52px; text-align: right;
+      backdrop-filter: blur(4px);
+    }
+    .highlight-salt { background: rgba(220, 235, 227, 0.4); border-left: 3px solid rgba(107,139,122,0.5); padding-left: 10px; border-radius: 0 var(--radius-xs) var(--radius-xs) 0; }
+    .highlight-kcal { background: rgba(245, 235, 225, 0.4); border-left: 3px solid rgba(210,160,130,0.5); padding-left: 10px; border-radius: 0 var(--radius-xs) var(--radius-xs) 0; }
+
+    /* 总含量区域 */
+    .total-section {
+      background: rgba(235, 242, 237, 0.5); border-radius: var(--radius-lg);
+      padding: 13px 14px; border: 1px solid rgba(200, 215, 205, 0.3);
+      box-shadow: var(--elevation-1); backdrop-filter: blur(6px);
+    }
+    .total-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(64px, 1fr)); gap: 5px; }
+    .total-item {
+      background: rgba(252, 253, 251, 0.6); border-radius: var(--radius-sm);
+      padding: 9px 4px; text-align: center; border: 1px solid rgba(200, 215, 205, 0.3);
+      backdrop-filter: blur(4px);
+    }
+    .total-item .t-label { font-size: 0.63rem; color: var(--md-on-surface-variant); }
+    .total-item .t-value { font-size: 0.95rem; font-weight: 520; color: var(--md-on-surface); }
+    .total-item .t-unit { font-size: 0.6rem; color: var(--md-on-surface-variant); }
+
+    /* 按钮 */
+    .card-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: auto; }
+    .btn-outline {
+      background: rgba(252, 253, 251, 0.55); border: 1.5px solid rgba(195, 210, 200, 0.45);
+      color: var(--md-on-surface-variant); padding: 7px 15px; border-radius: 20px;
+      font-size: 0.73rem; cursor: pointer; backdrop-filter: blur(8px);
+      font-family: inherit; font-weight: 460; letter-spacing: 0.02em;
+    }
+    .btn-outline:hover { background: rgba(235, 242, 237, 0.7); border-color: rgba(160,185,170,0.5); }
+    .btn-filled {
+      background: linear-gradient(155deg, rgba(107,139,122,0.85), rgba(90,120,104,0.8));
+      color: var(--md-on-primary); border: none; padding: 10px 21px; border-radius: 22px;
+      font-size: 0.8rem; cursor: pointer; box-shadow: var(--elevation-2); backdrop-filter: blur(8px);
+      font-family: inherit; font-weight: 470; letter-spacing: 0.03em;
+    }
+    .btn-filled:hover { background: linear-gradient(155deg, rgba(120,152,134,0.9), rgba(100,132,114,0.85)); box-shadow: var(--elevation-4); }
+    .global-reset { display: flex; justify-content: center; margin-top: 2px; }
+
+    .footer-note {
+      text-align: center; font-size: 0.66rem; color: var(--md-on-surface-variant);
+      padding: 8px 0 14px; opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header 左对齐 -->
+    <div class="header">
+      <div class="header-icon">🧂</div>
+      <div class="header-text">
+        <h1>配料表含量转换器</h1>
+        <span>如玉质感 · 钠×2.54 · 每克含量</span>
+      </div>
+    </div>
+
+    <!-- 双栏产品卡片 -->
+    <div class="dual-grid" id="dualGrid">
+      <!-- 产品 A -->
+      <div class="product-card" id="productA">
+        <div class="card-title">
+          <div class="product-icon">🅰️</div>
+          <h2>产品 A</h2>
+          <span class="chip">可调每份</span>
+        </div>
+        <div class="serving-row" id="servingRowA">
+          <div class="input-group"><label>📏 每份</label><input type="number" id="servingA" value="100" step="any" min="0.1" placeholder="100" class="serving-input"><span class="unit">g</span></div>
+          <div class="input-group"><label>⚖️ 总重</label><input type="number" id="totalWeightA" placeholder="如200" step="any" min="0"><span class="unit">g</span></div>
+          <div class="preset-popup" id="presetPopupA">
+            <button class="preset-chip" data-weight="15">15g</button><button class="preset-chip" data-weight="30">30g</button><button class="preset-chip" data-weight="50">50g</button><button class="preset-chip" data-weight="75">75g</button><button class="preset-chip" data-weight="100">100g</button><button class="preset-chip" data-weight="150">150g</button><button class="preset-chip" data-weight="200">200g</button><button class="preset-chip" data-weight="250">250g</button>
+          </div>
+        </div>
+        <div class="total-weight-row">
+          <span class="tw-label">总重快捷：</span>
+          <div class="total-chips" id="totalPresetsA">
+            <button class="total-chip" data-weight="15">15</button><button class="total-chip" data-weight="30">30</button><button class="total-chip" data-weight="50">50</button><button class="total-chip" data-weight="75">75</button><button class="total-chip" data-weight="100">100</button><button class="total-chip" data-weight="200">200</button><button class="total-chip" data-weight="250">250</button><button class="total-chip" data-weight="500">500</button>
+          </div>
+        </div>
+        <div class="nutrient-grid">
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-sodium"></span>钠</span><input type="number" id="naA" placeholder="0"><span class="nutrient-unit">mg</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-energy"></span>能量</span><input type="number" id="kjA" placeholder="0"><span class="nutrient-unit">kJ</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-protein"></span>蛋白质</span><input type="number" id="proteinA" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-fat"></span>脂肪</span><input type="number" id="fatA" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-carbs"></span>碳水</span><input type="number" id="carbsA" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-fiber"></span>纤维</span><input type="number" id="fiberA" placeholder="0"><span class="nutrient-unit">g</span></div>
+        </div>
+        <div class="converted-section">
+          <div class="converted-title">🧪 每克含量</div>
+          <div class="converted-row highlight-salt"><span class="converted-label">🧂 盐</span><span class="converted-value" id="saltA">-</span></div>
+          <div class="converted-row highlight-kcal"><span class="converted-label">🔥 卡路里</span><span class="converted-value" id="kcalA">-</span></div>
+          <div class="converted-row"><span class="converted-label">💪 蛋白质</span><span class="converted-value" id="protA">-</span></div>
+          <div class="converted-row"><span class="converted-label">🧈 脂肪</span><span class="converted-value" id="fatValA">-</span></div>
+          <div class="converted-row"><span class="converted-label">🍚 碳水</span><span class="converted-value" id="carbsValA">-</span></div>
+          <div class="converted-row"><span class="converted-label">🌿 纤维</span><span class="converted-value" id="fiberValA">-</span></div>
+        </div>
+        <div class="total-section">
+          <div class="converted-title" style="margin-bottom:6px;">🧾 总含量 (总重 × 每克)</div>
+          <div class="total-results" id="totalResultsA">
+            <div class="total-item"><div class="t-label">🧂盐</div><div class="t-value" id="totSaltA">-</div></div>
+            <div class="total-item"><div class="t-label">🔥卡路里</div><div class="t-value" id="totKcalA">-</div></div>
+            <div class="total-item"><div class="t-label">💪蛋白质</div><div class="t-value" id="totProteinA">-</div></div>
+            <div class="total-item"><div class="t-label">🧈脂肪</div><div class="t-value" id="totFatA">-</div></div>
+            <div class="total-item"><div class="t-label">🍚碳水</div><div class="t-value" id="totCarbsA">-</div></div>
+            <div class="total-item"><div class="t-label">🌿纤维</div><div class="t-value" id="totFiberA">-</div></div>
+          </div>
+        </div>
+        <div class="card-actions"><button class="btn-outline reset-product" data-product="A">🗑️ 清空</button></div>
+      </div>
+
+      <!-- 产品 B -->
+      <div class="product-card" id="productB">
+        <div class="card-title">
+          <div class="product-icon">🅱️</div>
+          <h2>产品 B</h2>
+          <span class="chip">可调每份</span>
+        </div>
+        <div class="serving-row" id="servingRowB">
+          <div class="input-group"><label>📏 每份</label><input type="number" id="servingB" value="100" step="any" min="0.1" placeholder="100" class="serving-input"><span class="unit">g</span></div>
+          <div class="input-group"><label>⚖️ 总重</label><input type="number" id="totalWeightB" placeholder="如200" step="any" min="0"><span class="unit">g</span></div>
+          <div class="preset-popup" id="presetPopupB">
+            <button class="preset-chip" data-weight="15">15g</button><button class="preset-chip" data-weight="30">30g</button><button class="preset-chip" data-weight="50">50g</button><button class="preset-chip" data-weight="75">75g</button><button class="preset-chip" data-weight="100">100g</button><button class="preset-chip" data-weight="150">150g</button><button class="preset-chip" data-weight="200">200g</button><button class="preset-chip" data-weight="250">250g</button>
+          </div>
+        </div>
+        <div class="total-weight-row">
+          <span class="tw-label">总重快捷：</span>
+          <div class="total-chips" id="totalPresetsB">
+            <button class="total-chip" data-weight="15">15</button><button class="total-chip" data-weight="30">30</button><button class="total-chip" data-weight="50">50</button><button class="total-chip" data-weight="75">75</button><button class="total-chip" data-weight="100">100</button><button class="total-chip" data-weight="200">200</button><button class="total-chip" data-weight="250">250</button><button class="total-chip" data-weight="500">500</button>
+          </div>
+        </div>
+        <div class="nutrient-grid">
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-sodium"></span>钠</span><input type="number" id="naB" placeholder="0"><span class="nutrient-unit">mg</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-energy"></span>能量</span><input type="number" id="kjB" placeholder="0"><span class="nutrient-unit">kJ</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-protein"></span>蛋白质</span><input type="number" id="proteinB" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-fat"></span>脂肪</span><input type="number" id="fatB" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-carbs"></span>碳水</span><input type="number" id="carbsB" placeholder="0"><span class="nutrient-unit">g</span></div>
+          <div class="nutrient-row"><span class="nutrient-label"><span class="dot dot-fiber"></span>纤维</span><input type="number" id="fiberB" placeholder="0"><span class="nutrient-unit">g</span></div>
+        </div>
+        <div class="converted-section">
+          <div class="converted-title">🧪 每克含量</div>
+          <div class="converted-row highlight-salt"><span class="converted-label">🧂 盐</span><span class="converted-value" id="saltB">-</span></div>
+          <div class="converted-row highlight-kcal"><span class="converted-label">🔥 卡路里</span><span class="converted-value" id="kcalB">-</span></div>
+          <div class="converted-row"><span class="converted-label">💪 蛋白质</span><span class="converted-value" id="protB">-</span></div>
+          <div class="converted-row"><span class="converted-label">🧈 脂肪</span><span class="converted-value" id="fatValB">-</span></div>
+          <div class="converted-row"><span class="converted-label">🍚 碳水</span><span class="converted-value" id="carbsValB">-</span></div>
+          <div class="converted-row"><span class="converted-label">🌿 纤维</span><span class="converted-value" id="fiberValB">-</span></div>
+        </div>
+        <div class="total-section">
+          <div class="converted-title" style="margin-bottom:6px;">🧾 总含量 (总重 × 每克)</div>
+          <div class="total-results" id="totalResultsB">
+            <div class="total-item"><div class="t-label">🧂盐</div><div class="t-value" id="totSaltB">-</div></div>
+            <div class="total-item"><div class="t-label">🔥卡路里</div><div class="t-value" id="totKcalB">-</div></div>
+            <div class="total-item"><div class="t-label">💪蛋白质</div><div class="t-value" id="totProteinB">-</div></div>
+            <div class="total-item"><div class="t-label">🧈脂肪</div><div class="t-value" id="totFatB">-</div></div>
+            <div class="total-item"><div class="t-label">🍚碳水</div><div class="t-value" id="totCarbsB">-</div></div>
+            <div class="total-item"><div class="t-label">🌿纤维</div><div class="t-value" id="totFiberB">-</div></div>
+          </div>
+        </div>
+        <div class="card-actions"><button class="btn-outline reset-product" data-product="B">🗑️ 清空</button></div>
+      </div>
+    </div>
+
+    <div class="global-reset">
+      <button class="btn-filled" id="globalReset">🔄 重置所有产品</button>
+    </div>
+    <div class="footer-note">
+      <span>🔬 <strong>盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;|&nbsp; <strong>kcal = kJ ÷ 4.184</strong></span><br>
+      <span>📐 每克含量 = 每份值 ÷ 每份克重 &nbsp;|&nbsp; 总含量 = 每克含量 × 总重</span>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const products = ['A', 'B'];
+      function getVal(id) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const raw = el.value.trim();
+        if (raw === '') return null;
+        const num = parseFloat(raw);
+        return isNaN(num) || num < 0 ? null : num;
+      }
+      function fmt(num, decimals = 2) {
+        if (num === null || num === undefined || isNaN(num)) return '-';
+        if (num === 0) return '0';
+        return parseFloat(num.toFixed(decimals)).toString();
+      }
+      function updateProduct(p) {
+        const serving = getVal(`serving${p}`) || 100;
+        document.getElementById(`serving${p}`).value = serving;
+        const na = getVal(`na${p}`);
+        const kj = getVal(`kj${p}`);
+        const protein = getVal(`protein${p}`);
+        const fat = getVal(`fat${p}`);
+        const carbs = getVal(`carbs${p}`);
+        const fiber = getVal(`fiber${p}`);
+        const saltPerGram = na !== null ? (na * 2.54 / 1000) / serving : null;
+        const kcalPerGram = kj !== null ? (kj / 4.184) / serving : null;
+        const proteinPerGram = protein !== null ? protein / serving : null;
+        const fatPerGram = fat !== null ? fat / serving : null;
+        const carbsPerGram = carbs !== null ? carbs / serving : null;
+        const fiberPerGram = fiber !== null ? fiber / serving : null;
+        document.getElementById(`salt${p}`).textContent = saltPerGram !== null ? fmt(saltPerGram, 3) : '-';
+        document.getElementById(`kcal${p}`).textContent = kcalPerGram !== null ? fmt(kcalPerGram, 2) : '-';
+        document.getElementById(`prot${p}`).textContent = proteinPerGram !== null ? fmt(proteinPerGram, 2) : '-';
+        document.getElementById(`fatVal${p}`).textContent = fatPerGram !== null ? fmt(fatPerGram, 2) : '-';
+        document.getElementById(`carbsVal${p}`).textContent = carbsPerGram !== null ? fmt(carbsPerGram, 2) : '-';
+        document.getElementById(`fiberVal${p}`).textContent = fiberPerGram !== null ? fmt(fiberPerGram, 2) : '-';
+        const totalWeight = getVal(`totalWeight${p}`);
+        const total = (perGramVal) => (perGramVal !== null && totalWeight !== null && totalWeight > 0) ? fmt(perGramVal * totalWeight, 2) : '-';
+        document.getElementById(`totSalt${p}`).textContent = total(saltPerGram);
+        document.getElementById(`totKcal${p}`).textContent = total(kcalPerGram);
+        document.getElementById(`totProtein${p}`).textContent = total(proteinPerGram);
+        document.getElementById(`totFat${p}`).textContent = total(fatPerGram);
+        document.getElementById(`totCarbs${p}`).textContent = total(carbsPerGram);
+        document.getElementById(`totFiber${p}`).textContent = total(fiberPerGram);
+        const tc = document.getElementById(`totalPresets${p}`);
+        if(tc) tc.querySelectorAll('.total-chip').forEach(chip => {
+          const w = parseFloat(chip.dataset.weight);
+          chip.classList.toggle('active', totalWeight !== null && Math.abs(w - totalWeight) < 0.001);
+        });
+      }
+      function updateAll() { products.forEach(p => updateProduct(p)); }
+      products.forEach(p => {
+        const fields = [`serving${p}`,`na${p}`,`kj${p}`,`protein${p}`,`fat${p}`,`carbs${p}`,`fiber${p}`,`totalWeight${p}`];
+        fields.forEach(id => {
+          const el = document.getElementById(id);
+          if(el) { el.addEventListener('input', () => updateProduct(p)); el.addEventListener('change', () => updateProduct(p)); }
+        });
+        const tp = document.getElementById(`totalPresets${p}`);
+        if(tp) tp.addEventListener('click', (e) => {
+          const chip = e.target.closest('.total-chip');
+          if(!chip) return;
+          document.getElementById(`totalWeight${p}`).value = chip.dataset.weight;
+          updateProduct(p);
+        });
+        const si = document.getElementById(`serving${p}`);
+        const popup = document.getElementById(`presetPopup${p}`);
+        if(si && popup) {
+          si.addEventListener('focus', () => popup.classList.add('active'));
+          si.addEventListener('blur', () => setTimeout(() => popup.classList.remove('active'), 200));
+          popup.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            const chip = e.target.closest('.preset-chip');
+            if(!chip) return;
+            si.value = chip.dataset.weight;
+            updateProduct(p);
+            popup.classList.remove('active');
+            si.focus();
+          });
+        }
+        document.querySelector(`.reset-product[data-product="${p}"]`)?.addEventListener('click', () => {
+          [`serving${p}`,`na${p}`,`kj${p}`,`protein${p}`,`fat${p}`,`carbs${p}`,`fiber${p}`,`totalWeight${p}`].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.value = id.startsWith('serving') ? '100' : '';
+          });
+          updateProduct(p);
+        });
+      });
+      document.getElementById('globalReset')?.addEventListener('click', () => {
+        products.forEach(p => {
+          [`serving${p}`,`na${p}`,`kj${p}`,`protein${p}`,`fat${p}`,`carbs${p}`,`fiber${p}`,`totalWeight${p}`].forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.value = id.startsWith('serving') ? '100' : '';
+          });
+          updateProduct(p);
+        });
+      });
+      updateAll();
+      setTimeout(() => document.getElementById('naA')?.focus(), 200);
+    })();
+  </script>
+</body>
+</html>
