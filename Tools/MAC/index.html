@@ -3,37 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAC 地址深度查询工具 (MacLookup版)</title>
+    <title>MAC 地址查询</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#6750A4',
-                        onPrimary: '#FFFFFF',
-                        primaryContainer: '#EADDFF',
-                        onPrimaryContainer: '#21005D',
-                        secondary: '#625B71',
-                        secondaryContainer: '#E8DEF8',
-                        background: '#FFFBFE',
-                        surface: '#FFFBFE',
-                        surfaceVariant: '#E7E0EC',
-                        onSurface: '#1C1B1F',
-                        onSurfaceVariant: '#49454F',
-                        outline: '#79747E',
-                        error: '#B3261E',
-                        errorContainer: '#F9DEDC',
+                        wise: {
+                            primary: '#9fe870',
+                            'on-primary': '#0e0f0c',
+                            'primary-active': '#cdffad',
+                            'primary-neutral': '#c5edab',
+                            'primary-pale': '#e2f6d5',
+                            ink: '#0e0f0c',
+                            'ink-deep': '#163300',
+                            body: '#454745',
+                            mute: '#868685',
+                            canvas: '#ffffff',
+                            'canvas-soft': '#e8ebe6',
+                            positive: '#2ead4b',
+                            'positive-deep': '#054d28',
+                            negative: '#d03238',
+                            'negative-deep': '#a72027',
+                            'negative-bg': '#320707',
+                        }
                     },
                     fontFamily: {
-                        sans: ['"Noto Sans SC"', '"Roboto"', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                        display: ['Manrope', 'Inter', 'system-ui', 'sans-serif'],
                     },
-                    boxShadow: {
-                        'md3': '0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px 0px rgba(0, 0, 0, 0.3)',
-                        'md3-sm': '0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3)',
+                    borderRadius: {
+                        'wise-xl': '24px',
+                        'wise-md': '12px',
+                        'wise-pill': '9999px',
                     }
                 }
             }
@@ -41,16 +47,13 @@
     </script>
     <style>
         body {
-            background-color: #fdf8fd;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(253,16%,7%,0) 0, hsla(253,16%,7%,0) 50%), 
-                radial-gradient(at 50% 0%, hsla(265,100%,74%,0.1) 0, hsla(265,100%,74%,0) 50%), 
-                radial-gradient(at 100% 0%, hsla(339,49%,30%,0) 0, hsla(339,49%,30%,0) 50%);
+            background-color: #e8ebe6; /* canvas-soft */
+            color: #0e0f0c; /* ink */
         }
-        
+
         .loader {
-            border: 3px solid #EADDFF;
-            border-top: 3px solid #6750A4;
+            border: 3px solid #e2f6d5;
+            border-top: 3px solid #9fe870;
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -72,121 +75,128 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 text-onSurface font-sans selection:bg-primaryContainer selection:text-onPrimaryContainer">
+<body class="min-h-screen flex items-center justify-center p-4 font-sans selection:bg-wise-primary-pale selection:text-wise-ink">
 
-    <main class="w-full max-w-lg bg-surface rounded-[32px] shadow-md3 overflow-hidden border border-white/50 backdrop-blur-sm relative">
+    <main class="w-full max-w-xl bg-wise-canvas rounded-wise-xl overflow-hidden relative shadow-sm">
         
         <!-- Header Section -->
-        <header class="p-8 pb-4 text-center">
-            <div class="w-16 h-16 bg-primaryContainer rounded-full flex items-center justify-center mx-auto mb-4 text-primary shadow-sm">
-                <i class="fa-solid fa-globe text-2xl"></i>
-            </div>
-            <h1 class="text-2xl font-bold tracking-tight text-onSurface mb-1">MAC 地址深度查询</h1>
-            <p class="text-sm text-onSurfaceVariant">数据源: maclookup.app</p>
+        <header class="bg-wise-canvas-soft p-8 pb-6 text-center border-b border-wise-mute/10">
+
+            <h1 class="text-3xl font-display font-extrabold tracking-tight text-wise-ink mb-1">MAC 地址查询</h1>
         </header>
 
         <!-- Input Section -->
-        <section class="px-8 py-4">
-            <div class="relative group">
-                <label for="macInput" class="block text-xs font-medium text-onSurfaceVariant mb-2 ml-1 uppercase tracking-wider">MAC Address</label>
-                <div class="relative">
+        <section class="bg-wise-canvas p-8 py-10">
+            <div class="mb-8">
+                <label for="macInput" class="block text-xs font-semibold text-wise-body mb-3 ml-1 uppercase tracking-wider">
+                    输入 MAC 地址
+                </label>
+                
+                <!-- 重构后的单一智能输入框 -->
+                <div class="relative flex items-center border-2 border-wise-ink rounded-wise-md overflow-hidden focus-within:border-wise-primary focus-within:shadow-[0_0_0_2px_rgba(159,232,112,0.3)] transition-all duration-200 bg-wise-canvas">
                     <input 
                         type="text" 
                         id="macInput" 
                         placeholder="A1:B2:C3:D4:E5:F6" 
-                        class="w-full bg-surfaceVariant text-onSurface px-5 py-4 rounded-2xl outline-none border-2 border-transparent focus:border-primary focus:bg-surface transition-all duration-300 placeholder:text-onSurfaceVariant/50 text-lg font-mono tracking-wider shadow-inner"
+                        class="w-full h-14 bg-transparent text-wise-ink px-5 outline-none text-xl font-mono font-bold tracking-widest placeholder:text-wise-mute/50"
                         maxlength="17"
+                        autocomplete="off"
                     >
-                    <div class="absolute right-4 top-1/2 -translate-y-1/2 text-onSurfaceVariant/50 group-focus-within:text-primary transition-colors">
+                    <div class="pr-4 text-wise-mute/50 group-focus-within:text-wise-primary transition-colors">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
                 </div>
-                <p id="errorMsg" class="text-error text-xs mt-2 ml-1 h-4 opacity-0 transition-opacity duration-300 font-medium">请输入有效的 MAC 地址</p>
+                <p id="errorMsg" class="text-wise-negative text-xs mt-3 ml-1 h-4 opacity-0 transition-opacity duration-300 font-medium">
+                    请输入有效的 MAC 地址
+                </p>
             </div>
 
             <button 
                 id="searchBtn"
-                class="w-full mt-4 bg-primary text-onPrimary font-medium py-4 rounded-2xl shadow-md3-sm hover:shadow-md3 hover:bg-[#523e85] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+                class="w-full bg-wise-primary text-wise-on-primary font-semibold py-4 rounded-wise-xl hover:bg-wise-primary-active active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 text-lg shadow-sm"
             >
-                <span>深度查询</span>
-                <i class="fa-solid fa-database"></i>
+                <span>地址查询</span>
+                <i class="fa-solid fa-magnifying-glass"></i>
             </button>
         </section>
 
         <!-- Result Section -->
-        <section id="resultSection" class="px-8 py-6 hidden">
-            <div class="border-t border-surfaceVariant pt-6">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="h-8 w-1 bg-primary rounded-full"></div>
-                    <h2 class="text-lg font-bold text-onSurface">查询结果</h2>
-                    <span id="dataSourceBadge" class="ml-auto text-xs bg-secondaryContainer text-secondary px-2 py-1 rounded-md font-medium">API Source</span>
+        <section id="resultSection" class="bg-wise-canvas-soft px-8 py-10 hidden">
+            <div class="border-t border-wise-mute/20 pt-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="h-8 w-1.5 bg-wise-primary rounded-wise-pill"></div>
+                    <h2 class="text-2xl font-display font-extrabold text-wise-ink">查询结果</h2>
+                    <span id="dataSourceBadge" class="ml-auto text-xs bg-wise-primary-pale text-wise-positive-deep px-3 py-1 rounded-wise-pill font-semibold">
+                        API Source
+                    </span>
                 </div>
 
                 <!-- Result Card -->
-                <div class="bg-primaryContainer/30 rounded-2xl p-5 border border-primaryContainer/50 backdrop-blur-md fade-in">
+                <div class="bg-wise-canvas rounded-wise-xl p-6 border border-wise-canvas-soft shadow-sm fade-in">
                     <!-- Vendor Name -->
-                    <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-start justify-between mb-6">
                         <div>
-                            <span class="text-xs font-bold text-primary uppercase tracking-widest block mb-1">Vendor / 厂商</span>
-                            <p id="vendorName" class="text-xl font-bold text-onPrimaryContainer leading-tight">Loading...</p>
+                            <span class="text-xs font-bold text-wise-body uppercase tracking-widest block mb-2">Vendor / 厂商</span>
+                            <p id="vendorName" class="text-2xl font-display font-extrabold text-wise-ink leading-tight">Loading...</p>
                         </div>
-                        <div class="bg-white/50 p-2 rounded-lg text-primary">
-                            <i class="fa-solid fa-building"></i>
+                        <div class="bg-wise-primary-pale p-3 rounded-wise-xl text-wise-ink">
+                            <i class="fa-solid fa-building text-xl"></i>
                         </div>
                     </div>
                     
                     <!-- Details Grid -->
                     <div class="grid grid-cols-2 gap-4 mt-4">
-                        <!-- Left Column -->
-                        <div class="space-y-3">
-                            <div class="bg-white/40 p-3 rounded-xl">
-                                <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">MAC 前缀 (OUI)</span>
-                                <span id="ouiPrefix" class="text-sm font-mono font-bold text-onSurface block">--</span>
+                        <div class="space-y-4">
+                            <div class="bg-wise-canvas-soft p-4 rounded-wise-xl">
+                                <span class="text-[10px] text-wise-body font-bold uppercase block mb-1">MAC 前缀 (OUI)</span>
+                                <span id="ouiPrefix" class="text-sm font-mono font-bold text-wise-ink block">--</span>
                             </div>
-                            <div class="bg-white/40 p-3 rounded-xl">
-                                <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">国家/地区</span>
+                            <div class="bg-wise-canvas-soft p-4 rounded-wise-xl">
+                                <span class="text-[10px] text-wise-body font-bold uppercase block mb-1">国家/地区</span>
                                 <div class="flex items-center gap-2">
-                                    <i id="countryIcon" class="fa-solid fa-earth-americas text-primary text-xs"></i>
-                                    <span id="countryName" class="text-sm font-medium text-onSurface">--</span>
+                                    <i id="countryIcon" class="fa-solid fa-earth-americas text-wise-primary text-xs"></i>
+                                    <span id="countryName" class="text-sm font-medium text-wise-ink">--</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Right Column -->
-                        <div class="space-y-3">
-                            <div class="bg-white/40 p-3 rounded-xl">
-                                <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">地址类型</span>
-                                <span id="addressType" class="text-sm font-medium text-onSurface block">--</span>
+                        <div class="space-y-4">
+                            <div class="bg-wise-canvas-soft p-4 rounded-wise-xl">
+                                <span class="text-[10px] text-wise-body font-bold uppercase block mb-1">地址类型</span>
+                                <span id="addressType" class="text-sm font-medium text-wise-ink block">--</span>
                             </div>
-                             <div class="bg-white/40 p-3 rounded-xl">
-                                <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">数据源</span>
-                                <span id="apiSource" class="text-xs font-medium text-primary block">--</span>
+                             <div class="bg-wise-canvas-soft p-4 rounded-wise-xl">
+                                <span class="text-[10px] text-wise-body font-bold uppercase block mb-1">数据源</span>
+                                <span id="apiSource" class="text-xs font-semibold text-wise-ink block">--</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Full Address -->
-                    <div id="addressContainer" class="mt-4 pt-3 border-t border-white/40 hidden">
-                        <span class="text-[10px] text-onSurfaceVariant font-bold uppercase block mb-1">详细地址</span>
-                        <p id="fullAddress" class="text-xs text-onSurface leading-relaxed"></p>
+                    <div id="addressContainer" class="mt-6 pt-4 border-t border-wise-canvas hidden">
+                        <span class="text-[10px] text-wise-body font-bold uppercase block mb-1">详细地址</span>
+                        <p id="fullAddress" class="text-sm text-wise-ink leading-relaxed"></p>
                     </div>
                 </div>
-                
-                <div class="mt-4 text-center">
-                    <button id="resetBtn" class="text-sm text-primary font-medium hover:underline underline-offset-4">查询任意 MAC 地址</button>
+
+                <div class="mt-6 text-center">
+                    <button id="resetBtn" class="text-sm text-wise-ink font-semibold hover:underline underline-offset-4 inline-flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
+                        查询新的 MAC 地址
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Loading State -->
-        <div id="loadingState" class="hidden absolute inset-0 bg-surface/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
+        <div id="loadingState" class="hidden absolute inset-0 bg-wise-canvas/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
             <div class="loader mb-3"></div>
-            <span id="loadingText" class="text-sm font-medium text-onSurfaceVariant animate-pulse">正在连接数据源...</span>
+            <span id="loadingText" class="text-sm font-medium text-wise-body animate-pulse">正在连接数据源...</span>
         </div>
 
         <!-- Footer -->
-        <footer class="p-6 text-center border-t border-surfaceVariant">
-            <p class="text-xs text-onSurfaceVariant/70">
+        <footer class="bg-wise-ink p-6 text-center">
+            <p class="text-xs text-wise-canvas-soft/70">
                 数据来源: IEEE OUI • maclookup.app
             </p>
         </footer>
@@ -201,29 +211,99 @@
         const loadingState = document.getElementById('loadingState');
         const loadingText = document.getElementById('loadingText');
         const errorMsg = document.getElementById('errorMsg');
+        const inputWrapper = macInput.parentElement; // 获取包裹输入框的div，用于控制边框颜色
         
         // Result Fields
         const vendorNameEl = document.getElementById('vendorName');
         const ouiPrefixEl = document.getElementById('ouiPrefix');
         const addressTypeEl = document.getElementById('addressType');
         const countryNameEl = document.getElementById('countryName');
-        const countryIconEl = document.getElementById('countryIcon');
         const apiSourceEl = document.getElementById('apiSource');
         const addressContainer = document.getElementById('addressContainer');
         const fullAddressEl = document.getElementById('fullAddress');
+
+        // --- 新的智能单一输入框逻辑 ---
+        
+        // 核心格式化函数：提取十六进制并自动插入冒号
+        function formatMac(value) {
+            // 1. 提取所有的十六进制字符
+            const hex = value.replace(/[^a-fA-F0-9]/g, '').toUpperCase();
+            // 2. 每两位一组，用冒号连接
+            const parts = hex.match(/.{1,2}/g);
+            return parts ? parts.join(':') : '';
+        }
+
+        macInput.addEventListener('input', (e) => {
+            // 防止最大长度限制导致冒号无法输入的问题
+            // 如果用户正在输入，暂时解除maxlength限制
+            macInput.removeAttribute('maxlength');
+            
+            const cursorPosition = macInput.selectionStart;
+            const oldValue = macInput.value;
+            
+            // 格式化
+            const formatted = formatMac(oldValue);
+            macInput.value = formatted;
+            
+            // 恢复maxlength
+            macInput.setAttribute('maxlength', '17');
+
+            // 智能光标位置计算
+            // 如果新输入了字符且刚好补了冒号，光标需要多移动一位
+            let diff = formatted.length - oldValue.length;
+            let newPosition = cursorPosition + diff;
+            
+            // 确保光标位置合理
+            if (newPosition < 0) newPosition = 0;
+            if (newPosition > formatted.length) newPosition = formatted.length;
+            
+            macInput.setSelectionRange(newPosition, newPosition);
+            
+            hideError();
+        });
+
+        // 智能退格键处理：当光标前面是冒号时，连同冒号前面的字符一起删除
+        macInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                const cursorPosition = macInput.selectionStart;
+                const value = macInput.value;
+                
+                // 如果光标前面是冒号，并且没有选中文本
+                if (cursorPosition > 0 && value[cursorPosition - 1] === ':' && macInput.selectionStart === macInput.selectionEnd) {
+                    e.preventDefault();
+                    // 删除冒号及前面的字符
+                    const newValue = value.substring(0, cursorPosition - 2) + value.substring(cursorPosition);
+                    macInput.value = formatMac(newValue); // 重新格式化以防万一
+                    macInput.setSelectionRange(cursorPosition - 2, cursorPosition - 2);
+                }
+            }
+            
+            // 回车键触发查询
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 粘贴事件：清洗并格式化
+        macInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const formatted = formatMac(pasteData);
+            macInput.value = formatted;
+            // 将光标移动到末尾
+            macInput.setSelectionRange(formatted.length, formatted.length);
+            hideError();
+        });
 
         // 检查代理是否有效的函数
         async function checkProxyStatus() {
             try {
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 5000);
-                
-                // 尝试访问一个简单的公共接口来测试代理是否有效
-                const response = await fetch(`https://corsproxy.io/?https://httpbin.org/get`, { 
+                const response = await fetch(`https://cors.maxcloud.fun/?url=https://httpbin.org/get`, { 
                     signal: controller.signal,
                     method: 'GET'
                 });
-                
                 clearTimeout(timeoutId);
                 return response.ok;
             } catch (error) {
@@ -232,46 +312,7 @@
             }
         }
 
-        // --- 优化的输入处理逻辑 ---
-        
-        // 核心格式化函数：将横线转为冒号，并统一格式
-        function formatMacValue(value) {
-            // 1. 将所有横线替换为冒号
-            let clean = value.replace(/-/g, ':');
-            // 2. 移除非十六进制字符和冒号
-            clean = clean.replace(/[^a-fA-F0-9:]/g, '').toUpperCase();
-            // 3. 重新组合，确保每两位一个冒号
-            const hexOnly = clean.replace(/:/g, '');
-            return hexOnly.match(/.{1,2}/g)?.join(':') || '';
-        }
-
-        macInput.addEventListener('input', (e) => {
-            const originalValue = e.target.value;
-            // 允许输入横线和冒号，但移除其他非法字符
-            const cleanValue = originalValue.replace(/[^a-fA-F0-9:-]/gi, '').toUpperCase();
-            if (originalValue !== cleanValue) {
-                e.target.value = cleanValue;
-            }
-            hideError();
-        });
-
-        function normalizeMac() {
-            const raw = macInput.value;
-            const formatted = formatMacValue(raw);
-            if (formatted !== raw) {
-                macInput.value = formatted;
-            }
-        }
-
-        macInput.addEventListener('blur', normalizeMac);
-        macInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                normalizeMac();
-                performSearch();
-            }
-        });
-
-        // --- 核心查询逻辑 (仅使用 maclookup.app) ---
+        // --- 核心查询逻辑 ---
         
         function isValidMac(mac) {
             const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
@@ -281,14 +322,18 @@
         function showError(msg) {
             errorMsg.textContent = msg;
             errorMsg.classList.remove('opacity-0');
-            macInput.classList.add('border-error');
-            macInput.classList.add('text-error');
+            // 修改包裹容器的边框颜色
+            inputWrapper.classList.remove('border-wise-ink');
+            inputWrapper.classList.add('border-wise-negative');
         }
 
         function hideError() {
             errorMsg.classList.add('opacity-0');
-            macInput.classList.remove('border-error');
-            macInput.classList.remove('text-error');
+            inputWrapper.classList.remove('border-wise-negative');
+            // 恢复原边框色，如果当前没有聚焦则是ink，聚焦则是primary (focus-within会自动处理primary)
+            if (!macInput.matches(':focus')) {
+                inputWrapper.classList.add('border-wise-ink');
+            }
         }
 
         function getAddressType(mac) {
@@ -301,22 +346,19 @@
         }
 
         async function performSearch() {
-            // 1. 格式化输入（横线转冒号）
-            normalizeMac();
             const mac = macInput.value.trim();
 
             if (!isValidMac(mac)) {
-                showError("格式无效，请输入如 A1-B2-C3-D4-E5-F6");
+                showError("格式无效，请输入如 A1:B2:C3:D4:E5:F6");
                 return;
             }
 
             loadingState.classList.remove('hidden');
             resultSection.classList.add('hidden');
             addressContainer.classList.add('hidden');
-            vendorNameEl.classList.remove('text-error');
+            vendorNameEl.classList.remove('text-wise-negative', 'text-wise-body');
 
             try {
-                // 首先检查代理是否可用
                 const isProxyAvailable = await checkProxyStatus();
                 
                 if (!isProxyAvailable) {
@@ -326,9 +368,8 @@
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-                // 使用 allorigins.win 代理，确保公网兼容性
                 const targetUrl = `https://api.maclookup.app/v2/macs/${mac}`;
-                const proxyUrl = `https://corsproxy.io/${targetUrl}`;
+                const proxyUrl = `https://cors.maxcloud.fun/?url=${targetUrl}`;
                 
                 const response = await fetch(proxyUrl, { signal: controller.signal });
                 
@@ -337,29 +378,25 @@
                 if (response.ok) {
                     const json = await response.json();
                     
-                    // 检查是否返回了特定的错误格式
                     if (json && json.errors && json.errors.detail === "Not Found") {
-                        // 情况1: API 明确返回未找到
                         vendorNameEl.textContent = "暂无数据";
-                        vendorNameEl.classList.add('text-onSurfaceVariant');
+                        vendorNameEl.classList.add('text-wise-body');
                         ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
                         countryNameEl.textContent = "暂无数据";
-                        countryNameEl.classList.add('text-onSurfaceVariant');
+                        countryNameEl.classList.add('text-wise-body');
                         addressContainer.classList.add('hidden');
                     } else if (json && json.company) {
-                        // 情况2: 正常返回数据
                         vendorNameEl.textContent = json.company;
-                        vendorNameEl.classList.remove('text-onSurfaceVariant');
                         ouiPrefixEl.textContent = mac.substring(0, 8).toUpperCase();
                         addressTypeEl.textContent = getAddressType(mac);
                         apiSourceEl.textContent = "maclookup.app";
                         
                         if (json.country) {
                             countryNameEl.textContent = json.country;
-                            countryNameEl.classList.remove('text-onSurfaceVariant');
+                            countryNameEl.classList.remove('text-wise-body');
                         } else {
                             countryNameEl.textContent = "暂无数据";
-                            countryNameEl.classList.add('text-onSurfaceVariant');
+                            countryNameEl.classList.add('text-wise-body');
                         }
 
                         if (json.address) {
@@ -383,7 +420,7 @@
                 else if (error.message === 'Proxy unavailable') errorText = "代理服务器不可用，请稍后重试";
                 
                 vendorNameEl.textContent = errorText;
-                vendorNameEl.classList.add('text-error');
+                vendorNameEl.classList.add('text-wise-negative');
                 ouiPrefixEl.textContent = "--";
                 countryNameEl.textContent = "--";
                 addressContainer.classList.add('hidden');
@@ -398,8 +435,14 @@
         resetBtn.addEventListener('click', () => {
             macInput.value = '';
             resultSection.classList.add('hidden');
+            hideError();
             macInput.focus();
         });
+        
+        // 页面加载时自动聚焦
+        window.onload = () => {
+            macInput.focus();
+        };
     </script>
 </body>
 </html>
