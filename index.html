@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
+    <!-- Howler.js — 开源音频引擎 (MIT License) -->
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
     <style>
         :root {
             --wise-primary: #9fe870;
@@ -204,9 +206,18 @@
         .secret-x { text-decoration: none; color: inherit; opacity: 0.15; transition: opacity 0.3s; padding: 5px; font-weight: 700; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
 
-        /* Desktop */
+        /* Desktop — 修复：移除 background-attachment: fixed 以避免 Chrome 下背景不显示 */
         @media screen and (min-width: 768px) {
-            body { background-color: var(--wise-canvas-soft); background-size: cover; background-position: center; background-attachment: fixed; display: flex; justify-content: flex-end; align-items: flex-end; padding: 20px; }
+            body {
+                background-color: var(--wise-canvas-soft);
+                background-size: cover;
+                background-position: center;
+                /* 移除 background-attachment: fixed 修复 Chrome 壁纸不显示问题 */
+                display: flex;
+                justify-content: flex-end;
+                align-items: flex-end;
+                padding: 20px;
+            }
             .phone-screen { width: 375px; height: 812px; border-radius: 40px; box-shadow: 0 0 0 10px var(--wise-ink), 0 0 0 12px rgba(14,15,12,0.2), 0 30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
             .player-content { padding-top: calc(env(safe-area-inset-top, 20px) + 100px); }
         }
@@ -296,13 +307,13 @@
     </div>
 </div>
 
-<audio id="audio" preload="metadata"></audio>
+<!-- 隐藏的 Canvas 用于提取主题色 -->
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
 <script>
-/* ──────────────────────────────────────────────
+/* =========================================================================
    Color Utilities — 从封面提取主题色
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 const ColorUtils = {
     hexToRgb: (hex) => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -326,7 +337,6 @@ const ColorUtils = {
         const canvas = document.getElementById('colorCanvas');
         const ctx = canvas.getContext('2d');
         const img = new Image();
-        // 对 blob: / data: 等本地 URL 不设置 crossOrigin，避免浏览器报错
         if (!imageUrl.startsWith('blob:') && !imageUrl.startsWith('data:')) {
             img.crossOrigin = "Anonymous";
         }
@@ -381,9 +391,9 @@ const ColorUtils = {
     }
 };
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    Cookie 工具
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 const CookieUtils = {
     set: (n, v, d = 30) => {
         const dt = new Date(); dt.setTime(dt.getTime() + d * 864e5);
@@ -396,24 +406,90 @@ const CookieUtils = {
     remove: (n) => { document.cookie = n + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/"; }
 };
 
-/* ──────────────────────────────────────────────
-   歌曲列表 — 只包含 MP3 文件 URL（无硬编码元数据）
-   ────────────────────────────────────────────── */
-const songs = [
-    { src: /src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3 },
-    { src: /src/邱清云 - 冇钱索货屎.mp3" }
+/* =========================================================================
+   扫描 /src/ 目录 — 动态发现音频文件（mp3, ogg, wav, flac, m4a, aac, opus）
+   ========================================================================= */
+const AUDIO_EXTENSIONS = ['.mp3', '.ogg', '.wav', '.flac', '.m4a', '.aac', '.opus', '.wma'];
+
+async function scanSrcDirectory() {
+    // 尝试多种路径以兼容不同部署环境
+    const pathsToTry = ['/src/', '/src', './src/', './src'];
+    for (const dirPath of pathsToTry) {
+        try {
+            const response = await fetch(dirPath);
+            if (!response.ok) continue;
+            const html = await response.text();
+
+            // 解析 HTML 目录列表（兼容 Nginx autoindex / Apache / Caddy 等）
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = [...doc.querySelectorAll('a')];
+            const audioFiles = links
+                .map(a => a.getAttribute('href'))
+                .filter(href => {
+                    if (!href) return false;
+                    // 跳过父目录链接和绝对 URL
+                    if (href === '../' || href === './' || href.startsWith('http')) return false;
+                    const lower = href.toLowerCase();
+                    return AUDIO_EXTENSIONS.some(ext => lower.endsWith(ext));
+                })
+                .map(href => {
+                    // 统一转换为相对于站点根目录的路径
+                    if (href.startsWith('/')) return href;
+                    return '/src/' + href;
+                });
+
+            if (audioFiles.length > 0) {
+                console.log(`✅ 从 ${dirPath} 扫描到 ${audioFiles.length} 首歌曲:`, audioFiles);
+                return audioFiles;
+            }
+        } catch (e) {
+            console.warn(`⚠️ 无法扫描 ${dirPath}:`, e.message);
+        }
+    }
+
+    // 回退：尝试获取 JSON 清单文件
+    try {
+        const manifestRes = await fetch('/src/playlist.json');
+        if (manifestRes.ok) {
+            const manifest = await manifestRes.json();
+            if (Array.isArray(manifest) && manifest.length > 0) {
+                console.log('✅ 从 playlist.json 加载歌曲列表:', manifest);
+                return manifest;
+            }
+        }
+    } catch (e) { /* 忽略 */ }
+
+    console.warn('⚠️ 无法扫描 /src/ 目录，使用默认歌曲列表');
+    return null;
+}
+
+/* =========================================================================
+   默认回退歌曲列表 — 当 /src/ 扫描失败时使用
+   ========================================================================= */
+const FALLBACK_SONGS = [
+    '/src/MerOne Record\'s - Follow YourDream\'s.mp3',
+    '/src/邱清云 - 冇钱索货屎.mp3'
 ];
 
+/* =========================================================================
+   全局状态
+   ========================================================================= */
+let songs = [];                      // 扫描到的歌曲 URL 数组
 let currentSongIndex = 0;
-let currentCoverUrl = null; // 跟踪当前封面的 Blob URL，用于释放内存
-const audio = document.getElementById('audio');
+let currentHowl = null;              // Howler.js 实例
+let currentCoverUrl = null;          // 当前封面的 Blob URL（用于释放内存）
+let progressRAF = null;              // requestAnimationFrame ID
+let isDragging = false;
+let currentMetadata = null;          // 当前歌曲的元数据缓存
+
 const app = document.getElementById('app');
 const island = document.getElementById('island');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    天气
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 const weatherCodeMap = {
     0: { desc: "晴朗", icon: "wb_sunny", bg: "#1a1c18" },
     1: { desc: "多云", icon: "partly_cloudy_day", bg: "#1e2020" },
@@ -545,10 +621,9 @@ async function fetchWeather() {
     }
 }
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    从文件名生成占位封面 (SVG Data URL)
-   当 MP3 没有内嵌封面时使用
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 function generatePlaceholderCover(seed) {
     let hash = 0;
     for (let i = 0; i < seed.length; i++) {
@@ -569,27 +644,25 @@ function generatePlaceholderCover(seed) {
     return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    从 URL 提取文件名作为 fallback 标题
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 function filenameFromUrl(url) {
     try {
         const decoded = decodeURIComponent(url);
         const base = decoded.split('/').pop() || decoded;
-        // 去掉扩展名，去掉可能的艺术家前缀
         return base.replace(/\.[^/.]+$/, '').trim();
     } catch (e) {
         return 'Unknown Title';
     }
 }
 
-/* ──────────────────────────────────────────────
-   核心：从 MP3 文件内嵌 ID3 标签读取元数据
+/* =========================================================================
+   从 MP3 文件内嵌 ID3 标签读取元数据
    返回 { title, artist, album, cover, coverType, src }
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 function extractMetadataFromFile(audioUrl) {
     return new Promise((resolve) => {
-        // ── 准备 fallback 数据 ──
         const fallbackTitle = filenameFromUrl(audioUrl);
         const fallback = {
             title: fallbackTitle,
@@ -600,14 +673,12 @@ function extractMetadataFromFile(audioUrl) {
             src: audioUrl
         };
 
-        // ── 检查 jsmediatags 是否可用 ──
         if (typeof jsmediatags === 'undefined') {
             console.warn('⚠️ jsmediatags 未加载，使用文件名作为标题');
             resolve(fallback);
             return;
         }
 
-        // ── 尝试读取 ID3 标签 ──
         try {
             jsmediatags.read(audioUrl, {
                 onSuccess: (tag) => {
@@ -619,7 +690,6 @@ function extractMetadataFromFile(audioUrl) {
                         hasCover: !!(tags.picture && tags.picture.data && tags.picture.data.length > 0)
                     });
 
-                    // ── 提取封面图片 ──
                     let coverUrl = fallback.cover;
                     let coverType = fallback.coverType;
                     if (tags.picture && tags.picture.data && tags.picture.data.length > 0) {
@@ -656,139 +726,20 @@ function extractMetadataFromFile(audioUrl) {
     });
 }
 
-/* ──────────────────────────────────────────────
-   播放控制
-   ────────────────────────────────────────────── */
-function toggleIsland() { island.classList.toggle('active'); }
-
-function playSong() {
-    audio.play();
-    app.classList.add('playing');
-    document.getElementById('playIcon').innerText = 'pause';
-}
-
-function pauseSong() {
-    audio.pause();
-    app.classList.remove('playing');
-    document.getElementById('playIcon').innerText = 'play_arrow';
-}
-
-/* ──────────────────────────────────────────────
-   加载歌曲 — 完全依赖 ID3 内嵌元数据
-   ────────────────────────────────────────────── */
-async function loadSong(song) {
-    // ── 1. 显示加载状态 ──
-    document.getElementById('mainTitle').innerText = '读取中...';
-    document.getElementById('mainArtist').innerText = '';
-    document.getElementById('mainCover').classList.add('change');
-
-    // ── 2. 从歌曲文件提取内嵌元数据 ──
-    const metadata = await extractMetadataFromFile(song.src);
-
-    // ── 3. 更新 UI ──
-    document.getElementById('mainTitle').innerText = metadata.title;
-    document.getElementById('mainArtist').innerText = metadata.artist;
-
-    // ── 4. 释放旧的 Blob URL ──
-    if (currentCoverUrl && currentCoverUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(currentCoverUrl);
-    }
-    currentCoverUrl = metadata.cover;
-
-    // ── 5. 从封面提取主题色 ──
-    ColorUtils.extractColorFromUrl(metadata.cover, rgb => {
-        const theme = ColorUtils.generateTheme(rgb);
-        for (const [k, v] of Object.entries(theme))
-            document.documentElement.style.setProperty(k, v);
-        updateThemeColor();
-    });
-
-    // ── 6. 设置封面图 ──
-    const mainCover = document.getElementById('mainCover');
-    mainCover.onload = () => {
-        mainCover.classList.remove('change');
-        // 封面加载完成后更新 MediaSession
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: metadata.title,
-                artist: metadata.artist,
-                album: metadata.album || 'Unknown Album',
-                artwork: [{ src: metadata.cover, sizes: '512x512', type: metadata.coverType || 'image/jpeg' }]
-            });
-        }
-    };
-    mainCover.onerror = () => {
-        mainCover.classList.remove('change');
-        // 如果封面加载失败（例如 SVG data URL 在某些情况），使用 fallback 颜色
-        const fallbackRgb = { r: 100, g: 145, b: 65 };
-        const theme = ColorUtils.generateTheme(fallbackRgb);
-        for (const [k, v] of Object.entries(theme))
-            document.documentElement.style.setProperty(k, v);
-        updateThemeColor();
-    };
-    mainCover.src = metadata.cover;
-
-    // ── 7. 设置音频源 ──
-    audio.src = metadata.src;
-
-    // ── 8. 立即设置 MediaSession（不等图片加载） ──
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: metadata.title,
-            artist: metadata.artist,
-            artwork: [{ src: metadata.cover, sizes: '512x512', type: metadata.coverType || 'image/jpeg' }]
-        });
-    }
-}
-
-/* ──────────────────────────────────────────────
-   事件绑定
-   ────────────────────────────────────────────── */
-document.getElementById('playBtn').addEventListener('click', () => {
-    audio.paused ? playSong() : pauseSong();
-});
-
-document.getElementById('nextBtn').addEventListener('click', async () => {
-    currentSongIndex = (currentSongIndex + 1) % songs.length;
-    await loadSong(songs[currentSongIndex]);
-    playSong();
-});
-
-document.getElementById('prevBtn').addEventListener('click', async () => {
-    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-    await loadSong(songs[currentSongIndex]);
-    playSong();
-});
-
-/* ──────────────────────────────────────────────
-   进度条
-   ────────────────────────────────────────────── */
-let isDragging = false;
+/* =========================================================================
+   进度条 UI 更新
+   ========================================================================= */
 const audioSlider = document.getElementById('audioSlider'),
       activeTrack = document.getElementById('activeTrack'),
       inactiveTrack = document.getElementById('inactiveTrack'),
       sliderThumb = document.getElementById('sliderThumb');
 
-audio.addEventListener('timeupdate', () => {
-    const { duration, currentTime } = audio;
-    if (isNaN(duration)) return;
-    const percent = (currentTime / duration) * 100;
-    if (!isDragging) updateUI(percent);
-    // 播完自动切下一首
-    if (currentTime >= duration && duration > 0) {
-        document.getElementById('nextBtn').click();
-    }
-});
-
-audioSlider.addEventListener('input', () => {
-    isDragging = true;
-    updateUI(audioSlider.value);
-});
-
-audioSlider.addEventListener('change', () => {
-    isDragging = false;
-    audio.currentTime = (audioSlider.value / 100) * audio.duration;
-});
+function formatTime(seconds) {
+    if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${String(s).padStart(2, '0')}`;
+}
 
 function updateUI(percent) {
     percent = isNaN(percent) ? 0 : Math.max(0, Math.min(100, percent));
@@ -797,26 +748,248 @@ function updateUI(percent) {
     inactiveTrack.style.left = percent + '%';
     inactiveTrack.style.width = (100 - percent) + '%';
     sliderThumb.style.left = percent + '%';
-    const cur = isDragging ? (percent / 100) * audio.duration : audio.currentTime;
-    document.getElementById('currTime').innerText = isNaN(cur) ? '0:00'
-        : `${Math.floor(cur/60)}:${String(Math.floor(cur%60)).padStart(2,'0')}`;
-    document.getElementById('durTime').innerText = isNaN(audio.duration) ? '0:00'
-        : `${Math.floor(audio.duration/60)}:${String(Math.floor(audio.duration%60)).padStart(2,'0')}`;
+
+    const dur = currentHowl ? currentHowl.duration() : 0;
+    const cur = isDragging ? (percent / 100) * dur : (currentHowl ? currentHowl.seek() || 0 : 0);
+    document.getElementById('currTime').innerText = formatTime(cur);
+    document.getElementById('durTime').innerText = formatTime(dur);
 }
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
+   停止进度轮询 (requestAnimationFrame)
+   ========================================================================= */
+function stopProgressLoop() {
+    if (progressRAF) {
+        cancelAnimationFrame(progressRAF);
+        progressRAF = null;
+    }
+}
+
+/* =========================================================================
+   启动进度轮询 — 利用 rAF 从 Howler.seek() 获取当前播放位置
+   ========================================================================= */
+function startProgressLoop() {
+    stopProgressLoop();
+    function loop() {
+        if (currentHowl && currentHowl.playing() && !isDragging) {
+            const seek = currentHowl.seek() || 0;
+            const duration = currentHowl.duration() || 0;
+            if (duration > 0) {
+                updateUI((seek / duration) * 100);
+            }
+        }
+        progressRAF = requestAnimationFrame(loop);
+    }
+    progressRAF = requestAnimationFrame(loop);
+}
+
+/* =========================================================================
+   播放控制 — 基于 Howler.js
+   ========================================================================= */
+function toggleIsland() { island.classList.toggle('active'); }
+
+function playSong() {
+    if (!currentHowl) return;
+    currentHowl.play();
+    app.classList.add('playing');
+    document.getElementById('playIcon').innerText = 'pause';
+    startProgressLoop();
+}
+
+function pauseSong() {
+    if (!currentHowl) return;
+    currentHowl.pause();
+    app.classList.remove('playing');
+    document.getElementById('playIcon').innerText = 'play_arrow';
+    stopProgressLoop();
+}
+
+/* =========================================================================
+   销毁当前 Howl 实例并释放资源
+   ========================================================================= */
+function destroyCurrentHowl() {
+    stopProgressLoop();
+    if (currentHowl) {
+        currentHowl.unload();
+        currentHowl = null;
+    }
+    // 释放旧的 Blob URL
+    if (currentCoverUrl && currentCoverUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(currentCoverUrl);
+        currentCoverUrl = null;
+    }
+}
+
+/* =========================================================================
+   加载歌曲 — 使用 Howler.js 创建播放实例
+   ========================================================================= */
+async function loadSong(songUrl) {
+    // 1. 显示加载状态
+    document.getElementById('mainTitle').innerText = '读取中...';
+    document.getElementById('mainArtist').innerText = '';
+    document.getElementById('mainCover').classList.add('change');
+
+    // 2. 销毁旧实例
+    destroyCurrentHowl();
+
+    // 3. 从歌曲文件提取内嵌元数据
+    const metadata = await extractMetadataFromFile(songUrl);
+    currentMetadata = metadata;
+    currentCoverUrl = metadata.cover;
+
+    // 4. 更新 UI
+    document.getElementById('mainTitle').innerText = metadata.title;
+    document.getElementById('mainArtist').innerText = metadata.artist;
+
+    // 5. 从封面提取主题色
+    ColorUtils.extractColorFromUrl(metadata.cover, rgb => {
+        const theme = ColorUtils.generateTheme(rgb);
+        for (const [k, v] of Object.entries(theme))
+            document.documentElement.style.setProperty(k, v);
+        updateThemeColor();
+    });
+
+    // 6. 设置封面图
+    const mainCover = document.getElementById('mainCover');
+    mainCover.onload = () => {
+        mainCover.classList.remove('change');
+        updateMediaSessionMetadata();
+    };
+    mainCover.onerror = () => {
+        mainCover.classList.remove('change');
+        const fallbackRgb = { r: 100, g: 145, b: 65 };
+        const theme = ColorUtils.generateTheme(fallbackRgb);
+        for (const [k, v] of Object.entries(theme))
+            document.documentElement.style.setProperty(k, v);
+        updateThemeColor();
+    };
+    mainCover.src = metadata.cover;
+
+    // 7. 创建 Howler.js 实例（开源音频引擎）
+    currentHowl = new Howl({
+        src: [songUrl],
+        html5: true,           // 使用 HTML5 Audio 以支持流式播放
+        preload: 'metadata',
+        volume: 1.0,
+        onplay: function() {
+            app.classList.add('playing');
+            document.getElementById('playIcon').innerText = 'pause';
+            startProgressLoop();
+            updateMediaSessionMetadata();
+        },
+        onpause: function() {
+            app.classList.remove('playing');
+            document.getElementById('playIcon').innerText = 'play_arrow';
+            stopProgressLoop();
+        },
+        onend: function() {
+            // 播放完毕后自动切到下一首
+            stopProgressLoop();
+            app.classList.remove('playing');
+            document.getElementById('playIcon').innerText = 'play_arrow';
+            nextSong();
+        },
+        onload: function() {
+            // 音频加载完成，更新时长显示
+            const dur = currentHowl.duration();
+            document.getElementById('durTime').innerText = formatTime(dur);
+            updateUI(0);
+        },
+        onloaderror: function(id, err) {
+            console.error('❌ 音频加载失败:', songUrl, err);
+            document.getElementById('mainTitle').innerText = '加载失败';
+            document.getElementById('mainArtist').innerText = '请检查文件是否存在';
+        },
+        onseek: function() {
+            // seek 完成后更新 UI
+            if (!isDragging && currentHowl) {
+                const seek = currentHowl.seek() || 0;
+                const dur = currentHowl.duration() || 0;
+                if (dur > 0) updateUI((seek / dur) * 100);
+            }
+        }
+    });
+
+    // 8. 立即设置 MediaSession
+    updateMediaSessionMetadata();
+}
+
+/* =========================================================================
+   更新 MediaSession 元数据
+   ========================================================================= */
+function updateMediaSessionMetadata() {
+    if (!('mediaSession' in navigator) || !currentMetadata) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: currentMetadata.title,
+        artist: currentMetadata.artist,
+        album: currentMetadata.album || 'Tools Music',
+        artwork: [{
+            src: currentMetadata.cover,
+            sizes: '512x512',
+            type: currentMetadata.coverType || 'image/jpeg'
+        }]
+    });
+}
+
+/* =========================================================================
+   切歌
+   ========================================================================= */
+async function prevSong() {
+    if (songs.length === 0) return;
+    currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+    await loadSong(songs[currentSongIndex]);
+    playSong();
+}
+
+async function nextSong() {
+    if (songs.length === 0) return;
+    currentSongIndex = (currentSongIndex + 1) % songs.length;
+    await loadSong(songs[currentSongIndex]);
+    playSong();
+}
+
+/* =========================================================================
+   事件绑定
+   ========================================================================= */
+document.getElementById('playBtn').addEventListener('click', () => {
+    if (!currentHowl) return;
+    currentHowl.playing() ? pauseSong() : playSong();
+});
+
+document.getElementById('nextBtn').addEventListener('click', nextSong);
+document.getElementById('prevBtn').addEventListener('click', prevSong);
+
+/* =========================================================================
+   进度条拖拽交互
+   ========================================================================= */
+audioSlider.addEventListener('input', () => {
+    isDragging = true;
+    updateUI(parseFloat(audioSlider.value));
+});
+
+audioSlider.addEventListener('change', () => {
+    isDragging = false;
+    if (currentHowl) {
+        const dur = currentHowl.duration();
+        if (dur > 0) {
+            currentHowl.seek((parseFloat(audioSlider.value) / 100) * dur);
+        }
+    }
+});
+
+/* =========================================================================
    MediaSession 动作
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 if ('mediaSession' in navigator) {
     navigator.mediaSession.setActionHandler('play', playSong);
     navigator.mediaSession.setActionHandler('pause', pauseSong);
-    navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prevBtn').click());
-    navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('nextBtn').click());
+    navigator.mediaSession.setActionHandler('previoustrack', prevSong);
+    navigator.mediaSession.setActionHandler('nexttrack', nextSong);
 }
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    底部抽屉 & 键盘快捷键
-   ────────────────────────────────────────────── */
+   ========================================================================= */
 function toggleDrawer() {
     document.getElementById('drawer').classList.toggle('open');
 }
@@ -824,55 +997,104 @@ function toggleDrawer() {
 document.addEventListener('keydown', async e => {
     if (e.key === ' ') {
         e.preventDefault();
-        audio.paused ? playSong() : pauseSong();
+        if (!currentHowl) return;
+        currentHowl.playing() ? pauseSong() : playSong();
     } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
-        await loadSong(songs[currentSongIndex]);
-        playSong();
+        await prevSong();
     } else if (e.key === 'ArrowRight') {
         e.preventDefault();
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
-        await loadSong(songs[currentSongIndex]);
-        playSong();
+        await nextSong();
     }
 });
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    Bing 壁纸（桌面端）
-   ────────────────────────────────────────────── */
+   修复点：
+   1. img.onload 必须在 img.src 之前设置，避免缓存命中时回调丢失
+   2. 桌面 CSS 移除了 background-attachment: fixed，避免 Chrome 渲染 bug
+   3. 增加错误重试和超时保护
+   ========================================================================= */
 async function loadBingWallpaper() {
     if (window.innerWidth < 768) return;
     try {
-        const response = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const response = await fetch(
+            'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN',
+            { signal: controller.signal }
+        );
+        clearTimeout(timeoutId);
+
         const data = await response.json();
         if (data.images && data.images.length > 0) {
             const imgUrl = 'https://www.bing.com' + data.images[0].url;
             const img = new Image();
+            // ✅ 修复：先绑定 onload/onerror，再设置 src
+            img.onload = () => {
+                document.body.style.backgroundImage = `url(${imgUrl})`;
+                console.log('✅ Bing 壁纸加载成功:', data.images[0].copyright);
+            };
+            img.onerror = () => {
+                console.warn('⚠️ Bing 壁纸图片加载失败，尝试使用低分辨率版本');
+                // 回退：尝试使用低分辨率版本
+                const fallbackUrl = 'https://www.bing.com' + data.images[0].url.replace('_1920x1080', '_1366x768');
+                const fbImg = new Image();
+                fbImg.onload = () => { document.body.style.backgroundImage = `url(${fallbackUrl})`; };
+                fbImg.onerror = () => { console.warn('⚠️ Bing 壁纸回退也失败'); };
+                fbImg.src = fallbackUrl;
+            };
             img.src = imgUrl;
-            img.onload = () => { document.body.style.backgroundImage = `url(${imgUrl})`; };
         }
-    } catch (e) { console.warn('Bing壁纸加载失败'); }
+    } catch (e) {
+        if (e.name === 'AbortError') {
+            console.warn('⚠️ Bing 壁纸请求超时');
+        } else {
+            console.warn('⚠️ Bing 壁纸加载失败:', e.message);
+        }
+    }
 }
 
-/* ──────────────────────────────────────────────
+/* =========================================================================
    初始化
-   ────────────────────────────────────────────── */
-function init() {
+   ========================================================================= */
+async function init() {
+    // 1. 扫描 /src/ 目录获取歌曲列表
+    const scanned = await scanSrcDirectory();
+    songs = (scanned && scanned.length > 0) ? scanned : FALLBACK_SONGS;
+    console.log(`🎵 歌曲列表 (${songs.length} 首):`, songs);
+
+    // 2. 启动时钟
     updateTime();
     setInterval(updateTime, 1000);
+
+    // 3. 天气
     fetchWeather();
     setInterval(fetchWeather, 10 * 60 * 1000);
+
+    // 4. 灵动岛点击
     island.addEventListener('click', toggleIsland);
+
+    // 5. Bing 壁纸（桌面端）
     loadBingWallpaper();
     window.addEventListener('resize', () => {
         if (window.innerWidth >= 768) loadBingWallpaper();
     });
+
+    // 6. 主题色
     updateThemeColor();
+
+    // 7. 加载第一首歌
+    if (songs.length > 0) {
+        await loadSong(songs[currentSongIndex]);
+    } else {
+        document.getElementById('mainTitle').innerText = '无可用歌曲';
+        document.getElementById('mainArtist').innerText = '请在 /src/ 目录添加音乐文件';
+    }
 }
 
-// 启动：加载第一首歌
-loadSong(songs[currentSongIndex]);
+// 启动
 init();
 </script>
 </body>
