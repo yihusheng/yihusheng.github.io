@@ -3,354 +3,313 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#e8ebe6">
 <title>Tools Music</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.2/color-thief.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#e8ebe6;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;background-size:cover;background-position:center;background-repeat:no-repeat;transition:background-image .5s}
-.phone-screen{width:100vw;height:100dvh;height:100vh;background:var(--bg,#e8ebe6);overflow:hidden;position:relative;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
-@supports(height:100dvh){.phone-screen{height:100dvh}}
-/* 灵动岛 */
-.dynamic-island{position:absolute;left:50%;transform:translateX(-50%);width:126px;height:38px;background:var(--island-bg,#0e0f0c);border-radius:20px;z-index:500;transition:all .4s cubic-bezier(0.175,0.885,0.32,1.275);display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 16px rgba(14,15,12,.3);cursor:pointer;top:calc(env(safe-area-inset-top,12px)+10px)}
+body{font-family:Inter,system-ui,-apple-system,sans-serif;background:#e8ebe6;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;background-size:cover;background-position:center}
+.phone-screen{width:100vw;height:100dvh;background:var(--phone-screen-bg,#e8ebe6);overflow:hidden;position:relative;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.dynamic-island{position:absolute;left:50%;transform:translateX(-50%);width:126px;height:38px;background:var(--island-bg,#0e0f0c);border-radius:20px;z-index:500;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;top:calc(env(safe-area-inset-top,12px)+10px);transition:.4s cubic-bezier(.175,.885,.32,1.275)}
 .dynamic-island.active{width:320px;height:150px;border-radius:36px;background:var(--island-expand-bg,#1a1c18)}
-.island-default{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 14px;gap:8px;opacity:1;position:absolute;height:100%;z-index:10;transition:opacity .2s}
-.dynamic-island.active .island-default{opacity:0;pointer-events:none}
+.island-default,.island-weather-detail{position:absolute;height:100%;z-index:10;transition:opacity .2s}
+.island-default{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 14px;gap:8px;opacity:1}
+.active .island-default{opacity:0;pointer-events:none}
+.island-weather-detail{display:flex;align-items:center;justify-content:space-between;width:100%;padding:20px 24px;opacity:0;pointer-events:none;top:0}
+.active .island-weather-detail{opacity:1;pointer-events:auto}
 .island-time{font-size:.85rem;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
 .island-weather{display:flex;align-items:center;gap:5px}
-.island-weather-icon{font-size:1.15rem;color:var(--primary,#9fe870);line-height:1}
-.island-weather-temp{font-size:.75rem;font-weight:600;color:var(--primary,#9fe870);font-variant-numeric:tabular-nums}
-.island-weather-detail{display:flex;align-items:center;justify-content:space-between;width:100%;padding:20px 24px;opacity:0;pointer-events:none;transition:opacity .2s .1s;position:absolute;top:0;height:100%;z-index:20}
-.dynamic-island.active .island-weather-detail{opacity:1;pointer-events:auto}
+.island-weather-icon{font-size:1.15rem;color:var(--md-sys-color-primary,#9fe870)}
+.island-weather-temp{font-size:.75rem;font-weight:600;color:var(--md-sys-color-primary,#9fe870);font-variant-numeric:tabular-nums}
 .detail-left{display:flex;flex-direction:column;align-items:flex-start}
-.detail-icon-lg{font-size:2.8rem;line-height:1;margin-bottom:10px;color:var(--primary,#9fe870)}
-.detail-temp-wrap{display:flex;flex-direction:column}
-.detail-temp-now{font-size:2.2rem;font-weight:900;color:var(--primary,#9fe870);line-height:1}
-.detail-temp-range{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:4px;font-weight:500}
+.detail-icon-lg{font-size:2.8rem;color:var(--md-sys-color-primary,#9fe870);margin-bottom:10px}
+.detail-temp-now{font-size:2.2rem;font-weight:900;color:var(--md-sys-color-primary,#9fe870);line-height:1}
+.detail-temp-range{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:4px}
 .detail-right{text-align:right;display:flex;flex-direction:column;gap:6px}
 .detail-desc{font-size:1.05rem;font-weight:700;color:#fff}
-.location-display{font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:2px;font-weight:500}
-.detail-meta{font-size:.75rem;color:rgba(255,255,255,.38);display:flex;flex-direction:column;gap:3px;font-weight:400}
-.detail-meta .material-symbols-rounded{font-size:.85rem;vertical-align:middle;color:rgba(255,255,255,.45)}
-/* 播放器 */
-.player-content{padding:calc(env(safe-area-inset-top,20px)+100px)24px 70px;display:flex;flex-direction:column;align-items:center;height:100%;position:relative;z-index:1}
-.player-background{position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;background:var(--player-bg,#e8ebe6);filter:blur(60px)saturate(1.2);transform:scale(1.3);opacity:.3;transition:background .6s}
-.album-art{width:280px;height:280px;object-fit:cover;border-radius:24px;margin-bottom:24px;box-shadow:0 8px 32px rgba(14,15,12,.1),0 2px 8px rgba(14,15,12,.05);transition:transform .4s cubic-bezier(0.34,1.56,0.64,1);max-width:75vw;background:#fff}
+.location-display{font-size:.8rem;color:rgba(255,255,255,.4);font-weight:500}
+.detail-meta{font-size:.75rem;color:rgba(255,255,255,.38);display:flex;flex-direction:column;gap:3px}
+.detail-meta .material-symbols-rounded{font-size:.85rem;color:rgba(255,255,255,.45);vertical-align:middle;margin-right:2px}
+.player-content{padding:calc(env(safe-area-inset-top,20px)+100px) 24px 70px;display:flex;flex-direction:column;align-items:center;height:100%;position:relative;z-index:1}
+.player-background{position:absolute;top:0;left:0;width:100%;height:100%;z-index:-1;background:var(--player-bg,#e8ebe6);filter:blur(60px)saturate(1.2);transform:scale(1.3);opacity:.3;transition:background-color .6s}
+.album-art{width:280px;height:280px;object-fit:cover;border-radius:24px;margin-bottom:24px;box-shadow:0 8px 32px rgba(14,15,12,.1),0 2px 8px rgba(14,15,12,.05);max-width:75vw;background:#fff;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
 .album-art.change{transform:scale(.9);opacity:.7}
 .song-info{text-align:center;margin-bottom:12px;width:100%;padding:0 8px}
-.song-title-main{font-weight:900;font-size:1.75rem;color:var(--on-surface,#0e0f0c);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.5px;line-height:1.15}
-.artist-name{font-size:1.05rem;color:var(--ink-deep,#163300);font-weight:600;letter-spacing:-.2px}
-/* 进度条 */
+.song-title-main{font-weight:900;font-size:1.75rem;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.5px;line-height:1.15}
+.artist-name{font-size:1.05rem;font-weight:600;letter-spacing:-.2px;color:var(--wise-ink-deep,#163300)}
 .m3-slider-root{width:100%;height:60px;position:relative;display:flex;align-items:center;flex-shrink:0}
-.m3-slider-track-inactive{position:absolute;height:4px;background:var(--track-bg,rgba(14,15,12,.1));border-radius:2px;z-index:1;top:28px;left:0;width:100%}
-.m3-slider-track-active-container{position:absolute;left:0;height:20px;overflow:hidden;z-index:2;width:0%;top:20px}
-.m3-slider-wavy-path{fill:none;stroke:var(--primary,#9fe870);stroke-width:4;stroke-linecap:round}
-@keyframes wavy-move{from{transform:translateX(0)}to{transform:translateX(-40px)}}
-.playing .m3-slider-wavy-path{animation:wavy-move 1.5s linear infinite}
-.m3-slider-thumb-vertical{position:absolute;top:30px;left:0%;width:4px;height:20px;background:var(--primary,#9fe870);border-radius:2px;transform:translate(-50%,-50%);z-index:3;pointer-events:none;box-shadow:0 2px 8px rgba(14,15,12,.15)}
-.m3-slider-input{position:absolute;width:100%;height:100%;-webkit-appearance:none;appearance:none;background:transparent;z-index:20;cursor:pointer;outline:none;margin:0}
-.m3-slider-input::-webkit-slider-thumb{-webkit-appearance:none;width:0;height:0;border:none;background:transparent}
-.m3-slider-input::-moz-range-thumb{width:0;height:0;border:none;background:transparent}
-.time-labels{width:100%;display:flex;justify-content:space-between;margin-top:4px;color:var(--on-surface-variant,#868685);font-size:.75rem;font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums}
-/* 控制按钮 */
+.m3-slider-track-inactive{position:absolute;height:4px;background:rgba(14,15,12,.1);border-radius:2px;top:28px;left:0;width:100%}
+.m3-slider-track-active-container{position:absolute;left:0;height:20px;overflow:hidden;top:20px;width:0%}
+.m3-slider-wavy-path{fill:none;stroke:var(--md-sys-color-primary,#9fe870);stroke-width:4;stroke-linecap:round}
+@keyframes wavy{from{transform:translateX(0)}to{transform:translateX(-40px)}}
+.playing .m3-slider-wavy-path{animation:wavy 1.5s linear infinite}
+.m3-slider-thumb-vertical{position:absolute;top:30px;left:0%;width:4px;height:20px;background:var(--md-sys-color-primary,#9fe870);border-radius:2px;transform:translate(-50%,-50%);z-index:3;pointer-events:none;box-shadow:0 2px 8px rgba(14,15,12,.15)}
+.m3-slider-input{position:absolute;width:100%;height:100%;-webkit-appearance:none;appearance:none;background:0 0;z-index:20;cursor:pointer;outline:none;margin:0}
+.m3-slider-input::-webkit-slider-thumb{-webkit-appearance:none;width:0;height:0;border:none;background:0 0}
+.m3-slider-input::-moz-range-thumb{width:0;height:0;border:none;background:0 0}
+.time-labels{width:100%;display:flex;justify-content:space-between;margin-top:4px;color:var(--md-sys-color-on-surface-variant,#868685);font-size:.75rem;font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums}
 .controls{display:flex;gap:20px;align-items:center;flex-shrink:0;margin-top:8px}
-.btn{background:var(--btn-bg,#d8dbd6);color:var(--on-surface,#0e0f0c);border:none;cursor:pointer;border-radius:24px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 1px 3px rgba(14,15,12,.06)}
-.btn:active{transform:scale(.92);background:var(--bg,#e8ebe6)}
+.btn{background:var(--wise-canvas-soft-darker,#d8dbd6);color:var(--md-sys-color-on-secondary-container,#0e0f0c);border:none;cursor:pointer;border-radius:24px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 1px 3px rgba(14,15,12,.06)}
+.btn:active{transform:scale(.92);background:var(--wise-canvas-soft,#e8ebe6)}
 .btn .material-symbols-rounded{font-size:1.5rem}
-.btn-play{width:72px;height:72px;border-radius:36px;background:var(--primary,#9fe870);color:var(--on-primary,#0e0f0c);box-shadow:0 4px 16px rgba(159,232,112,.35)}
-.btn-play:active{background:var(--primary-active,#cdffad)}
+.btn-play{width:72px;height:72px;border-radius:36px;background:var(--md-sys-color-primary,#9fe870);color:var(--md-sys-color-on-primary,#0e0f0c);box-shadow:0 4px 16px rgba(159,232,112,.35)}
+.btn-play:active{background:var(--wise-primary-active,#cdffad)}
 .btn-play .material-symbols-rounded{font-size:2rem}
-@keyframes pulse-play{0%,100%{box-shadow:0 4px 16px rgba(159,232,112,.35);transform:scale(1)}50%{box-shadow:0 6px 24px rgba(159,232,112,.5);transform:scale(1.03)}}
-.playing .btn-play{animation:pulse-play 2s ease-in-out infinite}
-/* 底部抽屉 */
-.bottom-drawer{position:absolute;bottom:0;left:0;width:100%;height:92%;background:#fff;border-radius:24px 24px 0 0;transform:translateY(calc(100% - 16px));transition:transform .5s cubic-bezier(0.2,0,0,1);z-index:1000;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(14,15,12,.08)}
+@keyframes pulse{0%,100%{box-shadow:0 4px 16px rgba(159,232,112,.35)}50%{box-shadow:0 6px 24px rgba(159,232,112,.5);transform:scale(1.03)}}
+.playing .btn-play{animation:pulse 2s ease-in-out infinite}
+.bottom-drawer{position:absolute;bottom:0;left:0;width:100%;height:92%;background:#fff;border-radius:24px 24px 0 0;transform:translateY(calc(100% - 16px));transition:transform .5s cubic-bezier(.2,0,0,1);z-index:1000;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(14,15,12,.08)}
 .bottom-drawer.open{transform:translateY(0)}
-.nav-handle-area{width:100%;height:16px;padding-top:6px;display:flex;justify-content:center;flex-shrink:0;cursor:pointer;background:transparent}
-.md3-nav-bar{width:32px;height:4px;background:var(--on-surface-variant,#868685);border-radius:2px;opacity:.3}
-.drawer-scroll-view{flex:1;overflow-y:auto;display:flex;flex-direction:column;padding:4px 24px 0}
+.nav-handle-area{width:100%;height:16px;padding-top:6px;display:flex;justify-content:center;flex-shrink:0;cursor:pointer;background:0 0}
+.md3-nav-bar{width:32px;height:4px;background:var(--md-sys-color-outline,#868685);border-radius:2px;opacity:.3}
+.drawer-scroll-view{flex:1;overflow-y:auto;padding:4px 24px 0}
 .drawer-scroll-view::-webkit-scrollbar{display:none}
-.drawer-title{font-size:1.5rem;color:var(--on-surface,#0e0f0c);margin:4px 0 16px;font-weight:900;flex-shrink:0;letter-spacing:-.5px}
+.drawer-title{font-size:1.5rem;margin:4px 0 16px;font-weight:900;flex-shrink:0;letter-spacing:-.5px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-bottom:16px}
-.card{background:var(--surface-container,#e8ebe6);border-radius:24px;padding:18px 16px;text-decoration:none;color:var(--on-surface,#0e0f0c);display:flex;flex-direction:column;gap:10px;border:none;transition:all .25s cubic-bezier(0.2,0,0,1);position:relative;overflow:hidden}
-.card:active{transform:scale(.97);background:var(--primary-pale,#e2f6d5)}
-.card .material-symbols-rounded{font-size:1.7rem;color:var(--ink-deep,#163300)}
-.card a{text-decoration:none;color:var(--on-surface,#0e0f0c);font-weight:600;font-size:.9rem;display:block;padding:2px 0;transition:color .2s;position:relative;z-index:1}
-.card a:hover{color:var(--ink-deep,#163300)}
-.drawer-footer-copyright{flex-shrink:0;padding:12px 24px;padding-bottom:calc(12px+env(safe-area-inset-bottom,0));text-align:center;width:100%;background:#0e0f0c;z-index:1}
-.copyright-text{font-size:.7rem;color:#e8ebe6;margin-bottom:4px;opacity:.65;font-weight:400}
+.card{background:var(--md-sys-color-surface-container,#e8ebe6);border-radius:24px;padding:18px 16px;text-decoration:none;display:flex;flex-direction:column;gap:10px;transition:all .25s cubic-bezier(.2,0,0,1);overflow:hidden}
+.card:active{transform:scale(.97);background:var(--wise-primary-pale,#e2f6d5)}
+.card .material-symbols-rounded{font-size:1.7rem;color:var(--wise-ink-deep,#163300)}
+.card a{text-decoration:none;color:inherit;font-weight:600;font-size:.9rem;display:block;padding:2px 0;transition:color .2s}
+.card a:hover{color:var(--wise-ink-deep,#163300)}
+.drawer-footer-copyright{flex-shrink:0;padding:12px 24px;padding-bottom:calc(12px+env(safe-area-inset-bottom,0));text-align:center;width:100%;background:var(--wise-ink,#0e0f0c)}
+.copyright-text{font-size:.7rem;color:var(--wise-canvas-soft,#e8ebe6);opacity:.65}
 .secret-x{text-decoration:none;color:inherit;opacity:.15;transition:opacity .3s;padding:5px;font-weight:700}
-.secret-x:hover{opacity:1;color:var(--primary,#9fe870)}
-/* 桌面端 */
-@media(min-width:768px){body{background:var(--bg,#e8ebe6);background-size:cover;background-position:center;background-attachment:fixed;display:flex;justify-content:flex-end;align-items:flex-end;padding:20px}.phone-screen{width:375px;height:812px;border-radius:40px;box-shadow:0 0 0 10px #0e0f0c,0 0 0 12px rgba(14,15,12,.2),0 30px 60px rgba(14,15,12,.15);margin:0}}
+.secret-x:hover{opacity:1;color:var(--md-sys-color-primary,#9fe870)}
+@media(min-width:768px){body{display:flex;justify-content:flex-end;align-items:flex-end;padding:20px}.phone-screen{width:375px;height:812px;border-radius:40px;box-shadow:0 0 0 10px var(--wise-ink,#0e0f0c),0 0 0 12px rgba(14,15,12,.2),0 30px 60px rgba(14,15,12,.15)}}
 @media(min-width:1024px){body{padding:30px}.phone-screen{width:390px;height:844px}}
 </style>
 </head>
 <body>
 <div class="phone-screen" id="app">
-  <!-- 灵动岛 -->
-  <div class="dynamic-island" id="island">
-    <div class="island-default">
-      <span class="island-time" id="islandTime">12:00</span>
-      <div class="island-weather">
-        <span class="island-weather-icon material-symbols-rounded" id="islandWeatherIcon">wb_sunny</span>
-        <span class="island-weather-temp" id="islandWeatherTemp">--°</span>
-      </div>
-    </div>
-    <div class="island-weather-detail">
-      <div class="detail-left">
-        <span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
-        <div class="detail-temp-wrap">
-          <span class="detail-temp-now" id="detailTemp">25°</span>
-          <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div class="location-display" id="locationDisplay">获取中...</div>
-        <div class="detail-desc" id="detailDesc">晴朗</div>
-        <div class="detail-meta">
-          <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
-          <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- 播放器 -->
-  <div class="player-content">
-    <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="专辑封面">
-    <div class="song-info">
-      <h1 id="mainTitle" class="song-title-main">Title</h1>
-      <p id="mainArtist" class="artist-name">Artist</p>
-    </div>
-    <div class="m3-slider-root">
-      <div class="m3-slider-track-inactive"></div>
-      <div class="m3-slider-track-active-container" id="activeTrack">
-        <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
-          <path class="m3-slider-wavy-path" d="M0,10Q10,0 20,10T40,10T60,10T80,10T100,10T120,10T140,10T160,10T180,10T200,10T220,10T240,10T260,10T280,10T300,10T320,10T340,10T360,10T380,10T400,10T420,10T440,10T460,10T480,10T500,10T520,10T540,10T560,10T580,10T600,10"/>
-        </svg>
-      </div>
-      <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
-      <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="播放进度">
-    </div>
-    <div class="time-labels">
-      <span id="currTime">0:00</span>
-      <span id="durTime">0:00</span>
-    </div>
-    <div class="controls">
-      <button class="btn" id="prevBtn" aria-label="上一首"><span class="material-symbols-rounded">skip_previous</span></button>
-      <button class="btn btn-play" id="playBtn" aria-label="播放/暂停"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
-      <button class="btn" id="nextBtn" aria-label="下一首"><span class="material-symbols-rounded">skip_next</span></button>
-    </div>
-  </div>
-  <!-- 底部抽屉 -->
-  <div class="bottom-drawer" id="drawer">
-    <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
-    <div class="drawer-scroll-view">
-      <h3 class="drawer-title">Dashboard</h3>
-      <div class="grid">
-        <div class="card"><span class="material-symbols-rounded">calculate</span><span><a href="/Tools/Double">Double</a></span></div>
-        <div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
-        <div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/zashboard">zashboard</a></span></div>
-        <div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
-        <div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Underline">Underline</a></span></div>
-        <div class="card"><span class="material-symbols-rounded">function</span><span><a href="/Tools/Content Calculator">ContentCalculator</a></span></div>
-      </div>
-    </div>
-    <div class="drawer-footer-copyright">
-      <div class="copyright-text">&copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a></div>
-    </div>
-  </div>
+<div class="dynamic-island" id="island">
+<div class="island-default">
+<span class="island-time" id="islandTime">12:00</span>
+<div class="island-weather">
+<span class="island-weather-icon material-symbols-rounded" id="islandWeatherIcon">wb_sunny</span>
+<span class="island-weather-temp" id="islandWeatherTemp">--°</span>
+</div></div>
+<div class="island-weather-detail">
+<div class="detail-left">
+<span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
+<div class="detail-temp-wrap">
+<span class="detail-temp-now" id="detailTemp">25°</span>
+<span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
+</div></div>
+<div class="detail-right">
+<div class="location-display" id="locationDisplay">获取中...</div>
+<div class="detail-desc" id="detailDesc">晴朗</div>
+<div class="detail-meta">
+<span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
+<span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
+</div></div></div></div>
+
+<div class="player-content">
+<div class="player-background"></div>
+<img id="mainCover" src="" class="album-art" alt="封面">
+<div class="song-info">
+<h1 id="mainTitle" class="song-title-main">加载中...</h1>
+<p id="mainArtist" class="artist-name">正在读取元数据</p>
 </div>
+<div class="m3-slider-root">
+<div class="m3-slider-track-inactive"></div>
+<div class="m3-slider-track-active-container" id="activeTrack">
+<svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
+<path class="m3-slider-wavy-path" d="M0,10Q10,0 20,10T40,10T60,10T80,10T100,10T120,10T140,10T160,10T180,10T200,10T220,10T240,10T260,10T280,10T300,10T320,10T340,10T360,10T380,10T400,10T420,10T440,10T460,10T480,10T500,10T520,10T540,10T560,10T580,10T600,10"/>
+</svg></div>
+<div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
+<input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="进度">
+</div>
+<div class="time-labels"><span id="currTime">0:00</span><span id="durTime">0:00</span></div>
+<div class="controls">
+<button class="btn" id="prevBtn" aria-label="上一首"><span class="material-symbols-rounded">skip_previous</span></button>
+<button class="btn btn-play" id="playBtn" aria-label="播放/暂停"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
+<button class="btn" id="nextBtn" aria-label="下一首"><span class="material-symbols-rounded">skip_next</span></button>
+</div></div>
+
+<div class="bottom-drawer" id="drawer">
+<div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
+<div class="drawer-scroll-view">
+<h3 class="drawer-title">Dashboard</h3>
+<div class="grid">
+<div class="card"><span class="material-symbols-rounded">calculate</span><span><a href="/Tools/Double">Double</a></span></div>
+<div class="card"><span class="material-symbols-rounded">lan</span><span><a href="/Tools/MAC">MAC Info</a></span></div>
+<div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/zashboard">zashboard</a></span></div>
+<div class="card"><span class="material-symbols-rounded">dashboard</span><span><a href="/Tools/Metacubexd">Metacubexd</a></span></div>
+<div class="card"><span class="material-symbols-rounded">dns</span><span><a href="/Tools/Underline">Underline</a></span></div>
+<div class="card"><span class="material-symbols-rounded">function</span><span><a href="/Tools/Content Calculator">ContentCalculator</a></span></div>
+</div></div>
+<div class="drawer-footer-copyright"><div class="copyright-text">&copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">✕</a></div></div>
+</div></div>
+
 <audio id="audio" preload="metadata"></audio>
+<canvas id="colorCanvas" style="display:none"></canvas>
 
 <script>
-// ── 工具 ──
-const $ = id => document.getElementById(id);
-const dom = {
-  app: $('app'), island: $('island'), audio: $('audio'),
-  slider: $('audioSlider'), activeTrack: $('activeTrack'),
-  sliderThumb: $('sliderThumb'), playIcon: $('playIcon'),
-  mainCover: $('mainCover'), locationDisp: $('locationDisplay')
-};
+const $=id=>document.getElementById(id),U=Math;
+const hexToRgb=h=>{let r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:null};
+const rgbToHsl=(r,g,b)=>{r/=255;g/=255;b/=255;let M=U.max(r,g,b),m=U.min(r,g,b),h,s,l=(M+m)/2;if(M===m)h=s=0;else{let d=M-m;s=l>.5?d/(2-M-m):d/(M+m);switch(M){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break}h/=6}return{h:h*360,s:s*100,l:l*100}};
 
-const Cookie = {
-  set: (n, v, d=30) => { const e=new Date(); e.setTime(e.getTime()+d*864e5); document.cookie=n+'='+v+';expires='+e.toUTCString()+';path=/' },
-  get: n => (document.cookie.match('(^|; )?'+n+'=([^;]*)')||[])[2]||null
-};
+const C={
+  extractColor(imgUrl,cb){let c=$('colorCanvas'),ctx=c.getContext('2d'),img=new Image;img.crossOrigin="Anonymous";img.src=imgUrl;
+    img.onload=()=>{c.width=c.height=50;ctx.drawImage(img,0,0,50,50);try{let d=ctx.getImageData(0,0,50,50).data,r=0,g=0,b=0,w=0;
+      for(let i=0;i<d.length;i+=4){let br=.299*d[i]+.587*d[i+1]+.114*d[i+2],wt=br<50?2:1;r+=d[i]*wt;g+=d[i+1]*wt;b+=d[i+2]*wt;w+=wt}
+      cb({r:U.floor(r/w),g:U.floor(g/w),b:U.floor(b/w)})}catch(e){cb({r:100,g:145,b:65})}};
+    img.onerror=()=>cb({r:100,g:145,b:65})},
+  genTheme(rgb){let h=rgbToHsl(rgb.r,rgb.g,rgb.b),H=h.h,S=U.max(20,U.min(100,h.s)),aL=U.max(55,U.min(78,h.l+20)),aS=U.max(50,U.min(95,S+10));
+    return{'--md-sys-color-primary':`hsl(${H},${aS}%,${aL}%)`,'--phone-screen-bg':`hsl(${H},${U.max(3,S/8)}%,91%)`,'--player-bg':`hsl(${H},${U.max(5,S/6)}%,88%)`,
+      '--island-expand-bg':`hsl(${H},${U.max(8,S/3)}%,10%)`,'--wise-primary-pale':`hsl(${H},${U.max(20,aS-30)}%,${U.min(92,aL+15)}%)`,
+      '--wise-ink-deep':`hsl(${H},${U.max(40,S)}%,${U.max(12,U.min(22,h.l-10))}%)`,'--wise-canvas-soft-darker':`hsl(${H},${U.max(4,S/5)}%,85%)`,
+      '--md-sys-color-surface-container':`hsl(${H},${U.max(4,S/7)}%,91%)`,'--md-sys-color-secondary-container':`hsl(${H},${U.max(5,S/6)}%,91%)`}}};
 
-const fmt = s => `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+const CK={set:(n,v,d=30)=>{let e=new Date;e.setTime(e.getTime()+d*864e5);document.cookie=n+'='+v+';expires='+e.toUTCString()+';path=/'},
+  get:n=>{let m=document.cookie.match('(^|;)\\s*'+n+'=([^;]*)');return m?m[2]:null}};
 
-// ── 主题生成 ──
-const colorThief = new ColorThief();
+const W={0:{desc:"晴朗",icon:"wb_sunny",bg:"#1a1c18"},1:{desc:"多云",icon:"partly_cloudy_day",bg:"#1e2020"},2:{desc:"少云",icon:"partly_cloudy_day",bg:"#1d1f1e"},3:{desc:"阴天",icon:"cloud",bg:"#1c1d1c"},45:{desc:"雾",icon:"foggy",bg:"#1a1b1a"},48:{desc:"冻雾",icon:"foggy",bg:"#1b1c1e"},51:{desc:"毛毛雨",icon:"rainy",bg:"#1a1e22"},53:{desc:"中毛毛雨",icon:"rainy",bg:"#1b1f23"},55:{desc:"大毛毛雨",icon:"rainy",bg:"#1c2024"},61:{desc:"小雨",icon:"rainy",bg:"#1a1e24"},63:{desc:"中雨",icon:"rainy",bg:"#191d22"},65:{desc:"大雨",icon:"thunderstorm",bg:"#171b20"},66:{desc:"冻雨",icon:"severe_cold",bg:"#1e2126"},67:{desc:"冻雨",icon:"severe_cold",bg:"#1e2126"},71:{desc:"小雪",icon:"ac_unit",bg:"#1e2022"},73:{desc:"中雪",icon:"ac_unit",bg:"#1d1f21"},75:{desc:"大雪",icon:"severe_cold",bg:"#1c1e20"},77:{desc:"雪粒",icon:"severe_cold",bg:"#1c1e20"},80:{desc:"阵雨",icon:"rainy",bg:"#1a1e23"},81:{desc:"阵雨",icon:"rainy",bg:"#1b1f24"},82:{desc:"暴雨",icon:"thunderstorm",bg:"#181c22"},85:{desc:"阵雪",icon:"ac_unit",bg:"#1d1f21"},86:{desc:"阵雪",icon:"ac_unit",bg:"#1c1e20"},95:{desc:"雷暴",icon:"thunderstorm",bg:"#1a1c22"},96:{desc:"雷暴",icon:"thunderstorm",bg:"#1b1d23"},99:{desc:"强雷暴",icon:"thunderstorm",bg:"#191b21"}};
 
-function applyTheme(r,g,b) {
-  const hsl = (()=>{let rr=r/255,gg=g/255,bb=b/255,m=Math.max(rr,gg,bb),n=Math.min(rr,gg,bb),d=m-n,h,s,l=(m+n)/2;if(!d)h=s=0;else{s=l>.5?d/(2-m-n):d/(m+n);let x;if(m===rr)x=(gg-bb)/d+(gg<bb?6:0);else if(m===gg)x=(bb-rr)/d+2;else x=(rr-gg)/d+4;h=x/6}return{h:h*360,s:s*100,l:l*100}})();
-  const h=hsl.h, s=Math.max(20,Math.min(100,hsl.s)), l=hsl.l;
-  const aL=Math.max(55,Math.min(78,l+20)), aS=Math.max(50,Math.min(95,s+10));
-  const hs=(h2,s2,l2)=>`hsl(${h2},${s2}%,${l2}%)`;
-  const set=(k,v)=>document.documentElement.style.setProperty(k,v);
-  set('--primary',hs(h,aS,aL));
-  set('--primary-active',hs(h,Math.max(20,aS-30),Math.min(92,aL+15)));
-  set('--primary-pale',hs(h,Math.max(20,aS-30),Math.min(92,aL+15)));
-  set('--ink-deep',hs(h,Math.max(40,s),Math.max(12,Math.min(22,l-10))));
-  set('--player-bg',hs(h,Math.max(5,s/6),88));
-  set('--surface-container',hs(h,Math.max(4,s/7),91));
-  set('--bg',hs(h,Math.max(3,s/8),91));
-  set('--btn-bg',hs(h,Math.max(4,s/5),85));
-  set('--island-expand-bg',hs(h,Math.max(8,s/3),10));
-  set('--on-surface-variant','#868685');
-  set('--track-bg','rgba(14,15,12,.1)');
-  document.querySelector('meta[name="theme-color"]').setAttribute('content',hs(h,Math.max(3,s/8),91));
-}
-
-// ── 天气 ──
-const WTHR = {
-  0:{d:'晴朗',i:'wb_sunny',b:'#1a1c18'},1:{d:'多云',i:'partly_cloudy_day',b:'#1e2020'},
-  2:{d:'少云',i:'partly_cloudy_day',b:'#1d1f1e'},3:{d:'阴天',i:'cloud',b:'#1c1d1c'},
-  45:{d:'雾',i:'foggy',b:'#1a1b1a'},51:{d:'毛毛雨',i:'rainy',b:'#1a1e22'},
-  61:{d:'小雨',i:'rainy',b:'#1a1e24'},63:{d:'中雨',i:'rainy',b:'#191d22'},
-  65:{d:'大雨',i:'thunderstorm',b:'#171b20'},71:{d:'小雪',i:'ac_unit',b:'#1e2022'},
-  75:{d:'大雪',i:'severe_cold',b:'#1c1e20'},80:{d:'阵雨',i:'rainy',b:'#1a1e23'},
-  95:{d:'雷暴',i:'thunderstorm',b:'#1a1c22'}
-};
-
-async function getLocByIP() {
-  try {
-    const d=await(await fetch('https://ipapi.co/json/')).json();
-    if(d.latitude) return {lat:d.latitude,lon:d.longitude,city:d.city};
-  }catch(e){}
-  if(location.protocol==='http:') try {
-    const d=await(await fetch('http://ip-api.com/json/?lang=zh-CN')).json();
-    if(d.status==='success') return {lat:d.lat,lon:d.lon,city:d.city};
-  }catch(e){}
-  return null;
-}
-
-async function fetchWeather() {
-  let lat=parseFloat(Cookie.get('weather_lat')), lon=parseFloat(Cookie.get('weather_lon')), locName=null;
-  if(!lat||!lon){
-    if('geolocation'in navigator){
-      try{
-        dom.locationDisp.textContent='正在请求位置...';
-        const p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true}));
-        lat=p.coords.latitude;lon=p.coords.longitude;
-        Cookie.set('weather_lat',lat);Cookie.set('weather_lon',lon);
-      }catch(e){
-        dom.locationDisp.textContent='IP定位中...';
-        const ip=await getLocByIP();
-        if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;Cookie.set('weather_lat',lat);Cookie.set('weather_lon',lon)}
-        else{lat=39.9042;lon=116.4074;dom.locationDisp.textContent='默认位置 (北京)'}
-      }
-    }else{
-      const ip=await getLocByIP();
-      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;Cookie.set('weather_lat',lat);Cookie.set('weather_lon',lon)}
-      else{lat=39.9042;lon=116.4074;dom.locationDisp.textContent='默认位置 (北京)'}
-    }
-  }
-  if(!locName) try {
-    const d=await(await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`)).json();
-    locName=d.city||d.locality||d.principalSubdivision||d.countryName||`${lat.toFixed(2)}, ${lon.toFixed(2)}`;
-  }catch(e){locName='未知位置'}
-  if(!dom.locationDisp.textContent.includes('默认')) dom.locationDisp.textContent=locName;
-  try{
-    const d=await(await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`)).json();
-    const cur=d.current||d.current_weather,t=Math.round(cur.temperature_2m),c=cur.weather_code,w=WTHR[c]||{d:'未知',i:'thermostat',b:'#1a1c18'};
-    $('islandWeatherTemp').textContent=t+'°';$('islandWeatherIcon').textContent=w.i;
-    $('detailIcon').textContent=w.i;$('detailTemp').textContent=t+'°';
-    $('detailDesc').textContent=w.d;
-    $('detailRange').textContent=`H:${Math.round(d.daily.temperature_2m_max[0])}° L:${Math.round(d.daily.temperature_2m_min[0])}°`;
-    $('detailWind').innerHTML=`<span class="material-symbols-rounded">air</span> ${Math.round(cur.wind_speed_10m)}km/h`;
-    $('detailHumidity').innerHTML=`<span class="material-symbols-rounded">water_drop</span> ${cur.relative_humidity_2m}%`;
-    document.documentElement.style.setProperty('--island-expand-bg',w.b);
-  }catch(e){console.error('天气失败',e)}
-}
-
-// ── 播放器 ──
-const songs=[
-  {title:"Follow YourDream's",artist:"MerOne Record'ss",cover:"https://maxcloud.pages.dev/src/Follow%20YourDream's.jpg",src:"https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3"},
-  {title:'冇钱索货屎',artist:'邱清云',cover:'https://maxcloud.pages.dev/src/邱清云 - 冇钱索货屎.jpg',src:'https://maxcloud.pages.dev/src/邱清云 - 冇钱索货屎.mp3'},
-  {title:'Night Drive',artist:'Synthwave • Retro',cover:'https://picsum.photos/600/600?random=3',src:'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'}
+/* ── 只保留 MP3 链接，元数据由 jsmediatags 从文件中读取 ── */
+const songSrcs=[
+  "https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3",
+  "https://maxcloud.pages.dev/src/邱清云%20-%20冇钱索货屎.mp3",
+  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
 ];
-let idx=0, dragging=false;
 
-function togglePlay(){dom.audio.paused?playSong():pauseSong()}
-function playSong(){dom.audio.play();dom.app.classList.add('playing');dom.playIcon.textContent='pause'}
-function pauseSong(){dom.audio.pause();dom.app.classList.remove('playing');dom.playIcon.textContent='play_arrow'}
+let songs=[],cur=0,isDragging=0,ready=0;
+const audio=$('audio'),app=$('app'),island=$('island'),slider=$('audioSlider'),aTrack=$('activeTrack'),sThumb=$('sliderThumb');
 
-function loadSong(song){
-  $('mainTitle').textContent=song.title;$('mainArtist').textContent=song.artist;
-  dom.mainCover.src=song.cover;dom.audio.src=song.src;
-  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});
+function buf2base(buf){let bin='';new Uint8Array(buf).forEach(b=>bin+=String.fromCharCode(b));return btoa(bin)}
+
+/* 用 jsmediatags 从 MP3 URL 读取内置元数据 */
+function fetchMeta(url,idx){
+  return new Promise(resolve=>{
+    const fallback=(msg)=>{
+      resolve({title:`歌曲 ${idx+1}`,artist:'未知歌手',cover:'',src:url});
+    };
+    if(typeof jsmediatags==='undefined')return fallback('no lib');
+    try{
+      jsmediatags.read(url,{
+        onSuccess:tag=>{
+          const t=tag.tags||{};
+          let cover='';
+          if(t.picture){const p=t.picture;cover=`data:${p.format};base64,${buf2base(p.data)}`;}
+          resolve({
+            title:t.title||`歌曲 ${idx+1}`,
+            artist:t.artist||'未知歌手',
+            cover,
+            src:url
+          });
+        },
+        onError:()=>fallback('read fail')
+      });
+    }catch(e){fallback('exception')}
+  });
 }
-// 封面加载完成后取色
-dom.mainCover.addEventListener('load',()=>{
-  try{const c=colorThief.getColor(dom.mainCover);applyTheme(c[0],c[1],c[2])}catch(e){}
-});
 
-function prev(){idx=(idx-1+songs.length)%songs.length;loadSong(songs[idx]);playSong()}
-function next(){idx=(idx+1)%songs.length;loadSong(songs[idx]);playSong()}
-
-function updateUI(pct){
-  pct=isNaN(pct)?0:Math.max(0,Math.min(100,pct));
-  dom.slider.value=pct;dom.activeTrack.style.width=pct+'%';
-  dom.sliderThumb.style.left=pct+'%';
-  const cur=dragging?(pct/100)*dom.audio.duration:dom.audio.currentTime;
-  $('currTime').textContent=isNaN(cur)?'0:00':fmt(cur);
-  $('durTime').textContent=isNaN(dom.audio.duration)?'0:00':fmt(dom.audio.duration);
+/* 初始化全部歌曲 */
+async function initSongs(){
+  for(let i=0;i<songSrcs.length;i++){
+    songs.push(await fetchMeta(songSrcs[i],i));
+  }
+  ready=1;
+  if(songs.length){loadSong(0);play();}
 }
 
-dom.audio.addEventListener('timeupdate',()=>{
-  const{duration:d,currentTime:c}=dom.audio;if(isNaN(d))return;
-  if(!dragging)updateUI((c/d)*100);
-  if(c>=d&&d>0)next();
-});
-dom.slider.addEventListener('input',()=>{dragging=true;updateUI(dom.slider.value)});
-dom.slider.addEventListener('change',()=>{dragging=false;dom.audio.currentTime=(dom.slider.value/100)*dom.audio.duration});
+/* 加载并播放 */
+function loadSong(i){
+  const s=songs[i];if(!s)return;
+  $('mainTitle').textContent=s.title;
+  $('mainArtist').textContent=s.artist;
+  const fallbackCover='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 fill=%22%23e8ebe6%22/%3E%3Ctext x=%22256%22 y=%22270%22 text-anchor=%22middle%22 font-size=%2272%22 fill=%22%23868685%22%3E♪%3C/text%3E%3C/svg%3E';
+  const coverUrl=s.cover||fallbackCover;
+  const mainCover=$('mainCover');
+  if(coverUrl!==mainCover.src){
+    C.extractColor(coverUrl,rgb=>{
+      const t=C.genTheme(rgb);
+      Object.entries(t).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
+      document.querySelector('meta[name="theme-color"]').setAttribute('content',t['--phone-screen-bg']||'#e8ebe6');
+    });
+  }
+  mainCover.src=coverUrl;
+  audio.src=s.src;
+  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({
+    title:s.title,artist:s.artist,artwork:[{src:coverUrl,sizes:'512x512',type:'image/jpeg'}]
+  });
+}
 
-// ── 事件绑定 ──
-$('playBtn').addEventListener('click',togglePlay);
-$('nextBtn').addEventListener('click',next);
-$('prevBtn').addEventListener('click',prev);
-dom.island.addEventListener('click',()=>dom.island.classList.toggle('active'));
-document.addEventListener('keydown',e=>{
-  if(e.key===' '){e.preventDefault();togglePlay()}
-  else if(e.key==='ArrowLeft'){e.preventDefault();prev()}
-  else if(e.key==='ArrowRight'){e.preventDefault();next()}
+function play(){if(!ready||!songs.length)return;audio.play();app.classList.add('playing');$('playIcon').textContent='pause'}
+function pause(){audio.pause();app.classList.remove('playing');$('playIcon').textContent='play_arrow'}
+
+audio.addEventListener('timeupdate',()=>{
+  const{duration:d,currentTime:t}=audio;if(isNaN(d))return;
+  const p=(t/d)*100;if(!isDragging)updateUI(p);
+  if(t>=d&&d>0){cur=(cur+1)%songs.length;loadSong(cur);play()}
 });
+slider.addEventListener('input',()=>{isDragging=1;updateUI(slider.value)});
+slider.addEventListener('change',()=>{isDragging=0;audio.currentTime=(slider.value/100)*audio.duration});
+
+function updateUI(p){p=isNaN(p)?0:U.max(0,U.min(100,p));slider.value=p;aTrack.style.width=p+'%';sThumb.style.left=p+'%';
+  let t=isDragging?(p/100)*audio.duration:audio.currentTime;
+  $('currTime').textContent=isNaN(t)?'0:00':`${U.floor(t/60)}:${String(U.floor(t%60)).padStart(2,'0')}`;
+  $('durTime').textContent=isNaN(audio.duration)?'0:00':`${U.floor(audio.duration/60)}:${String(U.floor(audio.duration%60)).padStart(2,'0')}`}
+
+$('playBtn').addEventListener('click',()=>audio.paused?play():pause());
+$('nextBtn').addEventListener('click',()=>{if(!ready)return;cur=(cur+1)%songs.length;loadSong(cur);play()});
+$('prevBtn').addEventListener('click',()=>{if(!ready)return;cur=(cur-1+songs.length)%songs.length;loadSong(cur);play()});
+
 if('mediaSession'in navigator){
-  navigator.mediaSession.setActionHandler('play',playSong);
-  navigator.mediaSession.setActionHandler('pause',pauseSong);
-  navigator.mediaSession.setActionHandler('previoustrack',prev);
-  navigator.mediaSession.setActionHandler('nexttrack',next);
+  navigator.mediaSession.setActionHandler('play',play);
+  navigator.mediaSession.setActionHandler('pause',pause);
+  navigator.mediaSession.setActionHandler('previoustrack',()=>$('prevBtn').click());
+  navigator.mediaSession.setActionHandler('nexttrack',()=>$('nextBtn').click());
 }
+
+document.addEventListener('keydown',e=>{
+  if(e.key===' '){e.preventDefault();audio.paused?play():pause()}
+  else if(e.key==='ArrowLeft'){e.preventDefault();$('prevBtn').click()}
+  else if(e.key==='ArrowRight'){e.preventDefault();$('nextBtn').click()}
+});
+
 function toggleDrawer(){$('drawer').classList.toggle('open')}
 
-// ── 时钟 ──
-function tick(){
-  const n=new Date();
-  $('islandTime').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
-}
+/* ── 灵动岛 & 天气 ── */
+function updateTime(){let n=new Date;$('islandTime').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`}
+async function getLocByIP(){try{let r=await fetch('https://ipapi.co/json/');if(r.ok){let d=await r.json();if(d.latitude)return{lat:d.latitude,lon:d.longitude,city:d.city}}}catch(e){}if(location.protocol==='http:')try{let r=await fetch('http://ip-api.com/json/?lang=zh-CN');if(r.ok){let d=await r.json();if(d.status==='success')return{lat:d.lat,lon:d.lon,city:d.city}}}catch(e){}return null}
 
-// ── Bing壁纸(桌面) ──
-async function loadBing(){
-  if(window.innerWidth<768)return;
-  try{
-    const d=await(await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN')).json();
-    if(d.images?.[0]){const i=new Image();i.onload=()=>document.body.style.backgroundImage=`url(https://www.bing.com${d.images[0].url})`;i.src='https://www.bing.com'+d.images[0].url}
-  }catch(e){}
-}
+async function fetchWeather(){let lat=CK.get('weather_lat'),lon=CK.get('weather_lon'),loc=null;
+if(!lat||!lon){lat=null;lon=null;
+  if('geolocation'in navigator){try{$('locationDisplay').textContent='定位中...';
+    let p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:1,maximumAge:3e5}));
+    lat=p.coords.latitude;lon=p.coords.longitude;CK.set('weather_lat',lat,30);CK.set('weather_lon',lon,30)
+  }catch(e){let ip=await getLocByIP();if(ip){lat=ip.lat;lon=ip.lon;loc=ip.city;CK.set('weather_lat',lat,30);CK.set('weather_lon',lon,30)}
+    else{lat=39.9042;lon=116.4074;$('locationDisplay').textContent='默认位置 (北京)'}}}
+  else{let ip=await getLocByIP();if(ip){lat=ip.lat;lon=ip.lon;loc=ip.city;CK.set('weather_lat',lat,30);CK.set('weather_lon',lon,30)}
+    else{lat=39.9042;lon=116.4074;$('locationDisplay').textContent='默认位置 (北京)'}}}
+lat=parseFloat(lat);lon=parseFloat(lon);
+if(!loc)try{let r=await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=zh`),d=await r.json();
+  loc=d.city||d.locality||d.principalSubdivision||d.countryName||`${lat.toFixed(2)},${lon.toFixed(2)}`}catch(e){loc='未知位置'}
+if(!$('locationDisplay').textContent.includes('默认'))$('locationDisplay').textContent=loc;
+try{let r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`),d=await r.json(),c=d.current||d.current_weather,dy=d.daily;
+  let t=U.round(c.temperature_2m),code=c.weather_code,w=W[code]||{desc:'未知',icon:'thermostat',bg:'#1a1c18'};
+  $('islandWeatherTemp').textContent=t+'°';$('islandWeatherIcon').textContent=w.icon;$('detailIcon').textContent=w.icon;
+  $('detailTemp').textContent=t+'°';$('detailDesc').textContent=w.desc;
+  $('detailRange').textContent=`H:${U.round(dy.temperature_2m_max[0])}° L:${U.round(dy.temperature_2m_min[0])}°`;
+  $('detailWind').innerHTML=`<span class="material-symbols-rounded">air</span> ${U.round(c.wind_speed_10m)}km/h`;
+  $('detailHumidity').innerHTML=`<span class="material-symbols-rounded">water_drop</span> ${c.relative_humidity_2m}%`;
+  document.documentElement.style.setProperty('--island-expand-bg',w.bg)}catch(e){}}
 
-// ── 启动 ──
-tick();setInterval(tick,1e3);
-fetchWeather();setInterval(fetchWeather,6e5);
-if(window.innerWidth>=768)loadBing();
-window.addEventListener('resize',()=>{if(window.innerWidth>=768)loadBing()});
-loadSong(songs[0]);
+function toggleIsland(){island.classList.toggle('active')}
+
+async function loadBing(){if(window.innerWidth<768)return;try{let r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN'),d=await r.json();
+  if(d.images?.length){let i=new Image;i.src='https://www.bing.com'+d.images[0].url;i.onload=()=>document.body.style.backgroundImage=`url(${i.src})`}}catch(e){}}
+
+function init(){
+  updateTime();setInterval(updateTime,1e3);
+  fetchWeather();setInterval(fetchWeather,6e5);
+  island.addEventListener('click',toggleIsland);
+  loadBing();window.addEventListener('resize',()=>{if(window.innerWidth>=768)loadBing()});
+  initSongs();
+}
+init();
 </script>
 </body>
 </html>
