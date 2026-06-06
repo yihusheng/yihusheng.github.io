@@ -206,13 +206,13 @@
         .secret-x { text-decoration: none; color: inherit; opacity: 0.15; transition: opacity 0.3s; padding: 5px; font-weight: 700; }
         .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
 
-        /* Desktop — 修复：移除 background-attachment: fixed 以避免 Chrome 下背景不显示 */
+        /* Desktop — 移除 background-attachment: fixed 修复 Chrome 壁纸不显示 */
         @media screen and (min-width: 768px) {
             body {
                 background-color: var(--wise-canvas-soft);
                 background-size: cover;
                 background-position: center;
-                /* 移除 background-attachment: fixed 修复 Chrome 壁纸不显示问题 */
+                /* background-attachment: fixed 已移除 — 避免 Chrome 下 background-size:cover 渲染失效 */
                 display: flex;
                 justify-content: flex-end;
                 align-items: flex-end;
@@ -260,7 +260,7 @@
         <div class="player-background"></div>
         <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="专辑封面">
         <div class="song-info">
-            <h1 id="mainTitle" class="song-title-main">加载中...</h1>
+            <h1 id="mainTitle" class="song-title-main">扫描音乐中...</h1>
             <p id="mainArtist" class="artist-name"></p>
         </div>
         <!-- 进度条 -->
@@ -307,7 +307,6 @@
     </div>
 </div>
 
-<!-- 隐藏的 Canvas 用于提取主题色 -->
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
 <script>
@@ -407,81 +406,125 @@ const CookieUtils = {
 };
 
 /* =========================================================================
-   扫描 /src/ 目录 — 动态发现音频文件（mp3, ogg, wav, flac, m4a, aac, opus）
+   扫描 /src/ 目录
+   — 发现所有音频文件 + 匹配同名图片作为封面候选
+   — 返回 [{ src, coverImage? }]
    ========================================================================= */
 const AUDIO_EXTENSIONS = ['.mp3', '.ogg', '.wav', '.flac', '.m4a', '.aac', '.opus', '.wma'];
+const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif', '.svg'];
+
+/**
+ * 从 URL 提取不带扩展名的文件基础名
+ * e.g. "/src/Artist - Song.mp3" → "Artist - Song"
+ */
+function baseNameNoExt(url) {
+    try {
+        const decoded = decodeURIComponent(url);
+        const filename = decoded.split('/').pop() || decoded;
+        const lastDot = filename.lastIndexOf('.');
+        return lastDot > 0 ? filename.slice(0, lastDot) : filename;
+    } catch (e) {
+        return url;
+    }
+}
+
+/**
+ * 规范化路径 — 确保以 / 开头的绝对路径
+ */
+function normalizePath(href, dirPrefix) {
+    if (href.startsWith('/')) return href;
+    if (href.startsWith('http')) return href;
+    // 相对路径，拼接到目录前缀
+    const base = dirPrefix.endsWith('/') ? dirPrefix : dirPrefix + '/';
+    return base + href;
+}
 
 async function scanSrcDirectory() {
-    // 尝试多种路径以兼容不同部署环境
-    const pathsToTry = ['/src/', '/src', './src/', './src'];
-    for (const dirPath of pathsToTry) {
+    const dirPathsToTry = ['/src/', '/src', './src/', './src'];
+    const IMG_EXTS = IMAGE_EXTENSIONS;
+    const AUD_EXTS = AUDIO_EXTENSIONS;
+
+    for (const dirPath of dirPathsToTry) {
         try {
             const response = await fetch(dirPath);
             if (!response.ok) continue;
             const html = await response.text();
 
-            // 解析 HTML 目录列表（兼容 Nginx autoindex / Apache / Caddy 等）
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const links = [...doc.querySelectorAll('a')];
-            const audioFiles = links
-                .map(a => a.getAttribute('href'))
-                .filter(href => {
-                    if (!href) return false;
-                    // 跳过父目录链接和绝对 URL
-                    if (href === '../' || href === './' || href.startsWith('http')) return false;
-                    const lower = href.toLowerCase();
-                    return AUDIO_EXTENSIONS.some(ext => lower.endsWith(ext));
-                })
-                .map(href => {
-                    // 统一转换为相对于站点根目录的路径
-                    if (href.startsWith('/')) return href;
-                    return '/src/' + href;
-                });
 
-            if (audioFiles.length > 0) {
-                console.log(`✅ 从 ${dirPath} 扫描到 ${audioFiles.length} 首歌曲:`, audioFiles);
-                return audioFiles;
+            // 分离音频和图片文件
+            const audioFiles = [];
+            const imageFiles = [];
+
+            for (const a of links) {
+                const href = a.getAttribute('href');
+                if (!href) continue;
+                if (href === '../' || href === './' || href === '/' || href.startsWith('http')) continue;
+                if (href.startsWith('?')) continue;
+
+                const lower = href.toLowerCase();
+
+                if (AUD_EXTS.some(ext => lower.endsWith(ext))) {
+                    audioFiles.push(normalizePath(href, dirPath));
+                } else if (IMG_EXTS.some(ext => lower.endsWith(ext))) {
+                    imageFiles.push(normalizePath(href, dirPath));
+                }
             }
+
+            if (audioFiles.length === 0) continue;
+
+            // 建立图片 baseName → 路径 的映射
+            const imageMap = new Map();
+            for (const imgPath of imageFiles) {
+                const bn = baseNameNoExt(imgPath).toLowerCase();
+                // 如果有多个同名图片，取第一个
+                if (!imageMap.has(bn)) {
+                    imageMap.set(bn, imgPath);
+                }
+            }
+
+            // 构建歌曲列表，匹配同名封面
+            const result = audioFiles.map(audioPath => {
+                const bn = baseNameNoExt(audioPath).toLowerCase();
+                const matchedCover = imageMap.get(bn) || null;
+                const entry = { src: audioPath };
+                if (matchedCover) {
+                    entry.coverImage = matchedCover;
+                }
+                return entry;
+            });
+
+            console.log(`✅ 从 ${dirPath} 扫描完成：`);
+            console.log(`   🎵 ${audioFiles.length} 首音频`);
+            console.log(`   🖼️ ${imageFiles.length} 张图片`);
+            console.log(`   🔗 同名封面匹配：${result.filter(e => e.coverImage).length} 首`);
+
+            return result;
         } catch (e) {
-            console.warn(`⚠️ 无法扫描 ${dirPath}:`, e.message);
+            console.warn(`⚠️ 扫描 ${dirPath} 失败:`, e.message);
         }
     }
 
-    // 回退：尝试获取 JSON 清单文件
-    try {
-        const manifestRes = await fetch('/src/playlist.json');
-        if (manifestRes.ok) {
-            const manifest = await manifestRes.json();
-            if (Array.isArray(manifest) && manifest.length > 0) {
-                console.log('✅ 从 playlist.json 加载歌曲列表:', manifest);
-                return manifest;
-            }
-        }
-    } catch (e) { /* 忽略 */ }
-
-    console.warn('⚠️ 无法扫描 /src/ 目录，使用默认歌曲列表');
-    return null;
+    // 所有路径都失败
+    console.error('❌ 无法扫描 /src/ 目录。请确保：');
+    console.error('   1. /src/ 目录存在且可访问');
+    console.error('   2. 服务器开启了目录列表 (autoindex on)');
+    console.error('   3. 目录中包含 .mp3/.ogg/.wav/.flac 等音频文件');
+    return [];
 }
 
 /* =========================================================================
-   默认回退歌曲列表 — 当 /src/ 扫描失败时使用
+   全局状态 — songs 完全由扫描结果填充，无硬编码
    ========================================================================= */
-const FALLBACK_SONGS = [
-    '/src/MerOne Record\'s - Follow YourDream\'s.mp3',
-    '/src/邱清云 - 冇钱索货屎.mp3'
-];
-
-/* =========================================================================
-   全局状态
-   ========================================================================= */
-let songs = [];                      // 扫描到的歌曲 URL 数组
+let songs = [];                   // [{ src, coverImage? }]
 let currentSongIndex = 0;
-let currentHowl = null;              // Howler.js 实例
-let currentCoverUrl = null;          // 当前封面的 Blob URL（用于释放内存）
-let progressRAF = null;              // requestAnimationFrame ID
+let currentHowl = null;
+let currentCoverUrl = null;
+let progressRAF = null;
 let isDragging = false;
-let currentMetadata = null;          // 当前歌曲的元数据缓存
+let currentMetadata = null;
 
 const app = document.getElementById('app');
 const island = document.getElementById('island');
@@ -622,7 +665,7 @@ async function fetchWeather() {
 }
 
 /* =========================================================================
-   从文件名生成占位封面 (SVG Data URL)
+   从文件名生成占位封面 (SVG Data URL) — 最低优先级
    ========================================================================= */
 function generatePlaceholderCover(seed) {
     let hash = 0;
@@ -658,10 +701,13 @@ function filenameFromUrl(url) {
 }
 
 /* =========================================================================
-   从 MP3 文件内嵌 ID3 标签读取元数据
-   返回 { title, artist, album, cover, coverType, src }
+   从 MP3 文件提取 ID3 元数据
+   封面优先级：同名图片 > ID3 内嵌封面 > SVG 占位图
+   参数：
+     audioUrl        — 音频文件路径
+     externalCoverUrl — /src/ 目录下同名图片路径（可选，最高优先级）
    ========================================================================= */
-function extractMetadataFromFile(audioUrl) {
+function extractMetadataFromFile(audioUrl, externalCoverUrl) {
     return new Promise((resolve) => {
         const fallbackTitle = filenameFromUrl(audioUrl);
         const fallback = {
@@ -673,6 +719,68 @@ function extractMetadataFromFile(audioUrl) {
             src: audioUrl
         };
 
+        // ═══ 如果存在同名图片，直接使用（最高优先级）═══
+        if (externalCoverUrl) {
+            // 推导封面 MIME 类型
+            const lower = externalCoverUrl.toLowerCase();
+            let mime = 'image/jpeg';
+            if (lower.endsWith('.png')) mime = 'image/png';
+            else if (lower.endsWith('.webp')) mime = 'image/webp';
+            else if (lower.endsWith('.gif')) mime = 'image/gif';
+            else if (lower.endsWith('.bmp')) mime = 'image/bmp';
+            else if (lower.endsWith('.svg')) mime = 'image/svg+xml';
+
+            // 仍需读取 ID3 获取 title/artist，但封面已确定
+            if (typeof jsmediatags === 'undefined') {
+                resolve({
+                    title: fallbackTitle,
+                    artist: 'Unknown Artist',
+                    album: '',
+                    cover: externalCoverUrl,
+                    coverType: mime,
+                    src: audioUrl
+                });
+                return;
+            }
+
+            try {
+                jsmediatags.read(audioUrl, {
+                    onSuccess: (tag) => {
+                        const tags = tag.tags;
+                        resolve({
+                            title: tags.title || fallbackTitle,
+                            artist: tags.artist || 'Unknown Artist',
+                            album: tags.album || '',
+                            cover: externalCoverUrl,    // ← 同名图片优先
+                            coverType: mime,
+                            src: audioUrl
+                        });
+                    },
+                    onError: () => {
+                        resolve({
+                            title: fallbackTitle,
+                            artist: 'Unknown Artist',
+                            album: '',
+                            cover: externalCoverUrl,
+                            coverType: mime,
+                            src: audioUrl
+                        });
+                    }
+                });
+            } catch (e) {
+                resolve({
+                    title: fallbackTitle,
+                    artist: 'Unknown Artist',
+                    album: '',
+                    cover: externalCoverUrl,
+                    coverType: mime,
+                    src: audioUrl
+                });
+            }
+            return;
+        }
+
+        // ═══ 无同名图片 → ID3 内嵌封面 or 占位图 ═══
         if (typeof jsmediatags === 'undefined') {
             console.warn('⚠️ jsmediatags 未加载，使用文件名作为标题');
             resolve(fallback);
@@ -756,7 +864,7 @@ function updateUI(percent) {
 }
 
 /* =========================================================================
-   停止进度轮询 (requestAnimationFrame)
+   进度轮询
    ========================================================================= */
 function stopProgressLoop() {
     if (progressRAF) {
@@ -765,18 +873,13 @@ function stopProgressLoop() {
     }
 }
 
-/* =========================================================================
-   启动进度轮询 — 利用 rAF 从 Howler.seek() 获取当前播放位置
-   ========================================================================= */
 function startProgressLoop() {
     stopProgressLoop();
     function loop() {
         if (currentHowl && currentHowl.playing() && !isDragging) {
             const seek = currentHowl.seek() || 0;
             const duration = currentHowl.duration() || 0;
-            if (duration > 0) {
-                updateUI((seek / duration) * 100);
-            }
+            if (duration > 0) updateUI((seek / duration) * 100);
         }
         progressRAF = requestAnimationFrame(loop);
     }
@@ -784,7 +887,7 @@ function startProgressLoop() {
 }
 
 /* =========================================================================
-   播放控制 — 基于 Howler.js
+   播放控制 — Howler.js
    ========================================================================= */
 function toggleIsland() { island.classList.toggle('active'); }
 
@@ -804,16 +907,12 @@ function pauseSong() {
     stopProgressLoop();
 }
 
-/* =========================================================================
-   销毁当前 Howl 实例并释放资源
-   ========================================================================= */
 function destroyCurrentHowl() {
     stopProgressLoop();
     if (currentHowl) {
         currentHowl.unload();
         currentHowl = null;
     }
-    // 释放旧的 Blob URL
     if (currentCoverUrl && currentCoverUrl.startsWith('blob:')) {
         URL.revokeObjectURL(currentCoverUrl);
         currentCoverUrl = null;
@@ -821,9 +920,9 @@ function destroyCurrentHowl() {
 }
 
 /* =========================================================================
-   加载歌曲 — 使用 Howler.js 创建播放实例
+   加载歌曲
    ========================================================================= */
-async function loadSong(songUrl) {
+async function loadSong(songEntry) {
     // 1. 显示加载状态
     document.getElementById('mainTitle').innerText = '读取中...';
     document.getElementById('mainArtist').innerText = '';
@@ -832,12 +931,12 @@ async function loadSong(songUrl) {
     // 2. 销毁旧实例
     destroyCurrentHowl();
 
-    // 3. 从歌曲文件提取内嵌元数据
-    const metadata = await extractMetadataFromFile(songUrl);
+    // 3. 提取元数据（传入同名封面候选）
+    const metadata = await extractMetadataFromFile(songEntry.src, songEntry.coverImage || null);
     currentMetadata = metadata;
     currentCoverUrl = metadata.cover;
 
-    // 4. 更新 UI
+    // 4. 更新 UI 文字
     document.getElementById('mainTitle').innerText = metadata.title;
     document.getElementById('mainArtist').innerText = metadata.artist;
 
@@ -865,10 +964,10 @@ async function loadSong(songUrl) {
     };
     mainCover.src = metadata.cover;
 
-    // 7. 创建 Howler.js 实例（开源音频引擎）
+    // 7. 创建 Howler.js 实例
     currentHowl = new Howl({
-        src: [songUrl],
-        html5: true,           // 使用 HTML5 Audio 以支持流式播放
+        src: [songEntry.src],
+        html5: true,
         preload: 'metadata',
         volume: 1.0,
         onplay: function() {
@@ -883,25 +982,22 @@ async function loadSong(songUrl) {
             stopProgressLoop();
         },
         onend: function() {
-            // 播放完毕后自动切到下一首
             stopProgressLoop();
             app.classList.remove('playing');
             document.getElementById('playIcon').innerText = 'play_arrow';
             nextSong();
         },
         onload: function() {
-            // 音频加载完成，更新时长显示
             const dur = currentHowl.duration();
             document.getElementById('durTime').innerText = formatTime(dur);
             updateUI(0);
         },
         onloaderror: function(id, err) {
-            console.error('❌ 音频加载失败:', songUrl, err);
+            console.error('❌ 音频加载失败:', songEntry.src, err);
             document.getElementById('mainTitle').innerText = '加载失败';
             document.getElementById('mainArtist').innerText = '请检查文件是否存在';
         },
         onseek: function() {
-            // seek 完成后更新 UI
             if (!isDragging && currentHowl) {
                 const seek = currentHowl.seek() || 0;
                 const dur = currentHowl.duration() || 0;
@@ -910,13 +1006,10 @@ async function loadSong(songUrl) {
         }
     });
 
-    // 8. 立即设置 MediaSession
+    // 8. MediaSession
     updateMediaSessionMetadata();
 }
 
-/* =========================================================================
-   更新 MediaSession 元数据
-   ========================================================================= */
 function updateMediaSessionMetadata() {
     if (!('mediaSession' in navigator) || !currentMetadata) return;
     navigator.mediaSession.metadata = new MediaMetadata({
@@ -960,7 +1053,7 @@ document.getElementById('nextBtn').addEventListener('click', nextSong);
 document.getElementById('prevBtn').addEventListener('click', prevSong);
 
 /* =========================================================================
-   进度条拖拽交互
+   进度条拖拽
    ========================================================================= */
 audioSlider.addEventListener('input', () => {
     isDragging = true;
@@ -1010,10 +1103,7 @@ document.addEventListener('keydown', async e => {
 
 /* =========================================================================
    Bing 壁纸（桌面端）
-   修复点：
-   1. img.onload 必须在 img.src 之前设置，避免缓存命中时回调丢失
-   2. 桌面 CSS 移除了 background-attachment: fixed，避免 Chrome 渲染 bug
-   3. 增加错误重试和超时保护
+   修复：onload 先于 src 绑定 + 移除 CSS background-attachment:fixed
    ========================================================================= */
 async function loadBingWallpaper() {
     if (window.innerWidth < 768) return;
@@ -1031,14 +1121,13 @@ async function loadBingWallpaper() {
         if (data.images && data.images.length > 0) {
             const imgUrl = 'https://www.bing.com' + data.images[0].url;
             const img = new Image();
-            // ✅ 修复：先绑定 onload/onerror，再设置 src
+            // ✅ 修复：先绑定事件，再设置 src
             img.onload = () => {
                 document.body.style.backgroundImage = `url(${imgUrl})`;
                 console.log('✅ Bing 壁纸加载成功:', data.images[0].copyright);
             };
             img.onerror = () => {
-                console.warn('⚠️ Bing 壁纸图片加载失败，尝试使用低分辨率版本');
-                // 回退：尝试使用低分辨率版本
+                console.warn('⚠️ Bing 壁纸图片加载失败，尝试低分辨率回退');
                 const fallbackUrl = 'https://www.bing.com' + data.images[0].url.replace('_1920x1080', '_1366x768');
                 const fbImg = new Image();
                 fbImg.onload = () => { document.body.style.backgroundImage = `url(${fallbackUrl})`; };
@@ -1057,15 +1146,28 @@ async function loadBingWallpaper() {
 }
 
 /* =========================================================================
-   初始化
+   初始化 — 全量从 /src/ 扫描，零硬编码
    ========================================================================= */
 async function init() {
     // 1. 扫描 /src/ 目录获取歌曲列表
-    const scanned = await scanSrcDirectory();
-    songs = (scanned && scanned.length > 0) ? scanned : FALLBACK_SONGS;
-    console.log(`🎵 歌曲列表 (${songs.length} 首):`, songs);
+    songs = await scanSrcDirectory();
 
-    // 2. 启动时钟
+    if (songs.length === 0) {
+        document.getElementById('mainTitle').innerText = '未发现音乐文件';
+        document.getElementById('mainArtist').innerText = '请在 /src/ 目录添加 .mp3/.ogg/.wav/.flac 等音频';
+        console.warn('⚠️ 未扫描到任何歌曲。请检查 /src/ 目录。');
+    } else {
+        console.log(`🎵 共发现 ${songs.length} 首歌曲`);
+        songs.forEach((s, i) => {
+            const tag = s.coverImage ? '🖼️ 有同名封面' : '🎨 无同名封面';
+            console.log(`   ${i + 1}. ${tag} ${s.src}`);
+        });
+
+        // 加载第一首歌
+        await loadSong(songs[currentSongIndex]);
+    }
+
+    // 2. 时钟
     updateTime();
     setInterval(updateTime, 1000);
 
@@ -1073,7 +1175,7 @@ async function init() {
     fetchWeather();
     setInterval(fetchWeather, 10 * 60 * 1000);
 
-    // 4. 灵动岛点击
+    // 4. 灵动岛
     island.addEventListener('click', toggleIsland);
 
     // 5. Bing 壁纸（桌面端）
@@ -1084,17 +1186,8 @@ async function init() {
 
     // 6. 主题色
     updateThemeColor();
-
-    // 7. 加载第一首歌
-    if (songs.length > 0) {
-        await loadSong(songs[currentSongIndex]);
-    } else {
-        document.getElementById('mainTitle').innerText = '无可用歌曲';
-        document.getElementById('mainArtist').innerText = '请在 /src/ 目录添加音乐文件';
-    }
 }
 
-// 启动
 init();
 </script>
 </body>
