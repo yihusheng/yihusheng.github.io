@@ -22,7 +22,6 @@
             --ink-deep: #163300;
             --body: #454745;
             --mute: #868685;
-            --negative-bg: #320707;
             --space-xs: 4px;
             --space-sm: 8px;
             --space-md: 12px;
@@ -187,7 +186,7 @@
         }
         .info-panel {
             background: var(--primary-pale);
-            border-radius: var(--radius-lg);
+            border-radius: 16px;
             padding: var(--space-lg);
             margin: var(--space-xl) 0 var(--space-md) 0;
         }
@@ -361,8 +360,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs2@0.0.2/qrcode.min.js"></script>
 <script>
-    // ---------- 品牌检测核心 (增强型UA解析 + 手动覆盖) ----------
-    let currentManualBrand = null;   // 手动覆盖的品牌，null表示使用自动检测
+    // 核心检测与跳转逻辑（完全遵循指定协议）
+    let currentManualBrand = null;
 
     function detectPlatformAndBrand() {
         const ua = navigator.userAgent.toLowerCase();
@@ -382,7 +381,6 @@
             else brand = 'huawei';
         } else if (isAndroid) {
             platform = 'android';
-            // 更详细的品牌检测
             if (ua.includes('xiaomi') || ua.includes('mi ') || ua.includes('redmi') || ua.includes('poco')) brand = 'xiaomi';
             else if (ua.includes('oppo') || ua.includes('realme') || (ua.includes('oneplus') && !ua.includes('oppo'))) brand = 'oppo';
             else if (ua.includes('vivo') || ua.includes('iqoo')) brand = 'vivo';
@@ -390,19 +388,15 @@
             else if (ua.includes('honor')) brand = 'honor';
             else if (ua.includes('huawei')) brand = 'huawei';
             else if (ua.includes('oneplus')) brand = 'oneplus';
-            else if (ua.includes('meizu')) brand = 'meizu';
-            else if (ua.includes('lenovo') || ua.includes('motorola')) brand = 'lenovo';
             else brand = 'generic_android';
         } else {
             platform = 'other';
             brand = 'desktop';
         }
         
-        // 如果有手动覆盖的品牌，优先使用手动值（但平台逻辑仍基于真实平台）
         let effectiveBrand = brand;
         if (currentManualBrand && currentManualBrand !== 'auto') {
             effectiveBrand = currentManualBrand;
-            // 若手动选择了apple且当前不是iOS，强制平台为ios以使用正确协议
             if (effectiveBrand === 'apple' && platform !== 'ios') {
                 platform = 'ios';
             }
@@ -410,11 +404,10 @@
                 platform = 'android';
             }
         }
-        
         return { platform, brand: effectiveBrand, isIOS: (platform === 'ios' || effectiveBrand === 'apple'), isAndroid: (platform === 'android' || (!isIOS && effectiveBrand !== 'apple')) };
     }
     
-    // 生成品牌专用链接
+    // 品牌专用链接 - 完全遵循用户指定协议
     function getBrandSpecificLink(packageName, brand, platform, isIOS) {
         if (!packageName || packageName.trim() === '') return null;
         const pkg = packageName.trim();
@@ -517,15 +510,14 @@
         platformTag.innerText = `${platform.toUpperCase()} | ${brand.toUpperCase()}`;
         
         const explainDiv = document.getElementById('explainText');
-        if (brand === 'xiaomi') explainDiv.innerHTML = '✨ 品牌专用按钮使用小米应用商店协议，通用按钮使用标准 market。';
-        else if (brand === 'huawei' || brand === 'honor') explainDiv.innerHTML = '✨ 品牌专用按钮使用华为应用市场协议，荣耀设备同样兼容。';
-        else if (brand === 'oppo') explainDiv.innerHTML = '✨ 品牌专用按钮使用OPPO软件商店协议。';
-        else if (brand === 'vivo') explainDiv.innerHTML = '✨ 品牌专用按钮使用vivo应用商店协议。';
-        else if (brand === 'samsung') explainDiv.innerHTML = '✨ 品牌专用按钮使用三星应用商店协议。';
+        if (brand === 'xiaomi') explainDiv.innerHTML = '✨ 品牌专用按钮使用小米应用商店协议: mimarket://details?id=包名';
+        else if (brand === 'huawei' || brand === 'honor') explainDiv.innerHTML = '✨ 品牌专用按钮使用华为应用市场协议: appmarket://details?id=包名';
+        else if (brand === 'oppo') explainDiv.innerHTML = '✨ 品牌专用按钮使用OPPO软件商店协议: oppomarket://details?packagename=包名';
+        else if (brand === 'vivo') explainDiv.innerHTML = '✨ 品牌专用按钮使用vivo应用商店协议: vivomarket://details?id=包名';
+        else if (brand === 'samsung') explainDiv.innerHTML = '✨ 品牌专用按钮使用三星应用商店协议: samsungapps://ProductDetail/包名';
         else if (isIOS) explainDiv.innerHTML = '🍏 iOS 设备：品牌专用按钮和通用按钮都将跳转 App Store 搜索当前包名。';
         else explainDiv.innerHTML = '✨ 品牌专用按钮根据品牌匹配专属商店链接，通用按钮使用 Android market:// 。';
         
-        // 同步下拉框当前选择
         const select = document.getElementById('manualBrandSelect');
         if (currentManualBrand && currentManualBrand !== 'auto') {
             select.value = currentManualBrand;
