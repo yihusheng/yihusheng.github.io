@@ -110,6 +110,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         .protocol-link {
             display: inline-block;
@@ -153,6 +154,15 @@
             text-align: center;
             font-size: 12px;
             color: var(--mute);
+        }
+        .warning-tip {
+            background: #fff3e0;
+            border-left: 3px solid var(--primary);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-md);
+            font-size: 13px;
+            color: #5e4a2b;
         }
         @media (min-width: 640px) {
             .brand-select-row {
@@ -271,9 +281,14 @@
                 📋 复制网页链接
             </div>
         </div>
+
+        <div class="warning-tip">
+            ⚠️ 注意：在浏览器中点击 “品牌专用链接” 或 “通用链接” 可能无法直接跳转（受浏览器安全限制）。<br>
+            💡 解决办法：<strong>点击下方的“复制”按钮</strong>，然后将链接粘贴到系统浏览器（如Chrome、Safari）的地址栏打开，或发送到微信/短信中点击，即可正常唤起应用商店。
+        </div>
         
         <div class="footer-note">
-            💡 点击任意链接即可直接跳转至应用商店 · 品牌专用链接基于所选品牌生成最精准的协议
+            💡 点击链接本身也可能成功（取决于系统和浏览器），若无效请使用复制功能。
         </div>
     </div>
 </div>
@@ -409,7 +424,7 @@
         }
     }
     
-    // 更新所有UI链接
+    // 更新所有UI链接 (去除前缀，只显示纯协议URL)
     function updateAllLinks() {
         const packageName = document.getElementById('packageInput').value.trim();
         const brandInfo = getEffectiveBrandInfo();
@@ -426,25 +441,17 @@
             }
         }
         
-        // 品牌专用链接
+        // 品牌专用链接：只显示纯URL，不加文字前缀
         let brandLink = null;
         let brandUrl = '#';
-        let brandDisplayText = '未填写包名';
+        let brandDisplayText = '—— 请输入包名 ——';
         if (packageName) {
             brandLink = getBrandSpecificLink(packageName, brandInfo);
             if (brandLink) {
                 brandUrl = brandLink;
-                let prefix = '';
-                if (isIOS) prefix = 'App Store 搜索链接: ';
-                else if (brand === 'xiaomi') prefix = '小米商店跳转链接: ';
-                else if (brand === 'huawei' || brand === 'honor') prefix = '华为商店跳转链接: ';
-                else if (brand === 'oppo') prefix = 'OPPO商店跳转链接: ';
-                else if (brand === 'vivo') prefix = 'vivo商店跳转链接: ';
-                else if (brand === 'samsung') prefix = '三星商店跳转链接: ';
-                else prefix = '品牌专用链接: ';
-                brandDisplayText = `${prefix}${brandLink}`;
+                brandDisplayText = brandLink;   // 只显示协议链接本身
             } else {
-                brandDisplayText = `⚠️ 无法生成专用链接 (包名无效)`;
+                brandDisplayText = `⚠️ 无法生成专用链接`;
                 brandUrl = '#';
             }
         } else {
@@ -464,15 +471,15 @@
             brandAnchor.style.opacity = '1';
         }
         
-        // 通用链接
+        // 通用链接：只显示纯URL
         let universalLink = null;
         let universalUrl = '#';
-        let universalDisplay = '未填写包名';
+        let universalDisplay = '—— 请输入包名 ——';
         if (packageName) {
             universalLink = getUniversalLink(packageName, brandInfo);
             if (universalLink) {
                 universalUrl = universalLink;
-                universalDisplay = `通用市场链接: ${universalLink}`;
+                universalDisplay = universalLink;
             } else {
                 universalDisplay = '⚠️ 无法生成通用链接';
                 universalUrl = '#';
@@ -493,13 +500,13 @@
             universalAnchor.style.opacity = '1';
         }
         
-        // 网页链接
+        // 网页链接：显示完整URL
         let webLinkUrl = '#';
-        let webDisplay = '未填写包名';
+        let webDisplay = '—— 请输入包名 ——';
         if (packageName) {
             const web = getWebStoreLink(packageName, brandInfo);
             webLinkUrl = web;
-            webDisplay = `网页商店: ${web}`;
+            webDisplay = web;
         } else {
             webDisplay = '—— 请输入包名 ——';
         }
@@ -558,7 +565,6 @@
         brandSelect.addEventListener('change', (e) => {
             currentManualBrand = e.target.value;
             updateAllLinks();
-            // 可选: 微调提示
             const info = getEffectiveBrandInfo();
             if (currentManualBrand !== 'auto') {
                 showToast(`已切换至 ${getBrandDisplayName(info.brand, info.isIOS)}`, 1000);
@@ -591,8 +597,6 @@
             }
             copyToClipboard(window.currentWebLink, '网页链接已复制');
         });
-        
-        // 可选: 点击链接前简单拦截无效点击，但我们已经设置了样式/pointer-events，不做额外处理
     }
     
     // 初始化自动检测品牌并同步下拉默认选项
@@ -606,7 +610,6 @@
         else if (!['huawei','xiaomi','oppo','vivo','samsung'].includes(suggestedBrand)) suggestedBrand = 'generic_android';
         
         const selectEl = document.getElementById('brandSelect');
-        // 预先匹配值
         let found = false;
         for (let i = 0; i < selectEl.options.length; i++) {
             if (selectEl.options[i].value === suggestedBrand) {
@@ -624,11 +627,9 @@
         updateAllLinks();
     }
     
-    // 监听ua变更导致的重新检测? 无需
     document.addEventListener('DOMContentLoaded', () => {
         initAutoSelectInDropdown();
         bindEvents();
-        // 初始刷新一次链接
         updateAllLinks();
     });
 </script>
