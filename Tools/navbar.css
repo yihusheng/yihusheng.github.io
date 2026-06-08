@@ -1,0 +1,321 @@
+/* ═══════════════════════════════════════════
+   Wise Navbar — 统一工具导航栏
+   配色遵循 Wise Design System (#9fe870)
+   ═══════════════════════════════════════════ */
+
+:root {
+  --nv-primary: #9fe870;
+  --nv-on-primary: #0e0f0c;
+  --nv-primary-active: #cdffad;
+  --nv-primary-pale: #e2f6d5;
+  --nv-ink: #0e0f0c;
+  --nv-ink-deep: #163300;
+  --nv-body: #454745;
+  --nv-mute: #868685;
+  --nv-surface: #ffffff;
+  --nv-surface-soft: #e8ebe6;
+  --nv-shadow: 0 2px 12px rgba(14,15,12,0.08);
+}
+
+/* ── Navbar Container ── */
+.wise-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid rgba(14,15,12,0.06);
+  box-shadow: var(--nv-shadow);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: transform 0.3s cubic-bezier(0.2,0,0,1);
+}
+
+.wise-navbar.hidden {
+  transform: translateY(-100%);
+}
+
+.wise-navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* ── Logo / Home ── */
+.wise-nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--nv-ink);
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.wise-nav-logo:hover {
+  opacity: 0.7;
+}
+
+.wise-nav-logo-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--nv-ink);
+  color: var(--nv-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+/* ── Desktop Links ── */
+.wise-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.wise-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.wise-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--nv-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s cubic-bezier(0.2,0,0,1);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.wise-nav-link:hover {
+  background: var(--nv-primary-pale);
+  color: var(--nv-ink-deep);
+}
+
+.wise-nav-link.active {
+  background: var(--nv-ink);
+  color: var(--nv-primary);
+}
+
+.wise-nav-link .nv-icon {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+/* ── Mobile Hamburger ── */
+.wise-nav-toggle {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--nv-ink);
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 6px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.wise-nav-toggle:hover {
+  background: var(--nv-primary-pale);
+}
+
+.wise-nav-toggle svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Mobile Drawer ── */
+.wise-nav-drawer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  background: rgba(14,15,12,0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.wise-nav-drawer.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.wise-nav-drawer-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 280px;
+  max-width: 80vw;
+  height: 100%;
+  background: var(--nv-surface);
+  box-shadow: -8px 0 32px rgba(14,15,12,0.1);
+  padding: 20px 16px 32px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.2,0,0,1);
+}
+
+.wise-nav-drawer.open .wise-nav-drawer-panel {
+  transform: translateX(0);
+}
+
+.wise-nav-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--nv-surface-soft);
+}
+
+.wise-nav-drawer-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--nv-ink);
+}
+
+.wise-nav-drawer-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--nv-surface-soft);
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nv-body);
+  transition: background 0.2s;
+}
+
+.wise-nav-drawer-close:hover {
+  background: var(--nv-primary-pale);
+}
+
+.wise-nav-drawer-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--nv-body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+
+.wise-nav-drawer-link:hover {
+  background: var(--nv-primary-pale);
+  color: var(--nv-ink-deep);
+}
+
+.wise-nav-drawer-link.active {
+  background: var(--nv-ink);
+  color: var(--nv-primary);
+}
+
+.wise-nav-drawer-link .nv-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--nv-surface-soft);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.wise-nav-drawer-link.active .nv-icon {
+  background: rgba(159,232,112,0.15);
+}
+
+/* ── Page padding (to offset fixed navbar) ── */
+body {
+  padding-top: 52px !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .wise-nav-links {
+    display: none;
+  }
+  .wise-nav-toggle {
+    display: block;
+  }
+  .wise-nav-drawer {
+    display: block;
+  }
+  .wise-navbar-inner {
+    padding: 0 12px;
+  }
+}
+
+/* ── Special: zashboard & Metacubexd are full-screen SPAs ── */
+body.navbar-overlay .wise-navbar {
+  background: rgba(14,15,12,0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
+
+body.navbar-overlay .wise-nav-logo {
+  color: #fff;
+}
+
+body.navbar-overlay .wise-nav-link {
+  color: rgba(255,255,255,0.7);
+}
+
+body.navbar-overlay .wise-nav-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+body.navbar-overlay .wise-nav-link.active {
+  background: var(--nv-primary);
+  color: var(--nv-ink);
+}
+
+body.navbar-overlay .wise-nav-toggle {
+  color: rgba(255,255,255,0.8);
+}
+
+body.navbar-overlay .wise-nav-toggle:hover {
+  background: rgba(255,255,255,0.1);
+}
