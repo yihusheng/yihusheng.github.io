@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
-<!-- ═══ 加载设备数据库 ═══ -->
 <script src="/src/devices.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -35,7 +34,6 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
 .di{background:var(--s);border-radius:var(--rs);padding:14px}
 .dl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--b);margin-bottom:4px}
 .dv{font-size:14px;font-weight:600;color:var(--k);word-break:break-all}
-.dv .s{font-size:10px;color:var(--m);font-weight:400;margin-left:4px}
 .ft{background:var(--k);padding:14px 24px;text-align:center}
 .ft p{font-size:11px;color:rgba(232,235,230,.5)}
 .ft a{color:var(--p);text-decoration:none}
@@ -57,7 +55,6 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
     <button class="btn btn-s" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
   </div>
 </div>
-
 <div class="card rs" id="resultCard">
   <div class="pad">
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">analytics</span> 解析结果</label>
@@ -72,82 +69,54 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
     </div>
     <div class="raw" id="rawUADisplay"></div>
     <div class="rw">
-      <button class="btn btn-s" id="copyResultBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果</button>
+      <button class="btn btn-s" id="copyResultBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果 + UA</button>
       <button class="btn btn-s" id="moreInfoBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
     </div>
   </div>
 </div>
-
 <div class="card"><div class="ft"><p>数据来源 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a> &bull; <a href="/src/devices.js" target="_blank">设备库</a></p></div></div>
 </div>
 <script>
 var I=document.getElementById('uaInput'),P=document.getElementById('parseBtn'),U=document.getElementById('useMyUABtn'),C=document.getElementById('clearBtn'),R=document.getElementById('resultCard');
 var BV=document.getElementById('browserVal'),BVV=document.getElementById('browserVerVal'),OV=document.getElementById('osVal'),OVV=document.getElementById('osVerVal'),BRV=document.getElementById('brandVal'),MV=document.getElementById('modelVal'),TV=document.getElementById('typeVal'),RUD=document.getElementById('rawUADisplay'),CRB=document.getElementById('copyResultBtn'),MIB=document.getElementById('moreInfoBtn');
-
-var DB = window.DeviceDB;
+var DB=window.DeviceDB;
 
 function F(ua,m,d){var u=ua.toLowerCase();for(var k in m)if(u.indexOf(k)!==-1)return m[k];return d}
 function GV(ua,p){var r=new RegExp(p+'[\\/\\s]?([0-9]+[\\.0-9]*)','i'),m=ua.match(r);return m?m[1]:''}
 
-function extractModel(ua){
-  var patterns = [
-    /iPhone(\d+,\d+)/i, /iPad(\d+,\d+)/i,
-    /SM-[A-Z0-9]+/g, /RMX[0-9]+/g, /CPH[0-9]+/g,
-    /IN20[0-9]+/g, /KB200[0-9]/g, /LE21[0-9]+/g,
-    /GM19[0-9]+/g, /HD19[0-9]+/g, /NE221[0-9]/g,
-    /PH[BKJDPRLCFZ][0-9]+/g, /MT211[0-9]/g, /PG[KZMP][0-9]+/g,
-    /PL[KRFZYQCDU][0-9]+/g, /PMB[0-9]+/g,
-    /NX[0-9]+/g, /V[0-9]{4}[A-Z0-9]*/g,
-    /Pixel\s?\d[a-z]*\s?(Pro|XL|Fold)?/i,
-    /M200[0-9]+/g, /210[0-9]+/g, /220[0-9]+/g, /230[0-9]+/g,
-    /Xiaomi\s?[A-Z0-9\s]+/i, /Redmi\s?[A-Z0-9\s]+/i,
-    /POCO\s?[A-Z0-9\s]+/i, /Mi\s?[A-Z0-9\s]+/i,
-    /OnePlus\s?[A-Z0-9]+/i
-  ];
-  for(var i=0;i<patterns.length;i++){
-    var m=ua.match(patterns[i]);if(m)return m[0]||m[1];
-  }
+function extractModelCode(ua){
+  var m=ua.match(/[;\\s]([A-Z0-9]{8,})\\s*[;)/]/);
+  if(m) return m[1];
+  m=ua.match(/\\b(24129PN74C|2410DPN6CC|25019PNF3C|25010PN30C|25042PN24C|23127PN0CC|23116PN5BC|2311BPN23C|24031PN0DC|2304FPN6DC|2211133C|2210132C|2201123C|2201122C|2112123AC|2206123SC|22061222203121C|2106118C|22061218C|2308CPXD0C|24072PX77C|2405CPX3DC|2505APX7BC|2109119BC|23046PNC9C|24053PY09C|2410CRP4CC|24091RPADC|25097RP43C)\\b/);
+  if(m) return m[1];
+  m=ua.match(/\\b((?:SM|RMX|CPH|IN20|KB200|LE21|GM19|HD19|NE221|PH[A-Z0-9]+|MT211|PG[A-Z0-9]+|PL[A-Z0-9]+|PMB[0-9]+|NX[0-9]+|V[0-9]{4}|M[0-9]{4}[A-Z0-9]*|Pixel\\s?\\d[\\w\\s]*?)(?:[);\\/\\s]|$))/);
+  if(m) return m[1].trim();
+  m=ua.match(/iPhone(\\d+,\\d+)/);if(m)return'iPhone'+m[1];
   return '--';
-}
-
-function typeCN(t){
-  var map={phone:'手机',tablet:'平板',watch:'手表/穿戴',band:'手环',tv:'电视'};
-  return map[t]||t||'--';
 }
 
 function parse(){
   var ua=I.value.trim();
   if(!ua){R.classList.remove('s');return}
-  var b=F(ua,{'edg':'Edge','chrome':'Chrome','crios':'Chrome','firefox':'Firefox','fxios':'Firefox','safari':'Safari','opr':'Opera','samsungbrowser':'Samsung Internet','micromessenger':'微信','qqbrowser':'QQ浏览器','ucbrowser':'UC浏览器'},'未知'),bv='';
+  var b=F(ua,{'edg':'Edge','edge':'Edge','chrome':'Chrome','crios':'Chrome','firefox':'Firefox','fxios':'Firefox','safari':'Safari','opr':'Opera','samsungbrowser':'Samsung Internet','micromessenger':'微信','qqbrowser':'QQ浏览器','ucbrowser':'UC浏览器'},'未知'),bv='';
   if(b==='Chrome')bv=GV(ua,'Chrome');else if(b==='Edge')bv=GV(ua,'Edg');else if(b==='Firefox')bv=GV(ua,'Firefox');else if(b==='Safari')bv=GV(ua,'Version');else if(b==='Opera')bv=GV(ua,'OPR')||GV(ua,'Opera');
-
   var os=F(ua,{'windows nt 10':'Windows 10/11','windows nt 6.3':'Windows 8.1','windows nt 6.2':'Windows 8','windows nt 6.1':'Windows 7','iphone os':'iOS','mac os x':'macOS','android':'Android','linux':'Linux','chrome os':'ChromeOS','harmonyos':'HarmonyOS'},'未知'),ov='';
-  if(os==='Android')ov=GV(ua,'Android');
-  else if(os==='iOS'){var v=GV(ua,'OS\\s+([0-9_]+)');if(v)ov=v.replace(/_/g,'.');}
+  if(os==='Android')ov=GV(ua,'Android');else if(os==='iOS'){var v=GV(ua,'OS\\s+([0-9_]+)');if(v)ov=v.replace(/_/g,'.');}
   else if(os==='macOS'){var v=GV(ua,'Mac OS X\\s+([0-9_]+)');if(v)ov=v.replace(/_/g,'.');}
-
-  var modelCode=extractModel(ua);
-  var devInfo=DB?DB.lookup(modelCode):null;
-
+  var code=extractModelCode(ua);
+  var info=DB?DB.lookup(code):null;
   BV.textContent=b;BVV.textContent=bv||'--';OV.textContent=os;OVV.textContent=ov||'--';
-
-  if(devInfo){
-    BRV.textContent=devInfo.brand;
-    MV.textContent=devInfo.name;
-    TV.textContent=typeCN(devInfo.type);
-  } else {
-    BRV.textContent='--(未知)';
-    MV.textContent=modelCode;
-    TV.textContent='--';
-  }
-  RUD.textContent=ua;
-  R.classList.add('s');
+  if(info&&info.brand!=='苹果'){BRV.textContent=info.brand;MV.textContent=info.name+' ('+code+')';TV.textContent={phone:'手机',tablet:'平板',watch:'手表',band:'手环',tv:'电视'}[info.type]||'--';}
+  else if(code.indexOf('iPhone')===0){BRV.textContent='苹果';MV.textContent=code;TV.textContent='手机';}
+  else if(code.indexOf('iPad')===0){BRV.textContent='苹果';MV.textContent=code;TV.textContent='平板';}
+  else if(code!=='--'){BRV.textContent='--';MV.textContent=code;TV.textContent=ua.indexOf('Mobile')!==-1?'手机':'--';}
+  else{BRV.textContent='--';MV.textContent='--';TV.textContent='--';}
+  RUD.textContent=ua;R.classList.add('s');
 }
-
 P.addEventListener('click',parse);
 U.addEventListener('click',function(){I.value=navigator.userAgent;parse()});
 C.addEventListener('click',function(){I.value='';R.classList.remove('s')});
-CRB.addEventListener('click',function(){navigator.clipboard.writeText('浏览器: '+BV.textContent+' '+BVV.textContent+'\n系统: '+OV.textContent+' '+OVV.textContent+'\n品牌: '+BRV.textContent+'\n型号: '+MV.textContent+'\n类型: '+TV.textContent)});
+CRB.addEventListener('click',function(){var t='浏览器: '+BV.textContent+' '+BVV.textContent+'\n系统: '+OV.textContent+' '+OVV.textContent+'\n品牌: '+BRV.textContent+'\n型号: '+MV.textContent.replace(/[()]/g,'')+'\n类型: '+TV.textContent+'\n\n原始 UA:\n'+I.value;navigator.clipboard.writeText(t)});
 MIB.addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')});
 window.addEventListener('load',function(){setTimeout(function(){I.value=navigator.userAgent;parse()},50)});
 </script>
