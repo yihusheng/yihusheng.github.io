@@ -1,222 +1,164 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本下划线生成器</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-    <!-- ═══ 统一导航栏 ═══ -->
-    <link rel="stylesheet" href="/Tools/navbar.css">
-    <script src="/Tools/navbar.js"></script>
-    <style>
-        :root {
-            --w-pri: #9fe870;
-            --w-on-pri: #0e0f0c;
-            --w-pri-act: #cdffad;
-            --w-pri-pale: #e2f6d5;
-            --w-ink: #0e0f0c;
-            --w-ink-deep: #163300;
-            --w-body: #454745;
-            --w-mute: #868685;
-            --w-canvas: #ffffff;
-            --w-soft: #e8ebe6;
-            --w-radius: 24px;
-            --w-radius-sm: 12px;
-            --w-radius-pill: 9999px;
-            --w-shadow: 0 4px 20px rgba(14,15,12,0.06);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: var(--w-soft);
-            color: var(--w-ink);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 24px;
-            line-height: 1.5;
-        }
-        .app-wrap {
-            width: 100%;
-            max-width: 960px;
-            background: var(--w-canvas);
-            border-radius: var(--w-radius);
-            box-shadow: var(--w-shadow);
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-            margin-top: 20px;
-        }
-        h1 {
-            font-weight: 900;
-            font-size: 32px;
-            letter-spacing: -0.03em;
-            color: var(--w-ink);
-            text-align: center;
-            margin-bottom: 4px;
-        }
-        .sub { color: var(--w-body); font-size: 14px; font-weight: 500; text-align: center; }
-        .sec-label {
-            font-size: 11px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 0.08em; color: var(--w-body); margin-bottom: 10px; display: block;
-        }
-        textarea {
-            width: 100%;
-            background: var(--w-soft);
-            color: var(--w-ink);
-            font-family: 'Inter', sans-serif;
-            font-size: 16px; font-weight: 500;
-            border: 2px solid transparent;
-            border-radius: var(--w-radius-sm);
-            padding: 16px;
-            outline: none;
-            resize: vertical;
-            min-height: 100px;
-            transition: all 0.2s;
-        }
-        textarea:focus { background: #fff; border-color: var(--w-pri); box-shadow: 0 0 0 3px rgba(159,232,112,0.2); }
-        .preview-box {
-            background: var(--w-soft);
-            border: 1px dashed rgba(14,15,12,0.12);
-            border-radius: var(--w-radius-sm);
-            padding: 32px 24px;
-            text-align: center;
-            min-height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn {
-            display: flex; align-items: center; justify-content: center;
-            height: 52px; padding: 0 28px;
-            border-radius: var(--w-radius-sm);
-            font-family: 'Inter', sans-serif;
-            font-size: 14px; font-weight: 700;
-            cursor: pointer; border: none; outline: none;
-            width: 100%; transition: all 0.15s;
-        }
-        .btn-pri { background: var(--w-ink); color: var(--w-pri); box-shadow: 0 3px 12px rgba(14,15,12,0.15); }
-        .btn-pri:hover { background: var(--w-ink-deep); transform: translateY(-1px); }
-        .btn-sec { background: var(--w-soft); color: var(--w-body); }
-        .btn-sec:hover { background: var(--w-pri-pale); color: var(--w-ink-deep); }
-        .divider { height: 1px; background: var(--w-soft); width: 100%; }
-        .bottom-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
-        @media (max-width: 768px) { .bottom-grid { grid-template-columns: 1fr; gap: 24px; } .app-wrap { padding: 24px; } }
-        .ctrl-group { margin-bottom: 20px; }
-        .chips { display: flex; gap: 6px; flex-wrap: wrap; }
-        .chip-label { position: relative; }
-        .chip-label input { position: absolute; opacity: 0; width: 0; height: 0; }
-        .chip {
-            padding: 7px 14px; background: var(--w-soft); color: var(--w-body);
-            border-radius: var(--w-radius-pill); font-size: 13px; font-weight: 600;
-            border: 1px solid transparent; cursor: pointer; transition: all 0.2s;
-        }
-        .chip-label input:checked + .chip { background: var(--w-ink); color: var(--w-pri); }
-        .chip-label:hover .chip { background: var(--w-pri-pale); }
-        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--w-soft); }
-        .toggle-label { font-size: 15px; font-weight: 600; color: var(--w-ink); }
-        .toggle-switch { position: relative; width: 48px; height: 28px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--w-soft); border-radius: 28px; transition: .3s; }
-        .slider:before { content: ''; position: absolute; height: 20px; width: 20px; left: 4px; bottom: 4px; background: #fff; border-radius: 50%; transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        input:checked + .slider { background: var(--w-ink); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        .range-hdr { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--w-body); margin-bottom: 8px; }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--w-ink); cursor: pointer; margin-top: -8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--w-soft); border-radius: 2px; }
-        .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .color-group label { display: block; font-size: 12px; font-weight: 600; color: var(--w-body); margin-bottom: 6px; }
-        input[type=color] { -webkit-appearance: none; border: none; width: 100%; height: 44px; border-radius: var(--w-radius-sm); cursor: pointer; padding: 0; background: none; }
-        input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type=color]::-webkit-color-swatch { border: 2px solid var(--w-soft); border-radius: var(--w-radius-sm); }
-        .code-block { background: var(--w-ink); border-radius: var(--w-radius-sm); padding: 16px; margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 13px; color: var(--w-pri); overflow-x: auto; white-space: pre-wrap; position: relative; }
-        .code-label { position: absolute; top: 0; right: 0; background: rgba(159,232,112,0.1); color: var(--w-pri); font-size: 10px; font-weight: 700; padding: 4px 8px; border-bottom-left-radius: 8px; text-transform: uppercase; }
-        #toast { visibility: hidden; min-width: 280px; background: var(--w-ink); color: var(--w-pri); text-align: center; border-radius: var(--w-radius-pill); padding: 14px 24px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px); font-size: 14px; font-weight: 600; opacity: 0; transition: all .3s; }
-        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>文本下划线生成器</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link rel="stylesheet" href="/Tools/navbar.css">
+<script src="/Tools/navbar.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:20px}
+.app{width:100%;max-width:900px;background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);padding:36px;margin-top:20px}
+h1{font-size:28px;font-weight:900;letter-spacing:-.03em;text-align:center;color:var(--k)}
+.sub{text-align:center;font-size:13px;color:var(--m);margin:2px 0 28px}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:8px}
+textarea{width:100%;background:var(--s);color:var(--k);font-family:'Inter',sans-serif;font-size:15px;font-weight:500;border:2px solid transparent;border-radius:var(--rs);padding:14px;outline:none;resize:vertical;min-height:80px;transition:all .2s}
+textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.pbox{background:var(--s);border:1px dashed rgba(14,15,12,.1);border-radius:var(--rs);padding:28px 20px;text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.btn{display:flex;align-items:center;justify-content:center;height:48px;padding:0 24px;border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;width:100%;transition:all .15s;gap:6px}
+.btn-p{background:var(--k);color:var(--p);box-shadow:0 3px 12px rgba(14,15,12,.12)}
+.btn-p:hover{background:var(--kd);transform:translateY(-1px)}
+.btn-s{background:var(--s);color:var(--b)}
+.btn-s:hover{background:var(--pp);color:var(--kd)}
+.btn-sq{background:var(--s);color:var(--b);border:none;border-radius:var(--rs);cursor:pointer;display:flex;align-items:center;justify-content:center;width:40px;height:40px;transition:all .15s;flex-shrink:0}
+.btn-sq:hover{background:var(--pp);color:var(--kd)}
+.sec{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px;padding-top:24px;border-top:1px solid var(--s)}
+@media(max-width:700px){.sec{grid-template-columns:1fr;gap:20px}.app{padding:20px}}
+.gr{margin-bottom:18px}
+.gr:last-child{margin-bottom:0}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.cl{position:relative}
+.cl input{position:absolute;opacity:0;width:0;height:0}
+.ch{display:flex;align-items:center;gap:4px;padding:6px 13px;background:var(--s);color:var(--b);border-radius:var(--rp);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.cl input:checked+.ch{background:var(--k);color:var(--p)}
+.cl:hover .ch{background:var(--pp)}
+.tr{display:flex;align-items:center;justify-content:space-between;padding:12px 0}
+.tl{font-size:14px;font-weight:600;color:var(--k)}
+.ts{position:relative;width:44px;height:26px}
+.ts input{opacity:0;width:0;height:0}
+.sl{position:absolute;cursor:pointer;inset:0;background:var(--s);border-radius:26px;transition:.3s}
+.sl:before{content:'';position:absolute;height:18px;width:18px;left:4px;bottom:4px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+input:checked+.sl{background:var(--k)}
+input:checked+.sl:before{transform:translateX(18px)}
+.rh{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--b);margin-bottom:6px}
+input[type=range]{-webkit-appearance:none;width:100%;background:transparent;height:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:18px;width:18px;border-radius:50%;background:var(--k);cursor:pointer;margin-top:-7px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+input[type=range]::-webkit-slider-runnable-track{width:100%;height:4px;background:var(--s);border-radius:2px}
+.cr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cg label{display:block;font-size:11px;font-weight:600;color:var(--b);margin-bottom:4px}
+input[type=color]{-webkit-appearance:none;border:none;width:100%;height:40px;border-radius:var(--rs);cursor:pointer;padding:0;background:none}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:2px solid var(--s);border-radius:var(--rs)}
+.cb{background:var(--k);border-radius:var(--rs);padding:14px;margin-bottom:10px;font-family:'Courier New',monospace;font-size:12px;color:var(--p);overflow-x:auto;white-space:pre-wrap;position:relative;min-height:40px}
+.cl2{position:absolute;top:0;right:0;background:rgba(159,232,112,.1);color:var(--p);font-size:9px;font-weight:700;padding:3px 7px;border-bottom-left-radius:8px;text-transform:uppercase}
+.toast{visibility:hidden;min-width:240px;background:var(--k);color:var(--p);text-align:center;border-radius:var(--rp);padding:12px 20px;position:fixed;z-index:10000;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);font-size:13px;font-weight:600;opacity:0;transition:all .3s}
+.toast.show{visibility:visible;opacity:1;transform:translateX(-50%) translateY(0)}
+.act-row{display:flex;gap:8px;margin-top:6px}
+.act-row .btn-s{width:auto;padding:0 16px;height:40px;font-size:12px}
+</style>
 </head>
 <body>
-<div class="app-wrap">
-    <header>
-        <h1>文本下划线生成器</h1>
-        <div class="sub">Wise Design</div>
-    </header>
+<div class="app">
+  <h1>下划线生成器</h1>
+  <div class="sub">在线预览 · 即改即得</div>
 
-    <div class="top-section">
-        <div>
-            <label class="sec-label">输入内容</label>
-            <textarea id="inputText" placeholder="在此处输入您的文本...">Atmospheric Design</textarea>
+  <div>
+    <label class="lbl">输入文本</label>
+    <textarea id="inputText" placeholder="在此输入文本...">Atmospheric Design</textarea>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="pbox"><span id="preview">Atmospheric Design</span></div>
+    <button class="btn btn-p" id="copyBtn"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button>
+  </div>
+
+  <div class="sec">
+    <div>
+      <div class="gr">
+        <label class="lbl">线条样式</label>
+        <div class="chips">
+          <label class="cl"><input type="radio" name="st" value="solid" checked><span class="ch"><span class="material-symbols-rounded" style="font-size:14px">horizontal_rule</span> 实线</span></label>
+          <label class="cl"><input type="radio" name="st" value="dashed"><span class="ch"><span class="material-symbols-rounded" style="font-size:14px">more_horiz</span> 虚线</span></label>
+          <label class="cl"><input type="radio" name="st" value="dotted"><span class="ch"><span class="material-symbols-rounded" style="font-size:14px">more_horiz</span> 点线</span></label>
+          <label class="cl"><input type="radio" name="st" value="wavy"><span class="ch"><span class="material-symbols-rounded" style="font-size:14px">water</span> 波浪</span></label>
+          <label class="cl"><input type="radio" name="st" value="double"><span class="ch"><span class="material-symbols-rounded" style="font-size:14px">horizontal_split</span> 双线</span></label>
         </div>
-        <div>
-            <label class="sec-label">实时预览</label>
-            <div class="preview-box"><span id="previewElement">Atmospheric Design</span></div>
+      </div>
+
+      <div class="gr">
+        <div class="tr">
+          <span class="tl">作为链接 &lt;a&gt;</span>
+          <label class="ts"><input type="checkbox" id="isLink"><span class="sl"></span></label>
         </div>
-        <button class="btn btn-pri" onclick="copyToClipboard('text')">复制带下划线文本</button>
+      </div>
+
+      <div class="gr">
+        <label class="lbl">颜色</label>
+        <div class="cr">
+          <div class="cg"><label>文本</label><input type="color" id="textColor" value="#0e0f0c"></div>
+          <div class="cg"><label>线条</label><input type="color" id="lineColor" value="#9fe870"></div>
+        </div>
+      </div>
+
+      <div class="gr">
+        <label class="lbl">粗细</label>
+        <div class="rh"><span>1px</span><span id="thickVal">2px</span><span>10px</span></div>
+        <input type="range" id="thick" min="1" max="10" value="2">
+      </div>
+
+      <div class="gr">
+        <label class="lbl">偏移</label>
+        <div class="rh"><span>0px</span><span id="offVal">3px</span><span>20px</span></div>
+        <input type="range" id="offset" min="0" max="20" value="3">
+      </div>
+
+      <div class="gr">
+        <label class="lbl">字号</label>
+        <div class="rh"><span>12px</span><span id="fsVal">24px</span><span>72px</span></div>
+        <input type="range" id="fontSize" min="12" max="72" value="24">
+      </div>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="bottom-grid">
-        <div class="controls-column">
-            <div class="ctrl-group">
-                <label class="sec-label">线条样式</label>
-                <div class="chips">
-                    <label class="chip-label"><input type="radio" name="ls" value="solid" checked><span class="chip">实线</span></label>
-                    <label class="chip-label"><input type="radio" name="ls" value="dashed"><span class="chip">虚线</span></label>
-                    <label class="chip-label"><input type="radio" name="ls" value="dotted"><span class="chip">点线</span></label>
-                    <label class="chip-label"><input type="radio" name="ls" value="wavy"><span class="chip">波浪线</span></label>
-                    <label class="chip-label"><input type="radio" name="ls" value="double"><span class="chip">双线</span></label>
-                </div>
-            </div>
-            <div class="ctrl-group">
-                <div class="toggle-row">
-                    <span class="toggle-label">作为链接 &lt;a&gt;</span>
-                    <label class="toggle-switch"><input type="checkbox" id="isLink"><span class="slider"></span></label>
-                </div>
-            </div>
-            <div class="ctrl-group">
-                <label class="sec-label">颜色设置</label>
-                <div class="color-row">
-                    <div class="color-group"><label>文本颜色</label><input type="color" id="textColor" value="#0e0f0c"></div>
-                    <div class="color-group"><label>线条颜色</label><input type="color" id="lineColor" value="#9fe870"></div>
-                </div>
-            </div>
-            <div class="ctrl-group">
-                <label class="sec-label">细节调整</label>
-                <div style="margin-top:12px">
-                    <div style="margin-bottom:14px"><div class="range-hdr"><span>线条粗细</span><span id="thickVal">2px</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
-                    <div style="margin-bottom:14px"><div class="range-hdr"><span>下划线偏移</span><span id="offVal">3px</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
-                    <div><div class="range-hdr"><span>字体大小</span><span id="fsVal">24px</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
-                </div>
-            </div>
-        </div>
-        <div class="code-column">
-            <label class="sec-label">生成代码</label>
-            <div style="margin-top:12px">
-                <div class="code-block"><div class="code-label">CSS</div><code id="cssOutput"></code></div>
-                <div class="code-block"><div class="code-label">HTML</div><code id="htmlOutput"></code></div>
-                <button class="btn btn-sec" onclick="copyToClipboard('html')" style="margin-bottom:8px">复制 HTML 代码</button>
-                <button class="btn btn-sec" onclick="copyToClipboard('css')">复制 CSS 代码</button>
-            </div>
-        </div>
+    <div>
+      <label class="lbl">CSS</label>
+      <div class="cb"><div class="cl2">CSS</div><code id="cssOut"></code></div>
+      <label class="lbl">HTML</label>
+      <div class="cb"><div class="cl2">HTML</div><code id="htmlOut"></code></div>
+      <div class="act-row">
+        <button class="btn btn-s" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button>
+        <button class="btn btn-s" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button>
+      </div>
     </div>
+  </div>
 </div>
-<div id="toast">已复制到剪贴板</div>
+<div class="toast" id="toast">已复制</div>
 
 <script>
-const inputText=document.getElementById('inputText'), preview=document.getElementById('previewElement'), cssOut=document.getElementById('cssOutput'), htmlOut=document.getElementById('htmlOutput'), toast=document.getElementById('toast');
-const textC=document.getElementById('textColor'), lineC=document.getElementById('lineColor'), thick=document.getElementById('thick'), offset=document.getElementById('offset'), fs=document.getElementById('fontSize'), linkChk=document.getElementById('isLink'), radios=document.getElementsByName('ls');
-const thickVal=document.getElementById('thickVal'), offVal=document.getElementById('offVal'), fsVal=document.getElementById('fsVal');
-function getStyle(){for(var i=0;i<radios.length;i++)if(radios[i].checked)return radios[i].value;return'solid'}
-function update(){var t=inputText.value||'预览文本',s=getStyle(),tc=textC.value,lc=lineC.value,th=thick.value,of=offset.value,fsz=fs.value,lnk=linkChk.checked;thickVal.textContent=th+'px';offVal.textContent=of+'px';fsVal.textContent=fsz+'px';var css='.underline-style{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fsz+'px;font-family:\'Inter\',sans-serif}'+(lnk?'\ntext-decoration-skip-ink:none;cursor:pointer':''),html=lnk?'<a href="#" class="underline-style">'+t+'</a>':'<span class="underline-style">'+t+'</span>';preview.textContent=t;preview.style.textDecorationLine='underline';preview.style.textDecorationStyle=s;preview.style.textDecorationColor=lc;preview.style.textDecorationThickness=th+'px';preview.style.textUnderlineOffset=of+'px';preview.style.color=tc;preview.style.fontSize=fsz+'px';preview.style.fontFamily="'Inter',sans-serif";cssOut.textContent=css;htmlOut.textContent=html}
-function getInline(){var t=inputText.value||'预览文本',s=getStyle(),tc=textC.value,lc=lineC.value,th=thick.value,of=offset.value,fsz=fs.value,lnk=linkChk.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fsz+'px;font-family:\'Inter\',sans-serif';return lnk?'<a href="#" style="'+is+'">'+t+'</a>':'<span style="'+is+'">'+t+'</span>'}
-function copyToClipboard(t){if(t==='text'){var h=getInline(),p=inputText.value;navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([h],{type:'text/html'}),'text/plain':new Blob([p],{type:'text/plain'})})]).then(showToast).catch(function(e){alert('复制失败')})}else{navigator.clipboard.writeText(t==='html'?htmlOut.textContent:cssOut.textContent).then(showToast)}}
-function showToast(){toast.className='show';setTimeout(function(){toast.className=''},2500)}
-var inputs=[inputText,textC,lineC,thick,offset,fs,linkChk];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',update);for(var i=0;i<radios.length;i++)radios[i].addEventListener('change',update);
-update();
+var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
+var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),LK=document.getElementById('isLink'),RS=document.getElementsByName('st');
+var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal');
+
+function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
+function up(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
+var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif}'+(lnk?'\ntext-decoration-skip-ink:none;cursor:pointer':''),html=lnk?'<a href="#" class="ul">'+t+'</a>':'<span class="ul">'+t+'</span>'
+P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px';P.style.fontFamily='Inter,sans-serif'
+CO.textContent=css;HO.textContent=html}
+
+function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif';return lnk?'<a href="#" style="'+is+'">'+t+'</a>':'<span style="'+is+'">'+t+'</span>'}
+
+function cp(t){if(t==='all'){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([gi()],{type:'text/html'}),'text/plain':new Blob([T.value||'预览'],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
+
+function st(){TT.className='toast show';setTimeout(function(){TT.className='toast'},2000)}
+
+var inputs=[T,TC,LC,TK,OF,FS,LK];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up);
+document.getElementById('copyBtn').addEventListener('click',function(){cp('all')})
+document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')})
+document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')})
+up()
 </script>
 </body>
 </html>
