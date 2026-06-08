@@ -8,7 +8,8 @@
  *  【维护方式】后续只需修改下方的 NAV_ITEMS 数组，添加/删除/修改
  *  导航条目，所有引用此脚本的页面都会同步更新，无需逐个页面修改。
  *  
- *  导航数据还会暴露到 window.WiseNavbarData，供主页底部抽屉动态渲染。
+ *  导航数据通过 window.WiseNavbarData 暴露给全局，
+ *  主页底部抽屉读取此数据动态渲染导航卡片。
  *  
  *  【使用方法】在任意页面的 <head> 中引入：
  *    <link rel="stylesheet" href="/Tools/navbar.css">
@@ -26,7 +27,7 @@
      ★★★ 导航数据 — 修改这里 = 更新所有页面 ★★★
      ──────────────────────────────────────────────
      格式：{ icon, label, href }
-     icon: Material Symbols Rounded 图标名（完整列表见 Google Fonts）
+     icon: Material Symbols Rounded 图标名
      label: 显示文字
      href: 链接路径（从根目录 / 开始）
   */
@@ -74,6 +75,11 @@
     p = p.replace(/\/index\.html$/, '');
     p = p.replace(/\/+$/, '');
     return p || '/';
+  }
+
+  // 判断是否为首页
+  function isHomePage() {
+    return getCurrentPath() === '/';
   }
 
   // 判断某项是否匹配当前页面
@@ -139,7 +145,7 @@
 </div>`;
   }
 
-  // 注入导航栏到页面
+  // 注入导航栏到页面（仅非首页调用）
   function inject() {
     if (document.getElementById('wiseNavbar')) return;
 
@@ -151,7 +157,7 @@
     }
   }
 
-  // 绑定交互事件
+  // 绑定交互事件（仅非首页调用）
   function bindEvents() {
     const toggle = document.getElementById('wiseNavToggle');
     const drawer = document.getElementById('wiseNavDrawer');
@@ -176,7 +182,6 @@
       drawer.classList.contains('open') ? closeDrawer() : open();
     });
     if (close) close.addEventListener('click', closeDrawer);
-
     drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
     drawer.querySelectorAll('.wise-nav-drawer-link').forEach(el => {
@@ -184,7 +189,7 @@
     });
   }
 
-  // 启动 — 主页有自己的抽屉布局，不自动注入顶部导航栏
+  // 启动（仅非首页调用）
   function init() {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => { inject(); bindEvents(); });
@@ -194,8 +199,12 @@
     }
   }
 
-  // 只在非主页时自动注入顶部导航栏；主页通过 WiseNavbarData 读取数据
-  if (getCurrentPath() !== '/') {
+  /* ══════════════════════════════════════════════
+     入口：首页只暴露数据，不注入顶部导航栏
+     其他页面自动注入完整的导航栏
+     ══════════════════════════════════════════════ */
+  if (!isHomePage()) {
     init();
   }
+  // 首页：什么也不做，仅通过 window.WiseNavbarData 暴露数据
 })();
