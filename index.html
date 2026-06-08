@@ -156,12 +156,6 @@
       margin-top: 4px;
     }
     .drawer-sections { padding-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
-    .drawer-section-label {
-      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--md-sys-color-on-surface-variant);
-      padding: 12px 4px 4px; opacity: 0.6;
-    }
     .drawer-row {
       display: flex; align-items: center; gap: 14px;
       padding: 12px 16px; border-radius: 16px;
@@ -404,8 +398,8 @@
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
       <div class="drawer-header">
-        <div class="drawer-title">Dashboard</div>
-        <div class="drawer-subtitle">快捷工具</div>
+        <div class="drawer-title">快捷工具</div>
+        <div class="drawer-subtitle">所有应用</div>
       </div>
       <div class="drawer-sections" id="drawerSections"></div>
     </div>
@@ -514,12 +508,10 @@ async function loadMusicList() {
   if (songs.length === 0) {
     songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src/music 目录', cover: '', src: '' }];
   }
-  // 随机起始曲目
   currentSongIndex = Math.floor(Math.random() * songs.length);
   loadSong(songs[currentSongIndex]);
 }
 
-// 从 MP3 文件读取内置封面
 function loadEmbeddedCover(mp3Url, callback) {
   if (typeof jsmediatags === 'undefined') { callback(null); return; }
   try {
@@ -604,14 +596,12 @@ function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
 document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
 
-// 随机 / 顺序 切换
 function toggleShuffle() {
   isShuffle = !isShuffle;
   document.getElementById('shuffleBtn').classList.toggle('active', isShuffle);
 }
 document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
 
-// ===== 播放列表按钮：点击直接打开播放列表 =====
 document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
 
 function getNextIndex() {
@@ -644,7 +634,6 @@ function loadSong(song){
   const mc = document.getElementById('mainCover');
   mc.src = '';
 
-  // 优先读取 MP3 内置封面
   loadEmbeddedCover(song.src, function(coverDataUrl) {
     if (coverDataUrl) {
       mc.src = coverDataUrl;
@@ -688,7 +677,6 @@ function toggleDrawer(){document.getElementById('drawer').classList.toggle('open
 document.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();audio.paused?playSong():pauseSong();}else if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('prevBtn').click();}else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('nextBtn').click();}});
 async function loadBingWallpaper(){if(window.innerWidth<768)return;try{const r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');const d=await r.json();if(d.images&&d.images.length>0){const u='https://www.bing.com'+d.images[0].url;const img=new Image();img.src=u;img.onload=()=>{document.body.style.backgroundImage='url('+u+')';};}}catch(e){}}
 
-// ===== 播放列表功能 =====
 function openPlaylist() {
   const overlay = document.getElementById('playlistOverlay');
   if (!songs || songs.length === 0) return;
