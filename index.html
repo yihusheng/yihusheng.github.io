@@ -12,6 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/Tools/navbar.css">
   <script src="/Tools/navbar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.8/jsmediatags.min.js"></script>
   <style>
     :root {
       --wise-primary: #9fe870;
@@ -125,10 +126,13 @@
     .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
     .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
     .time-labels { width: 100%; display: flex; justify-content: space-between; margin-top: 4px; color: var(--md-sys-color-on-surface-variant); font-size: 0.75rem; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-    .controls { display: flex; gap: 20px; align-items: center; flex-shrink: 0; margin-top: 8px; }
-    .btn { background: var(--wise-canvas-soft-darker); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 1px 3px rgba(14,15,12,0.06); }
+    .controls { display: flex; gap: 16px; align-items: center; flex-shrink: 0; margin-top: 8px; }
+    .btn { background: var(--wise-canvas-soft-darker); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 1px 3px rgba(14,15,12,0.06); }
     .btn:active { transform: scale(0.92); background: var(--wise-canvas-soft); }
-    .btn .material-symbols-rounded { font-size: 1.5rem; }
+    .btn .material-symbols-rounded { font-size: 1.4rem; }
+    .btn-shuffle { width: 44px; height: 44px; border-radius: 22px; }
+    .btn-shuffle.active { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+    .btn-shuffle .material-symbols-rounded { font-size: 1.2rem; }
     .btn-play { width: 72px; height: 72px; border-radius: 36px; background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); box-shadow: 0 4px 16px rgba(159,232,112,0.35); }
     .btn-play:active { background: var(--wise-primary-active); }
     .btn-play .material-symbols-rounded { font-size: 2rem; }
@@ -209,9 +213,11 @@
       <span id="durTime">0:00</span>
     </div>
     <div class="controls">
+      <button class="btn btn-shuffle active" id="shuffleBtn" aria-label="shuffle"><span class="material-symbols-rounded">shuffle</span></button>
       <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
       <button class="btn btn-play" id="playBtn" aria-label="play/pause"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
       <button class="btn" id="nextBtn" aria-label="next"><span class="material-symbols-rounded">skip_next</span></button>
+      <button class="btn btn-shuffle" id="repeatBtn" aria-label="repeat"><span class="material-symbols-rounded">repeat</span></button>
     </div>
   </div>
   <div class="bottom-drawer" id="drawer">
@@ -271,9 +277,19 @@ const CookieUtils = {
   remove: (n) => { document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/'; }
 };
 
-// ===== 动态从 src/scripts/music.json 加载歌曲列表 =====
+// ===== 随机播放 + 内置封面读取 =====
 let songs = [];
 let currentSongIndex = 0;
+let isShuffle = true;
+let isRepeat = false;
+
+function getRandomIndex() {
+  if (songs.length <= 1) return 0;
+  let idx;
+  do { idx = Math.floor(Math.random() * songs.length); }
+  while (idx === currentSongIndex);
+  return idx;
+}
 
 async function loadMusicList() {
   try {
@@ -282,13 +298,37 @@ async function loadMusicList() {
     songs = await res.json();
     console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ 加载 src/scripts/music.json 失败:', e);
+    console.error('❌ 加载 music.json 失败:', e);
     songs = [];
   }
   if (songs.length === 0) {
     songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src/music 目录', cover: '', src: '' }];
   }
-  loadSong(songs[0]);
+  // 随机起始曲目
+  currentSongIndex = Math.floor(Math.random() * songs.length);
+  loadSong(songs[currentSongIndex]);
+}
+
+// 从 MP3 文件读取内置封面
+function loadEmbeddedCover(mp3Url, callback) {
+  if (typeof jsmediatags === 'undefined') { callback(null); return; }
+  try {
+    jsmediatags.read(mp3Url, {
+      onSuccess: function(tag) {
+        const pic = tag.tags && tag.tags.picture;
+        if (pic && pic.data) {
+          const data = pic.data;
+          const bytes = new Uint8Array(data);
+          let binary = '';
+          for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+          callback('data:' + (pic.format || 'image/jpeg') + ';base64,' + btoa(binary));
+        } else {
+          callback(null);
+        }
+      },
+      onError: function() { callback(null); }
+    });
+  } catch(e) { callback(null); }
 }
 
 const audio = document.getElementById('audio');
@@ -353,19 +393,80 @@ function toggleIsland(){island.classList.toggle('active');}
 function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
 document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
-document.getElementById('nextBtn').addEventListener('click',()=>{if(!songs.length)return;currentSongIndex=(currentSongIndex+1)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
-document.getElementById('prevBtn').addEventListener('click',()=>{if(!songs.length)return;currentSongIndex=(currentSongIndex-1+songs.length)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
+
+// 随机 / 顺序 / 单曲 切换
+function toggleShuffle() {
+  isShuffle = !isShuffle;
+  document.getElementById('shuffleBtn').classList.toggle('active', isShuffle);
+}
+document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
+document.getElementById('repeatBtn').addEventListener('click', ()=>{
+  isRepeat = !isRepeat;
+  document.getElementById('repeatBtn').classList.toggle('active', isRepeat);
+});
+
+function getNextIndex() {
+  if (isRepeat) return currentSongIndex;
+  return isShuffle ? getRandomIndex() : (currentSongIndex + 1) % songs.length;
+}
+function getPrevIndex() {
+  if (isRepeat) return currentSongIndex;
+  if (isShuffle) return getRandomIndex();
+  return (currentSongIndex - 1 + songs.length) % songs.length;
+}
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(!songs.length) return;
+  currentSongIndex = getNextIndex();
+  loadSong(songs[currentSongIndex]);
+  playSong();
+});
+document.getElementById('prevBtn').addEventListener('click', ()=>{
+  if(!songs.length) return;
+  currentSongIndex = getPrevIndex();
+  loadSong(songs[currentSongIndex]);
+  playSong();
+});
 
 function loadSong(song){
   if (!song || !song.src) return;
-  document.getElementById('mainTitle').innerText=song.title; document.getElementById('mainArtist').innerText=song.artist;
-  if (song.cover) {
-    ColorUtils.extractColorFromUrl(song.cover,rgb=>{const t=ColorUtils.generateTheme(rgb); for(const[k,v]of Object.entries(t))document.documentElement.style.setProperty(k,v); updateThemeColor();});
-  }
-  const mc=document.getElementById('mainCover');
-  mc.onload=()=>{if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,album:'Unknown Album',artwork:[{src:song.cover||'',sizes:'512x512',type:'image/jpeg'}]});};
-  mc.src=song.cover||''; audio.src=song.src;
-  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover||'',sizes:'512x512',type:'image/jpeg'}]});
+  document.getElementById('mainTitle').innerText = song.title;
+  document.getElementById('mainArtist').innerText = song.artist;
+  const mc = document.getElementById('mainCover');
+  mc.src = ''; // 先清空
+
+  // 优先读取 MP3 内置封面
+  loadEmbeddedCover(song.src, function(coverDataUrl) {
+    if (coverDataUrl) {
+      mc.src = coverDataUrl;
+      ColorUtils.extractColorFromUrl(coverDataUrl, rgb => {
+        const t = ColorUtils.generateTheme(rgb);
+        for (const [k, v] of Object.entries(t)) document.documentElement.style.setProperty(k, v);
+        updateThemeColor();
+      });
+    } else if (song.cover) {
+      // 降级用外部封面
+      mc.src = song.cover;
+      ColorUtils.extractColorFromUrl(song.cover, rgb => {
+        const t = ColorUtils.generateTheme(rgb);
+        for (const [k, v] of Object.entries(t)) document.documentElement.style.setProperty(k, v);
+        updateThemeColor();
+      });
+    }
+  });
+
+  audio.src = song.src;
+  mc.onload = () => {
+    if ('mediaSession' in navigator)
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title, artist: song.artist, album: '',
+        artwork: [{ src: mc.src || '', sizes: '512x512', type: 'image/jpeg' }]
+      });
+  };
+  if ('mediaSession' in navigator)
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title, artist: song.artist, artwork: [{ src: '', sizes: '512x512', type: 'image/jpeg' }]
+    });
 }
 
 let isDragging=false;
