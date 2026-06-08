@@ -25,14 +25,6 @@
 (function () {
   'use strict';
 
-  /* ──────────────────────────────────────────────
-     ★★★ 导航数据 — 修改这里 = 更新所有页面 ★★★
-     ──────────────────────────────────────────────
-     格式：{ icon, label, href }
-     icon: Material Symbols Rounded 图标名
-     label: 显示文字
-     href: 链接路径（从根目录 / 开始）
-  */
   const NAV_ITEMS = [
     { icon: 'home',             label: '首页',      href: '/' },
     { icon: 'calculate',        label: 'Double',    href: '/Tools/Double/' },
@@ -45,16 +37,8 @@
     { icon: 'dashboard',        label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
 
-  /* ──────────────────────────────────────────────
-     暴露数据给外部使用（如主页底部抽屉）
-     ────────────────────────────────────────────── */
   window.WiseNavbarData = NAV_ITEMS.slice();
 
-  /* ══════════════════════════════════════════════
-     内部逻辑 — 通常无需修改
-     ══════════════════════════════════════════════ */
-
-  // 自动注入 Material Symbols Rounded 字体
   function injectFonts() {
     if (document.querySelector('link[href*="Material+Symbols+Rounded"]')) return;
     const link = document.createElement('link');
@@ -63,7 +47,6 @@
     document.head.appendChild(link);
   }
 
-  // 获取当前页面路径（标准化）
   function getCurrentPath() {
     let p = window.location.pathname;
     p = p.replace(/\/index\.html$/, '');
@@ -71,12 +54,8 @@
     return p || '/';
   }
 
-  // 判断是否为首页
-  function isHomePage() {
-    return getCurrentPath() === '/';
-  }
+  function isHomePage() { return getCurrentPath() === '/'; }
 
-  // 判断某项是否匹配当前页面
   function isActive(itemHref) {
     const cur = getCurrentPath();
     const target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
@@ -85,61 +64,44 @@
     return false;
   }
 
-  // 生成导航栏 HTML（两枚独立按钮 + 抽屉）
   function buildHTML() {
     const drawerLinks = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
-      return `<a class="wise-nav-drawer-link${act}" href="${item.href}">
-        <span class="nv-icon material-symbols-rounded">${item.icon}</span>
-        ${item.label}
-      </a>`;
+      return '<a class="wise-nav-drawer-link' + act + '" href="' + item.href + '">' +
+        '<span class="nv-icon material-symbols-rounded">' + item.icon + '</span>' +
+        item.label + '</a>';
     }).join('');
 
-    return `
-<!-- Wise Navbar: Home button (top-left) -->
-<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">
-  <span class="material-symbols-rounded">home</span>
-</a>
-
-<!-- Wise Navbar: Menu button (top-right) -->
-<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
-  <span class="material-symbols-rounded">apps</span>
-</button>
-
-<div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
-  <div class="wise-nav-drawer-panel">
-    <div class="wise-nav-drawer-header">
-      <span class="wise-nav-drawer-title">导航菜单</span>
-      <button class="wise-nav-drawer-close" id="wiseNavDrawerClose" aria-label="关闭导航菜单">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
-    ${drawerLinks}
-  </div>
-</div>`;
+    return '' +
+      '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
+        '<span class="material-symbols-rounded">home</span></a>' +
+      '<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">' +
+        '<span class="material-symbols-rounded">apps</span></button>' +
+      '<div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">' +
+        '<div class="wise-nav-drawer-panel">' +
+          '<div class="wise-nav-drawer-header">' +
+            '<span class="wise-nav-drawer-title">导航菜单</span>' +
+            '<button class="wise-nav-drawer-close" id="wiseNavDrawerClose" aria-label="关闭导航菜单">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+                '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
+              '</svg></button></div>' +
+          drawerLinks +
+        '</div></div>';
   }
 
-  // 注入导航栏到页面（仅非首页调用）
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
-
     injectFonts();
     document.body.insertAdjacentHTML('beforeend', buildHTML());
-
-    // 固定顶部按钮占据空间，padding 避免内容被遮挡
     if (!document.body.classList.contains('navbar-overlay')) {
       document.body.style.paddingTop = '74px';
     }
   }
 
-  // 绑定交互事件（仅非首页调用）
   function bindEvents() {
-    const toggle = document.getElementById('wiseNavToggle');
-    const drawer = document.getElementById('wiseNavDrawer');
-    const close  = document.getElementById('wiseNavDrawerClose');
+    var toggle = document.getElementById('wiseNavToggle');
+    var drawer = document.getElementById('wiseNavDrawer');
+    var close  = document.getElementById('wiseNavDrawerClose');
     if (!toggle || !drawer) return;
 
     function open() {
@@ -155,34 +117,29 @@
       document.body.style.overflow = '';
     }
 
-    toggle.addEventListener('click', e => {
+    toggle.addEventListener('click', function(e) {
       e.stopPropagation();
-      drawer.classList.contains('open') ? closeDrawer() : open();
+      if (drawer.classList.contains('open')) { closeDrawer(); } else { open(); }
     });
     if (close) close.addEventListener('click', closeDrawer);
-    drawer.addEventListener('click', e => (e.target === drawer) closeDrawer(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
-    drawer.querySelectorAll('.wise-nav-drawer-link').forEach(el => {
-      el.addEventListener('click', closeDrawer);
-    });
+    drawer.addEventListener('click', function(e) { if (e.target === drawer) closeDrawer(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
+    var links = drawer.querySelectorAll('.wise-nav-drawer-link');
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', closeDrawer);
+    }
   }
 
-  // 启动（仅非首页调用）
   function init() {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => { inject(); bindEvents(); });
+      document.addEventListener('DOMContentLoaded', function() { inject(); bindEvents(); });
     } else {
       inject();
       bindEvents();
     }
   }
 
-  /* ══════════════════════════════════════════════
-     入口：首页只暴露数据，不注入导航栏
-     其他页面自动注入两枚独立悬浮按钮
-     ══════════════════════════════════════════════ */
   if (!isHomePage()) {
     init();
   }
-  // 首页：仅通过 window.WiseNavbarData 暴露数据
 })();
