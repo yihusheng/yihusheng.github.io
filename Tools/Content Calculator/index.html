@@ -17,10 +17,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .card-pad{padding:24px}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
-.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:var(--b)}
-.ph-bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;flex-shrink:0;margin-top:4px}
+.ph-bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700}
 .ph-bdg .material-symbols-rounded{font-size:13px}
-.pc{background:none;border:none;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all .15s;flex-shrink:0;margin-left:auto;margin-top:2px}
+.ph-r{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
+.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--b)}
+.pc{background:none;border:none;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all .15s;flex-shrink:0}
 .pc:hover{background:var(--s);color:#d03238}
 .pc .material-symbols-rounded{font-size:18px}
 .sv{background:var(--s);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
@@ -72,9 +73,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 <div class="g" id="grid">
   <div class="card card-pad" id="pa">
     <div class="ph">
-      <div class="pb">A</div>
       <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
-      <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
+      <div class="ph-r">
+        <div class="pb">A</div>
+        <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
+      </div>
     </div>
     <div class="sv">
       <div class="sr">
@@ -104,9 +107,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
   </div>
   <div class="card card-pad" id="pb">
     <div class="ph">
-      <div class="pb">B</div>
       <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
-      <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
+      <div class="ph-r">
+        <div class="pb">B</div>
+        <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
+      </div>
     </div>
     <div class="sv">
       <div class="sr">
