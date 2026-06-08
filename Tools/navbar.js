@@ -18,7 +18,7 @@
  *  【样式说明】两枚独立按钮固定占据顶部区域：
  *    - 左上：主页按钮 🏠
  *    - 右上：菜单按钮 ···
- *    所有页面通过 spacer 占位确保内容在按钮下方显示。
+ *    通过 CSS 注入强制所有页面内容下移。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -45,6 +45,18 @@
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0';
     document.head.appendChild(link);
+  }
+
+  // 注入 CSS 强制所有页面内容下移 74px
+  // 覆盖 body / #app / #__nuxt 等 SPA 根容器
+  function injectSpacerCSS() {
+    var style = document.createElement('style');
+    style.id = 'wiseNavbarSpacerCSS';
+    style.textContent =
+      'body { padding-top: 74px !important; }' +
+      'body > #app { padding-top: 74px !important; box-sizing: border-box !important; }' +
+      'body > #__nuxt { padding-top: 74px !important; box-sizing: border-box !important; }';
+    document.head.appendChild(style);
   }
 
   function getCurrentPath() {
@@ -75,7 +87,6 @@
     }
 
     return '' +
-      '<div id="wiseNavbarSpacer" style="height:74px;flex-shrink:0;width:100%;"></div>' +
       '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
         '<span class="material-symbols-rounded">home</span></a>' +
       '<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">' +
@@ -95,8 +106,7 @@
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
-
-    // 在 body 最前面插入 spacer + 按钮，spacer 将后续内容推下
+    injectSpacerCSS();
     document.body.insertAdjacentHTML('afterbegin', buildHTML());
   }
 
