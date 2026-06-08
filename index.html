@@ -292,25 +292,23 @@ const CookieUtils = {
   remove: (n) => { document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/'; }
 };
 
-// ===== 动态从 music.json 加载歌曲列表 =====
+// ===== 动态从 src/music.json 加载歌曲列表 =====
 let songs = [];
 let currentSongIndex = 0;
 
 async function loadMusicList() {
   try {
-    const res = await fetch('music.json?' + Date.now()); // 加时间戳防止缓存
+    const res = await fetch('src/music.json?' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     songs = await res.json();
     console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ 加载 music.json 失败:', e);
+    console.error('❌ 加载 src/music.json 失败:', e);
     songs = [];
   }
-  // 如果列表为空，显示提示
   if (songs.length === 0) {
     songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src 目录', cover: '', src: '' }];
   }
-  // 加载第一首歌
   loadSong(songs[0]);
 }
 // ======================================
@@ -404,7 +402,6 @@ document.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();audio
 async function loadBingWallpaper(){if(window.innerWidth<768)return;try{const r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');const d=await r.json();if(d.images&&d.images.length>0){const u='https://www.bing.com'+d.images[0].url;const img=new Image();img.src=u;img.onload=()=>{document.body.style.backgroundImage='url('+u+')';};}}catch(e){}}
 function init(){updateTime();setInterval(updateTime,1e3);fetchWeather();setInterval(fetchWeather,6e5);island.addEventListener('click',toggleIsland);loadBingWallpaper();window.addEventListener('resize',()=>{if(window.innerWidth>=768)loadBingWallpaper();});updateThemeColor();}
 
-// 启动：先加载歌曲列表，再初始化其他功能
 loadMusicList().then(init);
 </script>
 </body>
