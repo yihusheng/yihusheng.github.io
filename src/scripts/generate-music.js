@@ -1,21 +1,19 @@
 /**
  * generate-music.js
- * 自动扫描 src/music 目录下的音乐文件，生成 src/scripts/music.json
+ * 扫描 src/music 目录，提取 MP3 内置封面，生成 src/scripts/music.json
  * 用法: node src/scripts/generate-music.js
  */
 
 const fs = require('fs');
 const path = require('path');
+const NodeID3 = require('node-id3');
 
 const musicDir = path.join(__dirname, '..', 'music');
 const outputFile = path.join(__dirname, 'music.json');
 
-// 支持的音频格式
 const AUDIO_EXTS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac'];
-// 支持的封面格式
 const COVER_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-// 读取 music 目录所有文件
 let files;
 try {
   files = fs.readdirSync(musicDir);
@@ -24,32 +22,49 @@ try {
   process.exit(1);
 }
 
-// 筛选出音频文件
 const audioFiles = files.filter(f =>
   AUDIO_EXTS.includes(path.extname(f).toLowerCase())
 );
 
 if (audioFiles.length === 0) {
-  console.log('⚠️  src/music 目录中没有找到音频文件，生成空列表');
+  console.log('⚠️  没有找到音频文件');
   fs.writeFileSync(outputFile, JSON.stringify([], null, 2));
   process.exit(0);
 }
 
-// 为每个音频文件匹配封面
 const songs = audioFiles.map((mp3File) => {
   const baseName = path.basename(mp3File, path.extname(mp3File));
-  
-  // 尝试找相同文件名的封面（优先 .jpg）
-  let coverFile = null;
-  for (const ext of COVER_EXTS) {
-    const candidate = baseName + ext;
-    if (files.includes(candidate)) {
-      coverFile = candidate;
-      break;
+  const filePath = path.join(musicDir, mp3File);
+
+  // 从 MP3 提取内置封面
+  let extractedCover = null;
+  try {
+    const tags = NodeID3.read(filePath);
+    if (tags && tags.image && tags.image.imageBuffer) {
+      const mime = tags.image.mime || 'image/jpeg';
+      const imgExt = mime === 'image/png' ? '.png' : '.jpg';
+      const coverFile = baseName + imgExt;
+      const coverPath = path.join(musicDir, coverFile);
+      if (!fs.existsSync(coverPath)) {
+        fs.writeFileSync(coverPath, Buffer.from(tags.image.imageBuffer));
+        console.log(`  📸 提取封面: ${coverFile}`);
+      }
+      extractedCover = coverFile;
     }
+  } catch (e) {
+    // 无 ID3 标签或没有封面，正常跳过
   }
 
-  // 如果没找到，尝试匹配 music 目录下的任意非音乐图片
+  // 外部封面匹配（内置封面优先级更高）
+  let coverFile = extractedCover;
+  if (!coverFile) {
+    for (const ext of COVER_EXTS) {
+      if (files.includes(baseName + ext)) {
+        coverFile = baseName + ext;
+        break;
+      }
+    }
+  }
   if (!coverFile) {
     coverFile = files.find(f =>
       COVER_EXTS.includes(path.extname(f).toLowerCase()) &&
@@ -57,7 +72,7 @@ const songs = audioFiles.map((mp3File) => {
     ) || null;
   }
 
-  // 从文件名解析标题和艺术家
+  // 解析标题和艺术家
   let title = baseName;
   let artist = 'Unknown';
   const dashIndex = baseName.indexOf(' - ');
@@ -67,16 +82,15 @@ const songs = audioFiles.map((mp3File) => {
   }
 
   return {
-    title: title,
-    artist: artist,
+    title,
+    artist,
     cover: coverFile ? `./src/music/${encodeURIComponent(coverFile)}` : '',
     src: `./src/music/${encodeURIComponent(mp3File)}`
   };
 });
 
-// 写入 music.json
 fs.writeFileSync(outputFile, JSON.stringify(songs, null, 2), 'utf-8');
-console.log(`✅ 已生成 music.json，共 ${songs.length} 首歌曲`);
+console.log(`✅ 已生成 music.json，共 ${songs.length} 首`);
 songs.forEach((s, i) => {
   console.log(`   ${i + 1}. ${s.artist} - ${s.title}${s.cover ? ' 🖼️' : ''}`);
 });

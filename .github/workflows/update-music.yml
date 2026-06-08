@@ -41,15 +41,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Generate music.json
+      - name: Install dependencies
+        run: npm install node-id3
+
+      - name: Generate music.json & extract covers
         run: node src/scripts/generate-music.js
 
-      - name: Commit updated music.json
+      - name: Commit changes
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/scripts/music.json
-          git diff --staged --quiet || git commit -m "chore: auto-update music.json [skip ci]"
+          git add src/scripts/music.json src/music/*.jpg src/music/*.png src/music/*.jpeg src/music/*.webp
+          git diff --staged --quiet || git commit -m "chore: auto-update music.json & extract covers [skip ci]"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
