@@ -15,10 +15,10 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】两枚独立固定悬浮按钮：
- *    - 左上：主页按钮 🏠（距边不贴边）
- *    - 右上：菜单按钮 ···（距边不贴边）
- *    固定占据顶部区域，网页内容自动下移不遮挡。
+ *  【样式说明】两枚独立浮动按钮（类似相框效果）：
+ *    - 左上：主页按钮 🏠（不贴边）
+ *    - 右上：菜单按钮 ···（不贴边）
+ *    纯浮动在页面之上，不影响原有网页内容布局。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -41,14 +41,14 @@
 
   function injectFonts() {
     if (document.querySelector('link[href*="Material+Symbols+Rounded"]')) return;
-    const link = document.createElement('link');
+    var link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0';
     document.head.appendChild(link);
   }
 
   function getCurrentPath() {
-    let p = window.location.pathname;
+    var p = window.location.pathname;
     p = p.replace(/\/index\.html$/, '');
     p = p.replace(/\/+$/, '');
     return p || '/';
@@ -57,20 +57,22 @@
   function isHomePage() { return getCurrentPath() === '/'; }
 
   function isActive(itemHref) {
-    const cur = getCurrentPath();
-    const target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
+    var cur = getCurrentPath();
+    var target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
     if (cur === target) return true;
     if (target !== '/' && cur.startsWith(target)) return true;
     return false;
   }
 
   function buildHTML() {
-    const drawerLinks = NAV_ITEMS.map(item => {
-      const act = isActive(item.href) ? ' active' : '';
-      return '<a class="wise-nav-drawer-link' + act + '" href="' + item.href + '">' +
+    var html = '';
+    for (var i = 0; i < NAV_ITEMS.length; i++) {
+      var item = NAV_ITEMS[i];
+      var act = isActive(item.href) ? ' active' : '';
+      html += '<a class="wise-nav-drawer-link' + act + '" href="' + item.href + '">' +
         '<span class="nv-icon material-symbols-rounded">' + item.icon + '</span>' +
         item.label + '</a>';
-    }).join('');
+    }
 
     return '' +
       '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
@@ -85,7 +87,7 @@
               '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
                 '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
               '</svg></button></div>' +
-          drawerLinks +
+          html +
         '</div></div>';
   }
 
@@ -93,9 +95,7 @@
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
     document.body.insertAdjacentHTML('beforeend', buildHTML());
-    if (!document.body.classList.contains('navbar-overlay')) {
-      document.body.style.paddingTop = '74px';
-    }
+    // 纯浮动按钮，不占用页面空间，无需 padding
   }
 
   function bindEvents() {
