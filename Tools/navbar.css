@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════
-   Wise Floating Navbar — 悬浮双按钮导航栏
-   左下：主页按钮 🏠 | 右下：菜单按钮 ···
+   Wise Navbar — 顶部固定导航条
+   最左：主页按钮 🏠 | 最右：菜单按钮 ···
    配色遵循 Wise Design System (#9fe870)
    ═══════════════════════════════════════════ */
 
@@ -17,46 +17,46 @@
   --nv-surface-soft: #e8ebe6;
 }
 
-/* ── Floating Pill Container ── */
+/* ── Top Bar Container ── */
 .wise-navbar {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 9999;
   display: flex;
   align-items: center;
-  gap: 0;
-  background: var(--nv-ink);
-  border-radius: 9999px;
-  box-shadow: 0 4px 20px rgba(14,15,12,0.25), 0 2px 8px rgba(14,15,12,0.1);
-  padding: 4px;
+  justify-content: space-between;
+  padding: 8px 16px;
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border-bottom: 1px solid rgba(14,15,12,0.06);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  transition: transform 0.2s cubic-bezier(0.2,0,0,1), box-shadow 0.2s ease;
-}
-
-.wise-navbar:hover {
-  box-shadow: 0 6px 28px rgba(14,15,12,0.3);
+  box-sizing: border-box;
 }
 
 /* ── Shared Button Style ── */
 .wise-nav-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: none;
-  background: transparent;
+  background: var(--nv-ink);
   color: var(--nv-primary);
   cursor: pointer;
-  border-radius: 9999px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   transition: all 0.2s cubic-bezier(0.2,0,0,1);
   flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .wise-nav-btn:hover {
-  background: rgba(159,232,112,0.12);
+  background: var(--nv-ink-deep);
   transform: scale(1.05);
 }
 
@@ -65,19 +65,25 @@
 }
 
 .wise-nav-btn .material-symbols-rounded {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-variation-settings: 'FILL' 1, 'wght' 400;
 }
 
-/* ── Divider between buttons ── */
-.wise-nav-divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(159,232,112,0.2);
-  flex-shrink: 0;
+/* ── Left section: Home ── */
+.wise-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* ── Mobile Drawer ── */
+/* ── Right section: Menu ── */
+.wise-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Mobile Drawer (bottom sheet) ── */
 .wise-nav-drawer {
   display: none;
   position: fixed;
@@ -192,38 +198,31 @@
 }
 
 /* ── Overlay mode for full-screen SPAs ── */
-body.navbar-overlay .wise-navbar {
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+body.navbar-overlay .wisebar14, 20drop(20px);
+  border-bottom-color: rgba(255,255,255,0.06);
 }
 
 body.navbar-overlay .wise-nav-btn {
+  background: rgba(255,255,255,0.12);
   color: #fff;
 }
 
 body.navbar-overlay .wise-nav-btn:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-body.navbar-overlay .wise-nav-divider {
   background: rgba(255,255,255,0.2);
 }
 
-/* ── Desktop adjustment ── */
+/* ── Desktop ── */
 @media screen and (min-width: 768px) {
   .wise-navbar {
-    bottom: 32px;
-    right: 32px;
-    padding: 6px;
+    padding: 10px 24px;
+    padding-top: calc(10px + env(safe-area-inset-top, 0px));
   }
   .wise-nav-btn {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
   }
   .wise-nav-btn .material-symbols-rounded {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   .wise-nav-drawer-panel {
     max-width: 360px;
