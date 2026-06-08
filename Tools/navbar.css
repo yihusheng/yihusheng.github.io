@@ -1,6 +1,5 @@
 /* ═══════════════════════════════════════════
-   Wise Navbar — 顶部固定导航条
-   最左：主页按钮 🏠 | 最右：菜单按钮 ···
+   Wise Navbar — 右上角悬浮双按钮
    配色遵循 Wise Design System (#9fe870)
    ═══════════════════════════════════════════ */
 
@@ -17,32 +16,28 @@
   --nv-surface-soft: #e8ebe6;
 }
 
-/* ── Top Bar Container ── */
+/* ── Floating Pill Container ── */
 .wise-navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 16px;
+  right: 16px;
   z-index: 9999;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border-bottom: 1px solid rgba(14,15,12,0.06);
+  gap: 6px;
+  background: var(--nv-ink);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(14,15,12,0.25);
+  padding: 6px 8px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  box-sizing: border-box;
 }
 
-/* ── Shared Button Style ── */
+/* ── Button Style (shared) ── */
 .wise-nav-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border: none;
-  background: var(--nv-ink);
+  background: transparent;
   color: var(--nv-primary);
   cursor: pointer;
   border-radius: 12px;
@@ -56,7 +51,7 @@
 }
 
 .wise-nav-btn:hover {
-  background: var(--nv-ink-deep);
+  background: rgba(159,232,112,0.12);
   transform: scale(1.05);
 }
 
@@ -69,21 +64,15 @@
   font-variation-settings: 'FILL' 1, 'wght' 400;
 }
 
-/* ── Left section: Home ── */
-.wise-nav-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* ── Divider ── */
+.wise-nav-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(159,232,112,0.2);
+  flex-shrink: 0;
 }
 
-/* ── Right section: Menu ── */
-.wise-nav-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ── Mobile Drawer (bottom sheet) ── */
+/* ── Drawer (bottom sheet) ── */
 .wise-nav-drawer {
   display: none;
   position: fixed;
@@ -101,6 +90,7 @@
 }
 
 .wise-nav-drawer.open {
+  display: block;
   opacity: 1;
   pointer-events: auto;
 }
@@ -161,7 +151,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 14px;
+  padding: 14px;
   border-radius: 14px;
   text-decoration: none;
   color: var(--nv-body);
@@ -199,26 +189,31 @@
 
 /* ── Overlay mode for full-screen SPAs ── */
 body.navbar-overlay .wise-navbar {
-  background: rgba(14,15,12,0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom-color: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 body.navbar-overlay .wise-nav-btn {
-  background: rgba(255,255,255,0.12);
   color: #fff;
 }
 
 body.navbar-overlay .wise-nav-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+body.navbar-overlay .wise-nav-divider {
   background: rgba(255,255,255,0.2);
 }
 
 /* ── Desktop ── */
 @media screen and (min-width: 768px) {
   .wise-navbar {
-    padding: 10px 24px;
-    padding-top: calc(10px + env(safe-area-inset-top, 0px));
+    top: 24px;
+    right: 24px;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 18px;
   }
   .wise-nav-btn {
     width: 42px;
