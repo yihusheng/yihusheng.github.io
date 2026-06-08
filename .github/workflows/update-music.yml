@@ -13,7 +13,7 @@ on:
       - 'src/*.jpeg'
       - 'src/*.png'
       - 'src/*.webp'
-      - 'src/generate-music.js'
+      - 'src/scripts/generate-music.js'
       - '.github/workflows/update-music.yml'
   workflow_dispatch:
 
@@ -42,7 +42,7 @@ jobs:
           node-version: 20
 
       - name: Generate music.json
-        run: node src/generate-music.js
+        run: node src/scripts/generate-music.js
 
       - name: Commit updated music.json
         run: |
