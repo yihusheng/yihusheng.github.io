@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════
-   Wise Navbar — 两枚独立悬浮按钮
+   Wise Navbar — 两枚独立相框式浮动按钮
    左上：主页 🏠 | 右上：菜单 ···
-   固定顶部区域，网页内容在其下
+   position:fixed 浮动在内容之上，不影响原有布局
    配色遵循 Wise Design System (#9fe870)
    ═══════════════════════════════════════════ */
 
@@ -201,7 +201,7 @@ body.navbar-overlay .wise-nav-btn:hover {
   .wise-nav-btn-menu { right: 24px; }
   .wise-nav-btn .material-symbols-rounded { font-size: 1.45rem; }
   .wise-nav-drawer-panel {
-    max-width: 360px;
+   -width: 360px;
     left: auto;
     right: 24px;
     bottom: 24px;
