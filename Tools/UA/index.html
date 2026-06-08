@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
-<script src="/src/devices.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px}
@@ -59,66 +58,186 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
   <div class="pad">
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">analytics</span> 解析结果</label>
     <div class="dg">
-      <div class="di"><div class="dl">浏览器</div><div class="dv" id="browserVal">--</div></div>
-      <div class="di"><div class="dl">版本</div><div class="dv" id="browserVerVal">--</div></div>
-      <div class="di"><div class="dl">操作系统</div><div class="dv" id="osVal">--</div></div>
-      <div class="di"><div class="dl">系统版本</div><div class="dv" id="osVerVal">--</div></div>
-      <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brandVal">--</div></div>
-      <div class="di"><div class="dl">设备型号</div><div class="dv" id="modelVal">--</div></div>
-      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="typeVal">--</div></div>
+      <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
+      <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
+      <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
+      <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
+      <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brVal">--</div></div>
+      <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
+      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
     </div>
-    <div class="raw" id="rawUADisplay"></div>
+    <div class="raw" id="rawD"></div>
     <div class="rw">
-      <button class="btn btn-s" id="copyResultBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果 + UA</button>
-      <button class="btn btn-s" id="moreInfoBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
+      <button class="btn btn-s" id="cpyBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果 + UA</button>
+      <button class="btn btn-s" id="dbBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
     </div>
   </div>
 </div>
-<div class="card"><div class="ft"><p>数据来源 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a> &bull; <a href="/src/devices.js" target="_blank">设备库</a></p></div></div>
+<div class="card"><div class="ft"><p>数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a></p></div></div>
 </div>
 <script>
-var I=document.getElementById('uaInput'),P=document.getElementById('parseBtn'),U=document.getElementById('useMyUABtn'),C=document.getElementById('clearBtn'),R=document.getElementById('resultCard');
-var BV=document.getElementById('browserVal'),BVV=document.getElementById('browserVerVal'),OV=document.getElementById('osVal'),OVV=document.getElementById('osVerVal'),BRV=document.getElementById('brandVal'),MV=document.getElementById('modelVal'),TV=document.getElementById('typeVal'),RUD=document.getElementById('rawUADisplay'),CRB=document.getElementById('copyResultBtn'),MIB=document.getElementById('moreInfoBtn');
-var DB=window.DeviceDB;
+// 内建设备数据库 - 型号代码 -> {品牌, 名称}
+var DB = {
+  '24129PN74C':['小米','Xiaomi 15'],'2410DPN6CC':['小米','Xiaomi 15 Pro'],'25019PNF3C':['小米','Xiaomi 15 Ultra'],
+  '23127PN0CC':['小米','Xiaomi 14'],'23116PN5BC':['小米','Xiaomi 14 Pro'],'24031PN0DC':['小米','Xiaomi 14 Ultra'],
+  '2211133C':['小米','Xiaomi 13'],'2210132C':['小米','Xiaomi 13 Pro'],'2304FPN6DC':['小米','Xiaomi 13 Ultra'],
+  '2201123C':['小米','Xiaomi 12'],'2201122C':['小米','Xiaomi 12 Pro'],'2106118C':['小米','MIX 4'],
+  'M2011K2C':['小米','小米11'],'M2102K1C':['小米','小米11 Ultra'],'M2102K1AC':['小米','小米11 Pro'],
+  'M2001J2C':['小米','小米10'],'M2001J1C':['小米','小米10 Pro'],'M2007J1SC':['小米','小米10 Ultra'],
+  'M2102J2SC':['小米','小米10S'],
+  '23113RKC6C':['红米','Redmi K70'],'23117RK66C':['红米','Redmi K70 Pro'],
+  '22127RK46C':['红米','Redmi K60 Pro'],'23013RK75C':['红米','Redmi K60'],
+  '22021211RC':['红米','Redmi K40S'],'M2012K11C':['红米','Redmi K40 Pro'],
+  'M2012K11AC':['红米','Redmi K40'],
+  'PJZ110':['一加','OnePlus 13'],'PJD110':['一加','OnePlus 12'],'PHB110':['一加','OnePlus 11'],
+  'NE2210':['一加','OnePlus 10 Pro'],
+  '23127PN0CG':['小米','Xiaomi 14 Global'],'2211133G':['小米','Xiaomi 13 Global'],
+  'SM-S9280':['三星','Galaxy S24 Ultra'],'SM-S9180':['三星','Galaxy S23 Ultra'],
+  'SM-S9080':['三星','Galaxy S22 Ultra'],'SM-S9210':['三星','Galaxy S24'],
+  'SM-F9560':['三星','Galaxy Z Fold6'],'SM-F7410':['三星','Galaxy Z Flip6'],
+  'PHK110':['一加','OnePlus Ace 2'],'PJE110':['一加','OnePlus Ace 3'],
+  'PJX110':['一加','OnePlus Ace 3 Pro'],'PKG110':['一加','OnePlus Ace 5'],
+  'V2324A':['vivo','X100 Pro'],'V2309A':['vivo','X100'],
+  'V2241A':['vivo','X90'],'V2185A':['vivo','X80 Pro'],
+  'PHY110':['OPPO','Find X7 Ultra'],'PHZ110':['OPPO','Find X7'],
+  'PGEM10':['OPPO','Find X6 Pro'],'PGFM10':['OPPO','Find X6'],
+  'LIO-AN00':['华为','Mate 30 Pro'],'TAS-AN00':['华为','Mate 30'],
+  'NOH-AN00':['华为','Mate 40 Pro'],'OCE-AN10':['华为','Mate 40'],
+  'ALN-AL00':['华为','Mate 60 Pro'],'BRA-AL00':['华为','Mate 60'],
+  'ELZ-AN00':['荣耀','Magic3'],'LGE-AN00':['荣耀','Magic4'],
+  'PGT-AN00':['荣耀','Magic5'],'BVL-AN00':['荣耀','Magic6'],
+  'PTP-AN00':['荣耀','Magic7'],
+  'CPH2447':['一加','OnePlus 11 India'],'CPH2449':['一加','OnePlus 11 Global'],
+  'SM-A5560':['三星','Galaxy A55 5G'],'SM-A5460':['三星','Galaxy A54 5G'],
+  'Pixel 9 Pro':['谷歌','Pixel 9 Pro'],'Pixel 8 Pro':['谷歌','Pixel 8 Pro'],
+  'Pixel 7':['谷歌','Pixel 7'],'Pixel 6':['谷歌','Pixel 6']
+};
 
-function F(ua,m,d){var u=ua.toLowerCase();for(var k in m)if(u.indexOf(k)!==-1)return m[k];return d}
-function GV(ua,p){var r=new RegExp(p+'[\\/\\s]?([0-9]+[\\.0-9]*)','i'),m=ua.match(r);return m?m[1]:''}
+// 品牌检测 - 通过UA中的关键字
+var BRANDS = [
+  ['xiaomi','小米'],['mi ','小米'],['redmi','红米'],['poco','POCO'],
+  ['huawei','华为'],['honor','荣耀'],
+  ['samsung','三星'],['sm-','三星'],
+  ['iphone','苹果'],['ipad','苹果'],
+  ['oneplus','一加'],
+  ['oppo','OPPO'],['realme','真我'],
+  ['vivo','vivo'],['iqoo','iQOO'],
+  ['meizu','魅族'],['lenovo','联想'],
+  ['pixel','谷歌'],
+  ['moto','摩托罗拉'],['motorola','摩托罗拉'],
+  ['nokia','诺基亚'],['sony','索尼'],['xperia','索尼'],
+  ['asus','华硕'],['rog','华硕'],
+  ['nothing','Nothing'],
+  ['nubia','努比亚'],['zte','中兴'],
+  ['coolpad','酷派'],['letv','乐视'],
+  ['blackshark','黑鲨'],['360','360']
+];
 
-function extractModelCode(ua){
-  var m=ua.match(/[;\\s]([A-Z0-9]{8,})\\s*[;)/]/);
-  if(m) return m[1];
-  m=ua.match(/\\b(24129PN74C|2410DPN6CC|25019PNF3C|25010PN30C|25042PN24C|23127PN0CC|23116PN5BC|2311BPN23C|24031PN0DC|2304FPN6DC|2211133C|2210132C|2201123C|2201122C|2112123AC|2206123SC|22061222203121C|2106118C|22061218C|2308CPXD0C|24072PX77C|2405CPX3DC|2505APX7BC|2109119BC|23046PNC9C|24053PY09C|2410CRP4CC|24091RPADC|25097RP43C)\\b/);
-  if(m) return m[1];
-  m=ua.match(/\\b((?:SM|RMX|CPH|IN20|KB200|LE21|GM19|HD19|NE221|PH[A-Z0-9]+|MT211|PG[A-Z0-9]+|PL[A-Z0-9]+|PMB[0-9]+|NX[0-9]+|V[0-9]{4}|M[0-9]{4}[A-Z0-9]*|Pixel\\s?\\d[\\w\\s]*?)(?:[);\\/\\s]|$))/);
-  if(m) return m[1].trim();
-  m=ua.match(/iPhone(\\d+,\\d+)/);if(m)return'iPhone'+m[1];
+function getBrand(ua) {
+  var u = ua.toLowerCase();
+  for (var i = 0; i < BRANDS.length; i++) {
+    if (u.indexOf(BRANDS[i][0]) !== -1) return BRANDS[i][1];
+  }
   return '--';
 }
 
-function parse(){
-  var ua=I.value.trim();
-  if(!ua){R.classList.remove('s');return}
-  var b=F(ua,{'edg':'Edge','edge':'Edge','chrome':'Chrome','crios':'Chrome','firefox':'Firefox','fxios':'Firefox','safari':'Safari','opr':'Opera','samsungbrowser':'Samsung Internet','micromessenger':'微信','qqbrowser':'QQ浏览器','ucbrowser':'UC浏览器'},'未知'),bv='';
-  if(b==='Chrome')bv=GV(ua,'Chrome');else if(b==='Edge')bv=GV(ua,'Edg');else if(b==='Firefox')bv=GV(ua,'Firefox');else if(b==='Safari')bv=GV(ua,'Version');else if(b==='Opera')bv=GV(ua,'OPR')||GV(ua,'Opera');
-  var os=F(ua,{'windows nt 10':'Windows 10/11','windows nt 6.3':'Windows 8.1','windows nt 6.2':'Windows 8','windows nt 6.1':'Windows 7','iphone os':'iOS','mac os x':'macOS','android':'Android','linux':'Linux','chrome os':'ChromeOS','harmonyos':'HarmonyOS'},'未知'),ov='';
-  if(os==='Android')ov=GV(ua,'Android');else if(os==='iOS'){var v=GV(ua,'OS\\s+([0-9_]+)');if(v)ov=v.replace(/_/g,'.');}
-  else if(os==='macOS'){var v=GV(ua,'Mac OS X\\s+([0-9_]+)');if(v)ov=v.replace(/_/g,'.');}
-  var code=extractModelCode(ua);
-  var info=DB?DB.lookup(code):null;
-  BV.textContent=b;BVV.textContent=bv||'--';OV.textContent=os;OVV.textContent=ov||'--';
-  if(info&&info.brand!=='苹果'){BRV.textContent=info.brand;MV.textContent=info.name+' ('+code+')';TV.textContent={phone:'手机',tablet:'平板',watch:'手表',band:'手环',tv:'电视'}[info.type]||'--';}
-  else if(code.indexOf('iPhone')===0){BRV.textContent='苹果';MV.textContent=code;TV.textContent='手机';}
-  else if(code.indexOf('iPad')===0){BRV.textContent='苹果';MV.textContent=code;TV.textContent='平板';}
-  else if(code!=='--'){BRV.textContent='--';MV.textContent=code;TV.textContent=ua.indexOf('Mobile')!==-1?'手机':'--';}
-  else{BRV.textContent='--';MV.textContent='--';TV.textContent='--';}
-  RUD.textContent=ua;R.classList.add('s');
+function getModel(ua) {
+  // 在UA中找型号代码 - 通常是分号或空格后的8-12位字母数字组合
+  var m = ua.match(/Android\s[\d.]+;\s*([A-Za-z0-9_-]{6,})\s*(?:Build|\))/);
+  if (m) {
+    var code = m[1].toUpperCase();
+    // 查数据库
+    if (DB[code]) return DB[code][0] + ' ' + DB[code][1] + ' (' + code + ')';
+    return code;
+  }
+  // 尝试其他常见格式
+  m = ua.match(/[;\s]([A-Z0-9]{6,12})\s*[;)\]\/]/);
+  if (m) {
+    var code = m[1].toUpperCase();
+    if (DB[code]) return DB[code][0] + ' ' + DB[code][1] + ' (' + code + ')';
+    return code;
+  }
+  // 匹配iPhone
+  m = ua.match(/iPhone(\d+,\d+)/);
+  if (m) return '苹果 iPhone ' + m[1].replace(',','/');
+  return '--';
 }
-P.addEventListener('click',parse);
-U.addEventListener('click',function(){I.value=navigator.userAgent;parse()});
-C.addEventListener('click',function(){I.value='';R.classList.remove('s')});
-CRB.addEventListener('click',function(){var t='浏览器: '+BV.textContent+' '+BVV.textContent+'\n系统: '+OV.textContent+' '+OVV.textContent+'\n品牌: '+BRV.textContent+'\n型号: '+MV.textContent.replace(/[()]/g,'')+'\n类型: '+TV.textContent+'\n\n原始 UA:\n'+I.value;navigator.clipboard.writeText(t)});
-MIB.addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')});
-window.addEventListener('load',function(){setTimeout(function(){I.value=navigator.userAgent;parse()},50)});
+
+function getType(ua) {
+  var u = ua.toLowerCase();
+  if (u.indexOf('iphone')!==-1 || (u.indexOf('mobile')!==-1 && u.indexOf('android')!==-1)) return '手机';
+  if (u.indexOf('ipad')!==-1) return '平板';
+  if (u.indexOf('tablet')!==-1) return '平板';
+  if (u.indexOf('watch')!==-1) return '手表';
+  if (u.indexOf('tv')!==-1) return '电视';
+  if (u.indexOf('mobile')!==-1) return '手机';
+  return '电脑';
+}
+
+function parse() {
+  var ua = document.getElementById('uaInput').value.trim();
+  if (!ua) return;
+  var b = '未知', bv = '';
+  var u = ua.toLowerCase();
+  // 浏览器
+  if (u.indexOf('edg')!==-1) { b='Edge'; bv=(ua.match(/Edg\/([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('chrome')!==-1) { b='Chrome'; bv=(ua.match(/Chrome\/([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('firefox')!==-1) { b='Firefox'; bv=(ua.match(/Firefox\/([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('safari')!==-1) { b='Safari'; bv=(ua.match(/Version\/([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('opr')!==-1) { b='Opera'; bv=(ua.match(/OPR\/([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('micromessenger')!==-1) b='微信';
+  // 系统
+  var os = '未知', ov = '';
+  if (u.indexOf('android')!==-1) { os='Android'; ov=(ua.match(/Android\s([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('iphone os')!==-1 || u.indexOf('ios')!==-1) {
+    os='iOS'; var v=ua.match(/OS\s([\d_]+)/); if(v) ov=v[1].replace(/_/g,'.');
+  }
+  else if (u.indexOf('mac os x')!==-1) { os='macOS'; var v=ua.match(/Mac OS X\s([\d_]+)/); if(v) ov=v[1].replace(/_/g,'.'); }
+  else if (u.indexOf('windows nt 10')!==-1) os='Windows 10/11';
+  else if (u.indexOf('windows nt 6.1')!==-1) os='Windows 7';
+  else if (u.indexOf('linux')!==-1) os='Linux';
+  else if (u.indexOf('harmonyos')!==-1) { os='HarmonyOS'; ov=(ua.match(/HarmonyOS\s([\d.]+)/)||[])[1]||''; }
+
+  document.getElementById('bVal').textContent = b;
+  document.getElementById('bvVal').textContent = bv || '--';
+  document.getElementById('oVal').textContent = os;
+  document.getElementById('ovVal').textContent = ov || '--';
+  document.getElementById('brVal').textContent = getBrand(ua);
+  document.getElementById('mVal').textContent = getModel(ua);
+  document.getElementById('tVal').textContent = getType(ua);
+  document.getElementById('rawD').textContent = ua;
+  document.getElementById('resultCard').classList.add('s');
+}
+
+document.getElementById('parseBtn').addEventListener('click', parse);
+document.getElementById('useMyUABtn').addEventListener('click', function(){
+  document.getElementById('uaInput').value = navigator.userAgent;
+  parse();
+});
+document.getElementById('clearBtn').addEventListener('click', function(){
+  document.getElementById('uaInput').value = '';
+  document.getElementById('resultCard').classList.remove('s');
+});
+document.getElementById('cpyBtn').addEventListener('click', function(){
+  var t = '浏览器: ' + document.getElementById('bVal').textContent + ' ' +
+    document.getElementById('bvVal').textContent +
+    '\n系统: ' + document.getElementById('oVal').textContent + ' ' +
+    document.getElementById('ovVal').textContent +
+    '\n品牌: ' + document.getElementById('brVal').textContent +
+    '\n型号: ' + document.getElementById('mVal').textContent +
+    '\n类型: ' + document.getElementById('tVal').textContent +
+    '\n\n原始 UA:\n' + document.getElementById('uaInput').value;
+  navigator.clipboard.writeText(t);
+});
+document.getElementById('dbBtn').addEventListener('click', function(){
+  window.open('https://github.com/KHwang9883/MobileModels','_blank');
+});
+
+// 启动时自动加载本机UA
+window.addEventListener('load', function(){
+  document.getElementById('uaInput').value = navigator.userAgent;
+  setTimeout(parse, 100);
+});
 </script>
 </body>
 </html>
