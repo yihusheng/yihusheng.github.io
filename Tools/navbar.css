@@ -265,11 +265,6 @@
   background: rgba(159,232,112,0.15);
 }
 
-/* ── Page padding (to offset fixed navbar) ── */
-body {
-  padding-top: 52px !important;
-}
-
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .wise-nav-links {
@@ -286,7 +281,7 @@ body {
   }
 }
 
-/* ── Special: zashboard & Metacubexd are full-screen SPAs ── */
+/* ── Overlay mode for full-screen SPAs (zashboard, Metacubexd, Music) ── */
 body.navbar-overlay .wise-navbar {
   background: rgba(14,15,12,0.75);
   backdrop-filter: blur(20px);
