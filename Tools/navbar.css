@@ -54,23 +54,16 @@
 }
 
 /* ── Home button: top-left ── */
-.wise-nav-btn-home {
-  left: 16px;
-}
+.wise-nav-btn-home { left: 16px; }
 
 /* ── Menu button: top-right ── */
-.wise-nav-btn-menu {
-  right: 16px;
-}
+.wise-nav-btn-menu { right: 16px; }
 
 /* ── Drawer (bottom sheet) ── */
 .wise-nav-drawer {
   display: none;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   z-index: 9998;
   background: rgba(14,15,12,0.4);
   backdrop-filter: blur(4px);
@@ -88,9 +81,7 @@
 
 .wise-nav-drawer-panel {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   max-height: 80vh;
   background: var(--nv-surface);
   border-radius: 24px 24px 0 0;
@@ -101,9 +92,7 @@
   transition: transform 0.35s cubic-bezier(0.2,0,0,1);
 }
 
-.wise-nav-drawer.open .wise-nav-drawer-panel {
-  transform: translateY(0);
-}
+.wise-nav-drawer.open .wise-nav-drawer-panel { transform: translateY(0); }
 
 .wise-nav-drawer-header {
   display: flex;
@@ -121,8 +110,7 @@
 }
 
 .wise-nav-drawer-close {
-  width: 32px;
-  height: 32px;
+  width: 32px; height: 32px;
   border: none;
   background: var(--nv-surface-soft);
   border-radius: 10px;
@@ -134,9 +122,7 @@
   transition: background 0.2s;
 }
 
-.wise-nav-drawer-close:hover {
-  background: var(--nv-primary-pale);
-}
+.wise-nav-drawer-close:hover { background: var(--nv-primary-pale); }
 
 .wise-nav-drawer-link {
   display: flex;
@@ -163,8 +149,7 @@
 }
 
 .wise-nav-drawer-link .nv-icon {
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   background: var(--nv-surface-soft);
   border-radius: 12px;
   display: flex;
@@ -185,23 +170,20 @@ body.navbar-overlay .wise-nav-btn {
   box-shadow: 0 3px 16px rgba(0,0,0,0.3);
 }
 
-body.navbar-overlay .wise-nav-btn:hover {
-  background: rgba(255,255,255,0.2);
-}
+body.navbar-overlay .wise-nav-btn:hover { background: rgba(255,255,255,0.2); }
 
 /* ── Desktop ── */
 @media screen and (min-width: 768px) {
   .wise-nav-btn {
     top: 24px;
-    width: 46px;
-    height: 46px;
+    width: 46px; height: 46px;
     border-radius: 16px;
   }
   .wise-nav-btn-home { left: 24px; }
   .wise-nav-btn-menu { right: 24px; }
   .wise-nav-btn .material-symbols-rounded { font-size: 1.45rem; }
   .wise-nav-drawer-panel {
-   -width: 360px;
+    max-width: 360px;
     left: auto;
     right: 24px;
     bottom: 24px;
