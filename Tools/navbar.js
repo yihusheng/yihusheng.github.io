@@ -15,9 +15,10 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】右上角悬浮胶囊双按钮：
- *    - 主页按钮（🏠） + 分割线 + 菜单按钮（···）
- *    悬浮不占位，不影响页面布局。
+ *  【样式说明】两枚独立固定悬浮按钮：
+ *    - 左上：主页按钮 🏠（距边不贴边）
+ *    - 右上：菜单按钮 ···（距边不贴边）
+ *    固定占据顶部区域，网页内容自动下移不遮挡。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -84,7 +85,7 @@
     return false;
   }
 
-  // 生成导航栏 HTML
+  // 生成导航栏 HTML（两枚独立按钮 + 抽屉）
   function buildHTML() {
     const drawerLinks = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
@@ -95,16 +96,15 @@
     }).join('');
 
     return `
-<!-- Wise Floating Navbar -->
-<nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="导航">
-  <a class="wise-nav-btn" href="/" aria-label="回到首页">
-    <span class="material-symbols-rounded">home</span>
-  </a>
-  <div class="wise-nav-divider"></div>
-  <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
-    <span class="material-symbols-rounded">apps</span>
-  </button>
-</nav>
+<!-- Wise Navbar: Home button (top-left) -->
+<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">
+  <span class="material-symbols-rounded">home</span>
+</a>
+
+<!-- Wise Navbar: Menu button (top-right) -->
+<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
+  <span class="material-symbols-rounded">apps</span>
+</button>
 
 <div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
   <div class="wise-nav-drawer-panel">
@@ -124,11 +124,15 @@
 
   // 注入导航栏到页面（仅非首页调用）
   function inject() {
-    if (document.getElementById('wiseNavbar')) return;
+    if (document.getElementById('wiseNavToggle')) return;
 
     injectFonts();
     document.body.insertAdjacentHTML('beforeend', buildHTML());
-    // 悬浮按钮不占位，不需要 body padding
+
+    // 固定顶部按钮占据空间，padding 避免内容被遮挡
+    if (!document.body.classList.contains('navbar-overlay')) {
+      document.body.style.paddingTop = '74px';
+    }
   }
 
   // 绑定交互事件（仅非首页调用）
@@ -156,7 +160,7 @@
       drawer.classList.contains('open') ? closeDrawer() : open();
     });
     if (close) close.addEventListener('click', closeDrawer);
-    drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
+    drawer.addEventListener('click', e => (e.target === drawer) closeDrawer(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
     drawer.querySelectorAll('.wise-nav-drawer-link').forEach(el => {
       el.addEventListener('click', closeDrawer);
@@ -175,7 +179,7 @@
 
   /* ══════════════════════════════════════════════
      入口：首页只暴露数据，不注入导航栏
-     其他页面自动注入悬浮双按钮
+     其他页面自动注入两枚独立悬浮按钮
      ══════════════════════════════════════════════ */
   if (!isHomePage()) {
     init();
