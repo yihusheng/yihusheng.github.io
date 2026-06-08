@@ -3,791 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文本下划线生成器 - Paws & Paths Style</title>
-    <!-- 引入 Plus Jakarta Sans 字体 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>文本下划线生成器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <!-- ═══ 统一导航栏 ═══ -->
     <link rel="stylesheet" href="/Tools/navbar.css">
     <script src="/Tools/navbar.js"></script>
-    
     <style>
-        /* --- CSS Variables based on design_dog.md --- */
         :root {
-            /* Colors */
-            --color-background: #f9f9ff;
-            --color-surface: #ffffff;
-            --color-surface-container-low: #f0f3ff;
-            --color-surface-container: #e7eefe;
-            --color-on-surface: #151c27;
-            --color-on-surface-variant: #534434;
-            
-            /* Primary (Orange) */
-            --color-primary: #855300;
-            --color-primary-container: #f59e0b;
-            --color-on-primary: #ffffff;
-            --color-on-primary-container: #613b00;
-            
-            /* Secondary (Blue) */
-            --color-secondary: #0058be;
-            --color-secondary-container: #2170e4;
-            --color-on-secondary: #ffffff;
-
-            /* Tertiary (Status/Accent) */
-            --color-tertiary: #00658b;
-            --color-tertiary-container: #1abdff;
-
-            /* Typography */
-            --font-family: 'Plus Jakarta Sans', sans-serif;
-            
-            /* Spacing */
-            --spacing-xs: 4px;
-            --spacing-sm: 12px;
-            --spacing-md: 24px;
-            --spacing-lg: 40px;
-            --spacing-xl: 64px;
-
-            /* Shapes */
-            --radius-sm: 4px;
-            --radius-md: 8px;  /* Input radius */
-            --radius-lg: 16px; /* Button radius */
-            --radius-xl: 24px; /* Card radius */
-            --radius-full: 9999px;
+            --w-pri: #9fe870;
+            --w-on-pri: #0e0f0c;
+            --w-pri-act: #cdffad;
+            --w-pri-pale: #e2f6d5;
+            --w-ink: #0e0f0c;
+            --w-ink-deep: #163300;
+            --w-body: #454745;
+            --w-mute: #868685;
+            --w-canvas: #ffffff;
+            --w-soft: #e8ebe6;
+            --w-radius: 24px;
+            --w-radius-sm: 12px;
+            --w-radius-pill: 9999px;
+            --w-shadow: 0 4px 20px rgba(14,15,12,0.06);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: var(--font-family);
-            background-color: var(--color-background);
-            color: var(--color-on-surface);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--w-soft);
+            color: var(--w-ink);
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding: 40px var(--spacing-md);
+            padding: 24px;
             line-height: 1.5;
         }
-
-        /* --- Main Container (Card Style) --- */
-        .app-container {
+        .app-wrap {
             width: 100%;
             max-width: 960px;
-            background: var(--color-surface);
-            border-radius: var(--radius-xl);
-            /* Ambient Shadow with soft diffusion */
-            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05), 
-                        0 8px 20px -5px rgba(133, 83, 0, 0.05); /* Hint of primary orange */
-            padding: var(--spacing-xl);
+            background: var(--w-canvas);
+            border-radius: var(--w-radius);
+            box-shadow: var(--w-shadow);
+            padding: 40px;
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-lg);
+            gap: 32px;
+            margin-top: 20px;
         }
-
-        /* Header */
-        header {
-            text-align: center;
-            margin-bottom: var(--spacing-xs);
-        }
-
         h1 {
-            color: var(--color-primary);
-            font-family: var(--font-family);
-            font-weight: 800;
+            font-weight: 900;
             font-size: 32px;
-            letter-spacing: -0.01em;
-            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            color: var(--w-ink);
+            text-align: center;
+            margin-bottom: 4px;
         }
-
-        .subtitle {
-            color: var(--color-on-surface-variant);
-            font-size: 14px;
-            font-weight: 500;
+        .sub { color: var(--w-body); font-size: 14px; font-weight: 500; text-align: center; }
+        .sec-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--w-body); margin-bottom: 10px; display: block;
         }
-
-        /* --- Top Section --- */
-        .top-section {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
-
-        .section-label {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--color-secondary);
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        /* Input Field */
         textarea {
             width: 100%;
-            background: var(--color-surface-container-low);
-            color: var(--color-on-surface);
-            font-family: var(--font-family);
-            font-size: 16px;
-            font-weight: 500;
+            background: var(--w-soft);
+            color: var(--w-ink);
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; font-weight: 500;
             border: 2px solid transparent;
-            border-radius: var(--radius-md);
-            padding: var(--spacing-md);
+            border-radius: var(--w-radius-sm);
+            padding: 16px;
             outline: none;
             resize: vertical;
             min-height: 100px;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
-
-        textarea:focus {
-            background: #ffffff;
-            border-color: var(--color-primary-container);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
-        }
-
-        /* Preview Box */
+        textarea:focus { background: #fff; border-color: var(--w-pri); box-shadow: 0 0 0 3px rgba(159,232,112,0.2); }
         .preview-box {
-            background: var(--color-surface-container-low);
-            border: 1px dashed rgba(133, 83, 0, 0.2);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg) var(--spacing-md);
+            background: var(--w-soft);
+            border: 1px dashed rgba(14,15,12,0.12);
+            border-radius: var(--w-radius-sm);
+            padding: 32px 24px;
             text-align: center;
-            min-height: 180px;
+            min-height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease;
         }
-
-        .preview-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-        }
-
-        /* --- Buttons --- */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            height: 56px; /* Larger touch target */
-            padding: 0 32px;
-            border-radius: var(--radius-lg);
-            font-family: var(--font-family);
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.15s ease-in-out;
-            border: none;
-            outline: none;
-            width: 100%;
+            display: flex; align-items: center; justify-content: center;
+            height: 52px; padding: 0 28px;
+            border-radius: var(--w-radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer; border: none; outline: none;
+            width: 100%; transition: all 0.15s;
         }
-
-        .btn-primary {
-            background-color: var(--color-primary);
-            color: var(--color-on-primary);
-            box-shadow: 0 4px 12px rgba(133, 83, 0, 0.25);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--color-primary-container);
-            color: var(--color-on-primary-container);
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background-color: var(--color-surface-container);
-            color: var(--color-secondary);
-            border: 1px solid transparent;
-            height: 48px;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--color-secondary-container);
-            color: var(--color-on-secondary);
-            border-color: var(--color-secondary-container);
-        }
-
-        /* --- Divider (Visual Rhythm) --- */
-        .spacer-lg {
-            height: 1px;
-            background: var(--color-surface-container);
-            width: 100%;
-            margin: var(--spacing-xs) 0;
-        }
-
-        /* --- Bottom Grid --- */
-        .bottom-section {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr; /* Give settings more space */
-            gap: var(--spacing-xl);
-        }
-
-        @media (max-width: 768px) {
-            .bottom-section {
-                grid-template-columns: 1fr;
-                gap: var(--spacing-lg);
-            }
-            .app-container {
-                padding: var(--spacing-md);
-            }
-        }
-
-        /* --- Controls --- */
-        .control-group {
-            margin-bottom: var(--spacing-md);
-        }
-
-        /* Chip Selectors (Line Styles) */
-        .style-options {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .style-option {
-            position: relative;
-        }
-
-        .style-option input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            width: 0;
-            height: 0;
-        }
-
+        .btn-pri { background: var(--w-ink); color: var(--w-pri); box-shadow: 0 3px 12px rgba(14,15,12,0.15); }
+        .btn-pri:hover { background: var(--w-ink-deep); transform: translateY(-1px); }
+        .btn-sec { background: var(--w-soft); color: var(--w-body); }
+        .btn-sec:hover { background: var(--w-pri-pale); color: var(--w-ink-deep); }
+        .divider { height: 1px; background: var(--w-soft); width: 100%; }
+        .bottom-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; }
+        @media (max-width: 768px) { .bottom-grid { grid-template-columns: 1fr; gap: 24px; } .app-wrap { padding: 24px; } }
+        .ctrl-group { margin-bottom: 20px; }
+        .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .chip-label { position: relative; }
+        .chip-label input { position: absolute; opacity: 0; width: 0; height: 0; }
         .chip {
-            padding: 8px 16px;
-            background: var(--color-surface-container-low);
-            color: var(--color-on-surface);
-            border-radius: var(--radius-full);
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            padding: 7px 14px; background: var(--w-soft); color: var(--w-body);
+            border-radius: var(--w-radius-pill); font-size: 13px; font-weight: 600;
+            border: 1px solid transparent; cursor: pointer; transition: all 0.2s;
         }
-
-        .style-option input:checked + .chip {
-            background: var(--color-primary);
-            color: var(--color-on-primary);
-            box-shadow: 0 4px 10px rgba(133, 83, 0, 0.2);
-        }
-
-        .style-option:hover .chip {
-            background: var(--color-surface-container);
-        }
-
-        /* Toggle Switch (Link) */
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--color-surface-container-low);
-        }
-
-        .toggle-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--color-on-surface);
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 48px;
-            height: 28px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--color-surface-container);
-            border-radius: 28px;
-            transition: .4s;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        input:checked + .slider {
-            background-color: var(--color-secondary);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        /* Sliders */
-        .range-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--color-on-surface-variant);
-            margin-bottom: 8px;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            background: var(--color-primary);
-            cursor: pointer;
-            margin-top: -8px;
-            box-shadow: 0 2px 6px rgba(133, 83, 0, 0.3);
-            border: 2px solid #fff;
-        }
-
-        input[type="range"]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: var(--color-surface-container);
-            border-radius: 2px;
-        }
-
-        /* Colors */
-        .color-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-sm);
-        }
-
-        .color-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--color-on-surface-variant);
-            margin-bottom: 8px;
-        }
-
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: none;
-            width: 100%;
-            height: 48px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            padding: 0;
-            background: none;
-        }
-        
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0; 
-        }
-        
-        input[type="color"]::-webkit-color-swatch {
-            border: 2px solid var(--color-surface-container);
-            border-radius: var(--radius-md);
-        }
-
-        /* Code Output */
-        .code-block {
-            background: #151c27; /* Deep Charcoal */
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #d8c3ad; /* outline-variant color for code text */
-            overflow-x: auto;
-            white-space: pre-wrap;
-            position: relative;
-        }
-
-        .code-label {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-bottom-left-radius: 8px;
-            text-transform: uppercase;
-        }
-
-        /* Toast */
-        #toast {
-            visibility: hidden;
-            min-width: 280px;
-            background-color: var(--color-on-surface);
-            color: var(--color-surface);
-            text-align: center;
-            border-radius: var(--radius-full);
-            padding: 16px 24px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%) translateY(20px);
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        #toast.show {
-            visibility: visible;
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .chip-label input:checked + .chip { background: var(--w-ink); color: var(--w-pri); }
+        .chip-label:hover .chip { background: var(--w-pri-pale); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--w-soft); }
+        .toggle-label { font-size: 15px; font-weight: 600; color: var(--w-ink); }
+        .toggle-switch { position: relative; width: 48px; height: 28px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--w-soft); border-radius: 28px; transition: .3s; }
+        .slider:before { content: ''; position: absolute; height: 20px; width: 20px; left: 4px; bottom: 4px; background: #fff; border-radius: 50%; transition: .3s; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        input:checked + .slider { background: var(--w-ink); }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .range-hdr { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--w-body); margin-bottom: 8px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: var(--w-ink); cursor: pointer; margin-top: -8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 4px; background: var(--w-soft); border-radius: 2px; }
+        .color-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .color-group label { display: block; font-size: 12px; font-weight: 600; color: var(--w-body); margin-bottom: 6px; }
+        input[type=color] { -webkit-appearance: none; border: none; width: 100%; height: 44px; border-radius: var(--w-radius-sm); cursor: pointer; padding: 0; background: none; }
+        input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type=color]::-webkit-color-swatch { border: 2px solid var(--w-soft); border-radius: var(--w-radius-sm); }
+        .code-block { background: var(--w-ink); border-radius: var(--w-radius-sm); padding: 16px; margin-bottom: 12px; font-family: 'Courier New', monospace; font-size: 13px; color: var(--w-pri); overflow-x: auto; white-space: pre-wrap; position: relative; }
+        .code-label { position: absolute; top: 0; right: 0; background: rgba(159,232,112,0.1); color: var(--w-pri); font-size: 10px; font-weight: 700; padding: 4px 8px; border-bottom-left-radius: 8px; text-transform: uppercase; }
+        #toast { visibility: hidden; min-width: 280px; background: var(--w-ink); color: var(--w-pri); text-align: center; border-radius: var(--w-radius-pill); padding: 14px 24px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px); font-size: 14px; font-weight: 600; opacity: 0; transition: all .3s; }
+        #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
+<div class="app-wrap">
+    <header>
+        <h1>文本下划线生成器</h1>
+        <div class="sub">Wise Design</div>
+    </header>
 
-    <div class="app-container">
-        <!-- Header -->
-        <header>
-            <h1>文本下划线生成器</h1>
-            <div class="subtitle">Modern Corporate Design</div>
-        </header>
-
-        <!-- TOP SECTION -->
-        <div class="top-section">
-            
-            <!-- Input -->
-            <div>
-                <label class="section-label">输入内容</label>
-                <textarea id="inputText" placeholder="在此处输入您的文本...">Atmospheric Design</textarea>
-            </div>
-
-            <!-- Preview -->
-            <div>
-                <label class="section-label">实时预览</label>
-                <div class="preview-box">
-                    <span id="previewElement">Atmospheric Design</span>
-                </div>
-            </div>
-
-            <!-- Main Action -->
-            <button class="btn btn-primary" onclick="copyToClipboard('text')">
-                复制带下划线文本
-            </button>
+    <div class="top-section">
+        <div>
+            <label class="sec-label">输入内容</label>
+            <textarea id="inputText" placeholder="在此处输入您的文本...">Atmospheric Design</textarea>
         </div>
-
-        <!-- VISUAL DIVIDER -->
-        <div class="spacer-lg"></div>
-
-        <!-- BOTTOM SECTION -->
-        <div class="bottom-section">
-            
-            <!-- Left: Settings Controls -->
-            <div class="controls-column">
-                
-                <!-- Line Style -->
-                <div class="control-group">
-                    <label class="section-label">线条样式</label>
-                    <div class="style-options">
-                        <label class="style-option">
-                            <input type="radio" name="lineStyle" value="solid" checked>
-                            <span class="chip">实线</span>
-                        </label>
-                        <label class="style-option">
-                            <input type="radio" name="lineStyle" value="dashed">
-                            <span class="chip">虚线</span>
-                        </label>
-                        <label class="style-option">
-                            <input type="radio" name="lineStyle" value="dotted">
-                            <span class="chip">点线</span>
-                        </label>
-                        <label class="style-option">
-                            <input type="radio" name="lineStyle" value="wavy">
-                            <span class="chip">波浪线</span>
-                        </label>
-                        <label class="style-option">
-                            <input type="radio" name="lineStyle" value="double">
-                            <span class="chip">双线</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Toggle (Link) -->
-                <div class="control-group">
-                    <div class="toggle-wrapper">
-                        <span class="toggle-label">作为链接 &lt;a&gt;</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="isLink">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Colors -->
-                <div class="control-group">
-                    <label class="section-label">颜色设置</label>
-                    <div class="color-row">
-                        <div class="color-group">
-                            <label>文本颜色</label>
-                            <input type="color" id="textColor" value="#151c27">
-                        </div>
-                        <div class="color-group">
-                            <label>线条颜色</label>
-                            <input type="color" id="lineColor" value="#855300">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sliders -->
-                <div class="control-group">
-                    <label class="section-label">细节调整</label>
-                    <div style="margin-top: 16px;">
-                        
-                        <div class="range-group" style="margin-bottom: 16px;">
-                            <div class="range-header">
-                                <span>线条粗细</span>
-                                <span id="thicknessVal">1px</span>
-                            </div>
-                            <input type="range" id="thickness" min="1" max="10" value="1" step="1">
-                        </div>
-
-                        <div class="range-group" style="margin-bottom: 16px;">
-                            <div class="range-header">
-                                <span>下划线偏移</span>
-                                <span id="offsetVal">3px</span>
-                            </div>
-                            <input type="range" id="offset" min="0" max="20" value="3" step="1">
-                        </div>
-
-                        <div class="range-group">
-                            <div class="range-header">
-                                <span>字体大小</span>
-                                <span id="fontSizeVal">24px</span>
-                            </div>
-                            <input type="range" id="fontSize" min="12" max="72" value="24" step="1">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right: Code Output -->
-            <div class="code-column">
-                <label class="section-label">生成代码</label>
-                <div style="margin-top: 16px;">
-                    
-                    <div class="code-block">
-                        <div class="code-label">CSS</div>
-                        <code id="cssOutput"></code>
-                    </div>
-
-                    <div class="code-block">
-                        <div class="code-label">HTML</div>
-                        <code id="htmlOutput"></code>
-                    </div>
-
-                    <button class="btn btn-secondary" onclick="copyToClipboard('html')">复制 HTML 代码</button>
-                    <button class="btn btn-secondary" onclick="copyToClipboard('css')">复制 CSS 代码</button>
-                </div>
-            </div>
-
+        <div>
+            <label class="sec-label">实时预览</label>
+            <div class="preview-box"><span id="previewElement">Atmospheric Design</span></div>
         </div>
+        <button class="btn btn-pri" onclick="copyToClipboard('text')">复制带下划线文本</button>
     </div>
 
-    <!-- Toast Notification -->
-    <div id="toast">已复制到剪贴板</div>
+    <div class="divider"></div>
 
-    <script>
-        // Elements
-        const inputText = document.getElementById('inputText');
-        const previewElement = document.getElementById('previewElement');
-        const cssOutput = document.getElementById('cssOutput');
-        const htmlOutput = document.getElementById('htmlOutput');
-        const toast = document.getElementById('toast');
+    <div class="bottom-grid">
+        <div class="controls-column">
+            <div class="ctrl-group">
+                <label class="sec-label">线条样式</label>
+                <div class="chips">
+                    <label class="chip-label"><input type="radio" name="ls" value="solid" checked><span class="chip">实线</span></label>
+                    <label class="chip-label"><input type="radio" name="ls" value="dashed"><span class="chip">虚线</span></label>
+                    <label class="chip-label"><input type="radio" name="ls" value="dotted"><span class="chip">点线</span></label>
+                    <label class="chip-label"><input type="radio" name="ls" value="wavy"><span class="chip">波浪线</span></label>
+                    <label class="chip-label"><input type="radio" name="ls" value="double"><span class="chip">双线</span></label>
+                </div>
+            </div>
+            <div class="ctrl-group">
+                <div class="toggle-row">
+                    <span class="toggle-label">作为链接 &lt;a&gt;</span>
+                    <label class="toggle-switch"><input type="checkbox" id="isLink"><span class="slider"></span></label>
+                </div>
+            </div>
+            <div class="ctrl-group">
+                <label class="sec-label">颜色设置</label>
+                <div class="color-row">
+                    <div class="color-group"><label>文本颜色</label><input type="color" id="textColor" value="#0e0f0c"></div>
+                    <div class="color-group"><label>线条颜色</label><input type="color" id="lineColor" value="#9fe870"></div>
+                </div>
+            </div>
+            <div class="ctrl-group">
+                <label class="sec-label">细节调整</label>
+                <div style="margin-top:12px">
+                    <div style="margin-bottom:14px"><div class="range-hdr"><span>线条粗细</span><span id="thickVal">2px</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
+                    <div style="margin-bottom:14px"><div class="range-hdr"><span>下划线偏移</span><span id="offVal">3px</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
+                    <div><div class="range-hdr"><span>字体大小</span><span id="fsVal">24px</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
+                </div>
+            </div>
+        </div>
+        <div class="code-column">
+            <label class="sec-label">生成代码</label>
+            <div style="margin-top:12px">
+                <div class="code-block"><div class="code-label">CSS</div><code id="cssOutput"></code></div>
+                <div class="code-block"><div class="code-label">HTML</div><code id="htmlOutput"></code></div>
+                <button class="btn btn-sec" onclick="copyToClipboard('html')" style="margin-bottom:8px">复制 HTML 代码</button>
+                <button class="btn btn-sec" onclick="copyToClipboard('css')">复制 CSS 代码</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="toast">已复制到剪贴板</div>
 
-        // Inputs
-        const textColors = document.getElementById('textColor');
-        const lineColors = document.getElementById('lineColor');
-        const thickness = document.getElementById('thickness');
-        const offset = document.getElementById('offset');
-        const fontSizes = document.getElementById('fontSize');
-        const isLinkCheck = document.getElementById('isLink');
-        const styleRadios = document.getElementsByName('lineStyle');
-
-        // Value Displays
-        const thicknessVal = document.getElementById('thicknessVal');
-        const offsetVal = document.getElementById('offsetVal');
-        const fontSizeVal = document.getElementById('fontSizeVal');
-
-        function getSelectedStyle() {
-            for (const radio of styleRadios) {
-                if (radio.checked) return radio.value;
-            }
-            return 'solid';
-        }
-
-        function updatePreview() {
-            const text = inputText.value || '输入文本预览';
-            const style = getSelectedStyle();
-            const tColor = textColors.value;
-            const lColor = lineColors.value;
-            const thick = thickness.value;
-            const off = offset.value;
-            const fSize = fontSizes.value;
-            const isLink = isLinkCheck.checked;
-
-            // Update Labels
-            thicknessVal.textContent = `${thick}px`;
-            offsetVal.textContent = `${off}px`;
-            fontSizeVal.textContent = `${fSize}px`;
-
-            // CSS Construction
-            let cssText = `
-.underline-style {
-  text-decoration-line: underline;
-  text-decoration-style: ${style};
-  text-decoration-color: ${lColor};
-  text-decoration-thickness: ${thick}px;
-  text-underline-offset: ${off}px;
-  color: ${tColor};
-  font-size: ${fSize}px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}`;
-
-            if (isLink) {
-                cssText += `
-  text-decoration-skip-ink: none;
-  cursor: pointer;`;
-            }
-
-            // HTML Construction
-            let htmlText = '';
-            if (isLink) {
-                htmlText = `<a href="#" class="underline-style">${text}</a>`;
-            } else {
-                htmlText = `<span class="underline-style">${text}</span>`;
-            }
-
-            // Apply to Preview
-            previewElement.textContent = text;
-            previewElement.style.textDecorationLine = 'underline';
-            previewElement.style.textDecorationStyle = style;
-            previewElement.style.textDecorationColor = lColor;
-            previewElement.style.textDecorationThickness = `${thick}px`;
-            previewElement.style.textUnderlineOffset = `${off}px`;
-            previewElement.style.color = tColor;
-            previewElement.style.fontSize = `${fSize}px`;
-            previewElement.style.fontFamily = "'Plus Jakarta Sans', sans-serif";
-
-            // Update Code Blocks
-            cssOutput.textContent = cssText.trim();
-            htmlOutput.textContent = htmlText;
-        }
-
-        // Event Listeners
-        const inputs = [inputText, textColors, lineColors, thickness, offset, fontSizes, isLinkCheck];
-        inputs.forEach(input => {
-            input.addEventListener('input', updatePreview);
-        });
-
-        styleRadios.forEach(radio => {
-            radio.addEventListener('change', updatePreview);
-        });
-
-        // 生成带内联样式的HTML
-        function getInlineStyledHTML() {
-            const text = inputText.value || '输入文本预览';
-            const style = getSelectedStyle();
-            const tColor = textColors.value;
-            const lColor = lineColors.value;
-            const thick = thickness.value;
-            const off = offset.value;
-            const fSize = fontSizes.value;
-            const isLink = isLinkCheck.checked;
-
-            const inlineStyles = `
-                text-decoration-line: underline;
-                text-decoration-style: ${style};
-                text-decoration-color: ${lColor};
-                text-decoration-thickness: ${thick}px;
-                text-underline-offset: ${off}px;
-                color: ${tColor};
-                font-size: ${fSize}px;
-                font-family: 'Plus Jakarta Sans', sans-serif;
-            `;
-
-            if (isLink) {
-                return `<a href="#" style="${inlineStyles} text-decoration-skip-ink: none;">${text}</a>`;
-            } else {
-                return `<span style="${inlineStyles}">${text}</span>`;
-            }
-        }
-
-        // Copy Functionality
-        function copyToClipboard(type) {
-            if (type === 'text') {
-                const htmlContent = getInlineStyledHTML();
-                const plainContent = inputText.value;
-                
-                const clipboardItem = new ClipboardItem({
-                    'text/html': new Blob([htmlContent], { type: 'text/html' }),
-                    'text/plain': new Blob([plainContent], { type: 'text/plain' })
-                });
-                
-                navigator.clipboard.write([clipboardItem]).then(() => {
-                    showToast();
-                }).catch(err => {
-                    console.error('复制失败:', err);
-                    alert('复制失败，请确保在浏览器允许剪贴板访问的权限。');
-                });
-
-            } else if (type === 'html') {
-                navigator.clipboard.writeText(htmlOutput.textContent).then(() => {
-                    showToast();
-                }).catch(err => {
-                    console.error('复制失败: ', err);
-                });
-            } else if (type === 'css') {
-                navigator.clipboard.writeText(cssOutput.textContent).then(() => {
-                    showToast();
-                }).catch(err => {
-                    console.error('复制失败: ', err);
-                });
-            }
-        }
-
-        function showToast() {
-            toast.className = "show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        // Initialize
-        updatePreview();
-    </script>
+<script>
+const inputText=document.getElementById('inputText'), preview=document.getElementById('previewElement'), cssOut=document.getElementById('cssOutput'), htmlOut=document.getElementById('htmlOutput'), toast=document.getElementById('toast');
+const textC=document.getElementById('textColor'), lineC=document.getElementById('lineColor'), thick=document.getElementById('thick'), offset=document.getElementById('offset'), fs=document.getElementById('fontSize'), linkChk=document.getElementById('isLink'), radios=document.getElementsByName('ls');
+const thickVal=document.getElementById('thickVal'), offVal=document.getElementById('offVal'), fsVal=document.getElementById('fsVal');
+function getStyle(){for(var i=0;i<radios.length;i++)if(radios[i].checked)return radios[i].value;return'solid'}
+function update(){var t=inputText.value||'预览文本',s=getStyle(),tc=textC.value,lc=lineC.value,th=thick.value,of=offset.value,fsz=fs.value,lnk=linkChk.checked;thickVal.textContent=th+'px';offVal.textContent=of+'px';fsVal.textContent=fsz+'px';var css='.underline-style{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fsz+'px;font-family:\'Inter\',sans-serif}'+(lnk?'\ntext-decoration-skip-ink:none;cursor:pointer':''),html=lnk?'<a href="#" class="underline-style">'+t+'</a>':'<span class="underline-style">'+t+'</span>';preview.textContent=t;preview.style.textDecorationLine='underline';preview.style.textDecorationStyle=s;preview.style.textDecorationColor=lc;preview.style.textDecorationThickness=th+'px';preview.style.textUnderlineOffset=of+'px';preview.style.color=tc;preview.style.fontSize=fsz+'px';preview.style.fontFamily="'Inter',sans-serif";cssOut.textContent=css;htmlOut.textContent=html}
+function getInline(){var t=inputText.value||'预览文本',s=getStyle(),tc=textC.value,lc=lineC.value,th=thick.value,of=offset.value,fsz=fs.value,lnk=linkChk.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fsz+'px;font-family:\'Inter\',sans-serif';return lnk?'<a href="#" style="'+is+'">'+t+'</a>':'<span style="'+is+'">'+t+'</span>'}
+function copyToClipboard(t){if(t==='text'){var h=getInline(),p=inputText.value;navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([h],{type:'text/html'}),'text/plain':new Blob([p],{type:'text/plain'})})]).then(showToast).catch(function(e){alert('复制失败')})}else{navigator.clipboard.writeText(t==='html'?htmlOut.textContent:cssOut.textContent).then(showToast)}}
+function showToast(){toast.className='show';setTimeout(function(){toast.className=''},2500)}
+var inputs=[inputText,textC,lineC,thick,offset,fs,linkChk];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',update);for(var i=0;i<radios.length;i++)radios[i].addEventListener('change',update);
+update();
+</script>
 </body>
 </html>
