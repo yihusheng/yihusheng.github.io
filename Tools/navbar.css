@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════
-   Wise Navbar — 统一工具导航栏
+   Wise Floating Navbar — 悬浮双按钮导航栏
+   左下：主页按钮 🏠 | 右下：菜单按钮 ···
    配色遵循 Wise Design System (#9fe870)
    ═══════════════════════════════════════════ */
 
@@ -14,141 +15,66 @@
   --nv-mute: #868685;
   --nv-surface: #ffffff;
   --nv-surface-soft: #e8ebe6;
-  --nv-shadow: 0 2px 12px rgba(14,15,12,0.08);
 }
 
-/* ── Navbar Container ── */
+/* ── Floating Pill Container ── */
 .wise-navbar {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  bottom: 24px;
+  right: 24px;
   z-index: 9999;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  border-bottom: 1px solid rgba(14,15,12,0.06);
-  box-shadow: var(--nv-shadow);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  transition: transform 0.3s cubic-bezier(0.2,0,0,1);
-}
-
-.wise-navbar.hidden {
-  transform: translateY(-100%);
-}
-
-.wise-navbar-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 16px;
-  height: 52px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-/* ── Logo / Home ── */
-.wise-nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--nv-ink);
-  font-weight: 800;
-  font-size: 0.95rem;
-  letter-spacing: -0.3px;
-  flex-shrink: 0;
-  transition: opacity 0.2s;
-}
-
-.wise-nav-logo:hover {
-  opacity: 0.7;
-}
-
-.wise-nav-logo-icon {
-  width: 30px;
-  height: 30px;
+  gap: 0;
   background: var(--nv-ink);
+  border-radius: 9999px;
+  box-shadow: 0 4px 20px rgba(14,15,12,0.25), 0 2px 8px rgba(14,15,12,0.1);
+  padding: 4px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: transform 0.2s cubic-bezier(0.2,0,0,1), box-shadow 0.2s ease;
+}
+
+.wise-navbar:hover {
+  box-shadow: 0 6px 28px rgba(14,15,12,0.3);
+}
+
+/* ── Shared Button Style ── */
+.wise-nav-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: transparent;
   color: var(--nv-primary);
-  border-radius: 10px;
+  cursor: pointer;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 900;
-  flex-shrink: 0;
-}
-
-/* ── Desktop Links ── */
-.wise-nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  flex: 1;
-  justify-content: flex-end;
-}
-
-.wise-nav-links::-webkit-scrollbar {
-  display: none;
-}
-
-.wise-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 12px;
-  border-radius: 10px;
   text-decoration: none;
-  color: var(--nv-body);
-  font-size: 0.78rem;
-  font-weight: 600;
-  white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.2,0,0,1);
   flex-shrink: 0;
-  position: relative;
 }
 
-.wise-nav-link:hover {
-  background: var(--nv-primary-pale);
-  color: var(--nv-ink-deep);
+.wise-nav-btn:hover {
+  background: rgba(159,232,112,0.12);
+  transform: scale(1.05);
 }
 
-.wise-nav-link.active {
-  background: var(--nv-ink);
-  color: var(--nv-primary);
+.wise-nav-btn:active {
+  transform: scale(0.92);
 }
 
-.wise-nav-link .nv-icon {
-  font-size: 1.1em;
-  line-height: 1;
+.wise-nav-btn .material-symbols-rounded {
+  font-size: 1.4rem;
+  font-variation-settings: 'FILL' 1, 'wght' 400;
 }
 
-/* ── Mobile Hamburger ── */
-.wise-nav-toggle {
-  display: none;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: transparent;
-  color: var(--nv-ink);
-  cursor: pointer;
-  border-radius: 10px;
-  padding: 6px;
-  transition: background 0.2s;
+/* ── Divider between buttons ── */
+.wise-nav-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(159,232,112,0.2);
   flex-shrink: 0;
-}
-
-.wise-nav-toggle:hover {
-  background: var(--nv-primary-pale);
-}
-
-.wise-nav-toggle svg {
-  width: 100%;
-  height: 100%;
 }
 
 /* ── Mobile Drawer ── */
@@ -175,29 +101,29 @@
 
 .wise-nav-drawer-panel {
   position: absolute;
-  top: 0;
+  bottom: 0;
+  left: 0;
   right: 0;
-  width: 280px;
-  max-width: 80vw;
-  height: 100%;
+  max-height: 80vh;
   background: var(--nv-surface);
-  box-shadow: -8px 0 32px rgba(14,15,12,0.1);
-  padding: 20px 16px 32px;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -8px 40px rgba(14,15,12,0.12);
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
-  transform: translateX(100%);
+  transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.2,0,0,1);
 }
 
 .wise-nav-drawer.open .wise-nav-drawer-panel {
-  transform: translateX(0);
+  transform: translateY(0);
 }
 
 .wise-nav-drawer-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
+  margin-bottom: 8px;
+  padding: 8px 8px 12px;
   border-bottom: 1px solid var(--nv-surface-soft);
 }
 
@@ -228,12 +154,12 @@
 .wise-nav-drawer-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 12px;
+  gap: 12px;
+  padding: 14px 14px;
+  border-radius: 14px;
   text-decoration: none;
   color: var(--nv-body);
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   font-weight: 600;
   transition: all 0.15s;
   margin-bottom: 2px;
@@ -250,14 +176,14 @@
 }
 
 .wise-nav-drawer-link .nv-icon {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   background: var(--nv-surface-soft);
-  border-radius: 8px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 1.2rem;
   flex-shrink: 0;
 }
 
@@ -265,52 +191,47 @@
   background: rgba(159,232,112,0.15);
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .wise-nav-links {
-    display: none;
-  }
-  .wise-nav-toggle {
-    display: block;
-  }
-  .wise-nav-drawer {
-    display: block;
-  }
-  .wise-navbar-inner {
-    padding: 0 12px;
-  }
-}
-
-/* ── Overlay mode for full-screen SPAs (zashboard, Metacubexd, Music) ── */
+/* ── Overlay mode for full-screen SPAs ── */
 body.navbar-overlay .wise-navbar {
-  background: rgba(14,15,12,0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom-color: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
-body.navbar-overlay .wise-nav-logo {
+body.navbar-overlay .wise-nav-btn {
   color: #fff;
 }
 
-body.navbar-overlay .wise-nav-link {
-  color: rgba(255,255,255,0.7);
+body.navbar-overlay .wise-nav-btn:hover {
+  background: rgba(255,255,255,0.12);
 }
 
-body.navbar-overlay .wise-nav-link:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+body.navbar-overlay .wise-nav-divider {
+  background: rgba(255,255,255,0.2);
 }
 
-body.navbar-overlay .wise-nav-link.active {
-  background: var(--nv-primary);
-  color: var(--nv-ink);
-}
-
-body.navbar-overlay .wise-nav-toggle {
-  color: rgba(255,255,255,0.8);
-}
-
-body.navbar-overlay .wise-nav-toggle:hover {
-  background: rgba(255,255,255,0.1);
+/* ── Desktop adjustment ── */
+@media screen and (min-width: 768px) {
+  .wise-navbar {
+    bottom: 32px;
+    right: 32px;
+    padding: 6px;
+  }
+  .wise-nav-btn {
+    width: 48px;
+    height: 48px;
+  }
+  .wise-nav-btn .material-symbols-rounded {
+    font-size: 1.5rem;
+  }
+  .wise-nav-drawer-panel {
+    max-width: 360px;
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    border-radius: 24px;
+    max-height: 70vh;
+    box-shadow: 0 12px 48px rgba(14,15,12,0.15);
+  }
 }
