@@ -292,25 +292,41 @@ const CookieUtils = {
   remove: (n) => { document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/'; }
 };
 
-const songs = [
-  { title: "Follow YourDream's", artist: "MerOne Record'ss", cover: "https://maxcloud.pages.dev/src/Follow%20YourDream's.jpg", src: "https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3" },
-  { title: "\u5187\u94b1\u7d22\u8d27\u5c4e", artist: "\u90b1\u6e05\u4e91", cover: "https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.jpg", src: "https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.mp3" },
-  { title: "Night Drive", artist: "Synthwave \u2022 Retro", cover: "https://picsum.photos/600/600?random=3", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
-];
-
+// ===== 动态从 music.json 加载歌曲列表 =====
+let songs = [];
 let currentSongIndex = 0;
+
+async function loadMusicList() {
+  try {
+    const res = await fetch('music.json?' + Date.now()); // 加时间戳防止缓存
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    songs = await res.json();
+    console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
+  } catch (e) {
+    console.error('❌ 加载 music.json 失败:', e);
+    songs = [];
+  }
+  // 如果列表为空，显示提示
+  if (songs.length === 0) {
+    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src 目录', cover: '', src: '' }];
+  }
+  // 加载第一首歌
+  loadSong(songs[0]);
+}
+// ======================================
+
 const audio = document.getElementById('audio');
 const app = document.getElementById('app');
 const island = document.getElementById('island');
 const themeColorMeta = document.querySelector('meta[name="theme-color"]');
 
 const weatherCodeMap = {
-  0:{d:"\u6674\u6717",i:"wb_sunny",b:"#1a1c18"},1:{d:"\u591a\u4e91",i:"partly_cloudy_day",b:"#1e2020"},2:{d:"\u5c11\u4e91",i:"partly_cloudy_day",b:"#1d1f1e"},3:{d:"\u9634\u5929",i:"cloud",b:"#1c1d1c"},
-  45:{d:"\u96fe",i:"foggy",b:"#1a1b1a"},48:{d:"\u51bb\u96fe",i:"foggy",b:"#1b1c1e"},51:{d:"\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1a1e22"},53:{d:"\u4e2d\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1b1f23"},55:{d:"\u5927\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1c2024"},
-  61:{d:"\u5c0f\u96e8",i:"rainy",b:"#1a1e24"},63:{d:"\u4e2d\u96e8",i:"rainy",b:"#191d22"},65:{d:"\u5927\u96e8",i:"thunderstorm",b:"#171b20"},66:{d:"\u51bb\u96e8",i:"severe_cold",b:"#1e2126"},67:{d:"\u51bb\u96e8",i:"severe_cold",b:"#1e2126"},
-  71:{d:"\u5c0f\u96ea",i:"ac_unit",b:"#1e2022"},73:{d:"\u4e2d\u96ea",i:"ac_unit",b:"#1d1f21"},75:{d:"\u5927\u96ea",i:"severe_cold",b:"#1c1e20"},77:{d:"\u96ea\u7c92",i:"severe_cold",b:"#1c1e20"},
-  80:{d:"\u9635\u96e8",i:"rainy",b:"#1a1e23"},81:{d:"\u9635\u96e8",i:"rainy",b:"#1b1f24"},82:{d:"\u66b4\u96e8",i:"thunderstorm",b:"#181c22"},85:{d:"\u9635\u96ea",i:"ac_unit",b:"#1d1f21"},86:{d:"\u9635\u96ea",i:"ac_unit",b:"#1c1e20"},
-  95:{d:"\u96f7\u66b4",i:"thunderstorm",b:"#1a1c22"},96:{d:"\u96f7\u66b4",i:"thunderstorm",b:"#1b1d23"},99:{d:"\u5f3a\u96f7\u66b4",i:"thunderstorm",b:"#191b21"}
+  0:{d:"晴朗",i:"wb_sunny",b:"#1a1c18"},1:{d:"多云",i:"partly_cloudy_day",b:"#1e2020"},2:{d:"少云",i:"partly_cloudy_day",b:"#1d1f1e"},3:{d:"阴天",i:"cloud",b:"#1c1d1c"},
+  45:{d:"雾",i:"foggy",b:"#1a1b1a"},48:{d:"冻雾",i:"foggy",b:"#1b1c1e"},51:{d:"毛毛雨",i:"rainy",b:"#1a1e22"},53:{d:"中毛毛雨",i:"rainy",b:"#1b1f23"},55:{d:"大毛毛雨",i:"rainy",b:"#1c2024"},
+  61:{d:"小雨",i:"rainy",b:"#1a1e24"},63:{d:"中雨",i:"rainy",b:"#191d22"},65:{d:"大雨",i:"thunderstorm",b:"#171b20"},66:{d:"冻雨",i:"severe_cold",b:"#1e2126"},67:{d:"冻雨",i:"severe_cold",b:"#1e2126"},
+  71:{d:"小雪",i:"ac_unit",b:"#1e2022"},73:{d:"中雪",i:"ac_unit",b:"#1d1f21"},75:{d:"大雪",i:"severe_cold",b:"#1c1e20"},77:{d:"雪粒",i:"severe_cold",b:"#1c1e20"},
+  80:{d:"阵雨",i:"rainy",b:"#1a1e23"},81:{d:"阵雨",i:"rainy",b:"#1b1f24"},82:{d:"暴雨",i:"thunderstorm",b:"#181c22"},85:{d:"阵雪",i:"ac_unit",b:"#1d1f21"},86:{d:"阵雪",i:"ac_unit",b:"#1c1e20"},
+  95:{d:"雷暴",i:"thunderstorm",b:"#1a1c22"},96:{d:"雷暴",i:"thunderstorm",b:"#1b1d23"},99:{d:"强雷暴",i:"thunderstorm",b:"#191b21"}
 };
 
 function updateThemeColor() { const c=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim(); if(c) themeColorMeta.setAttribute('content',c); }
@@ -327,50 +343,53 @@ async function fetchWeather() {
   if(!lat||!lon) {
     if('geolocation'in navigator){
       try {
-        document.getElementById('locationDisplay').textContent='\u6b63\u5728\u8bf7\u6c42\u4f4d\u7f6e...';
+        document.getElementById('locationDisplay').textContent='正在请求位置...';
         const p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true,maximumAge:3e5}));
         lat=p.coords.latitude; lon=p.coords.longitude;
         CookieUtils.set('weather_lat',lat,30); CookieUtils.set('weather_lon',lon,30);
       } catch(e) {
         const ip=await getLocationByIP();
         if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-        else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}
+        else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
       }
     } else {
       const ip=await getLocationByIP();
       if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}
+      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
     }
   }
   try {
-    if(!locName){ try { const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); const ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='\u672a\u77e5\u4f4d\u7f6e';} }
-    if(!document.getElementById('locationDisplay').textContent.includes('\u9ed8\u8ba4')) document.getElementById('locationDisplay').textContent=locName;
+    if(!locName){ try { const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); const ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
+    if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
     const wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
-    const d=await wr.json(); const c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'\u672a\u77e5',i:'thermostat',b:'#1a1c18'};
-    document.getElementById('islandWeatherTemp').textContent=t+'\u00b0'; document.getElementById('islandWeatherIcon').textContent=w.i;
-    document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'\u00b0';
+    const d=await wr.json(); const c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
+    document.getElementById('islandWeatherTemp').textContent=t+'°'; document.getElementById('islandWeatherIcon').textContent=w.i;
+    document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'°';
     document.getElementById('detailDesc').textContent=w.d;
-    document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'\u00b0 L:'+Math.round(da.temperature_2m_min[0])+'\u00b0';
+    document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'° L:'+Math.round(da.temperature_2m_min[0])+'°';
     document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';
     document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
     document.documentElement.style.setProperty('--island-expand-bg',w.b);
-  } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('\u5931\u8d25')) document.getElementById('locationDisplay').textContent='\u5929\u6c14\u83b7\u53d6\u5931\u8d25'; }
+  } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
 }
 
 function toggleIsland(){island.classList.toggle('active');}
-function playSong(){audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
+function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
 document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
-document.getElementById('nextBtn').addEventListener('click',()=>{currentSongIndex=(currentSongIndex+1)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
-document.getElementById('prevBtn').addEventListener('click',()=>{currentSongIndex=(currentSongIndex-1+songs.length)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
+document.getElementById('nextBtn').addEventListener('click',()=>{if(!songs.length)return;currentSongIndex=(currentSongIndex+1)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
+document.getElementById('prevBtn').addEventListener('click',()=>{if(!songs.length)return;currentSongIndex=(currentSongIndex-1+songs.length)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
 
 function loadSong(song){
+  if (!song || !song.src) return;
   document.getElementById('mainTitle').innerText=song.title; document.getElementById('mainArtist').innerText=song.artist;
-  ColorUtils.extractColorFromUrl(song.cover,rgb=>{const t=ColorUtils.generateTheme(rgb); for(const[k,v]of Object.entries(t))document.documentElement.style.setProperty(k,v); updateThemeColor();});
+  if (song.cover) {
+    ColorUtils.extractColorFromUrl(song.cover,rgb=>{const t=ColorUtils.generateTheme(rgb); for(const[k,v]of Object.entries(t))document.documentElement.style.setProperty(k,v); updateThemeColor();});
+  }
   const mc=document.getElementById('mainCover');
-  mc.onload=()=>{if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,album:song.artist.split('\u2022')[1]?.trim()||'Unknown Album',artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});};
-  mc.src=song.cover; audio.src=song.src;
-  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});
+  mc.onload=()=>{if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,album:'Unknown Album',artwork:[{src:song.cover||'',sizes:'512x512',type:'image/jpeg'}]});};
+  mc.src=song.cover||''; audio.src=song.src;
+  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover||'',sizes:'512x512',type:'image/jpeg'}]});
 }
 
 let isDragging=false;
@@ -384,8 +403,9 @@ function toggleDrawer(){document.getElementById('drawer').classList.toggle('open
 document.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();audio.paused?playSong():pauseSong();}else if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('prevBtn').click();}else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('nextBtn').click();}});
 async function loadBingWallpaper(){if(window.innerWidth<768)return;try{const r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');const d=await r.json();if(d.images&&d.images.length>0){const u='https://www.bing.com'+d.images[0].url;const img=new Image();img.src=u;img.onload=()=>{document.body.style.backgroundImage='url('+u+')';};}}catch(e){}}
 function init(){updateTime();setInterval(updateTime,1e3);fetchWeather();setInterval(fetchWeather,6e5);island.addEventListener('click',toggleIsland);loadBingWallpaper();window.addEventListener('resize',()=>{if(window.innerWidth>=768)loadBingWallpaper();});updateThemeColor();}
-loadSong(songs[currentSongIndex]);
-init();
+
+// 启动：先加载歌曲列表，再初始化其他功能
+loadMusicList().then(init);
 </script>
 </body>
 </html>
