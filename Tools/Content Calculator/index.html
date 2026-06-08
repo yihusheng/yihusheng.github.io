@@ -19,7 +19,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .card-pad{padding:24px}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .ph{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;font-weight:900;color:var(--b)}
+.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pb .material-symbols-rounded{font-size:18px;color:var(--b)}
 .pt{flex:1}
 .pt h2{font-size:16px;font-weight:900;letter-spacing:-.02em}
 .pt span{font-size:11px;color:var(--m);font-weight:500}
@@ -71,13 +72,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 </head>
 <body>
 <div class="wrap">
-<div class="bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
 
 <div class="g" id="grid">
   <div class="card card-pad" id="pa">
     <div class="ph">
-      <div class="pb">A</div>
-      <div class="pt"><h2>产品 A</h2><span>输入配料表数据</span></div>
+      <div class="pb"><span class="material-symbols-rounded">calculate</span></div>
+      <div class="pt"><h2>Nutrition Calculator</h2><span>输入配料表数据</span></div>
       <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
     </div>
     <div class="sv">
@@ -108,8 +108,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
   </div>
   <div class="card card-pad" id="pb">
     <div class="ph">
-      <div class="pb">B</div>
-      <div class="pt"><h2>产品 B</h2><span>输入配料表数据</span></div>
+      <div class="pb"><span class="material-symbols-rounded">calculate</span></div>
+      <div class="pt"><h2>Nutrition Calculator</h2><span>输入配料表数据</span></div>
       <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
     </div>
     <div class="sv">
