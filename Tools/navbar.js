@@ -14,11 +14,6 @@
  *  【使用方法】在任意页面的 <head> 中引入：
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
- *  
- *  【样式说明】两枚独立按钮固定占据顶部区域：
- *    - 左上：主页按钮 🏠
- *    - 右上：菜单按钮 ···
- *    通过 CSS 注入强制所有页面内容下移。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -32,7 +27,6 @@
     { icon: 'format_underlined',label: 'Underline', href: '/Tools/Underline/' },
     { icon: 'functions',        label: 'Calculator', href: '/Tools/Content%20Calculator/' },
     { icon: 'open_in_new',      label: 'JumpTools', href: '/Tools/JumpTools/' },
-    { icon: 'music_note',       label: 'Music',     href: '/Music/' },
     { icon: 'dashboard',        label: 'zashboard', href: '/Tools/zashboard/' },
     { icon: 'dashboard',        label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
@@ -47,8 +41,6 @@
     document.head.appendChild(link);
   }
 
-  // 注入 CSS 强制所有页面内容下移 74px
-  // 覆盖 body / #app / #__nuxt 等 SPA 根容器
   function injectSpacerCSS() {
     var style = document.createElement('style');
     style.id = 'wiseNavbarSpacerCSS';
