@@ -2,97 +2,97 @@
   {
     "title": "Santorini（圣托里尼）",
     "artist": "Jasing Rye",
-    "cover": "",
-    "src": "./src/music/Jasing Rye - Santorini（圣托里尼）.mp3"
+    "cover": "./src/music/Jasing%20Rye%20-%20Santorini%EF%BC%88%E5%9C%A3%E6%89%98%E9%87%8C%E5%B0%BC%EF%BC%89.jpg",
+    "src": "./src/music/Jasing%20Rye%20-%20Santorini%EF%BC%88%E5%9C%A3%E6%89%98%E9%87%8C%E5%B0%BC%EF%BC%89.mp3"
   },
   {
     "title": "Une Hirondelle A Fait Le Printemps（独燕成春）",
     "artist": "Jasing Rye",
-    "cover": "",
-    "src": "./src/music/Jasing Rye - Une Hirondelle A Fait Le Printemps（独燕成春）.mp3"
+    "cover": "./src/music/Jasing%20Rye%20-%20Une%20Hirondelle%20A%20Fait%20Le%20Printemps%EF%BC%88%E7%8B%AC%E7%87%95%E6%88%90%E6%98%A5%EF%BC%89.jpg",
+    "src": "./src/music/Jasing%20Rye%20-%20Une%20Hirondelle%20A%20Fait%20Le%20Printemps%EF%BC%88%E7%8B%AC%E7%87%95%E6%88%90%E6%98%A5%EF%BC%89.mp3"
   },
   {
     "title": "La Ultima Noche(Collazo)",
     "artist": "Lex Vandyke",
-    "cover": "",
-    "src": "./src/music/Lex Vandyke - La Ultima Noche(Collazo).mp3"
+    "cover": "./src/music/Lex%20Vandyke%20-%20La%20Ultima%20Noche(Collazo).jpg",
+    "src": "./src/music/Lex%20Vandyke%20-%20La%20Ultima%20Noche(Collazo).mp3"
   },
   {
     "title": "Follow YourDream's",
     "artist": "MerOne Record's",
-    "cover": "./src/music/Follow YourDream's.jpg",
-    "src": "./src/music/MerOne Record's - Follow YourDream's.mp3"
+    "cover": "./src/music/MerOne%20Record's%20-%20Follow%20YourDream's.jpg",
+    "src": "./src/music/MerOne%20Record's%20-%20Follow%20YourDream's.mp3"
   },
   {
     "title": "香花",
     "artist": "丘沛宸",
-    "cover": "",
-    "src": "./src/music/丘沛宸 - 香花.mp3"
+    "cover": "./src/music/%E4%B8%98%E6%B2%9B%E5%AE%B8%20-%20%E9%A6%99%E8%8A%B1.jpg",
+    "src": "./src/music/%E4%B8%98%E6%B2%9B%E5%AE%B8%20-%20%E9%A6%99%E8%8A%B1.mp3"
   },
   {
     "title": "金山寺",
     "artist": "燕池",
-    "cover": "",
-    "src": "./src/music/燕池 - 金山寺.mp3"
+    "cover": "./src/music/%E7%87%95%E6%B1%A0%20-%20%E9%87%91%E5%B1%B1%E5%AF%BA.jpg",
+    "src": "./src/music/%E7%87%95%E6%B1%A0%20-%20%E9%87%91%E5%B1%B1%E5%AF%BA.mp3"
   },
   {
     "title": "蓮花空行",
     "artist": "珂拉琪 Collage",
-    "cover": "",
-    "src": "./src/music/珂拉琪 Collage - 蓮花空行.mp3"
+    "cover": "./src/music/%E7%8F%82%E6%8B%89%E7%90%AA%20Collage%20-%20%E8%93%AE%E8%8A%B1%E7%A9%BA%E8%A1%8C.jpg",
+    "src": "./src/music/%E7%8F%82%E6%8B%89%E7%90%AA%20Collage%20-%20%E8%93%AE%E8%8A%B1%E7%A9%BA%E8%A1%8C.mp3"
   },
   {
     "title": "小时候（2022版）",
     "artist": "罗伟力",
-    "cover": "",
-    "src": "./src/music/罗伟力 - 小时候（2022版）.mp3"
+    "cover": "./src/music/%E7%BD%97%E4%BC%9F%E5%8A%9B%20-%20%E5%B0%8F%E6%97%B6%E5%80%99%EF%BC%882022%E7%89%88%EF%BC%89.jpg",
+    "src": "./src/music/%E7%BD%97%E4%BC%9F%E5%8A%9B%20-%20%E5%B0%8F%E6%97%B6%E5%80%99%EF%BC%882022%E7%89%88%EF%BC%89.mp3"
   },
   {
     "title": "车田豆腐（2022版）",
     "artist": "罗伟力",
-    "cover": "",
-    "src": "./src/music/罗伟力 - 车田豆腐（2022版）.mp3"
+    "cover": "./src/music/%E7%BD%97%E4%BC%9F%E5%8A%9B%20-%20%E8%BD%A6%E7%94%B0%E8%B1%86%E8%85%90%EF%BC%882022%E7%89%88%EF%BC%89.jpg",
+    "src": "./src/music/%E7%BD%97%E4%BC%9F%E5%8A%9B%20-%20%E8%BD%A6%E7%94%B0%E8%B1%86%E8%85%90%EF%BC%882022%E7%89%88%EF%BC%89.mp3"
   },
   {
     "title": "之乎者也",
     "artist": "罗大佑",
-    "cover": "",
-    "src": "./src/music/罗大佑 - 之乎者也.mp3"
+    "cover": "./src/music/%E7%BD%97%E5%A4%A7%E4%BD%91%20-%20%E4%B9%8B%E4%B9%8E%E8%80%85%E4%B9%9F.png",
+    "src": "./src/music/%E7%BD%97%E5%A4%A7%E4%BD%91%20-%20%E4%B9%8B%E4%B9%8E%E8%80%85%E4%B9%9F.mp3"
   },
   {
     "title": "乡愁四韵",
     "artist": "罗大佑",
-    "cover": "",
-    "src": "./src/music/罗大佑 - 乡愁四韵.mp3"
+    "cover": "./src/music/%E7%BD%97%E5%A4%A7%E4%BD%91%20-%20%E4%B9%A1%E6%84%81%E5%9B%9B%E9%9F%B5.png",
+    "src": "./src/music/%E7%BD%97%E5%A4%A7%E4%BD%91%20-%20%E4%B9%A1%E6%84%81%E5%9B%9B%E9%9F%B5.mp3"
   },
   {
     "title": "鹿港小镇",
     "artist": "罗大佑",
     "cover": "",
-    "src": "./src/music/罗大佑 - 鹿港小镇.m4a"
+    "src": "./src/music/%E7%BD%97%E5%A4%A7%E4%BD%91%20-%20%E9%B9%BF%E6%B8%AF%E5%B0%8F%E9%95%87.m4a"
   },
   {
     "title": "万事镭行先",
     "artist": "邱清云",
-    "cover": "",
-    "src": "./src/music/邱清云 - 万事镭行先.mp3"
+    "cover": "./src/music/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E4%B8%87%E4%BA%8B%E9%95%AD%E8%A1%8C%E5%85%88.jpg",
+    "src": "./src/music/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E4%B8%87%E4%BA%8B%E9%95%AD%E8%A1%8C%E5%85%88.mp3"
   },
   {
     "title": "冇钱索货屎",
     "artist": "邱清云",
-    "cover": "./src/music/邱清云 - 冇钱索货屎.jpg",
-    "src": "./src/music/邱清云 - 冇钱索货屎.mp3"
+    "cover": "./src/music/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.jpg",
+    "src": "./src/music/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.mp3"
   },
   {
     "title": "摘（Leaves fall, dreams rise）",
     "artist": "陈抒妮",
-    "cover": "",
-    "src": "./src/music/陈抒妮 - 摘（Leaves fall, dreams rise）.mp3"
+    "cover": "./src/music/%E9%99%88%E6%8A%92%E5%A6%AE%20-%20%E6%91%98%EF%BC%88Leaves%20fall%2C%20dreams%20rise%EF%BC%89.jpg",
+    "src": "./src/music/%E9%99%88%E6%8A%92%E5%A6%AE%20-%20%E6%91%98%EF%BC%88Leaves%20fall%2C%20dreams%20rise%EF%BC%89.mp3"
   },
   {
     "title": "寂静的天空",
     "artist": "黛青塔娜 HAYA乐团",
-    "cover": "",
-    "src": "./src/music/黛青塔娜 HAYA乐团 - 寂静的天空.mp3"
+    "cover": "./src/music/%E9%BB%9B%E9%9D%92%E5%A1%94%E5%A8%9C%20HAYA%E4%B9%90%E5%9B%A2%20-%20%E5%AF%82%E9%9D%99%E7%9A%84%E5%A4%A9%E7%A9%BA.jpg",
+    "src": "./src/music/%E9%BB%9B%E9%9D%92%E5%A1%94%E5%A8%9C%20HAYA%E4%B9%90%E5%9B%A2%20-%20%E5%AF%82%E9%9D%99%E7%9A%84%E5%A4%A9%E7%A9%BA.mp3"
   }
 ]
