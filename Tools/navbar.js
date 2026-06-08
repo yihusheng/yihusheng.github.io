@@ -52,6 +52,17 @@
      内部逻辑 — 通常无需修改
      ══════════════════════════════════════════════ */
 
+  // 自动注入 Material Symbols Rounded 字体（确保图标正确显示）
+  function injectFonts() {
+    // 避免重复注入
+    if (document.querySelector('link[href*="Material+Symbols+Rounded"]')) return;
+    
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0';
+    document.head.appendChild(link);
+  }
+
   // 获取当前页面路径（标准化）
   function getCurrentPath() {
     let p = window.location.pathname;
@@ -132,6 +143,9 @@
   function inject() {
     if (document.getElementById('wiseNavbar')) return; // 防止重复注入
 
+    // 先注入字体，再生成导航栏
+    injectFonts();
+    
     document.body.insertAdjacentHTML('afterbegin', buildHTML());
     
     // body padding（非 overlay 模式）
