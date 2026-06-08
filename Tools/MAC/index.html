@@ -10,114 +10,118 @@
 <script src="/Tools/navbar.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--pri:#9fe870;--on-pri:#0e0f0c;--pri-act:#cdffad;--pri-pale:#e2f6d5;--ink:#0e0f0c;--ink-deep:#163300;--body:#454745;--mute:#868685;--canvas:#fff;--soft:#e8ebe6;--neg:#d03238;--r:24px;--r-sm:12px;--r-pill:9999px}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--soft);color:var(--ink);min-height:100vh;display:flex;justify-content:center;padding:20px}
-.card{width:100%;max-width:480px;background:var(--canvas);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden;margin-top:0;align-self:flex-start}
-.head{background:var(--soft);padding:32px 28px 24px;text-align:center;border-bottom:1px solid rgba(14,15,12,.06)}
-.head h1{font-size:26px;font-weight:900;letter-spacing:-.03em;color:var(--ink)}
-.head p{font-size:13px;color:var(--mute);margin-top:4px}
-.body{padding:28px}
-.in-group{margin-bottom:24px}
-.in-group label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--body);display:block;margin-bottom:8px}
-.in-wrap{display:flex;align-items:center;border:2px solid var(--ink);border-radius:var(--r-sm);overflow:hidden;transition:all .2s;background:var(--canvas)}
-.in-wrap:focus-within{border-color:var(--pri);box-shadow:0 0 0 3px rgba(159,232,112,.25)}
-.in-wrap.err{border-color:var(--neg)}
-.in-wrap input{flex:1;height:52px;background:transparent;border:none;outline:none;padding:0 16px;font-family:'Inter',monospace;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--ink)}
-.in-wrap input::placeholder{color:rgba(134,134,133,.4);font-weight:500;font-size:14px}
-.in-wrap .icon{padding:0 14px;color:var(--mute);flex-shrink:0}
-.in-wrap:focus-within .icon{color:var(--pri)}
-.err-msg{color:var(--neg);font-size:12px;margin-top:6px;height:18px;opacity:0;transition:opacity .2s;font-weight:500}
-.err-msg.show{opacity:1}
-.btn-s{width:100%;height:52px;border:none;border-radius:var(--r-sm);background:var(--ink);color:var(--pri);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 3px 12px rgba(14,15,12,.12)}
-.btn-s:hover{background:var(--ink-deep);transform:translateY(-1px)}
-.btn-s:active{transform:scale(.97)}
-.loader{position:absolute;inset:0;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-.loader.show{display:flex}
-.spin{width:28px;height:28px;border:3px solid var(--pri-pale);border-top-color:var(--pri);border-radius:50%;animation:s 1s linear infinite}
-@keyframes s{to{transform:rotate(360deg)}}
-.loader span{font-size:13px;font-weight:500;color:var(--body);animation:p 1.5s ease-in-out infinite}
-@keyframes p{50%{opacity:.4}}
-.result{display:none;background:var(--soft);padding:28px;border-top:1px solid rgba(14,15,12,.06)}
-.result.show{display:block}
-.res-hdr{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.res-hdr .bar{width:4px;height:24px;background:var(--pri);border-radius:var(--r-pill);flex-shrink:0}
-.res-hdr h2{font-size:20px;font-weight:800;letter-spacing:-.02em}
-.res-hdr .src{font-size:10px;background:var(--pri-pale);color:var(--ink-deep);padding:3px 10px;border-radius:var(--r-pill);font-weight:700;margin-left:auto;text-transform:uppercase;letter-spacing:.05em}
-.res-card{background:var(--canvas);border-radius:var(--r);padding:24px}
-.vend{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
-.vend-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--body);margin-bottom:6px}
-.vend-n{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--ink)}
-.vend-icon{width:44px;height:44px;background:var(--pri-pale);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink-deep)}
-.vend-icon .material-symbols-rounded{font-size:24px}
-.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.d-item{background:var(--soft);border-radius:var(--r-sm);padding:14px}
-.d-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--body);margin-bottom:4px}
-.d-val{font-size:13px;font-weight:600;color:var(--ink)}
-.d-val .material-symbols-rounded{font-size:14px;vertical-align:middle;color:var(--pri);margin-right:2px}
-.addr-wrap{margin-top:16px;padding-top:14px;border-top:1px solid var(--soft);display:none}
-.addr-wrap.show{display:block}
-.addr-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--body);margin-bottom:4px}
-.addr-text{font-size:13px;color:var(--body);line-height:1.6}
-.reset{text-align:center;margin-top:16px}
-.reset button{border:none;background:none;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:8px;border-radius:var(--r-sm);transition:all .15s}
-.reset button:hover{background:var(--pri-pale)}
-.ft{background:var(--ink);padding:16px;text-align:center}
-.ft p{font-size:11px;color:rgba(232,235,230,.55)}
+:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--neg:#d03238;--r:24px;--rs:12px;--rp:9999px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:var(--pp);color:var(--kd);padding:5px 14px;border-radius:var(--rp);font-size:11px;font-weight:700;margin-bottom:12px}
+h1{font-size:28px;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:4px}
+.sub{font-size:13px;color:var(--m);margin-bottom:20px}
+.card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden}
+.sec{padding:24px}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.in-w{display:flex;align-items:center;border:2px solid var(--k);border-radius:var(--rs);overflow:hidden;transition:all .2s;background:var(--c)}
+.in-w:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.in-w.er{border-color:var(--neg)}
+.in-w input{flex:1;height:50px;background:transparent;border:none;outline:none;padding:0 14px;font-family:'Inter',monospace;font-size:17px;font-weight:700;letter-spacing:2px;color:var(--k)}
+.in-w input::placeholder{color:rgba(134,134,133,.35);font-weight:500;font-size:13px}
+.in-w .ic{padding:0 12px;color:var(--m);flex-shrink:0;font-size:20px}
+.in-w:focus-within .ic{color:var(--p)}
+.em{color:var(--neg);font-size:12px;margin-top:6px;height:18px;opacity:0;transition:opacity .2s;font-weight:500}
+.em.s{opacity:1}
+.btn{width:100%;height:50px;border:none;border-radius:var(--rs);background:var(--k);color:var(--p);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;box-shadow:0 3px 12px rgba(14,15,12,.1)}
+.btn:hover{background:var(--kd);transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.ld{display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px}
+.ld.s{display:flex}
+.sp{width:26px;height:26px;border:3px solid var(--pp);border-top-color:var(--p);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld span{font-size:13px;font-weight:500;color:var(--b)}
+.rs{display:none}
+.rs.s{display:block}
+.rh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:0 24px;padding-top:20px}
+.rh .b{width:4px;height:22px;background:var(--p);border-radius:var(--rp);flex-shrink:0}
+.rh h2{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.rh .tag{font-size:10px;background:var(--pp);color:var(--kd);padding:3px 10px;border-radius:var(--rp);font-weight:700;margin-left:auto;text-transform:uppercase}
+.rc{border-top:1px solid rgba(14,15,12,.06);padding:0 24px 24px}
+.ri{background:var(--s);border-radius:var(--r);padding:20px}
+.rv{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.rvl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:4px}
+.rvn{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--k)}
+.rvi{width:42px;height:42px;background:var(--pp);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rvi .material-symbols-rounded{font-size:22px;color:var(--kd)}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.di{background:var(--s);border-radius:var(--rs);padding:12px}
+.dl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--b);margin-bottom:3px}
+.dv{font-size:13px;font-weight:600;color:var(--k)}
+.aw{margin-top:14px;padding-top:12px;border-top:1px solid var(--s);display:none}
+.aw.s{display:block}
+.al{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--b);margin-bottom:4px}
+.at{font-size:13px;color:var(--b);line-height:1.6}
+.rt{text-align:center;margin-top:14px}
+.rt button{border:none;background:none;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:var(--rs);transition:all .15s}
+.rt button:hover{background:var(--pp)}
+.ft{background:var(--k);padding:14px 24px;text-align:center}
+.ft p{font-size:11px;color:rgba(232,235,230,.5)}
 </style>
 </head>
 <body>
-<div class="card" id="appCard">
-  <div class="head">
-    <h1>MAC 地址查询</h1>
-    <p>输入 MAC 地址查询厂商信息</p>
+<div class="wrap">
+<div class="card" style="padding:24px">
+  <div class="badge"><span class="material-symbols-rounded" style="font-size:14px">lan</span> Network Tool</div>
+  <h1>MAC 地址查询</h1>
+  <p class="sub">输入 MAC 地址查询设备厂商信息</p>
+  
+  <div class="in-w" id="inputWrap">
+    <input type="text" id="macInput" placeholder="A1:B2:C3:D4:E5:F6" maxlength="17" autocomplete="off" spellcheck="false">
+    <span class="ic material-symbols-rounded">search</span>
   </div>
-  <div class="body" id="inputSection">
-    <div class="in-group">
-      <label>MAC 地址</label>
-      <div class="in-wrap" id="inputWrap">
-        <input type="text" id="macInput" placeholder="A1:B2:C3:D4:E5:F6" maxlength="17" autocomplete="off" spellcheck="false">
-        <span class="icon material-symbols-rounded">search</span>
-      </div>
-      <div class="err-msg" id="errorMsg">格式无效</div>
-    </div>
-    <button class="btn-s" id="searchBtn"><span class="material-symbols-rounded" style="font-size:18px">search</span> 地址查询</button>
+  <div class="em" id="errorMsg">格式无效，请输入如 A1:B2:C3:D4:E5:F6</div>
+  
+  <button class="btn" id="searchBtn" style="margin-top:16px"><span class="material-symbols-rounded" style="font-size:18px">search</span> 地址查询</button>
+</div>
+
+<div class="card" id="resultCard" style="display:none">
+  <div class="rh">
+    <div class="b"></div>
+    <h2>查询结果</h2>
+    <span class="tag" id="dataSourceBadge">API</span>
   </div>
-  <div class="loader" id="loadingState">
-    <div class="spin"></div>
-    <span>正在查询...</span>
-  </div>
-  <div class="result" id="resultSection">
-    <div class="res-hdr">
-      <div class="bar"></div>
-      <h2>查询结果</h2>
-      <span class="src" id="dataSourceBadge">API</span>
-    </div>
-    <div class="res-card">
-      <div class="vend">
+  <div class="rc">
+    <div class="ri">
+      <div class="rv">
         <div>
-          <div class="vend-l">厂商 / Vendor</div>
-          <div class="vend-n" id="vendorName">--</div>
+          <div class="rvl">厂商 / Vendor</div>
+          <div class="rvn" id="vendorName">--</div>
         </div>
-        <div class="vend-icon"><span class="material-symbols-rounded">business</span></div>
+        <div class="rvi"><span class="material-symbols-rounded">business</span></div>
       </div>
-      <div class="d-grid">
-        <div class="d-item"><div class="d-label">OUI 前缀</div><div class="d-val" id="ouiPrefix">--</div></div>
-        <div class="d-item"><div class="d-label">地址类型</div><div class="d-val" id="addressType">--</div></div>
-        <div class="d-item"><div class="d-label">国家/地区</div><div class="d-val" id="countryName">--</div></div>
-        <div class="d-item"><div class="d-label">数据源</div><div class="d-val" id="apiSource">--</div></div>
+      <div class="dg">
+        <div class="di"><div class="dl">OUI 前缀</div><div class="dv" id="ouiPrefix">--</div></div>
+        <div class="di"><div class="dl">地址类型</div><div class="dv" id="addressType">--</div></div>
+        <div class="di"><div class="dl">国家/地区</div><div class="dv" id="countryName">--</div></div>
+        <div class="di"><div class="dl">数据源</div><div class="dv" id="apiSource">--</div></div>
       </div>
-      <div class="addr-wrap" id="addressContainer">
-        <div class="addr-label">详细地址</div>
-        <div class="addr-text" id="fullAddress"></div>
+      <div class="aw" id="addressContainer">
+        <div class="al">详细地址</div>
+        <div class="at" id="fullAddress"></div>
       </div>
     </div>
-    <div class="reset"><button id="resetBtn"><span class="material-symbols-rounded" style="font-size:16px">refresh</span> 查询新的地址</button></div>
+    <div class="rt"><button id="resetBtn"><span class="material-symbols-rounded" style="font-size:16px">refresh</span> 查询新的地址</button></div>
   </div>
-  <div class="ft"><p>IEEE OUI &bull; maclookup.app</p></div>
+</div>
+
+<div class="card" id="loadingCard" style="display:none">
+  <div class="ld s">
+    <div class="sp"></div>
+    <span>正在查询厂商信息...</span>
+  </div>
+</div>
+
+<div class="card"><div class="ft"><p>IEEE OUI &bull; maclookup.app</p></div></div>
 </div>
 
 <script>
-var I=document.getElementById('macInput'),S=document.getElementById('searchBtn'),R=document.getElementById('resetBtn'),RS=document.getElementById('resultSection'),LS=document.getElementById('loadingState'),EM=document.getElementById('errorMsg'),IW=document.getElementById('inputWrap');
+var I=document.getElementById('macInput'),S=document.getElementById('searchBtn'),R=document.getElementById('resetBtn'),RC=document.getElementById('resultCard'),LC=document.getElementById('loadingCard'),EM=document.getElementById('errorMsg'),IW=document.getElementById('inputWrap');
 var VN=document.getElementById('vendorName'),OP=document.getElementById('ouiPrefix'),AT=document.getElementById('addressType'),CN=document.getElementById('countryName'),AS=document.getElementById('apiSource'),AC=document.getElementById('addressContainer'),FA=document.getElementById('fullAddress'),DS=document.getElementById('dataSourceBadge');
 
 function fmt(v){var h=v.replace(/[^a-fA-F0-9]/g,'').toUpperCase(),p=h.match(/.{1,2}/g);return p?p.join(':'):''}
@@ -125,27 +129,27 @@ I.addEventListener('input',function(){I.removeAttribute('maxlength');var c=I.sel
 I.addEventListener('keydown',function(e){if(e.key==='Backspace'&&I.selectionStart>0&&I.value[I.selectionStart-1]===':'&&I.selectionStart===I.selectionEnd){e.preventDefault();var v=I.value,s=I.selectionStart;I.value=fmt(v.substring(0,s-2)+v.substring(s));I.setSelectionRange(s-2,s-2)}if(e.key==='Enter')P()});
 I.addEventListener('paste',function(e){e.preventDefault();I.value=fmt((e.clipboardData||window.clipboardData).getData('text'));I.setSelectionRange(I.value.length,I.value.length);hE()});
 
-function sE(m){EM.textContent=m;EM.classList.add('show');IW.classList.add('err')}
-function hE(){EM.classList.remove('show');IW.classList.remove('err')}
+function sE(m){EM.textContent=m;EM.classList.add('s');IW.classList.add('er')}
+function hE(){EM.classList.remove('s');IW.classList.remove('er')}
 function vM(m){return/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(m)}
 function gAT(m){var b=parseInt(m.substring(0,2),16);return(b&2)===2?'Local (Random)':(b&1)===1?'Multicast':'Unicast'}
 
 async function cP(){try{var c=new AbortController();setTimeout(function(){c.abort()},5000);var r=await fetch('https://cors.maxcloud.fun/?url=https://httpbin.org/get',{signal:c.signal});return r.ok}catch(e){return false}}
 
-async function P(){var m=I.value.trim();if(!vM(m)){sE('格式无效，请输入 A1:B2:C3:D4:E5:F6');return}
-LS.classList.add('show');RS.classList.remove('show');AC.classList.remove('show');VN.className='vend-n'
+async function P(){var m=I.value.trim();if(!vM(m)){sE('格式无效，请输入如 A1:B2:C3:D4:E5:F6');return}
+LC.style.display='block';RC.style.display='none';AC.classList.remove('s')
 try{if(!await cP())throw new Error('Proxy unavailable');var c=new AbortController(),t=setTimeout(function(){c.abort()},8000),r=await fetch('https://cors.maxcloud.fun/?url=https://api.maclookup.app/v2/macs/'+m,{signal:c.signal});clearTimeout(t)
 if(r.ok){var j=await r.json()
-if(j&&j.errors&&j.errors.detail==='Not Found'){VN.textContent='暂无数据';VN.style.color='var(--body)';OP.textContent=m.substring(0,8).toUpperCase();CN.textContent='暂无数据';CN.style.color='var(--body)';AC.classList.remove('show')}
+if(j&&j.errors&&j.errors.detail==='Not Found'){VN.textContent='暂无数据';VN.style.color='var(--b)';OP.textContent=m.substring(0,8).toUpperCase();CN.textContent='暂无数据';CN.style.color='var(--b)';AC.classList.remove('s')}
 else if(j&&j.company){VN.textContent=j.company;VN.style.color='';OP.textContent=m.substring(0,8).toUpperCase();AT.textContent=gAT(m);AS.textContent='maclookup.app';DS.textContent='API'
-if(j.country){CN.textContent=j.country;CN.style.color=''}else{CN.textContent='暂无数据';CN.style.color='var(--body)'}
-if(j.address){AC.classList.add('show');FA.textContent=j.address}else{AC.classList.remove('show')}}
+if(j.country){CN.textContent=j.country;CN.style.color=''}else{CN.textContent='暂无数据';CN.style.color='var(--b)'}
+if(j.address){AC.classList.add('s');FA.textContent=j.address}else{AC.classList.remove('s')}}
 else throw new Error('Invalid')}
 else throw new Error('HTTP '+r.status)}catch(e){var t='查询失败';if(e.name==='AbortError')t='请求超时';else if(e.message==='Proxy unavailable')t='代理不可用';else if(e.message.includes('Failed'))t='网络异常'
-VN.textContent=t;VN.style.color='var(--neg)';OP.textContent='--';CN.textContent='--';AC.classList.remove('show')}
-finally{LS.classList.remove('show');RS.classList.add('show')}}
+VN.textContent=t;VN.style.color='var(--neg)';OP.textContent='--';CN.textContent='--';AC.classList.remove('s')}
+finally{LC.style.display='none';RC.style.display='block'}}
 
-S.addEventListener('click',P);R.addEventListener('click',function(){I.value='';RS.classList.remove('show');hE();I.focus()})
+S.addEventListener('click',P);R.addEventListener('click',function(){I.value='';RC.style.display='none';hE();I.focus()})
 window.addEventListener('load',function(){I.focus()})
 </script>
 </body>
