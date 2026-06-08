@@ -14,9 +14,7 @@
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px}
 .wrap{width:100%;max-width:600px;margin-top:0;align-self:flex-start}
 .card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden;margin-bottom:12px}
-.hd{padding:24px 24px 0}
-.hd h1{font-size:22px;font-weight:900;letter-spacing:-.03em}
-.hd p{font-size:12px;color:var(--m);margin-top:2px}
+.hd{padding:24px 24px 0}.hd h1{font-size:22px;font-weight:900;letter-spacing:-.03em}.hd p{font-size:12px;color:var(--m);margin-top:2px}
 .sec{padding:20px 24px}
 .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:6px;display:flex;align-items:center;gap:4px}
 textarea{width:100%;background:var(--s);color:var(--k);font-family:'Inter',sans-serif;font-size:15px;font-weight:500;border:2px solid transparent;border-radius:var(--rs);padding:14px;outline:none;resize:vertical;min-height:72px;transition:all .2s}
@@ -27,33 +25,23 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
 .btn-p:hover{background:var(--kd);transform:translateY(-1px)}
 .btn-s{background:var(--s);color:var(--b)}
 .btn-s:hover{background:var(--pp);color:var(--kd)}
-.row{display:flex;gap:8px}
-.row .btn{flex:1}
+.row{display:flex;gap:8px}.row .btn{flex:1}
 .chips{display:flex;gap:4px;flex-wrap:wrap}
-.cl{position:relative}
-.cl input{position:absolute;opacity:0;width:0;height:0}
+.cl{position:relative}.cl input{position:absolute;opacity:0;width:0;height:0}
 .ch{display:flex;align-items:center;gap:4px;padding:6px 12px;background:var(--s);color:var(--b);border-radius:var(--rp);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
-.cl input:checked+.ch{background:var(--k);color:var(--p)}
-.cl:hover .ch{background:var(--pp)}
-.gr{margin-bottom:16px}
-.gr:last-child{margin-bottom:0}
-.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.sg .gr{margin-bottom:0}
-.rh{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--b);margin-bottom:4px}
-.rh span{color:var(--m);font-weight:400}
+.cl input:checked+.ch{background:var(--k);color:var(--p)}.cl:hover .ch{background:var(--pp)}
+.gr{margin-bottom:16px}.gr:last-child{margin-bottom:0}
+.sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.sg .gr{margin-bottom:0}
+.rh{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--b);margin-bottom:4px}.rh span{color:var(--m);font-weight:400}
 input[type=range]{-webkit-appearance:none;width:100%;background:transparent;height:6px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:16px;width:16px;border-radius:50%;background:var(--k);cursor:pointer;margin-top:-6px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 input[type=range]::-webkit-slider-runnable-track{width:100%;height:4px;background:var(--s);border-radius:2px}
-.cr{display:flex;gap:12px}
-.cg{flex:1}
-.cg label{display:block;font-size:11px;font-weight:600;color:var(--b);margin-bottom:3px}
+.cr{display:flex;gap:12px}.cg{flex:1}.cg label{display:block;font-size:11px;font-weight:600;color:var(--b);margin-bottom:3px}
 input[type=color]{-webkit-appearance:none;border:none;width:100%;height:38px;border-radius:var(--rs);cursor:pointer;padding:0;background:none}
 input[type=color]::-webkit-color-swatch-wrapper{padding:0}
 input[type=color]::-webkit-color-swatch{border:2px solid var(--s);border-radius:var(--rs)}
-.ts{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-.ts-l{font-size:13px;font-weight:600}
-.ts-w{position:relative;width:40px;height:22px;flex-shrink:0}
-.ts-w input{opacity:0;width:0;height:0}
+.ts{display:flex;align-items:center;justify-content:space-between;padding:8px 0}.ts-l{font-size:13px;font-weight:600}
+.ts-w{position:relative;width:40px;height:22px;flex-shrink:0}.ts-w input{opacity:0;width:0;height:0}
 .sl{position:absolute;cursor:pointer;inset:0;background:var(--s);border-radius:22px;transition:.3s}
 .sl:before{content:'';position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 input:checked+.sl{background:var(--k)}
@@ -67,60 +55,27 @@ input:checked+.sl:before{transform:translateX(18px)}
 </head>
 <body>
 <div class="wrap">
-<div class="card">
-  <div class="hd"><h1>下划线生成器</h1><p>实时预览 · 即改即得</p></div>
-  <div class="sec">
-    <label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">edit</span> 输入文本</label>
-    <textarea id="inputText" placeholder="在此输入文本...">Atmospheric Design</textarea>
-  </div>
+<div class="card"><div class="hd"><h1>下划线生成器</h1><p>实时预览 · 即改即得</p></div>
+<div class="sec"><label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">edit</span> 输入文本</label><textarea id="inputText" placeholder="在此输入文本...">Atmospheric Design</textarea></div></div>
+<div class="card"><div class="sec"><label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">visibility</span> 实时预览</label><div class="pbox"><span id="preview">Atmospheric Design</span></div></div>
+<div style="padding:0 24px 20px"><button class="btn btn-p" id="copyBtn" style="width:100%"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button></div></div>
+<div class="card"><div class="sec"><label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">format_underlined</span> 线条样式</label>
+<div class="chips"><label class="cl"><input type="radio" name="st" value="solid" checked><span class="ch">实线</span></label><label class="cl"><input type="radio" name="st" value="dashed"><span class="ch">虚线</span></label><label class="cl"><input type="radio" name="st" value="dotted"><span class="ch">点线</span></label><label class="cl"><input type="radio" name="st" value="wavy"><span class="ch">波浪</span></label><label class="cl"><input type="radio" name="st" value="double"><span class="ch">双线</span></label></div></div>
+<div class="sec" style="padding-top:0"><div class="sg">
+<div class="gr"><label class="lbl">粗细</label><div class="rh"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
+<div class="gr"><label class="lbl">偏移</label><div class="rh"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
+<div class="gr"><label class="lbl">字号</label><div class="rh"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
 </div>
-
-<div class="card">
-  <div class="sec">
-    <label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">visibility</span> 实时预览</label>
-    <div class="pbox"><span id="preview">Atmospheric Design</span></div>
-  </div>
-  <div style="padding:0 24px 20px">
-    <button class="btn btn-p" id="copyBtn" style="width:100%"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="sec">
-    <label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">format_underlined</span> 线条样式</label>
-    <div class="chips">
-      <label class="cl"><input type="radio" name="st" value="solid" checked><span class="ch">实线</span></label>
-      <label class="cl"><input type="radio" name="st" value="dashed"><span class="ch">虚线</span></label>
-      <label class="cl"><input type="radio" name="st" value="dotted"><span class="ch">点线</span></label>
-      <label class="cl"><input type="radio" name="st" value="wavy"><span class="ch">波浪</span></label>
-      <label class="cl"><input type="radio" name="st" value="double"><span class="ch">双线</span></label>
-    </div>
-  </div>
-  <div class="sec" style="padding-top:0">
-    <div class="sg">
-      <div class="gr"><label class="lbl">粗细</label><div class="rh"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
-      <div class="gr"><label class="lbl">偏移</label><div class="rh"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
-      <div class="gr"><label class="lbl">字号</label><div class="rh"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
-    </div>
-    <div class="gr"><label class="lbl">颜色</label><div class="cr"><div class="cg"><label>文本</label><input type="color" id="textColor" value="#0e0f0c"></div><div class="cg"><label>线条</label><input type="color" id="lineColor" value="#9fe870"></div></div></div>
-    <div class="ts"><span class="ts-l">作为链接 &lt;a&gt;</span><label class="ts-w"><input type="checkbox" id="isLink"><span class="sl"></span></label></div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="sec">
-    <label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">code</span> 代码</label>
-    <div class="cb"><div class="cb-l">CSS</div><code id="cssOut"></code></div>
-    <div class="cb"><div class="cb-l">HTML</div><code id="htmlOut"></code></div>
-    <div class="row" style="margin-top:12px">
-      <button class="btn btn-s" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button>
-      <button class="btn btn-s" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button>
-    </div>
-  </div>
-</div>
+<div class="gr"><label class="lbl">颜色</label><div class="cr"><div class="cg"><label>文本</label><input type="color" id="textColor" value="#0e0f0c"></div><div class="cg"><label>线条</label><input type="color" id="lineColor" value="#9fe870"></div></div></div>
+<div class="ts"><span class="ts-l">作为链接 &lt;a&gt;</span><label class="ts-w"><input type="checkbox" id="isLink"><span class="sl"></span></label></div>
+</div></div>
+<div class="card"><div class="sec"><label class="lbl"><span class="material-symbols-rounded" style="font-size:14px">code</span> 代码</label>
+<div class="cb"><div class="cb-l">CSS</div><code id="cssOut"></code></div>
+<div class="cb"><div class="cb-l">HTML</div><code id="htmlOut"></code></div>
+<div class="row" style="margin-top:12px"><button class="btn btn-s" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button><button class="btn btn-s" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button></div>
+</div></div>
 </div>
 <div class="toast" id="toast">已复制</div>
-
 <script>
 var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),LK=document.getElementById('isLink'),RS=document.getElementsByName('st');
@@ -128,16 +83,13 @@ var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function up(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif}',html=lnk?'<a href="#" class="ul">'+t+'</a>':'<span class="ul">'+t+'</span>'
-P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;Size=fs+'px';P.style.fontFamily='Inter,sans-serif'
+P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px';P.style.fontFamily='Inter,sans-serif'
 CO.textContent=css;HO.textContent=html}
 function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif';return lnk?'<a href="#" style="'+is+'">'+t+'</a>':'<span style="'+is+'">'+t+'</span>'}
 function cp(t){if(t==='all'){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([gi()],{type:'text/html'}),'text/plain':new Blob([T.value||'预览'],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
 function st(){TT.className='toast show';setTimeout(function(){TT.className='toast'},2000)}
 var inputs=[T,TC,LC,TK,OF,FS,LK];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up);
-document.getElementById('copyBtn').addEventListener('click',function(){cp('all')})
-document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')})
-document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')})
-up()
+document.getElementById('copyBtn').addEventListener('click',function(){cp('all')});document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')});document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')});up()
 </script>
 </body>
 </html>
