@@ -140,21 +140,73 @@
     .playing .btn-play { animation: pulse-play 2s ease-in-out infinite; }
     .bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 24px 24px 0 0; transform: translateY(calc(100% - 16px)); transition: transform 0.5s cubic-bezier(0.2,0,0,1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(14,15,12,0.08); }
     .bottom-drawer.open { transform: translateY(0); }
-    .nav-handle-area { width: 100%; height: 16px; padding-top: 6px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; background: transparent; }
+    .nav-handle-area { width: 100%; height: 20px; padding-top: 8px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; background: transparent; }
     .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.3; }
-    .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 4px 24px 0; }
+    .drawer-scroll-view { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 0 20px 0; }
     .drawer-scroll-view::-webkit-scrollbar { display: none; }
-    .drawer-title { font-size: 1.5rem; color: var(--md-sys-color-on-surface); margin: 4px 0 16px; font-weight: 900; flex-shrink: 0; letter-spacing: -0.5px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 16px; }
-    .card { background: var(--md-sys-color-surface-container); border-radius: 24px; padding: 18px 16px; text-decoration: none; color: var(--md-sys-color-on-surface); display: flex; flex-direction: column; gap: 10px; border: none; box-shadow: none; transition: all 0.25s cubic-bezier(0.2, 0, 0, 1); position: relative; overflow: hidden; }
-    .card:active { transform: scale(0.97); background: var(--wise-primary-pale); }
-    .card .material-symbols-rounded { font-size: 1.7rem; color: var(--wise-ink-deep); }
-    .card a { text-decoration: none; color: var(--md-sys-color-on-surface); font-weight: 600; font-size: 0.9rem; display: block; padding: 2px 0; transition: color 0.2s; position: relative; z-index: 1; }
-    .card a:hover { color: var(--wise-ink-deep); text-decoration: none; }
-    .drawer-footer-copyright { flex-shrink: 0; padding: 12px 24px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); text-align: center; width: 100%; background: var(--wise-ink); z-index: 1; }
-    .copyright-text { font-size: 0.7rem; color: var(--wise-canvas-soft); margin-bottom: 4px; opacity: 0.65; font-weight: 400; }
-    .secret-x { text-decoration: none; color: inherit; opacity: 0.15; transition: opacity 0.3s; padding: 5px; font-weight: 700; }
-    .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
+    .drawer-header { padding: 8px 4px 18px; flex-shrink: 0; }
+    .drawer-title {
+      font-size: 1.65rem; font-weight: 900;
+      color: var(--md-sys-color-on-surface);
+      letter-spacing: -0.75px; line-height: 1.1;
+    }
+    .drawer-subtitle {
+      font-size: 0.8rem; font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 4px;
+    }
+    .drawer-sections { padding-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+    .drawer-section-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 12px 4px 4px; opacity: 0.6;
+    }
+    .drawer-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 16px; border-radius: 16px;
+      cursor: pointer; text-decoration: none;
+      color: var(--md-sys-color-on-surface);
+      transition: all 0.2s cubic-bezier(0.2,0,0,1);
+    }
+    .drawer-row:active { background: var(--md-sys-color-surface-container); transform: scale(0.98); }
+    .drawer-row-icon {
+      width: 40px; height: 40px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--md-sys-color-surface-container);
+      color: var(--wise-ink-deep);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .drawer-row:active .drawer-row-icon { background: var(--wise-primary-pale); }
+    .drawer-row-icon .material-symbols-rounded { font-size: 1.3rem; }
+    .drawer-row-info { flex: 1; min-width: 0; }
+    .drawer-row-label {
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--md-sys-color-on-surface);
+    }
+    .drawer-row-hint {
+      font-size: 0.7rem; font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+      margin-top: 1px;
+    }
+    .drawer-row-arrow { color: var(--md-sys-color-on-surface-variant); opacity: 0.3; }
+    .drawer-row-arrow .material-symbols-rounded { font-size: 1.1rem; }
+    .drawer-footer {
+      flex-shrink: 0; padding: 16px 24px;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      text-align: center;
+    }
+    .drawer-footer-text {
+      font-size: 0.65rem; font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+      opacity: 0.5;
+    }
+    .drawer-footer-secret {
+      text-decoration: none; color: inherit;
+      opacity: 0.15; transition: opacity 0.3s;
+    }
+    .drawer-footer-secret:hover { opacity: 1; color: var(--md-sys-color-primary); }
 
     /* ===== 播放列表弹窗 ===== */
     .playlist-overlay {
@@ -351,11 +403,16 @@
   <div class="bottom-drawer" id="drawer">
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
-      <h3 class="drawer-title">Dashboard</h3>
-      <div class="grid" id="drawerGrid"></div>
+      <div class="drawer-header">
+        <div class="drawer-title">Dashboard</div>
+        <div class="drawer-subtitle">快捷工具</div>
+      </div>
+      <div class="drawer-sections" id="drawerSections"></div>
     </div>
-    <div class="drawer-footer-copyright">
-      <div class="copyright-text">&copy; 2026 Personal Dashboard. All Rights Reserved. <a href="/Music" class="secret-x">&#10005;</a></div>
+    <div class="drawer-footer">
+      <div class="drawer-footer-text">
+        &copy; 2026 &middot; <a href="/Music" class="drawer-footer-secret">&#10005;</a>
+      </div>
     </div>
   </div>
 </div>
@@ -385,8 +442,8 @@
 
 <script>
 (function renderDrawer() {
-  const grid = document.getElementById('drawerGrid');
-  if (!grid) return;
+  const container = document.getElementById('drawerSections');
+  if (!container) return;
   const items = window.WiseNavbarData || [];
   const seen = new Set();
   const filtered = items.filter(item => {
@@ -396,11 +453,15 @@
     seen.add(key);
     return true;
   });
-  grid.innerHTML = filtered.map(item => `
-    <div class="card">
-      <span class="material-symbols-rounded">${item.icon}</span>
-      <span><a href="${item.href}">${item.label}</a></span>
-    </div>
+  container.innerHTML = filtered.map((item, i) => `
+    <a class="drawer-row" href="${item.href}">
+      <div class="drawer-row-icon"><span class="material-symbols-rounded">${item.icon}</span></div>
+      <div class="drawer-row-info">
+        <div class="drawer-row-label">${item.label}</div>
+        <div class="drawer-row-hint">${item.href}</div>
+      </div>
+      <div class="drawer-row-arrow"><span class="material-symbols-rounded">chevron_right</span></div>
+    </a>
   `).join('');
 })();
 
@@ -642,7 +703,6 @@ function closePlaylist() {
 function renderPlaylist() {
   const body = document.getElementById('playlistBody');
   const repeatBtn = document.getElementById('playlistRepeatBtn');
-  // 同步 repeat 状态
   repeatBtn.classList.toggle('active', isRepeat);
   document.getElementById('playlistCount').textContent = songs.length + ' 首';
   body.innerHTML = songs.map((song, i) => {
@@ -662,7 +722,6 @@ function renderPlaylist() {
     `;
   }).join('');
 
-  // 点击歌曲切换
   body.querySelectorAll('.playlist-item').forEach(el => {
     el.addEventListener('click', function() {
       const idx = parseInt(this.dataset.index, 10);
@@ -673,16 +732,13 @@ function renderPlaylist() {
       currentSongIndex = idx;
       loadSong(songs[idx]);
       playSong();
-      renderPlaylist(); // 刷新高亮，保持打开
+      renderPlaylist();
     });
   });
 }
 
-// 点击背景关闭
 document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
-// 拖拽把手关闭
 document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
-// 播放列表内的单曲循环开关
 document.getElementById('playlistRepeatBtn').addEventListener('click', function() {
   isRepeat = !isRepeat;
   this.classList.toggle('active', isRepeat);
