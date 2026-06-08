@@ -1,640 +1,140 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>跳转链接 · 应用商店直达</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
-    <!-- ═══ 统一导航栏 ═══ -->
-    <link rel="stylesheet" href="/Tools/navbar.css">
-    <script src="/Tools/navbar.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        :root {
-            --primary: #9fe870;
-            --on-primary: #0e0f0c;
-            --primary-active: #cdffad;
-            --primary-pale: #e2f6d5;
-            --canvas: #ffffff;
-            --canvas-soft: #e8ebe6;
-            --ink: #0e0f0c;
-            --ink-deep: #163300;
-            --body: #454745;
-            --mute: #868685;
-            --space-xs: 4px;
-            --space-sm: 8px;
-            --space-md: 12px;
-            --space-lg: 16px;
-            --space-xl: 24px;
-            --space-2xl: 32px;
-            --space-3xl: 48px;
-            --radius-md: 12px;
-            --radius-xl: 24px;
-            --radius-pill: 9999px;
-            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
-        }
-        body {
-            background-color: var(--canvas-soft);
-            font-family: 'Inter', system-ui, sans-serif;
-            color: var(--ink);
-            line-height: 1.4;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: var(--space-xl) var(--space-lg);
-        }
-        .hero-band {
-            padding: var(--space-3xl) 0 var(--space-2xl) 0;
-            background-color: var(--canvas-soft);
-        }
-        .card {
-            background: var(--canvas);
-            border-radius: var(--radius-xl);
-            padding: var(--space-xl);
-            box-shadow: var(--shadow-soft);
-        }
-        .input-field {
-            width: 100%;
-            background: var(--canvas);
-            border: 1px solid var(--ink);
-            border-radius: var(--radius-md);
-            padding: var(--space-md) var(--space-lg);
-            font-family: 'Inter', monospace;
-            font-size: 16px;
-            font-weight: 400;
-            line-height: 24px;
-            color: var(--ink);
-            outline: none;
-        }
-        .input-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(159, 232, 112, 0.2);
-        }
-        select {
-            background: var(--canvas);
-            border: 1px solid var(--ink);
-            border-radius: var(--radius-md);
-            padding: 8px 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--ink);
-            cursor: pointer;
-            width: 100%;
-        }
-        .badge-brand {
-            background: var(--primary-pale);
-            color: var(--ink-deep);
-            font-weight: 600;
-            font-size: 13px;
-            padding: 4px 12px;
-            border-radius: var(--radius-pill);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .link-card {
-            background: var(--canvas-soft);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            margin-top: var(--space-xl);
-            transition: all 0.1s ease;
-        }
-        .link-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--ink);
-            margin-bottom: var(--space-sm);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .protocol-link {
-            display: inline-block;
-            background: var(--canvas);
-            padding: var(--space-md) var(--space-lg);
-            border-radius: var(--radius-md);
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 14px;
-            word-break: break-all;
-            color: var(--ink);
-            text-decoration: none;
-            border: 1px solid transparent;
-            transition: 0.2s;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .protocol-link:hover {
-            background: var(--primary-pale);
-            border-color: var(--primary);
-            text-decoration: underline;
-        }
-        .copy-tip {
-            font-size: 12px;
-            color: var(--mute);
-            margin-top: var(--space-xs);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .copy-tip:hover {
-            color: var(--ink);
-        }
-        hr {
-            margin: var(--space-lg) 0;
-            border: none;
-            border-top: 1px solid var(--canvas-soft);
-        }
-        .footer-note {
-            margin-top: var(--space-2xl);
-            text-align: center;
-            font-size: 12px;
-            color: var(--mute);
-        }
-        .warning-tip {
-            background: #fff3e0;
-            border-left: 3px solid var(--primary);
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-md);
-            margin-top: var(--space-md);
-            font-size: 13px;
-            color: #5e4a2b;
-        }
-        @media (min-width: 640px) {
-            .brand-select-row {
-                display: flex;
-                align-items: center;
-                gap: var(--space-lg);
-            }
-            .brand-select-row .badge-brand {
-                flex-shrink: 0;
-            }
-            select {
-                width: auto;
-                min-width: 200px;
-            }
-        }
-        .toast-msg {
-            position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--ink);
-            color: var(--primary);
-            padding: 10px 20px;
-            border-radius: var(--radius-xl);
-            font-weight: 500;
-            font-size: 13px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.2s;
-            pointer-events: none;
-            white-space: nowrap;
-        }
-        .toast-msg.show {
-            opacity: 1;
-        }
-        h1 {
-            font-weight: 900;
-            font-size: clamp(48px, 12vw, 96px);
-            line-height: 1.05;
-            letter-spacing: -0.02em;
-            margin-bottom: var(--space-md);
-        }
-        .sub {
-            color: var(--body);
-            font-size: 16px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>跳转链接 · 应用商店直达</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link rel="stylesheet" href="/Tools/navbar.css">
+<script src="/Tools/navbar.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;padding:16px;display:flex;justify-content:center}
+.wrap{width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;width:fit-content;margin-bottom:8px}
+.bdg .material-symbols-rounded{font-size:13px}
+h1{font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-bottom:3px}
+.sub{font-size:14px;color:var(--m);margin-bottom:16px}
+.card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden}
+.pad{padding:24px}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.inp{width:100%;height:50px;background:var(--c);border:2px solid var(--k);border-radius:var(--rs);padding:0 14px;font-family:'Inter',sans-serif;font-size:15px;font-weight:500;color:var(--k);outline:none;transition:all .2s}
+.inp:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.inp::placeholder{color:rgba(134,134,133,.4)}
+select{height:44px;background:var(--c);border:2px solid var(--k);border-radius:var(--rs);padding:0 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;outline:none;transition:all .2s;width:100%}
+select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.srow .bdg{margin-bottom:0}
+.lc{background:var(--s);border-radius:var(--rs);padding:16px;margin-top:12px;transition:all .1s}
+.ll{font-size:13px;font-weight:700;color:var(--k);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lt{display:block;background:var(--c);padding:12px 14px;border-radius:10px;font-family:'SF Mono','Monaco','Courier New',monospace;font-size:13px;word-break:break-all;color:var(--k);text-decoration:none;border:1px solid transparent;transition:.2s;width:100%}
+.lt:hover{background:var(--pp);border-color:var(--p)}
+.cpy{font-size:12px;color:var(--m);margin-top:6px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:color .15s;padding:2px 0}
+.cpy:hover{color:var(--k)}
+.cpy .material-symbols-rounded{font-size:14px}
+.alert{background:var(--pp);border-left:3px solid var(--p);padding:12px 16px;border-radius:var(--rs);font-size:12px;color:var(--kd);line-height:1.6;margin-top:16px}
+.nt{text-align:center;font-size:12px;color:var(--m);margin-top:16px}
+.ft{background:var(--k);padding:14px 24px;text-align:center}
+.ft p{font-size:11px;color:rgba(232,235,230,.5)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--k);color:var(--p);padding:8px 18px;border-radius:var(--rp);font-size:13px;font-weight:500;z-index:10000;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+.toast.s{opacity:1}
+@media(min-width:640px){.srow select{width:auto;min-width:200px}}
+</style>
 </head>
 <body>
+<div class="wrap">
+<div class="card" style="padding:24px">
+  <div class="bdg"><span class="material-symbols-rounded">open_in_new</span> App Store Links</div>
+  <h1>跳转链接</h1>
+  <p class="sub">输入包名 · 自动生成商店直达链接</p>
 
-<div class="hero-band">
-    <div class="container">
-        <h1>跳转链接</h1>
-        <p class="sub">输入包名 · 自动生成商店直达链接</p>
-    </div>
+  <label class="lbl" style="margin-top:4px"><span class="material-symbols-rounded" style="font-size:13px">package</span> 应用包名</label>
+  <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
+
+  <div class="srow" style="margin-top:16px">
+    <span class="bdg"><span class="material-symbols-rounded">smartphone</span> 选择品牌</span>
+    <select id="brandSelect">
+      <option value="auto">🤖 自动检测</option>
+      <option value="huawei">华为 / 荣耀</option>
+      <option value="xiaomi">小米 / Redmi</option>
+      <option value="oppo">OPPO / 一加</option>
+      <option value="vivo">vivo / iQOO</option>
+      <option value="samsung">三星</option>
+      <option value="generic_android">通用 Android</option>
+      <option value="apple">苹果 iPhone / iPad</option>
+    </select>
+  </div>
+
+  <div class="lc">
+    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">star</span> 品牌专用链接 <span id="brandHintBadge" class="bdg" style="font-size:10px;padding:2px 8px">—</span></div>
+    <a href="#" id="brandProtocolLink" class="lt" target="_self">—— 等待输入包名 ——</a>
+    <span class="cpy" id="copyBrandLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制专用链接</span>
+  </div>
+
+  <div class="lc">
+    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">public</span> 通用市场链接</div>
+    <a href="#" id="universalProtocolLink" class="lt" target="_self">—— 等待输入包名 ——</a>
+    <span class="cpy" id="copyUniversalLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制通用链接</span>
+  </div>
+
+  <div class="lc">
+    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">language</span> 网页商店 (备选)</div>
+    <a href="#" id="webLink" class="lt" target="_blank">—— 等待输入包名 ——</a>
+    <span class="cpy" id="copyWebLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制网页链接</span>
+  </div>
+
+  <div class="alert">
+    <strong>⚠️ 注意：</strong>在浏览器中直接点击链接可能无法跳转。<br>
+    💡 请使用下方的<strong>复制</strong>按钮，将链接粘贴到系统浏览器地址栏打开，或发送到微信/短信中点击。
+  </div>
+  <div class="nt">💡 点击链接本身也可能成功，若无效请使用复制功能</div>
 </div>
 
-<div class="container">
-    <div class="card">
-        <div style="margin-bottom: var(--space-xl);">
-            <label class="badge-brand" style="margin-bottom: var(--space-sm); display: inline-block;">📦 应用包名</label>
-            <input type="text" id="packageInput" class="input-field" placeholder="例如: com.tencent.mm  /  com.spotify.music" value="com.instagram.android">
-        </div>
-
-        <div class="brand-select-row" style="margin-bottom: var(--space-lg);">
-            <span class="badge-brand">📱 选择品牌</span>
-            <select id="brandSelect">
-                <option value="auto">🤖 自动检测 (当前)</option>
-                <option value="huawei">华为 / 荣耀</option>
-                <option value="xiaomi">小米 / Redmi</option>
-                <option value="oppo">OPPO / 一加</option>
-                <option value="vivo">vivo / iQOO</option>
-                <option value="samsung">三星</option>
-                <option value="generic_android">通用 Android</option>
-                <option value="apple">苹果 iPhone / iPad</option>
-            </select>
-        </div>
-
-        <!-- 品牌专用链接区域 -->
-        <div class="link-card" id="brandLinkCard">
-            <div class="link-label">
-                <span>✨ 品牌专用链接</span>
-                <span id="brandHintBadge" class="badge-brand" style="background: var(--primary-pale); font-size: 11px;">—</span>
-            </div>
-            <div>
-                <a href="#" id="brandProtocolLink" class="protocol-link" target="_self">—— 等待输入包名 ——</a>
-            </div>
-            <div class="copy-tip" id="copyBrandLinkBtn">
-                📋 复制专用链接
-            </div>
-        </div>
-
-        <!-- 通用链接区域 -->
-        <div class="link-card" style="margin-top: var(--space-lg);">
-            <div class="link-label">
-                <span>🌐 通用市场链接</span>
-                <span class="badge-brand" style="background: var(--primary-pale); font-size: 11px;">Android market / iOS App Store</span>
-            </div>
-            <div>
-                <a href="#" id="universalProtocolLink" class="protocol-link" target="_self">—— 等待输入包名 ——</a>
-            </div>
-            <div class="copy-tip" id="copyUniversalLinkBtn">
-                📋 复制通用链接
-            </div>
-        </div>
-        
-        <div class="link-card" style="margin-top: var(--space-lg);">
-            <div class="link-label">
-                <span>🌍 网页商店 (备选)</span>
-                <span class="badge-brand" style="background: var(--primary-pale); font-size: 11px;">Google Play / Apple 网页版</span>
-            </div>
-            <div>
-                <a href="#" id="webLink" class="protocol-link" target="_blank">—— 等待输入包名 ——</a>
-            </div>
-            <div class="copy-tip" id="copyWebLinkBtn">
-                📋 复制网页链接
-            </div>
-        </div>
-
-        <div class="warning-tip">
-            ⚠️ 注意：在浏览器中点击 “品牌专用链接” 或 “通用链接” 可能无法直接跳转（受浏览器安全限制）。<br>
-            💡 解决办法：<strong>点击下方的“复制”按钮</strong>，然后将链接粘贴到系统浏览器（如Chrome、Safari）的地址栏打开，或发送到微信/短信中点击，即可正常唤起应用商店。
-        </div>
-        
-        <div class="footer-note">
-            💡 点击链接本身也可能成功（取决于系统和浏览器），若无效请使用复制功能。
-        </div>
-    </div>
+<div class="card"><div class="ft"><p>自动检测品牌 · 一键直达应用商店</p></div></div>
 </div>
 
-<div id="toastMsg" class="toast-msg"></div>
+<div class="toast" id="toastMsg"></div>
 
 <script>
-    // ------------------------------
-    // 品牌检测 (UA 自动识别)
-    // ------------------------------
-    let currentManualBrand = 'auto';   // 从下拉菜单同步
-    
-    // 自动检测原始品牌 (不依赖手动覆盖)
-    function getAutoDetectBrandInfo() {
-        const ua = navigator.userAgent.toLowerCase();
-        const isIOS = /iphone|ipad|ipod/.test(ua);
-        const isAndroid = /android/.test(ua);
-        const isHarmony = /harmonyos|huawei|hmos/i.test(ua);
-        
-        let brand = 'generic_android';
-        let platform = 'android';
-        let isIOSFlag = false;
-        
-        if (isIOS) {
-            platform = 'ios';
-            brand = 'apple';
-            isIOSFlag = true;
-        } else if (isHarmony || (isAndroid && (ua.includes('huawei') || ua.includes('honor')))) {
-            platform = 'harmony_android';
-            if (ua.includes('honor')) brand = 'honor';
-            else brand = 'huawei';
-        } else if (isAndroid) {
-            platform = 'android';
-            if (ua.includes('xiaomi') || ua.includes('mi ') || ua.includes('redmi') || ua.includes('poco')) brand = 'xiaomi';
-            else if (ua.includes('oppo') || ua.includes('realme') || (ua.includes('oneplus') && !ua.includes('oppo'))) brand = 'oppo';
-            else if (ua.includes('vivo') || ua.includes('iqoo')) brand = 'vivo';
-            else if (ua.includes('samsung') || ua.includes('sm-')) brand = 'samsung';
-            else if (ua.includes('honor')) brand = 'honor';
-            else if (ua.includes('huawei')) brand = 'huawei';
-            else if (ua.includes('oneplus')) brand = 'oneplus';
-            else brand = 'generic_android';
-        } else {
-            platform = 'other';
-            brand = 'desktop';
-        }
-        return { brand, platform, isIOS: isIOSFlag, isAndroid: (platform === 'android') };
-    }
-    
-    // 根据手动选择 + 自动检测获取最终品牌、平台、是否iOS
-    function getEffectiveBrandInfo() {
-        const autoInfo = getAutoDetectBrandInfo();
-        let selected = currentManualBrand;
-        if (selected === 'auto') {
-            return autoInfo;
-        }
-        let brand = selected;
-        let platform = autoInfo.platform;
-        let isIOS = false;
-        if (selected === 'apple') {
-            isIOS = true;
-            platform = 'ios';
-        } else if (selected === 'generic_android') {
-            isIOS = false;
-            platform = 'android';
-        } else {
-            // 华为/小米/oppo/vivo/samsung 均属于安卓阵营
-            isIOS = false;
-            platform = 'android';
-        }
-        return { brand, platform, isIOS, isAndroid: !isIOS };
-    }
-    
-    // ---------- 协议生成 (严格遵循指定格式) ----------
-    function getBrandSpecificLink(packageName, brandInfo) {
-        if (!packageName || packageName.trim() === '') return null;
-        const pkg = packageName.trim();
-        const { brand, isIOS } = brandInfo;
-        
-        if (isIOS) {
-            return `itms-apps://itunes.apple.com/search?term=${encodeURIComponent(pkg)}&entity=software`;
-        }
-        
-        switch (brand) {
-            case 'huawei':
-            case 'honor':
-                return `appmarket://details?id=${pkg}`;
-            case 'xiaomi':
-                return `mimarket://details?id=${pkg}`;
-            case 'oppo':
-            case 'oneplus':
-                return `oppomarket://details?packagename=${pkg}`;
-            case 'vivo':
-                return `vivomarket://details?id=${pkg}`;
-            case 'samsung':
-                return `samsungapps://ProductDetail/${pkg}`;
-            default:
-                return `market://details?id=${pkg}`;
-        }
-    }
-    
-    function getUniversalLink(packageName, brandInfo) {
-        if (!packageName || packageName.trim() === '') return null;
-        const pkg = packageName.trim();
-        const { isIOS } = brandInfo;
-        if (isIOS) {
-            return `itms-apps://itunes.apple.com/search?term=${encodeURIComponent(pkg)}&entity=software`;
-        }
-        return `market://details?id=${pkg}`;
-    }
-    
-    function getWebStoreLink(packageName, brandInfo) {
-        if (!packageName) return '#';
-        const pkg = packageName.trim();
-        const { isIOS } = brandInfo;
-        if (isIOS) {
-            return `https://apps.apple.com/search?term=${encodeURIComponent(pkg)}`;
-        }
-        return `https://play.google.com/store/apps/details?id=${pkg}`;
-    }
-    
-    // 辅助显示品牌友好名称
-    function getBrandDisplayName(brand, isIOS) {
-        if (isIOS) return '苹果 App Store';
-        switch (brand) {
-            case 'huawei': return '华为应用市场';
-            case 'honor': return '荣耀应用市场';
-            case 'xiaomi': return '小米应用商店';
-            case 'oppo': return 'OPPO软件商店';
-            case 'oneplus': return '一加商店 (OPPO协议)';
-            case 'vivo': return 'vivo应用商店';
-            case 'samsung': return '三星应用商店';
-            default: return '通用市场协议';
-        }
-    }
-    
-    // 更新所有UI链接 (去除前缀，只显示纯协议URL)
-    function updateAllLinks() {
-        const packageName = document.getElementById('packageInput').value.trim();
-        const brandInfo = getEffectiveBrandInfo();
-        const brand = brandInfo.brand;
-        const isIOS = brandInfo.isIOS;
-        
-        // 更新品牌徽章提示
-        const brandHintSpan = document.getElementById('brandHintBadge');
-        if (brandHintSpan) {
-            if (currentManualBrand !== 'auto') {
-                brandHintSpan.innerText = `手动: ${getBrandDisplayName(brand, isIOS)}`;
-            } else {
-                brandHintSpan.innerText = `自动检测: ${getBrandDisplayName(brand, isIOS)}`;
-            }
-        }
-        
-        // 品牌专用链接：只显示纯URL，不加文字前缀
-        let brandLink = null;
-        let brandUrl = '#';
-        let brandDisplayText = '—— 请输入包名 ——';
-        if (packageName) {
-            brandLink = getBrandSpecificLink(packageName, brandInfo);
-            if (brandLink) {
-                brandUrl = brandLink;
-                brandDisplayText = brandLink;   // 只显示协议链接本身
-            } else {
-                brandDisplayText = `⚠️ 无法生成专用链接`;
-                brandUrl = '#';
-            }
-        } else {
-            brandDisplayText = '—— 请输入包名 ——';
-            brandUrl = '#';
-        }
-        
-        const brandAnchor = document.getElementById('brandProtocolLink');
-        brandAnchor.innerText = brandDisplayText;
-        brandAnchor.href = brandUrl;
-        brandAnchor.style.cursor = (packageName && brandLink) ? 'pointer' : 'default';
-        if (!packageName || !brandLink) {
-            brandAnchor.style.pointerEvents = 'none';
-            brandAnchor.style.opacity = '0.7';
-        } else {
-            brandAnchor.style.pointerEvents = 'auto';
-            brandAnchor.style.opacity = '1';
-        }
-        
-        // 通用链接：只显示纯URL
-        let universalLink = null;
-        let universalUrl = '#';
-        let universalDisplay = '—— 请输入包名 ——';
-        if (packageName) {
-            universalLink = getUniversalLink(packageName, brandInfo);
-            if (universalLink) {
-                universalUrl = universalLink;
-                universalDisplay = universalLink;
-            } else {
-                universalDisplay = '⚠️ 无法生成通用链接';
-                universalUrl = '#';
-            }
-        } else {
-            universalDisplay = '—— 请输入包名 ——';
-            universalUrl = '#';
-        }
-        const universalAnchor = document.getElementById('universalProtocolLink');
-        universalAnchor.innerText = universalDisplay;
-        universalAnchor.href = universalUrl;
-        universalAnchor.style.cursor = (packageName && universalLink) ? 'pointer' : 'default';
-        if (!packageName || !universalLink) {
-            universalAnchor.style.pointerEvents = 'none';
-            universalAnchor.style.opacity = '0.7';
-        } else {
-            universalAnchor.style.pointerEvents = 'auto';
-            universalAnchor.style.opacity = '1';
-        }
-        
-        // 网页链接：显示完整URL
-        let webLinkUrl = '#';
-        let webDisplay = '—— 请输入包名 ——';
-        if (packageName) {
-            const web = getWebStoreLink(packageName, brandInfo);
-            webLinkUrl = web;
-            webDisplay = web;
-        } else {
-            webDisplay = '—— 请输入包名 ——';
-        }
-        const webAnchor = document.getElementById('webLink');
-        webAnchor.innerText = webDisplay;
-        webAnchor.href = webLinkUrl;
-        webAnchor.target = '_blank';
-        webAnchor.style.cursor = packageName ? 'pointer' : 'default';
-        if (!packageName) {
-            webAnchor.style.pointerEvents = 'none';
-            webAnchor.style.opacity = '0.7';
-        } else {
-            webAnchor.style.pointerEvents = 'auto';
-            webAnchor.style.opacity = '1';
-        }
-        
-        // 存储当前有效链接以供复制功能
-        window.currentBrandLink = brandLink;
-        window.currentUniversalLink = universalLink;
-        window.currentWebLink = webLinkUrl;
-        window.hasValidPackage = !!packageName;
-    }
-    
-    // toast提示
-    function showToast(msg, duration = 1800) {
-        const toast = document.getElementById('toastMsg');
-        toast.innerText = msg;
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, duration);
-    }
-    
-    async function copyToClipboard(text, successMsg = '已复制到剪贴板') {
-        if (!text) {
-            showToast('无有效链接，无法复制');
-            return;
-        }
-        try {
-            await navigator.clipboard.writeText(text);
-            showToast(`✅ ${successMsg}`);
-        } catch (err) {
-            showToast('复制失败，请手动复制');
-        }
-    }
-    
-    // 事件绑定
-    function bindEvents() {
-        const packageInput = document.getElementById('packageInput');
-        const brandSelect = document.getElementById('brandSelect');
-        
-        packageInput.addEventListener('input', () => {
-            updateAllLinks();
-        });
-        
-        brandSelect.addEventListener('change', (e) => {
-            currentManualBrand = e.target.value;
-            updateAllLinks();
-            const info = getEffectiveBrandInfo();
-            if (currentManualBrand !== 'auto') {
-                showToast(`已切换至 ${getBrandDisplayName(info.brand, info.isIOS)}`, 1000);
-            } else {
-                showToast(`恢复自动检测品牌: ${getBrandDisplayName(info.brand, info.isIOS)}`, 1000);
-            }
-        });
-        
-        // 复制按钮
-        document.getElementById('copyBrandLinkBtn').addEventListener('click', () => {
-            if (!window.hasValidPackage || !window.currentBrandLink) {
-                showToast('请填写有效的包名，且品牌专用链接已生成');
-                return;
-            }
-            copyToClipboard(window.currentBrandLink, '品牌专用链接已复制');
-        });
-        
-        document.getElementById('copyUniversalLinkBtn').addEventListener('click', () => {
-            if (!window.hasValidPackage || !window.currentUniversalLink) {
-                showToast('请填写有效的包名');
-                return;
-            }
-            copyToClipboard(window.currentUniversalLink, '通用链接已复制');
-        });
-        
-        document.getElementById('copyWebLinkBtn').addEventListener('click', () => {
-            if (!window.hasValidPackage || !window.currentWebLink || window.currentWebLink === '#') {
-                showToast('请填写有效的包名');
-                return;
-            }
-            copyToClipboard(window.currentWebLink, '网页链接已复制');
-        });
-    }
-    
-    // 初始化自动检测品牌并同步下拉默认选项
-    function initAutoSelectInDropdown() {
-        const autoInfo = getAutoDetectBrandInfo();
-        let suggestedBrand = autoInfo.brand;
-        if (autoInfo.isIOS) suggestedBrand = 'apple';
-        else if (suggestedBrand === 'honor') suggestedBrand = 'huawei';
-        else if (suggestedBrand === 'oneplus') suggestedBrand = 'oppo';
-        else if (suggestedBrand === 'generic_android') suggestedBrand = 'generic_android';
-        else if (!['huawei','xiaomi','oppo','vivo','samsung'].includes(suggestedBrand)) suggestedBrand = 'generic_android';
-        
-        const selectEl = document.getElementById('brandSelect');
-        let found = false;
-        for (let i = 0; i < selectEl.options.length; i++) {
-            if (selectEl.options[i].value === suggestedBrand) {
-                selectEl.selectedIndex = i;
-                found = true;
-                break;
-            }
-        }
-        if (!found && suggestedBrand === 'huawei') {
-            selectEl.value = 'huawei';
-        } else if (!found) {
-            selectEl.value = 'auto';
-        }
-        currentManualBrand = selectEl.value;
-        updateAllLinks();
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        initAutoSelectInDropdown();
-        bindEvents();
-        updateAllLinks();
-    });
+var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink'),TM=document.getElementById('toastMsg');
+
+function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else if(u.includes('oneplus'))b='oneplus';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
+
+function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
+
+function gBN(b,i){if(i)return'苹果 App Store';switch(b){case'huawei':return'华为应用市场';case'honor':return'荣耀应用市场';case'xiaomi':return'小米应用商店';case'oppo':return'OPPO软件商店';case'oneplus':return'一加商店';case'vivo':return'vivo应用商店';case'samsung':return'三星应用商店';default:return'通用市场协议'}}
+
+var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl,hasPkg;
+
+function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS)
+
+brandLink=pkg?gBSL(pkg,bi):null;var bUrl=brandLink||'#',bTxt=brandLink||'—— 请输入包名 ——';BPL.textContent=bTxt;BPL.href=bUrl;BPL.style.pointerEvents=pkg&&brandLink?'auto':'none';BPL.style.opacity=pkg&&brandLink?'1':'.6'
+
+universalLink=pkg?gUL(pkg,bi):null;var uUrl=universalLink||'#',uTxt=universalLink||'—— 请输入包名 ——';UPL.textContent=uTxt;UPL.href=uUrl;UPL.style.pointerEvents=pkg&&universalLink?'auto':'none';UPL.style.opacity=pkg&&universalLink?'1':'.6'
+
+webLinkUrl=pkg?gWS(pkg,bi):'#';WL.textContent=webLinkUrl||'—— 请输入包名 ——';WL.href=webLinkUrl||'#';WL.style.pointerEvents=pkg?'auto':'none';WL.style.opacity=pkg?'1':'.6'
+
+hasPkg=!!pkg}
+
+function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'appmarket://details?id='+pk;case'xiaomi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
+
+function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
+
+function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
+
+function sT(m,d){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},d||1800)}
+
+async function c2c(t,m){if(!t){sT('无有效链接');return}try{await navigator.clipboard.writeText(t);sT(m||'已复制')}catch(e){sT('复制失败')}}
+
+PI.addEventListener('input',upd);BS.addEventListener('change',function(e){cManual=e.target.value;upd();var i=gEff();sT(cManual!=='auto'?'已切换至 '+gBN(i.brand,i.isIOS):'恢复自动检测',1000)})
+document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){if(!hasPkg||!brandLink){sT('请填写有效包名');return}c2c(brandLink,'品牌专用链接已复制')})
+document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){if(!hasPkg||!universalLink){sT('请填写有效包名');return}c2c(universalLink,'通用链接已复制')})
+document.getElementById('copyWebLinkBtn').addEventListener('click',function(){if(!hasPkg||!webLinkUrl||webLinkUrl==='#'){sT('请填写有效包名');return}c2c(webLinkUrl,'网页链接已复制')})
+
+function init(){var a=gAuto(),s=a.brand;if(a.isIOS)s='apple';else if(s==='honor'||s==='oneplus')s='oppo';else if(!['huawei','xiaomi','oppo','vivo','samsung','generic_android'].includes(s))s='generic_android';for(var i=0;i<BS.options.length;i++){if(BS.options[i].value===s){BS.selectedIndex=i;break}}cManual=BS.value;upd()}
+init()
 </script>
 </body>
 </html>
