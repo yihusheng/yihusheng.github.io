@@ -1,682 +1,168 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>配料表含量转换器</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-    <link rel="stylesheet" href="/Tools/navbar.css">
-    <script src="/Tools/navbar.js"></script>
-    <style>
-        :root {
-            --wise-primary: #9fe870;
-            --wise-on-primary: #0e0f0c;
-            --wise-primary-active: #cdffad;
-            --wise-primary-pale: #e2f6d5;
-            --wise-ink: #0e0f0c;
-            --wise-ink-deep: #163300;
-            --wise-body: #454745;
-            --wise-mute: #868685;
-            --wise-canvas: #ffffff;
-            --wise-canvas-soft: #e8ebe6;
-            --wise-canvas-soft-darker: #d8dbd6;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            font-feature-settings: "calt";
-            -webkit-font-smoothing: antialiased;
-            -webkit-tap-highlight-color: transparent;
-            color: var(--wise-ink);
-            background: var(--wise-canvas-soft);
-        }
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 24px;
-            background: var(--wise-canvas-soft);
-        }
-        .app {
-            max-width: 1140px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-        .page-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 4px 0;
-        }
-        .page-header-icon {
-            width: 44px; height: 44px;
-            background: var(--wise-ink);
-            color: var(--wise-primary);
-            border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .page-header-icon .material-symbols-rounded { font-size: 1.4rem; }
-        .page-header-text h1 {
-            font-size: 1.5rem; font-weight: 900;
-            letter-spacing: -0.5px; line-height: 1.15;
-            color: var(--wise-ink);
-        }
-        .page-header-text p {
-            font-size: 0.8rem; font-weight: 500;
-            color: var(--wise-mute); margin-top: 2px;
-        }
-        .dual-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        .product-card {
-            background: var(--wise-canvas);
-            border-radius: 24px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            box-shadow: 0 2px 12px rgba(14,15,12,0.04);
-        }
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .card-badge {
-            width: 40px; height: 40px;
-            background: var(--wise-canvas-soft);
-            color: var(--wise-body);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem; font-weight: 900;
-            flex-shrink: 0;
-            transition: background 0.2s;
-        }
-        .card-header-text { flex: 1; min-width: 0; }
-        .card-header-text h2 {
-            font-size: 1.15rem; font-weight: 900;
-            letter-spacing: -0.3px; line-height: 1.15;
-            color: var(--wise-ink);
-        }
-        .card-header-text span {
-            font-size: 0.72rem; font-weight: 500;
-            color: var(--wise-mute);
-        }
-        .btn-clear {
-            background: none; border: none; cursor: pointer;
-            width: 32px; height: 32px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--wise-mute);
-            transition: all 0.2s; flex-shrink: 0;
-        }
-        .btn-clear:hover { background: var(--wise-canvas-soft); color: var(--wise-negative); }
-        .btn-clear:active { transform: scale(0.9); }
-        .btn-clear .material-symbols-rounded { font-size: 1.15rem; }
-        .serving-block {
-            background: var(--wise-canvas-soft);
-            border-radius: 20px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .serving-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .input-pair {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .input-pair label {
-            font-size: 0.75rem; font-weight: 600;
-            color: var(--wise-body);
-            white-space: nowrap;
-        }
-        .wise-input {
-            width: 68px;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.85rem; font-weight: 600;
-            text-align: center;
-            background: var(--wise-canvas);
-            color: var(--wise-ink);
-            font-family: inherit;
-            transition: box-shadow 0.2s;
-        }
-        .wise-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(159,232,112,0.35);
-        }
-        .input-pair .unit {
-            font-size: 0.7rem; font-weight: 500;
-            color: var(--wise-mute);
-        }
-        .quick-row {
-            display: flex;
-            align-items: center;
-            gap: 6px; flex-wrap: wrap;
-        }
-        .quick-label {
-            font-size: 0.65rem; font-weight: 600;
-            color: var(--wise-mute);
-            letter-spacing: 0.3px;
-            margin-right: 4px;
-        }
-        .quick-chip {
-            background: var(--wise-canvas);
-            border: none;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.65rem; font-weight: 600;
-            cursor: pointer; color: var(--wise-body);
-            font-family: inherit;
-            transition: all 0.15s;
-        }
-        .quick-chip:hover { background: var(--wise-primary-pale); color: var(--wise-ink-deep); }
-        .quick-chip.active {
-            background: var(--wise-ink);
-            color: var(--wise-primary);
-        }
-        .nutrient-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .nutrient-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            border-radius: 14px;
-            transition: background 0.15s;
-        }
-        .nutrient-row:focus-within { background: var(--wise-canvas-soft); }
-        .nutrient-row.highlight-primary { background: var(--wise-primary-pale); }
-        .nutrient-row.highlight-energy { background: rgba(255,209,26,0.07); }
-        .nutrient-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-        .dot-na { background: #e8b860; }
-        .dot-kj { background: #e08070; }
-        .dot-pro { background: #9a8ad4; }
-        .dot-fat { background: #e896b0; }
-        .dot-carb { background: #5db8c4; }
-        .dot-fib { background: #9cbc60; }
-        .nutrient-name {
-            flex: 1; min-width: 0;
-            font-size: 0.8rem; font-weight: 600;
-            color: var(--wise-ink);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .inline-results {
-            display: flex;
-            gap: 12px; flex-shrink: 0;
-        }
-        .res-col {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 1px;
-        }
-        .res-label {
-            font-size: 9px; font-weight: 600;
-            letter-spacing: 0.4px; text-transform: uppercase;
-            color: var(--wise-mute); line-height: 1;
-        }
-        .res-val {
-            font-size: 13px; font-weight: 700;
-            line-height: 1.2; text-align: right;
-            font-variant-numeric: tabular-nums;
-            color: var(--wise-ink);
-        }
-        .res-unit {
-            font-size: 0.65em; font-weight: 500;
-            color: var(--wise-mute);
-        }
-        .nutrient-input {
-            width: 58px;
-            padding: 5px 8px;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.8rem; font-weight: 600;
-            text-align: right;
-            background: var(--wise-canvas-soft);
-            color: var(--wise-ink);
-            font-family: inherit;
-            transition: all 0.15s;
-            flex-shrink: 0;
-        }
-        .nutrient-input:focus {
-            outline: none;
-            background: var(--wise-canvas);
-            box-shadow: 0 0 0 3px rgba(159,232,112,0.3);
-        }
-        .nutrient-unit {
-            font-size: 0.68rem; font-weight: 500;
-            color: var(--wise-mute);
-            min-width: 22px; flex-shrink: 0;
-        }
-        .page-footer {
-            background: var(--wise-canvas);
-            border-radius: 24px;
-            padding: 20px 24px;
-            text-align: center;
-            box-shadow: 0 2px 12px rgba(14,15,12,0.04);
-        }
-        .page-footer-title {
-            font-size: 0.85rem; font-weight: 700;
-            color: var(--wise-ink); margin-bottom: 6px;
-        }
-        .page-footer-formula {
-            font-size: 0.72rem; font-weight: 500;
-            color: var(--wise-mute); line-height: 1.7;
-        }
-        .page-footer-formula strong {
-            color: var(--wise-ink-deep); font-weight: 600;
-        }
-
-        @media (max-width: 850px) {
-            .dual-grid {
-                display: flex;
-                gap: 16px;
-                overflow-x: auto;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
-                padding: 4px 2px 8px;
-                scrollbar-width: none;
-            }
-            .dual-grid::-webkit-scrollbar { display: none; }
-            .product-card {
-                flex: 0 0 88vw;
-                scroll-snap-align: start;
-                min-width: 300px; max-width: 420px;
-            }
-            body { padding: 16px; }
-        }
-        @media (max-width: 440px) {
-            .product-card {
-                flex: 0 0 92vw;
-                min-width: 270px;
-                padding: 18px 16px;
-            }
-            .nutrient-row { padding: 8px 10px; gap: 6px; }
-            .inline-results { gap: 8px; }
-            .nutrient-input { width: 50px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes,viewport-fit=cover">
+<title>配料表含量转换器</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link rel="stylesheet" href="/Tools/navbar.css">
+<script src="/Tools/navbar.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px;--r-sm:8px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;margin-top:4px}
+/* header */
+.hdr{display:flex;align-items:center;gap:10px;margin-bottom:2px}
+.bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;width:fit-content}
+.bdg .material-symbols-rounded{font-size:13px}
+h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.sub{font-size:13px;color:var(--m);margin-bottom:6px}
+/* card */
+.card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden}
+.card-pad{padding:24px}
+/* grid */
+.g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+/* product header */
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0}
+.pt{flex:1}
+.pt h2{font-size:16px;font-weight:900;letter-spacing:-.02em}
+.pt span{font-size:11px;color:var(--m);font-weight:500}
+.pc{background:none;border:none;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all .15s;flex-shrink:0}
+.pc:hover{background:var(--s);color:#d03238}
+.pc .material-symbols-rounded{font-size:18px}
+/* serving */
+.sv{background:var(--s);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.sr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ip{display:flex;align-items:center;gap:6px}
+.ip label{font-size:11px;font-weight:700;color:var(--b);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+.inp-sm{width:60px;height:34px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 8px;font-family:'Inter',monospace;font-size:13px;font-weight:600;text-align:center;background:var(--c);color:var(--k);outline:none;transition:all .15s}
+.inp-sm:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.ip .un{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase}
+.qr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.ql{font-size:9px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.08em;margin-right:2px}
+.qc{background:var(--c);border:none;padding:3px 10px;border-radius:var(--rp);font-size:10px;font-weight:700;cursor:pointer;color:var(--b);font-family:inherit;transition:all .12s}
+.qc:hover{background:var(--pp);color:var(--kd)}
+.qc.act{background:var(--k);color:var(--p)}
+/* nutrient table */
+.nt{display:flex;flex-direction:column;gap:3px}
+.nr{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;transition:background .12s}
+.nr:focus-within{background:var(--s)}
+.nr.hl{background:var(--pp)}
+.nr.he{background:rgba(255,209,26,.06)}
+.nd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nd-na{background:#e8b860}
+.nd-kj{background:#e08070}
+.nd-pr{background:#9a8ad4}
+.nd-ft{background:#e896b0}
+.nd-cb{background:#5db8c4}
+.nd-fb{background:#9cbc60}
+.nn{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--k)}
+.ir{display:flex;gap:10px;flex-shrink:0}
+.rc{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.rl{font-size:8px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.06em;line-height:1}
+.rv{font-size:12px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--k)}
+.ru{font-size:.65em;font-weight:500;color:var(--m)}
+.ni{width:52px;height:28px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 6px;font-family:'Inter',monospace;font-size:12px;font-weight:600;text-align:right;background:var(--c);color:var(--k);outline:none;transition:all .12s;flex-shrink:0}
+.ni:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.nu{font-size:10px;font-weight:600;color:var(--m);min-width:20px;flex-shrink:0}
+/* footer */
+.ft{background:var(--k);padding:16px 24px;text-align:center}
+.ft .ft-t{font-size:12px;font-weight:700;color:var(--p);margin-bottom:4px}
+.ft .ft-f{font-size:10px;color:rgba(232,235,230,.5);line-height:1.6}
+.ft .ft-f strong{color:var(--p);font-weight:600}
+/* mobile */
+@media(max-width:720px){
+.g{grid-template-columns:1fr}
+.wrap{max-width:480px}
+}
+</style>
 </head>
 <body>
-    <div class="app">
-        <div class="page-header">
-            <div class="page-header-icon">
-                <span class="material-symbols-rounded">calculate</span>
-            </div>
-            <div class="page-header-text">
-                <h1>配料表转换器</h1>
-                <p>双产品营养含量对比计算</p>
-            </div>
-        </div>
+<div class="wrap">
+<div class="hdr">
+  <div class="bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
+</div>
+<h1>配料表转换器</h1>
+<p class="sub">双产品营养含量对比计算</p>
 
-        <div class="dual-grid" id="dualGrid">
-            <!-- ──── Product A ──── -->
-            <div class="product-card" id="productA">
-                <div class="card-header">
-                    <div class="card-badge">A</div>
-                    <div class="card-header-text">
-                        <h2>产品 A</h2>
-                        <span>输入配料表数据</span>
-                    </div>
-                    <button class="btn-clear" data-product="A" title="清空">
-                        <span class="material-symbols-rounded">close</span>
-                    </button>
-                </div>
-                <div class="serving-block">
-                    <div class="serving-row">
-                        <div class="input-pair">
-                            <label>每份</label>
-                            <input type="number" id="servingA" value="100" step="any" min="0.1" class="wise-input">
-                            <span class="unit">g</span>
-                        </div>
-                        <div class="input-pair">
-                            <label>总重</label>
-                            <input type="number" id="totalWeightA" placeholder="—" step="any" min="0" class="wise-input">
-                            <span class="unit">g</span>
-                        </div>
-                    </div>
-                    <div class="quick-row">
-                        <span class="quick-label">总重快捷</span>
-                        <div class="quick-chips" id="totalPresetsA">
-                            <button class="quick-chip" data-weight="15">15</button>
-                            <button class="quick-chip" data-weight="30">30</button>
-                            <button class="quick-chip" data-weight="50">50</button>
-                            <button class="quick-chip" data-weight="100">100</button>
-                            <button class="quick-chip" data-weight="200">200</button>
-                            <button class="quick-chip" data-weight="500">500</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="nutrient-grid">
-                    <div class="nutrient-row highlight-primary">
-                        <span class="nutrient-dot dot-na"></span>
-                        <span class="nutrient-name">钠</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="saltA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totSaltA">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="naA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">mg</span>
-                    </div>
-                    <div class="nutrient-row highlight-energy">
-                        <span class="nutrient-dot dot-kj"></span>
-                        <span class="nutrient-name">能量</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="kcalA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totKcalA">—<span class="res-unit">kcal</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="kjA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">kJ</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-pro"></span>
-                        <span class="nutrient-name">蛋白质</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="protA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totProteinA">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="proteinA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-fat"></span>
-                        <span class="nutrient-name">脂肪</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="fatValA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totFatA">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="fatA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-carb"></span>
-                        <span class="nutrient-name">碳水</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="carbsValA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totCarbsA">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="carbsA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-fib"></span>
-                        <span class="nutrient-name">纤维</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="fiberValA">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totFiberA">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="fiberA" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ──── Product B ──── -->
-            <div class="product-card" id="productB">
-                <div class="card-header">
-                    <div class="card-badge">B</div>
-                    <div class="card-header-text">
-                        <h2>产品 B</h2>
-                        <span>输入配料表数据</span>
-                    </div>
-                    <button class="btn-clear" data-product="B" title="清空">
-                        <span class="material-symbols-rounded">close</span>
-                    </button>
-                </div>
-                <div class="serving-block">
-                    <div class="serving-row">
-                        <div class="input-pair">
-                            <label>每份</label>
-                            <input type="number" id="servingB" value="100" step="any" min="0.1" class="wise-input">
-                            <span class="unit">g</span>
-                        </div>
-                        <div class="input-pair">
-                            <label>总重</label>
-                            <input type="number" id="totalWeightB" placeholder="—" step="any" min="0" class="wise-input">
-                            <span class="unit">g</span>
-                        </div>
-                    </div>
-                    <div class="quick-row">
-                        <span class="quick-label">总重快捷</span>
-                        <div class="quick-chips" id="totalPresetsB">
-                            <button class="quick-chip" data-weight="15">15</button>
-                            <button class="quick-chip" data-weight="30">30</button>
-                            <button class="quick-chip" data-weight="50">50</button>
-                            <button class="quick-chip" data-weight="100">100</button>
-                            <button class="quick-chip" data-weight="200">200</button>
-                            <button class="quick-chip" data-weight="500">500</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="nutrient-grid">
-                    <div class="nutrient-row highlight-primary">
-                        <span class="nutrient-dot dot-na"></span>
-                        <span class="nutrient-name">钠</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="saltB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totSaltB">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="naB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">mg</span>
-                    </div>
-                    <div class="nutrient-row highlight-energy">
-                        <span class="nutrient-dot dot-kj"></span>
-                        <span class="nutrient-name">能量</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="kcalB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totKcalB">—<span class="res-unit">kcal</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="kjB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">kJ</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-pro"></span>
-                        <span class="nutrient-name">蛋白质</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="protB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totProteinB">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="proteinB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-fat"></span>
-                        <span class="nutrient-name">脂肪</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="fatValB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totFatB">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="fatB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-carb"></span>
-                        <span class="nutrient-name">碳水</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="carbsValB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totCarbsB">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="carbsB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                    <div class="nutrient-row">
-                        <span class="nutrient-dot dot-fib"></span>
-                        <span class="nutrient-name">纤维</span>
-                        <div class="inline-results">
-                            <div class="res-col">
-                                <span class="res-label">每g</span>
-                                <span class="res-val" id="fiberValB">—</span>
-                            </div>
-                            <div class="res-col">
-                                <span class="res-label">总含</span>
-                                <span class="res-val" id="totFiberB">—<span class="res-unit">g</span></span>
-                            </div>
-                        </div>
-                        <input type="number" id="fiberB" placeholder="0" class="nutrient-input"><span class="nutrient-unit">g</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="page-footer">
-            <div class="page-footer-title">换算公式</div>
-            <div class="page-footer-formula">
-                <strong>盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;·&nbsp; <strong>kcal = kJ ÷ 4.184</strong>
-            </div>
-        </div>
+<div class="g" id="grid">
+  <!-- Product A -->
+  <div class="card card-pad" id="pa">
+    <div class="ph">
+      <div class="pb">A</div>
+      <div class="pt"><h2>产品 A</h2><span>输入配料表数据</span></div>
+      <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
     </div>
+    <div class="sv">
+      <div class="sr">
+        <div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0.1" class="inp-sm"><span class="un">g</span></div>
+        <div class="ip"><label>总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
+      </div>
+      <div class="qr">
+        <span class="ql">快捷</span>
+        <div id="tpA">
+          <button class="qc" data-w="15">15</button>
+          <button class="qc" data-w="30">30</button>
+          <button class="qc" data-w="50">50</button>
+          <button class="qc" data-w="100">100</button>
+          <button class="qc" data-w="200">200</button>
+          <button class="qc" data-w="500">500</button>
+        </div>
+      </div>
+    </div>
+    <div class="nt">
+      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsA">—<span class="ru">g</span></span></div></div><input type="number" id="naA" placeholder="0" class="ni"><span class="nu">mg</span></div>
+      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkA">—<span class="ru">kcal</span></span></div></div><input type="number" id="kjA" placeholder="0" class="ni"><span class="nu">kJ</span></div>
+      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprA">—<span class="ru">g</span></span></div></div><input type="number" id="proA" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftA">—<span class="ru">g</span></span></div></div><input type="number" id="fatA" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbA">—<span class="ru">g</span></span></div></div><input type="number" id="carA" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbA">—<span class="ru">g</span></span></div></div><input type="number" id="fibA" placeholder="0" class="ni"><span class="nu">g</span></div>
+    </div>
+  </div>
 
-    <script>
-        (function() {
-            const P = ['A', 'B'];
-            const getVal = id => {
-                const el = document.getElementById(id);
-                if (!el) return null;
-                const v = el.value.trim();
-                if (v === '') return null;
-                const n = parseFloat(v);
-                return isNaN(n) || n < 0 ? null : n;
-            };
-            const fmt = (n, d) => {
-                if (n === null || isNaN(n)) return '—';
-                if (n === 0) return '0';
-                return parseFloat(n.toFixed(d)).toString();
-            };
-            const calc = p => {
-                const serving = getVal(`serving${p}`) || 100;
-                document.getElementById(`serving${p}`).value = serving;
-                const na = getVal(`na${p}`), kj = getVal(`kj${p}`), pro = getVal(`protein${p}`);
-                const fat = getVal(`fat${p}`), carb = getVal(`carbs${p}`), fib = getVal(`fiber${p}`);
-                const saltPg = na !== null ? (na * 2.54 / 1000) / serving : null;
-                const kcalPg = kj !== null ? (kj / 4.184) / serving : null;
-                const proPg = pro !== null ? pro / serving : null;
-                const fatPg = fat !== null ? fat / serving : null;
-                const carbPg = carb !== null ? carb / serving : null;
-                const fibPg = fib !== null ? fib / serving : null;
-                document.getElementById(`salt${p}`).textContent = saltPg !== null ? fmt(saltPg, 3) : '—';
-                document.getElementById(`kcal${p}`).textContent = kcalPg !== null ? fmt(kcalPg, 2) : '—';
-                document.getElementById(`prot${p}`).textContent = proPg !== null ? fmt(proPg, 2) : '—';
-                document.getElementById(`fatVal${p}`).textContent = fatPg !== null ? fmt(fatPg, 2) : '—';
-                document.getElementById(`carbsVal${p}`).textContent = carbPg !== null ? fmt(carbPg, 2) : '—';
-                document.getElementById(`fiberVal${p}`).textContent = fibPg !== null ? fmt(fibPg, 2) : '—';
-                const tw = getVal(`totalWeight${p}`);
-                const tot = pg => (pg !== null && tw !== null && tw > 0) ? fmt(pg * tw, 2) : '—';
-                document.getElementById(`totSalt${p}`).textContent = tot(saltPg);
-                document.getElementById(`totKcal${p}`).textContent = tot(kcalPg);
-                document.getElementById(`totProtein${p}`).textContent = tot(proPg);
-                document.getElementById(`totFat${p}`).textContent = tot(fatPg);
-                document.getElementById(`totCarbs${p}`).textContent = tot(carbPg);
-                document.getElementById(`totFiber${p}`).textContent = tot(fibPg);
-                const tc = document.getElementById(`totalPresets${p}`);
-                if (tc) tc.querySelectorAll('.quick-chip').forEach(c => {
-                    c.classList.toggle('active', tw !== null && Math.abs(parseFloat(c.dataset.weight) - tw) < 0.01);
-                });
-            };
-            const calcAll = () => P.forEach(calc);
-            P.forEach(p => {
-                [`serving${p}`, `na${p}`, `kj${p}`, `protein${p}`, `fat${p}`, `carbs${p}`, `fiber${p}`, `totalWeight${p}`].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.addEventListener('input', () => calc(p));
-                        el.addEventListener('change', () => calc(p));
-                    }
-                });
-                const tp = document.getElementById(`totalPresets${p}`);
-                if (tp) tp.addEventListener('click', e => {
-                    const c = e.target.closest('.quick-chip');
-                    if (!c) return;
-                    document.getElementById(`totalWeight${p}`).value = c.dataset.weight;
-                    calc(p);
-                });
-                const clearBtn = document.querySelector(`#product${p} .btn-clear`);
-                if (clearBtn) {
-                    clearBtn.addEventListener('click', () => {
-                        [`serving${p}`, `na${p}`, `kj${p}`, `protein${p}`, `fat${p}`, `carbs${p}`, `fiber${p}`, `totalWeight${p}`].forEach(id => {
-                            const el = document.getElementById(id);
-                            if (el) el.value = id.startsWith('serving') ? '100' : '';
-                        });
-                        calc(p);
-                    });
-                }
-            });
-            calcAll();
-        })();
-    </script>
+  <!-- Product B -->
+  <div class="card card-pad" id="pb">
+    <div class="ph">
+      <div class="pb">B</div>
+      <div class="pt"><h2>产品 B</h2><span>输入配料表数据</span></div>
+      <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
+    </div>
+    <div class="sv">
+      <div class="sr">
+        <div class="ip"><label>每份</label><input type="number" id="sB" value="100" step="any" min="0.1" class="inp-sm"><span class="un">g</span></div>
+        <div class="ip"><label>总重</label><input type="number" id="twB" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
+      </div>
+      <div class="qr">
+        <span class="ql">快捷</span>
+        <div id="tpB">
+          <button class="qc" data-w="15">15</button>
+          <button class="qc" data-w="30">30</button>
+          <button class="qc" data-w="50">50</button>
+          <button class="qc" data-w="100">100</button>
+          <button class="qc" data-w="200">200</button>
+          <button class="qc" data-w="500">500</button>
+        </div>
+      </div>
+    </div>
+    <div class="nt">
+      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsB">—<span class="ru">g</span></span></div></div><input type="number" id="naB" placeholder="0" class="ni"><span class="nu">mg</span></div>
+      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkB">—<span class="ru">kcal</span></span></div></div><input type="number" id="kjB" placeholder="0" class="ni"><span class="nu">kJ</span></div>
+      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprB">—<span class="ru">g</span></span></div></div><input type="number" id="proB" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftB">—<span class="ru">g</span></span></div></div><input type="number" id="fatB" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbB">—<span class="ru">g</span></span></div></div><input type="number" id="carB" placeholder="0" class="ni"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbB">—<span class="ru">g</span></span></div></div><input type="number" id="fibB" placeholder="0" class="ni"><span class="nu">g</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="card"><div class="ft"><div class="ft-t">换算公式</div><div class="ft-f"><strong>盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;·&nbsp; <strong>kcal = kJ ÷ 4.184</strong></div></div></div>
+</div>
+
+<script>
+(function(){const P=['A','B'];const g=id=>{const e=document.getElementById(id);if(!e)return null;const v=e.value.trim();if(v==='')return null;const n=parseFloat(v);return isNaN(n)||n<0?null:n};const f=(n,d)=>{if(n===null||isNaN(n))return'—';if(n===0)return'0';return parseFloat(n.toFixed(d)).toString()};const c=p=>{const s=g('s'+p)||100;document.getElementById('s'+p).value=s;const na=g('na'+p),kj=g('kj'+p),pro=g('pro'+p),fat=g('fat'+p),car=g('car'+p),fib=g('fib'+p);const sp=na!==null?(na*2.54/1000)/s:null;kp=kj!==null?(kj/4.184)/s:null;pp=pro!==null?pro/s:null;fp=fat!==null?fat/s:null;cp=car!==null?car/s:null;fip=fib!==null?fib/s:null;document.getElementById('salt'+p).textContent=sp!==null?f(sp,3):'—';document.getElementById('kcal'+p).textContent=kp!==null?f(kp,2):'—';document.getElementById('pr'+p).textContent=pp!==null?f(pp,2):'—';document.getElementById('ft'+p).textContent=fp!==null?f(fp,2):'—';document.getElementById('cb'+p).textContent=cp!==null?f(cp,2):'—';document.getElementById('fb'+p).textContent=fip!==null?f(fip,2):'—';const tw=g('tw'+p);const t=pg=>pg!==null&&tw!==null&&tw>0?f(pg*tw,2):'—';document.getElementById('ts'+p).textContent=t(sp);document.getElementById('tk'+p).textContent=t(kp);document.getElementById('tpr'+p).textContent=t(pp);document.getElementById('tft'+p).textContent=t(fp);document.getElementById('tcb'+p).textContent=t(cp);document.getElementById('tfb'+p).textContent=t(fip);const tc=document.getElementById('tp'+p);if(tc)tc.querySelectorAll('.qc').forEach(c=>c.classList.toggle('act',tw!==null&&Math.abs(parseFloat(c.dataset.w)-tw)<.01))};const ca=()=>P.forEach(c);P.forEach(p=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e){e.addEventListener('input',()=>c(p));e.addEventListener('change',()=>c(p))}});const tp=document.getElementById('tp'+p);if(tp)tp.addEventListener('click',e=>{const t=e.target.closest('.qc');if(!t)return;document.getElementById('tw'+p).value=t.dataset.w;c(p)});const cb=document.querySelector('#p'+p+' .pc');if(cb)cb.addEventListener('click',()=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e)e.value=id.startsWith('s')?'100':''});c(p)})});ca()})();
+</script>
 </body>
 </html>
