@@ -67,11 +67,24 @@
       display: flex; flex-direction: column;
       padding-top: env(safe-area-inset-top);
     }
-    @supports (height: 100dvh) { .phone-screen { height: 100d%; transform: translate(-50%);
-      width126px; height: 38px;
+    @supports (height: 100dvh) { .phone-screen { height: 100dvh; } }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      width: 126px; height: 38px;
       background-color: var(--island-bg); border-radius: 20px;
       z-index: 500;
-      transition: all 0.4s cubic-b  background(--land . display;; space width: 100%; padding: 0 14px; gap: 8px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; box-shadow: 0 4px 16px rgba(14,15,12,0.3);
+      cursor: pointer;
+      top: calc(env(safe-area-inset-top, 12px) + 10px);
+    }
+    .dynamic-island.active { width: 320px; height: 150px; border-radius: 36px; background-color: var(--island-expand-bg); }
+    .island-default {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 0 14px; gap: 8px;
       opacity: 1; pointer-events: auto; transition: opacity 0.2s ease;
       position: absolute; height: 100%; z-index: 10;
     }
@@ -95,13 +108,19 @@
     .detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
     .detail-desc { font-size: 1.05rem; font-weight: 700; color: #fff; }
     .location-display { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 2px; font-weight: 500; }
-    .detail-meta { font-size: 0.75rem; color); display: flex; flex-direction: column; gap: 3px; font-weight:;   detail .s font0rem: color(255-rightpx .player-content { padding: calc(env(safe-area-inset-top, 20px) + 100px) 24px 70px; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; z-index: 1; }
+    .detail-meta { font-size: 0.75rem; color: rgba(255,255,255,0.38); display: flex; flex-direction: column; gap: 3px; font-weight: 400; }
+    .detail-meta .material-symbols-rounded { font-size: 0.85rem; vertical-align: middle; color: rgba(255,255,255,0.45); margin-right: 2px; }
+
+    /* Player */
+    .player-content { padding: calc(env(safe-area-inset-top, 20px) + 100px) 24px 70px; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; z-index: 1; }
     .player-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: var(--player-bg); filter: blur(60px) saturate(1.2); transform: scale(1.3); opacity: 0.3; transition: background-color 0.6s ease; }
     .album-art { width: 280px; height: 280px; object-fit: cover; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,12,0.05); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 75vw; background: var(--wise-canvas); }
     .album-art.change { transform: scale(0.9); opacity: 0.7; }
     .song-info { text-align: center; margin-bottom: 12px; width: 100%; padding: 0 8px; }
     .song-title-main { font-weight: 900; font-size: 1.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; line-height: 1.15; }
     .artist-name { font-size: 1.05rem; color: var(--wise-ink-deep); font-weight: 600; letter-spacing: -0.2px; }
+
+    /* Wavy Slider */
     .m3-slider-root { width: 100%; height: 60px; position: relative; display: flex; align-items: center; margin-bottom: 0; flex-shrink: 0; }
     .m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(14,15,12,0.1); border-radius: 2px; z-index: 1; top: 28px; left: 0; width: 100%; }
     .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 20px; }
@@ -113,6 +132,8 @@
     .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
     .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
     .time-labels { width: 100%; display: flex; justify-content: space-between; margin-top: 4px; color: var(--md-sys-color-on-surface-variant); font-size: 0.75rem; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+    /* Controls */
     .controls { display: flex; gap: 20px; align-items: center; flex-shrink: 0; margin-top: 8px; }
     .btn { background: var(--wise-canvas-soft-darker); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 1px 3px rgba(14,15,12,0.06); }
     .btn:active { transform: scale(0.92); background: var(--wise-canvas-soft); }
@@ -122,6 +143,8 @@
     .btn-play .material-symbols-rounded { font-size: 2rem; }
     @keyframes pulse-play { 0%, 100% { box-shadow: 0 4px 16px rgba(159,232,112,0.35); transform: scale(1); } 50% { box-shadow: 0 6px 24px rgba(159,232,112,0.5); transform: scale(1.03); } }
     .playing .btn-play { animation: pulse-play 2s ease-in-out infinite; }
+
+    /* Bottom Drawer */
     .bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 24px 24px 0 0; transform: translateY(calc(100% - 16px)); transition: transform 0.5s cubic-bezier(0.2,0,0,1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(14,15,12,0.08); }
     .bottom-drawer.open { transform: translateY(0); }
     .nav-handle-area { width: 100%; height: 16px; padding-top: 6px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; background: transparent; }
@@ -139,6 +162,7 @@
     .copyright-text { font-size: 0.7rem; color: var(--wise-canvas-soft); margin-bottom: 4px; opacity: 0.65; font-weight: 400; }
     .secret-x { text-decoration: none; color: inherit; opacity: 0.15; transition: opacity 0.3s; padding: 5px; font-weight: 700; }
     .secret-x:hover { opacity: 1; color: var(--md-sys-color-primary); }
+
     @media screen and (min-width: 768px) {
       body { background-color: var(--wise-canvas-soft); background-size: cover; background-position: center; background-attachment: fixed; display: flex; justify-content: flex-end; align-items: flex-end; padding: 20px; }
       .phone-screen { width: 375px; height: 812px; border-radius: 40px; box-shadow: 0 0 0 10px var(--wise-ink), 0 0 0 12px rgba(14,15,12,0.2), 0 30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
@@ -150,7 +174,7 @@
 <body>
 <div class="phone-screen" id="app">
 
-  <!-- 灵动岛 -->
+  <!-- Dynamic Island -->
   <div class="dynamic-island" id="island">
     <div class="island-default">
       <span class="island-time" id="islandTime">12:00</span>
@@ -178,10 +202,10 @@
     </div>
   </div>
 
-  <!-- 播放器 -->
+  <!-- Player -->
   <div class="player-content">
     <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="专辑封面">
+    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover">
     <div class="song-info">
       <h1 id="mainTitle" class="song-title-main">Title</h1>
       <p id="mainArtist" class="artist-name">Artist</p>
@@ -194,20 +218,20 @@
         </svg>
       </div>
       <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
-      <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="播放进度">
+      <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="progress">
     </div>
     <div class="time-labels">
       <span id="currTime">0:00</span>
       <span id="durTime">0:00</span>
     </div>
     <div class="controls">
-      <button class="btn" id="prevBtn" aria-label="上一首"><span class="material-symbols-rounded">skip_previous</span></button>
-      <button class="btn btn-play" id="playBtn" aria-label="播放/暂停"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
-      <button class="btn" id="nextBtn" aria-label="下一首"><span class="material-symbols-rounded">skip_next</span></button>
+      <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
+      <button class="btn btn-play" id="playBtn" aria-label="play/pause"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
+      <button class="btn" id="nextBtn" aria-label="next"><span class="material-symbols-rounded">skip_next</span></button>
     </div>
   </div>
 
-  <!-- 底部抽屉 — 从 WiseNavbarData 动态渲染 -->
+  <!-- Bottom Drawer - dynamically rendered from WiseNavbarData -->
   <div class="bottom-drawer" id="drawer">
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
@@ -225,6 +249,7 @@
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
 <script>
+// Render drawer from WiseNavbarData
 (function renderDrawer() {
   const grid = document.getElementById('drawerGrid');
   if (!grid) return;
@@ -246,36 +271,110 @@
 })();
 
 const ColorUtils = {
-  hexToRgb: (hex) => { const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null; },
-  rgbToHsl: (r, g, b) => { r/=255; g/=255; b/=255; const max=Math.max(r,g,b), min=Math.min(r,g,b); let h,s,l=(max+min)/2; if(max===min){h=s=0;}else{const d=max-min; s=l>0.5?d/(2-max-min):d/(max+min); switch(max){case r:h=(g-b)/d+(g<b?6:0);break; case g:h=(b-r)/d+2;break; case b:h=(r-g)/d+4;break;} h/=6;} return {h:h*360,s:s*100,l:l*100}; },
+  hexToRgb: (hex) => { const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : null; },
+  rgbToHsl: (r,g,b) => { r/=255; g/=255; b/=255; const M=Math.max(r,g,b), m=Math.min(r,g,b); let h,s,l=(M+m)/2; if(M===m){h=s=0;}else{const d=M-m; s=l>0.5?d/(2-M-m):d/(M+m); switch(M){case r:h=(g-b)/d+(g<b?6:0);break; case g:h=(b-r)/d+2;break; case b:h=(r-g)/d+4;break;} h/=6;} return {h:h*360,s:s*100,l:l*100}; },
   hslToString: (h,s,l) => 'hsl('+h+','+s+'%,'+l+'%)',
-  extractColorFromUrl: (imageUrl,callback) => {
-    const canvas=document.getElementById('colorCanvas'), ctx=canvas.getContext('2d'), img=new Image();
-    img.crossOrigin='Anonymous'; img.src=imageUrl;
-    img.onload=function(){canvas.width=50;canvas.height=50;ctx.drawImage(img,0,0,50,50);try{const d=ctx.getImageData(0,0,50,50).data;let r=0,g=0,b=0,tw=0;for(let i=0;i<d.length;i+=4){const br=(0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]);let w=br<50?2:1;r+=d[i]*w;g+=d[i+1]*w;b+=d[i+2]*w;tw+=w;}if(tw>0){r=Math.floor(r/tw);g=Math.floor(g/tw);b=Math.floor(b/tw);}callback({r,g,b});}catch(e){callback({r:100,g:145,b:65});}};
-    img.onerror=()=>callback({r:100,g:145,b:65});
+  extractColorFromUrl: (url,cb) => {
+    const c=document.getElementById('colorCanvas'), x=c.getContext('2d'), i=new Image();
+    i.crossOrigin='Anonymous'; i.src=url;
+    i.onload=function(){c.width=50;c.height=50;x.drawImage(i,0,0,50,50);try{const d=x.getImageData(0,0,50,50).data;let r=0,g=0,b=0,t=0;for(let i=0;i<d.length;i+=4){const br=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];let w=br<50?2:1;r+=d[i]*w;g+=d[i+1]*w;b+=d[i+2]*w;t+=w;}if(t>0){r=Math.floor(r/t);g=Math.floor(g/t);b=Math.floor(b/t);}cb({r,g,b});}catch(e){cb({r:100,g:145,b:65});}};
+    i.onerror=()=>cb({r:100,g:145,b:65});
   },
   generateTheme: (src) => {
-    const hsl=ColorUtils.rgbToHsl(src.r,src.g,src.b), h=hsl.h, s=Math.max(20,Math.min(100,hsl.s)), l=hsl.l, aL=Math.max(55,Math.min(78,l+20)), aS=Math.max(50,Math.min(95,s+10));
-    return {'--md-sys-color-primary':ColorUtils.hslToString(h,aS,aL),'--md-sys-color-on-primary':'#0e0f0c','--md-sys-color-primary-container':ColorUtils.hslToString(h,Math.max(25,s-5),Math.min(30,l-15)),'--md-sys-color-on-primary-container':ColorUtils.hslToString(h,aS,Math.min(85,aL+10)),'--md-sys-color-secondary-container':ColorUtils.hslToString(h,Math.max(5,s/6),91),'--md-sys-color-on-secondary-container':'#0e0f0c','--md-sys-color-surface':'#ffffff','--md-sys-color-surface-container':ColorUtils.hslToString(h,Math.max(4,s/7),91),'--md-sys-color-on-surface':'#0e0f0c','--md-sys-color-on-surface-variant':'#868685','--md-sys-color-outline':'#868685','--phone-screen-bg':ColorUtils.hslToString(h,Math.max(3,s/8),91),'--player-bg':ColorUtils.hslToString(h,Math.max(5,s/6),88),'--island-expand-bg':ColorUtils.hslToString(h,Math.max(8,s/3),10),'--wise-primary-pale':ColorUtils.hslToString(h,Math.max(20,aS-30),Math.min(92,aL+15)),'--wise-ink-deep':ColorUtils.hslToString(h,Math.max(40,s),Math.max(12,Math.min(22,l-10))),'--wise-canvas-soft-darker':ColorUtils.hslToString(h,Math.max(4,s/5),85)};
+    const h=ColorUtils.rgbToHsl(src.r,src.g,src.b), hue=h.h, s=Math.max(20,Math.min(100,h.s)), l=h.l, aL=Math.max(55,Math.min(78,l+20)), aS=Math.max(50,Math.min(95,s+10));
+    return {'--md-sys-color-primary':ColorUtils.hslToString(hue,aS,aL),'--md-sys-color-on-primary':'#0e0f0c','--md-sys-color-primary-container':ColorUtils.hslToString(hue,Math.max(25,s-5),Math.min(30,l-15)),'--md-sys-color-on-primary-container':ColorUtils.hslToString(hue,aS,Math.min(85,aL+10)),'--md-sys-color-secondary-container':ColorUtils.hslToString(hue,Math.max(5,s/6),91),'--md-sys-color-on-secondary-container':'#0e0f0c','--md-sys-color-surface':'#ffffff','--md-sys-color-surface-container':ColorUtils.hslToString(hue,Math.max(4,s/7),91),'--md-sys-color-on-surface':'#0e0f0c','--md-sys-color-on-surface-variant':'#868685','--md-sys-color-outline':'#868685','--phone-screen-bg':ColorUtils.hslToString(hue,Math.max(3,s/8),91),'--player-bg':ColorUtils.hslToString(hue,Math.max(5,s/6),88),'--island-expand-bg':ColorUtils.hslToString(hue,Math.max(8,s/3),10),'--wise-primary-pale':ColorUtils.hslToString(hue,Math.max(20,aS-30),Math.min(92,aL+15)),'--wise-ink-deep':ColorUtils.hslToString(hue,Math.max(40,s),Math.max(12,Math.min(22,l-10))),'--wise-canvas-soft-darker':ColorUtils.hslToString(hue,Math.max(4,s/5),85)};
   }
 };
-const CookieUtils={set:(n,v,d=30)=>{const dt=new Date();dt.setTime(dt.getTime()+d*864e5);document.cookie=n+'='+v+';expires='+dt.toUTCString()+';path=/';},get:(n)=>{const v=document.cookie.match('(^|;)\\s*'+n+'=([^;]*)');return v?v[2]:null;},remove:(n)=>{document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';}};
-const songs=[{title:"Follow YourDream's",artist:"MerOne Record'ss",cover:"https://maxcloud.pages.dev/src/Follow%20YourDream's.jpg",src:"https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3"},{title:"\u5187\u94b1\u7d22\u8d27\u5c4e",artist:"\u90b1\u6e05\u4e91",cover:"https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.jpg",src:"https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.mp3"},{title:"Night Drive",artist:"Synthwave \u2022 Retro",cover:"https://picsum.photos/600/600?random=3",src:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}];
-let currentSongIndex=0; const audio=document.getElementById('audio'); const app=document.getElementById('app'); const island=document.getElementById('island'); const themeColorMeta=document.querySelector('meta[name="theme-color"]');
-const wMap={0:{desc:"\u6674\u6717",icon:"wb_sunny",bg:"#1a1c18"},1:{desc:"\u591a\u4e91",icon:"partly_cloudy_day",bg:"#1e2020"},2:{desc:"\u5c11\u4e91",icon:"partly_cloudy_day",bg:"#1d1f1e"},3:{desc:"\u9634\u5929",icon:"cloud",bg:"#1c1d1c"},45:{desc:"\u96fe",icon:"foggy",bg:"#1a1b1a"},48:{desc:"\u51bb\u96fe",icon:"foggy",bg:"#1b1c1e"},51:{desc:"\u6bdb\u6bdb\u96e8",icon:"rainy",bg:"#1a1e22"},53:{desc:"\u4e2d\u6bdb\u6bdb\u96e8",icon:"rainy",bg:"#1b1f23"},55:{desc:"\u5927\u6bdb\u6bdb\u96e8",icon:"rainy",bg:"#1c2024"},61:{desc:"\u5c0f\u96e8",icon:"rainy",bg:"#1a1e24"},63:{desc:"\u4e2d\u96e8",icon:"rainy",bg:"#191d22"},65:{desc:"\u5927\u96e8",icon:"thunderstorm",bg:"#171b20"},66:{desc:"\u51bb\u96e8",icon:"severe_cold",bg:"#1e2126"},67:{desc:"\u51bb\u96e8",icon:"severe_cold",bg:"#1e2126"},71:{desc:"\u5c0f\u96ea",icon:"ac_unit",bg:"#1e2022"},73:{desc:"\u4e2d\u96ea",icon:"ac_unit",bg:"#1d1f21"},75:{desc:"\u5927\u96ea",icon:"severe_cold",bg:"#1c1e20"},77:{desc:"\u96ea\u7c92",icon:"severe_cold",bg:"#1c1e20"},80:{desc:"\u9635\u96e8",icon:"rainy",bg:"#1a1e23"},81:{desc:"\u9635\u96e8",icon:"rainy",bg:"#1b1f24"},82:{desc:"\u66b4\u96e8",icon:"thunderstorm",bg:"#181c22"},85:{desc:"\u9635\u96ea",icon:"ac_unit",bg:"#1d1f21"},86:{desc:"\u9635\u96ea",icon:"ac_unit",bg:"#1c1e20"},95:{desc:"\u96f7\u66b4",icon:"thunderstorm",bg:"#1a1c22"},96:{desc:"\u96f7\u66b4",icon:"thunderstorm",bg:"#1b1d23"},99:{desc:"\u5f3a\u96f7\u66b4",icon:"thunderstorm",bg:"#191b21"}};
-function updateThemeColor(){const c=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim();if(c)themeColorMeta.setAttribute('content',c);}
-function updateTime(){const n=new Date();document.getElementById('islandTime').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');}
-async function getLocationByIP(){try{const r=await fetch('https://ipapi.co/json/');if(!r.ok)throw Error();const d=await r.json();if(d.latitude&&d.longitude)return{lat:d.latitude,lon:d.longitude,city:d.city};}catch(e){if(location.protocol==='http:'){try{const r2=await fetch('http://ip-api.com/json/?lang=zh-CN');if(r2.ok){const d2=await r2.json();if(d2.status==='success')return{lat:d2.lat,lon:d2.lon,city:d2.city};}}catch(e2){}}}return null;}
-async function fetchWeather(){let lat=parseFloat(CookieUtils.get('weather_lat'))||null,lon=parseFloat(CookieUtils.get('weather_lon'))||null,locName=null;if(!lat||!lon){if('geolocation'in navigator){try{document.getElementById('locationDisplay').textContent='\u6b63\u5728\u8bf7\u6c42\u4f4d\u7f6e...';const p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true,maximumAge:3e5}));lat=p.coords.latitude;lon=p.coords.longitude;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}catch(geoError){const ip=await getLocationByIP();if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}}}else{const ip=await getLocationByIP();if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}}}try{if(!locName){try{const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh');const ld=await l.json();locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2);}catch(e){locName='\u672a\u77e5\u4f4d\u7f6e';}}if(!document.getElementById('locationDisplay').textContent.includes('\u9ed8\u8ba4'))document.getElementById('locationDisplay').textContent=locName;const wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');const d=await wr.json();const c=d.current_weather||d.current,da=d.daily,t=Math.round(c.temperature_2m),cd=c.weather_code,w=wMap[cd]||{desc:'\u672a\u77e5',icon:'thermostat',bg:'#1a1c18'};document.getElementById('islandWeatherTemp').textContent=t+'\u00b0';document.getElementById('islandWeatherIcon').textContent=w.icon;document.getElementById('detailIcon').textContent=w.icon;document.getElementById('detailTemp').textContent=t+'\u00b0';document.getElementById('detailDesc').textContent=w.desc;document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'\u00b0 L:'+Math.round(da.temperature_2m_min[0])+'\u00b0';document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';document.documentElement.style.setProperty('--island-expand-bg',w.bg);}catch(e){console.error(e);if(!document.getElementById('locationDisplay').textContent.includes('\u5931\u8d25'))document.getElementById('locationDisplay').textContent='\u5929\u6c14\u83b7\u53d6\u5931\u8d25';}}
+
+const CookieUtils = {
+  set: (n,v,d) => { const e=new Date(); e.setTime(e.getTime()+(d||30)*864e5); document.cookie=n+'='+v+';expires='+e.toUTCString()+';path=/'; },
+  get: (n) => { const v=document.cookie.match('(^|;)\\s*'+n+'=([^;]*)'); return v?v[2]:null; },
+  remove: (n) => { document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/'; }
+};
+
+const songs = [
+  { title: "Follow YourDream's", artist: "MerOne Record'ss", cover: "https://maxcloud.pages.dev/src/Follow%20YourDream's.jpg", src: "https://maxcloud.pages.dev/src/MerOne%20Record's%20-%20Follow%20YourDream's.mp3" },
+  { title: "\u5187\u94b1\u7d22\u8d27\u5c4e", artist: "\u90b1\u6e05\u4e91", cover: "https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.jpg", src: "https://maxcloud.pages.dev/src/%E9%82%B1%E6%B8%85%E4%BA%91%20-%20%E5%86%87%E9%92%B1%E7%B4%A2%E8%B4%A7%E5%B1%8E.mp3" },
+  { title: "Night Drive", artist: "Synthwave \u2022 Retro", cover: "https://picsum.photos/600/600?random=3", src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+];
+
+let currentSongIndex = 0;
+const audio = document.getElementById('audio');
+const app = document.getElementById('app');
+const island = document.getElementById('island');
+const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+const weatherCodeMap = {
+  0:{d:"\u6674\u6717",i:"wb_sunny",b:"#1a1c18"},1:{d:"\u591a\u4e91",i:"partly_cloudy_day",b:"#1e2020"},2:{d:"\u5c11\u4e91",i:"partly_cloudy_day",b:"#1d1f1e"},3:{d:"\u9634\u5929",i:"cloud",b:"#1c1d1c"},
+  45:{d:"\u96fe",i:"foggy",b:"#1a1b1a"},48:{d:"\u51bb\u96fe",i:"foggy",b:"#1b1c1e"},51:{d:"\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1a1e22"},53:{d:"\u4e2d\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1b1f23"},55:{d:"\u5927\u6bdb\u6bdb\u96e8",i:"rainy",b:"#1c2024"},
+  61:{d:"\u5c0f\u96e8",i:"rainy",b:"#1a1e24"},63:{d:"\u4e2d\u96e8",i:"rainy",b:"#191d22"},65:{d:"\u5927\u96e8",i:"thunderstorm",b:"#171b20"},66:{d:"\u51bb\u96e8",i:"severe_cold",b:"#1e2126"},67:{d:"\u51bb\u96e8",i:"severe_cold",b:"#1e2126"},
+  71:{d:"\u5c0f\u96ea",i:"ac_unit",b:"#1e2022"},73:{d:"\u4e2d\u96ea",i:"ac_unit",b:"#1d1f21"},75:{d:"\u5927\u96ea",i:"severe_cold",b:"#1c1e20"},77:{d:"\u96ea\u7c92",i:"severe_cold",b:"#1c1e20"},
+  80:{d:"\u9635\u96e8",i:"rainy",b:"#1a1e23"},81:{d:"\u9635\u96e8",i:"rainy",b:"#1b1f24"},82:{d:"\u66b4\u96e8",i:"thunderstorm",b:"#181c22"},85:{d:"\u9635\u96ea",i:"ac_unit",b:"#1d1f21"},86:{d:"\u9635\u96ea",i:"ac_unit",b:"#1c1e20"},
+  95:{d:"\u96f7\u66b4",i:"thunderstorm",b:"#1a1c22"},96:{d:"\u96f7\u66b4",i:"thunderstorm",b:"#1b1d23"},99:{d:"\u5f3a\u96f7\u66b4",i:"thunderstorm",b:"#191b21"}
+};
+
+function updateThemeColor() { const c=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim(); if(c) themeColorMeta.setAttribute('content',c); }
+function updateTime() { const n=new Date(); document.getElementById('islandTime').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
+
+async function getLocationByIP() {
+  try { const r=await fetch('https://ipapi.co/json/'); if(!r.ok) throw Error(); const d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city}; } catch(e) {
+    if(location.protocol==='http:'){ try { const r2=await fetch('http://ip-api.com/json/?lang=zh-CN'); if(r2.ok){ const d2=await r2.json(); if(d2.status==='success') return {lat:d2.lat,lon:d2.lon,city:d2.city}; } } catch(e2){} }
+  } return null;
+}
+
+async function fetchWeather() {
+  let lat=parseFloat(CookieUtils.get('weather_lat'))||null, lon=parseFloat(CookieUtils.get('weather_lon'))||null, locName=null;
+  if(!lat||!lon) {
+    if('geolocation'in navigator){
+      try {
+        document.getElementById('locationDisplay').textContent='\u6b63\u5728\u8bf7\u6c42\u4f4d\u7f6e...';
+        const p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true,maximumAge:3e5}));
+        lat=p.coords.latitude; lon=p.coords.longitude;
+        CookieUtils.set('weather_lat',lat,30); CookieUtils.set('weather_lon',lon,30);
+      } catch(e) {
+        const ip=await getLocationByIP();
+        if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
+        else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}
+      }
+    } else {
+      const ip=await getLocationByIP();
+      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
+      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='\u9ed8\u8ba4\u4f4d\u7f6e (\u5317\u4eac)';}
+    }
+  }
+  try {
+    if(!locName){ try { const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); const ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='\u672a\u77e5\u4f4d\u7f6e';} }
+    if(!document.getElementById('locationDisplay').textContent.includes('\u9ed8\u8ba4')) document.getElementById('locationDisplay').textContent=locName;
+    const wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
+    const d=await wr.json(); const c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'\u672a\u77e5',i:'thermostat',b:'#1a1c18'};
+    document.getElementById('islandWeatherTemp').textContent=t+'\u00b0'; document.getElementById('islandWeatherIcon').textContent=w.i;
+    document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'\u00b0';
+    document.getElementById('detailDesc').textContent=w.d;
+    document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'\u00b0 L:'+Math.round(da.temperature_2m_min[0])+'\u00b0';
+    document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';
+    document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
+    document.documentElement.style.setProperty('--island-expand-bg',w.b);
+  } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('\u5931\u8d25')) document.getElementById('locationDisplay').textContent='\u5929\u6c14\u83b7\u53d6\u5931\u8d25'; }
+}
+
 function toggleIsland(){island.classList.toggle('active');}
 function playSong(){audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
 document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
 document.getElementById('nextBtn').addEventListener('click',()=>{currentSongIndex=(currentSongIndex+1)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
 document.getElementById('prevBtn').addEventListener('click',()=>{currentSongIndex=(currentSongIndex-1+songs.length)%songs.length;loadSong(songs[currentSongIndex]);playSong();});
-function loadSong(song){document.getElementById('mainTitle').innerText=song.title;document.getElementById('mainArtist').innerText=song.artist;ColorUtils.extractColorFromUrl(song.cover,rgb=>{const t=ColorUtils.generateTheme(rgb);for(const[k,v]of Object.entries(t))document.documentElement.style.setProperty(k,v);updateThemeColor();});const mc=document.getElementById('mainCover');mc.onload=()=>{if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,album:song.artist.split('\u2022')[1]?.trim()||'Unknown Album',artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});};mc.src=song.cover;audio.src=song.src;if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});}
-let isDragging=false;const audioSlider=document.getElementById('audioSlider'),activeTrack=document.getElementById('activeTrack'),inactiveTrack=document.getElementById('inactiveTrack'),sliderThumb=document.getElementById('sliderThumb');
+
+function loadSong(song){
+  document.getElementById('mainTitle').innerText=song.title; document.getElementById('mainArtist').innerText=song.artist;
+  ColorUtils.extractColorFromUrl(song.cover,rgb=>{const t=ColorUtils.generateTheme(rgb); for(const[k,v]of Object.entries(t))document.documentElement.style.setProperty(k,v); updateThemeColor();});
+  const mc=document.getElementById('mainCover');
+  mc.onload=()=>{if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,album:song.artist.split('\u2022')[1]?.trim()||'Unknown Album',artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});};
+  mc.src=song.cover; audio.src=song.src;
+  if('mediaSession'in navigator)navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:song.artist,artwork:[{src:song.cover,sizes:'512x512',type:'image/jpeg'}]});
+}
+
+let isDragging=false;
+const audioSlider=document.getElementById('audioSlider'),activeTrack=document.getElementById('activeTrack'),inactiveTrack=document.getElementById('inactiveTrack'),sliderThumb=document.getElementById('sliderThumb');
 audio.addEventListener('timeupdate',()=>{const{duration,currentTime}=audio;if(isNaN(duration))return;const p=currentTime/duration*100;if(!isDragging)updateUI(p);if(currentTime>=duration&&duration>0)document.getElementById('nextBtn').click();});
 audioSlider.addEventListener('input',()=>{isDragging=true;updateUI(audioSlider.value);});
 audioSlider.addEventListener('change',()=>{isDragging=false;audio.currentTime=audioSlider.value/100*audio.duration;});
