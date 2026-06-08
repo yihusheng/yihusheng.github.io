@@ -1,26 +1,26 @@
 /**
  * generate-music.js
- * 自动扫描 src 目录下的音乐文件，生成 src/music.json
+ * 自动扫描 src/music 目录下的音乐文件，生成 src/scripts/music.json
  * 用法: node src/scripts/generate-music.js
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const srcDir = path.join(__dirname, '..');
-const outputFile = path.join(__dirname, '..', 'music.json');
+const musicDir = path.join(__dirname, '..', 'music');
+const outputFile = path.join(__dirname, 'music.json');
 
 // 支持的音频格式
 const AUDIO_EXTS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac'];
 // 支持的封面格式
 const COVER_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-// 读取 src 目录所有文件
+// 读取 music 目录所有文件
 let files;
 try {
-  files = fs.readdirSync(srcDir);
+  files = fs.readdirSync(musicDir);
 } catch (e) {
-  console.error('❌ 无法读取 src 目录:', e.message);
+  console.error('❌ 无法读取 src/music 目录:', e.message);
   process.exit(1);
 }
 
@@ -30,7 +30,7 @@ const audioFiles = files.filter(f =>
 );
 
 if (audioFiles.length === 0) {
-  console.log('⚠️  src 目录中没有找到音频文件，生成空列表');
+  console.log('⚠️  src/music 目录中没有找到音频文件，生成空列表');
   fs.writeFileSync(outputFile, JSON.stringify([], null, 2));
   process.exit(0);
 }
@@ -49,7 +49,7 @@ const songs = audioFiles.map((mp3File) => {
     }
   }
 
-  // 如果没找到，尝试匹配 src 目录下的任意非音乐图片
+  // 如果没找到，尝试匹配 music 目录下的任意非音乐图片
   if (!coverFile) {
     coverFile = files.find(f =>
       COVER_EXTS.includes(path.extname(f).toLowerCase()) &&
@@ -58,11 +58,8 @@ const songs = audioFiles.map((mp3File) => {
   }
 
   // 从文件名解析标题和艺术家
-  // 格式: "Artist - Title.mp3" 或 "Title.mp3"
   let title = baseName;
   let artist = 'Unknown';
-
-  // 尝试用 " - " 分割
   const dashIndex = baseName.indexOf(' - ');
   if (dashIndex > 0) {
     artist = baseName.substring(0, dashIndex).trim();
@@ -72,8 +69,8 @@ const songs = audioFiles.map((mp3File) => {
   return {
     title: title,
     artist: artist,
-    cover: coverFile ? `./src/${encodeURIComponent(coverFile)}` : '',
-    src: `./src/${encodeURIComponent(mp3File)}`
+    cover: coverFile ? `./src/music/${encodeURIComponent(coverFile)}` : '',
+    src: `./src/music/${encodeURIComponent(mp3File)}`
   };
 });
 

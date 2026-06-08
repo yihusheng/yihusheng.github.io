@@ -1,0 +1,20 @@
+[
+  {
+    "title": "La Ultima Noche(Collazo)",
+    "artist": "Lex Vandyke",
+    "cover": "",
+    "src": "./src/music/Lex Vandyke - La Ultima Noche(Collazo).mp3"
+  },
+  {
+    "title": "Follow YourDream's",
+    "artist": "MerOne Record's",
+    "cover": "./src/music/Follow YourDream's.jpg",
+    "src": "./src/music/MerOne Record's - Follow YourDream's.mp3"
+  },
+  {
+    "title": "冇钱索货屎",
+    "artist": "邱清云",
+    "cover": "./src/music/邱清云 - 冇钱索货屎.jpg",
+    "src": "./src/music/邱清云 - 冇钱索货屎.mp3"
+  }
+]
