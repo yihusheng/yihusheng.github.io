@@ -54,6 +54,7 @@ jobs:
           git add src/scripts/music.json
           git add src/music/ -- '*.jpg' '*.png'
           git diff --staged --quiet || git commit -m "chore: auto-update music.json & extract covers [skip ci]"
+          git pull --rebase
           git push
 
       - name: Setup Pages
