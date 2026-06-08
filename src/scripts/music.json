@@ -1,5 +1,17 @@
 [
   {
+    "title": "Santorini（圣托里尼）",
+    "artist": "Jasing Rye",
+    "cover": "",
+    "src": "./src/music/Jasing Rye - Santorini（圣托里尼）.mp3"
+  },
+  {
+    "title": "Une Hirondelle A Fait Le Printemps（独燕成春）",
+    "artist": "Jasing Rye",
+    "cover": "",
+    "src": "./src/music/Jasing Rye - Une Hirondelle A Fait Le Printemps（独燕成春）.mp3"
+  },
+  {
     "title": "La Ultima Noche(Collazo)",
     "artist": "Lex Vandyke",
     "cover": "",
@@ -12,9 +24,75 @@
     "src": "./src/music/MerOne Record's - Follow YourDream's.mp3"
   },
   {
+    "title": "香花",
+    "artist": "丘沛宸",
+    "cover": "",
+    "src": "./src/music/丘沛宸 - 香花.mp3"
+  },
+  {
+    "title": "金山寺",
+    "artist": "燕池",
+    "cover": "",
+    "src": "./src/music/燕池 - 金山寺.mp3"
+  },
+  {
+    "title": "蓮花空行",
+    "artist": "珂拉琪 Collage",
+    "cover": "",
+    "src": "./src/music/珂拉琪 Collage - 蓮花空行.mp3"
+  },
+  {
+    "title": "小时候（2022版）",
+    "artist": "罗伟力",
+    "cover": "",
+    "src": "./src/music/罗伟力 - 小时候（2022版）.mp3"
+  },
+  {
+    "title": "车田豆腐（2022版）",
+    "artist": "罗伟力",
+    "cover": "",
+    "src": "./src/music/罗伟力 - 车田豆腐（2022版）.mp3"
+  },
+  {
+    "title": "之乎者也",
+    "artist": "罗大佑",
+    "cover": "",
+    "src": "./src/music/罗大佑 - 之乎者也.mp3"
+  },
+  {
+    "title": "乡愁四韵",
+    "artist": "罗大佑",
+    "cover": "",
+    "src": "./src/music/罗大佑 - 乡愁四韵.mp3"
+  },
+  {
+    "title": "鹿港小镇",
+    "artist": "罗大佑",
+    "cover": "",
+    "src": "./src/music/罗大佑 - 鹿港小镇.m4a"
+  },
+  {
+    "title": "万事镭行先",
+    "artist": "邱清云",
+    "cover": "",
+    "src": "./src/music/邱清云 - 万事镭行先.mp3"
+  },
+  {
     "title": "冇钱索货屎",
     "artist": "邱清云",
     "cover": "./src/music/邱清云 - 冇钱索货屎.jpg",
     "src": "./src/music/邱清云 - 冇钱索货屎.mp3"
+  },
+  {
+    "title": "摘（Leaves fall, dreams rise）",
+    "artist": "陈抒妮",
+    "cover": "",
+    "src": "./src/music/陈抒妮 - 摘（Leaves fall, dreams rise）.mp3"
+  },
+  {
+    "title": "寂静的天空",
+    "artist": "黛青塔娜 HAYA乐团",
+    "cover": "",
+    "src": "./src/music/黛青塔娜 HAYA乐团 - 寂静的天空.mp3"
   }
 ]
