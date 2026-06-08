@@ -35,7 +35,6 @@
     { icon: 'underline',   label: 'Underline', href: '/Tools/Underline/' },
     { icon: 'functions',   label: 'Calculator', href: '/Tools/Content%20Calculator/' },
     { icon: 'open_in_new', label: 'JumpTools', href: '/Tools/JumpTools/' },
-    { icon: 'music_note',  label: 'Music',     href: '/Music/' },
     { icon: 'dashboard',   label: 'zashboard', href: '/Tools/zashboard/' },
     { icon: 'dashboard',   label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
