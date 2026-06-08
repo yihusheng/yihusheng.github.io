@@ -199,6 +199,9 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 4px 24px 12px; flex-shrink: 0;
     }
+    .playlist-header-left {
+      display: flex; align-items: center; gap: 10px;
+    }
     .playlist-header-title {
       font-size: 1.25rem; font-weight: 900;
       color: var(--md-sys-color-on-surface);
@@ -207,6 +210,20 @@
     .playlist-header-count {
       font-size: 0.8rem; color: var(--md-sys-color-on-surface-variant);
       font-weight: 500;
+    }
+    .playlist-repeat-btn {
+      background: none; border: none; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--md-sys-color-on-surface-variant);
+      transition: all 0.2s;
+    }
+    .playlist-repeat-btn .material-symbols-rounded {
+      font-size: 1.3rem;
+    }
+    .playlist-repeat-btn.active {
+      color: var(--md-sys-color-primary);
+      background: var(--md-sys-color-surface-container);
     }
     .playlist-body {
       flex: 1; overflow-y: auto;
@@ -328,7 +345,7 @@
       <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
       <button class="btn btn-play" id="playBtn" aria-label="play/pause"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
       <button class="btn" id="nextBtn" aria-label="next"><span class="material-symbols-rounded">skip_next</span></button>
-      <button class="btn btn-shuffle" id="repeatBtn" aria-label="repeat"><span class="material-symbols-rounded">repeat</span></button>
+      <button class="btn btn-shuffle" id="playlistBtn" aria-label="playlist"><span class="material-symbols-rounded">queue_music</span></button>
     </div>
   </div>
   <div class="bottom-drawer" id="drawer">
@@ -351,8 +368,13 @@
       <div class="playlist-handle"></div>
     </div>
     <div class="playlist-header">
-      <span class="playlist-header-title">播放列表</span>
-      <span class="playlist-header-count" id="playlistCount">0 首</span>
+      <div class="playlist-header-left">
+        <span class="playlist-header-title">播放列表</span>
+        <span class="playlist-header-count" id="playlistCount">0 首</span>
+      </div>
+      <button class="playlist-repeat-btn" id="playlistRepeatBtn" aria-label="toggle repeat">
+        <span class="material-symbols-rounded">repeat</span>
+      </button>
     </div>
     <div class="playlist-body" id="playlistBody"></div>
   </div>
@@ -521,53 +543,15 @@ function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
 document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
 
-// 随机 / 顺序 / 单曲 切换
+// 随机 / 顺序 切换
 function toggleShuffle() {
   isShuffle = !isShuffle;
   document.getElementById('shuffleBtn').classList.toggle('active', isShuffle);
 }
 document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
 
-// ===== Repeat 按钮：单击切换单曲循环，长按弹出播放列表 =====
-(function setupRepeatButton() {
-  const btn = document.getElementById('repeatBtn');
-  let pressTimer = null;
-  let isLongPress = false;
-  const LONG_PRESS_MS = 400;
-
-  function startPress(e) {
-    // 避免鼠标和触摸同时触发
-    if (pressTimer) return;
-    isLongPress = false;
-    pressTimer = setTimeout(() => {
-      isLongPress = true;
-      pressTimer = null;
-      openPlaylist();
-    }, LONG_PRESS_MS);
-  }
-
-  function endPress(e) {
-    if (pressTimer) {
-      clearTimeout(pressTimer);
-      pressTimer = null;
-      // 如果不是长按，执行单击逻辑（切换单曲循环）
-      if (!isLongPress) {
-        isRepeat = !isRepeat;
-        btn.classList.toggle('active', isRepeat);
-      }
-    }
-    isLongPress = false;
-  }
-
-  // 鼠标事件
-  btn.addEventListener('mousedown', startPress);
-  btn.addEventListener('mouseup', endPress);
-  btn.addEventListener('mouseleave', endPress);
-  // 触摸事件
-  btn.addEventListener('touchstart', startPress, { passive: true });
-  btn.addEventListener('touchend', endPress);
-  btn.addEventListener('touchcancel', endPress);
-})();
+// ===== 播放列表按钮：点击直接打开播放列表 =====
+document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
 
 function getNextIndex() {
   if (isRepeat) return currentSongIndex;
@@ -597,7 +581,7 @@ function loadSong(song){
   document.getElementById('mainTitle').innerText = song.title;
   document.getElementById('mainArtist').innerText = song.artist;
   const mc = document.getElementById('mainCover');
-  mc.src = ''; // 先清空
+  mc.src = '';
 
   // 优先读取 MP3 内置封面
   loadEmbeddedCover(song.src, function(coverDataUrl) {
@@ -609,7 +593,6 @@ function loadSong(song){
         updateThemeColor();
       });
     } else if (song.cover) {
-      // 降级用外部封面
       mc.src = song.cover;
       ColorUtils.extractColorFromUrl(song.cover, rgb => {
         const t = ColorUtils.generateTheme(rgb);
@@ -658,6 +641,9 @@ function closePlaylist() {
 
 function renderPlaylist() {
   const body = document.getElementById('playlistBody');
+  const repeatBtn = document.getElementById('playlistRepeatBtn');
+  // 同步 repeat 状态
+  repeatBtn.classList.toggle('active', isRepeat);
   document.getElementById('playlistCount').textContent = songs.length + ' 首';
   body.innerHTML = songs.map((song, i) => {
     const isActive = i === currentSongIndex;
@@ -687,9 +673,7 @@ function renderPlaylist() {
       currentSongIndex = idx;
       loadSong(songs[idx]);
       playSong();
-      // 刷新高亮
-      renderPlaylist();
-      // 保持打开状态，方便继续切歌
+      renderPlaylist(); // 刷新高亮，保持打开
     });
   });
 }
@@ -698,6 +682,11 @@ function renderPlaylist() {
 document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
 // 拖拽把手关闭
 document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
+// 播放列表内的单曲循环开关
+document.getElementById('playlistRepeatBtn').addEventListener('click', function() {
+  isRepeat = !isRepeat;
+  this.classList.toggle('active', isRepeat);
+});
 
 function init(){updateTime();setInterval(updateTime,1e3);fetchWeather();setInterval(fetchWeather,6e5);island.addEventListener('click',toggleIsland);loadBingWallpaper();window.addEventListener('resize',()=>{if(window.innerWidth>=768)loadBingWallpaper();});updateThemeColor();}
 
