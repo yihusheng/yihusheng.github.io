@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>UA 信息读取</title>
-<link href="https/css500; href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--neg:#d03238;--r:24px;--rs:12px;--rp:9999px}
+:root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px}
 .wrap{width:100%;max-width:640px;display:flex;flex-direction:column;gap:12px;margin-top:8px}
 .bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;width:fit-content;margin-bottom:6px}
@@ -35,9 +36,8 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
 .ft{background:var(--k);padding:14px 24px;text-align:center}
 .ft p{font-size:11px;color:rgba(232,235,230,.5)}
 .ft a{color:var(--p);text-decoration:none}
-.rs{display:none}
-.rs.s{display:block}
-.raw{background:var(--k);border-radius:var(--rs);padding:12px 14px;;font-size:11px;color:var(--p);overflow-x:auto;white-space:pre-wrap;word-break:break-all;margin-top:12px;line-height:1.6;max-height:120px;overflow-y:auto}
+.rs{display:none}.rs.s{display:block}
+.raw{background:var(--k);border-radius:var(--rs);padding:12px 14px;font-family:'SF Mono','Courier New',monospace;font-size:11px;color:var(--p);word-break:break-all;margin-top:12px;line-height:1.6;max-height:120px;overflow:auto}
 </style>
 </head>
 <body>
@@ -47,20 +47,19 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
   <h1>UA 信息读取</h1>
   <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
   <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">text_snippet</span> User-Agent</label>
-  <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
+  <textarea id="uaInput" placeholder="粘贴 User-Agent..."></textarea>
   <button class="btn btn-p" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
   <div class="rw">
-    <button class="btn btn-s" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 使用本机 UA</button>
+    <button class="btn btn-s" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 本机 UA</button>
     <button class="btn btn-s" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
   </div>
 </div>
-
 <div class="card rs" id="resultCard">
   <div class="pad">
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">analytics</span> 解析结果</label>
     <div class="dg">
       <div class="di"><div class="dl">浏览器</div><div class="dv" id="browserVal">--</div></div>
-      <div class="di"><div class="dl">浏览器版本</div><div class="dv" id="browserVerVal">--</div></div>
+      <div class="di"><div class="dl">版本</div><div class="dv" id="browserVerVal">--</div></div>
       <div class="di"><div class="dl">操作系统</div><div class="dv" id="osVal">--</div></div>
       <div class="di"><div class="dl">系统版本</div><div class="dv" id="osVerVal">--</div></div>
       <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brandVal">--</div></div>
@@ -69,47 +68,34 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
     </div>
     <div class="raw" id="rawUADisplay"></div>
     <div class="rw">
-      <button class="btn btn-s" id="copyResultBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果</button>
-      <button class="btn btn-s" id="moreInfoBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
+      <button class="btn btn-s" id="copyResultBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制</button>
+      <button class="btn btn-s" id="moreInfoBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备库</button>
     </div>
   </div>
 </div>
-
-<div class="card"><div class="ft"><p>数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a> &bull; 智能解析 UA</p></div></div>
+<div class="card"><div class="ft"><p>数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a></p></div></div>
 </div>
-
 <script>
-var uaI=document.getElementById('uaInput'),pB=document.getElementById('parseBtn'),uB=document.getElementById('useMyUABtn'),cB=document.getElementById('clearBtn'),rC=document.getElementById('resultCard');
-var bV=document.getElementById('browserVal'),bVV=document.getElementById('browserVerVal'),oV=document.getElementById('osVal'),oVV=document.getElementById('osVerVal'),brV=document.getElementById('brandVal'),mV=document.getElementById('modelVal'),tV=document.getElementById('typeVal'),rUD=document.getElementById('rawUADisplay'),cRB=document.getElementById('copyResultBtn'),mIB=document.getElementById('moreInfoBtn');
-
-var brandMap={'xiaomi':'小米','mi':'小米','redmi':'红米','poco':'POCO','huawei':'华为','honor':'荣耀','samsung':'三星','sm-':'三星','apple':'苹果','iphone':'苹果','ipad':'苹果','oneplus':'一加','oppo':'OPPO','realme':'真我','vivo':'vivo','iqoo':'iQOO','meizu':'魅族','lenovo':'联想','google':'谷歌','pixel':'谷歌','motorola':'摩托罗拉','moto':'摩托罗拉','nokia':'诺基亚','sony':'索尼','xperia':'索尼','asus':'华硕','zenfone':'华硕','rog':'华硕','360':'360','nubia':'努比亚','nothing':'Nothing','coolpad':'酷派','letv':'乐视','zte':'中兴','blackshark':'黑鲨','tcl':'TCL'};
-
-function findInUA(ua,map,def){var u=ua.toLowerCase();for(var k in map)if(u.indexOf(k)!==-1)return map[k];return def}
-function gV(ua,p){var r=new RegExp(p+'[\\/\\s]?([0-9]+[\\.0-9]*)','i');var m=ua.match(r);return m?m[1]:''}
-function oV2(ua,os){if(os==='Android')return gV(ua,'Android');if(os==='iOS'){var v=gV(ua,'OS\\s+([0-9_]+)');if(v)return v.replace(/_/g,'.');v=gV(ua,'iPhone OS\\s+([0-9_]+)');return v?v.replace(/_/g,'.'):''}if(os==='macOS'){var v=gV(ua,'Mac OS X\\s+([0-9_]+)');return v?v.replace(/_/g,'.'):''}return''}
-function dT(ua){var u=ua.toLowerCase();if(u.indexOf('iphone')!==-1)return'手机';if(u.indexOf('ipad')!==-1||u.indexOf('tablet')!==-1)return'平板';if(u.indexOf('watch')!==-1)return'手表';if(u.indexOf('tv')!==-1)return'电视';if(u.indexOf('mobile')!==-1||u.indexOf('android')!==-1)return'手机';return'电脑'}
-function dB(ua){var u=ua.toLowerCase();for(var k in brandMap)if(u.indexOf(k)!==-1)return brandMap[k];return'未知'}
-function dM(ua){var ms=['SM-[A-Z0-9]+','RMX[0-9]+','CPH[0-9]+','PH[0-9]+','Pixel\\s?[0-9a-z]+','iPhone[0-9,]+'];for(var i=0;i<ms.length;i++){var r=new RegExp(ms[i],'i'),m=ua.match(r);if(m)return m[0]}return'--'}
-
-function parse(){
-  var ua=uaI.value.trim();
-  if(!ua){rC.classList.remove('s');return}
-  var b=findInUA(ua,{'edg':'Edge','edge':'Edge','chrome':'Chrome','crios':'Chrome','firefox':'Firefox','fxios':'Firefox','safari':'Safari','opera':'Opera','opr':'Opera','samsungbrowser':'Samsung Internet','micromessenger':'微信','qqbrowser':'QQ浏览器','ucbrowser':'UC浏览器','baiduboxapp':'百度'},'未知');
-  var bv='';
-  if(b==='Chrome')bv=gV(ua,'Chrome');else if(b==='Edge')bv=gV(ua,'Edg');else if(b==='Firefox')bv=gV(ua,'Firefox');else if(b==='Safari')bv=gV(ua,'Version');else if(b==='Opera')bv=gV(ua,'OPR')||gV(ua,'Opera');else{var m=ua.match(/([a-zA-Z]+)[\\/\\s]([0-9]+[\\.0-9]*)/);if(m)bv=m[2]}
-  var os=findInUA(ua,{'windows nt 10':'Windows 10/11','windows nt 6.3':'Windows 8.1','windows nt 6.2':'Windows 8','windows nt 6.1':'Windows 7','windows nt 6.0':'Windows Vista','windows phone':'Windows Phone','android':'Android','iphone os':'iOS','mac os x':'macOS','macintosh':'macOS','linux':'Linux','chrome os':'ChromeOS','harmonyos':'HarmonyOS'},'未知');
-  var ov=oV2(ua,os);
-  bV.textContent=b;bVV.textContent=bv||'--';oV.textContent=os;oVV.textContent=ov||'--';brV.textContent=dB(ua);mV.textContent=dM(ua);tV.textContent=dT(ua);rUD.textContent=ua;
-  rC.classList.add('s');
-}
-
-pB.addEventListener('click',parse);
-uaI.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.ctrlKey)parse()});
-uB.addEventListener('click',function(){uaI.value=navigator.userAgent;parse()});
-cB.addEventListener('click',function(){uaI.value='';rC.classList.remove('s')});
-cRB.addEventListener('click',function(){navigator.clipboard.writeText('浏览器: '+bV.textContent+' '+bVV.textContent+'\n系统: '+oV.textContent+' '+oVV.textContent+'\n品牌: '+brV.textContent+'\n型号: '+mV.textContent+'\n类型: '+tV.textContent)});
-mIB.addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')});
-window.addEventListener('load',function(){setTimeout(function(){uaI.value=navigator.userAgent;parse()},100)});
+var I=document.getElementById('uaInput'),P=document.getElementById('parseBtn'),U=document.getElementById('useMyUABtn'),C=document.getElementById('clearBtn'),R=document.getElementById('resultCard');
+var BV=document.getElementById('browserVal'),BVV=document.getElementById('browserVerVal'),OV=document.getElementById('osVal'),OVV=document.getElementById('osVerVal'),BRV=document.getElementById('brandVal'),MV=document.getElementById('modelVal'),TV=document.getElementById('typeVal'),RUD=document.getElementById('rawUADisplay'),CRB=document.getElementById('copyResultBtn'),MIB=document.getElementById('moreInfoBtn');
+var BM={'xiaomi':'小米','mi':'小米','redmi':'红米','poco':'POCO','huawei':'华为','honor':'荣耀','samsung':'三星','sm-':'三星','apple':'苹果','iphone':'苹果','ipad':'苹果','oneplus':'一加','oppo':'OPPO','realme':'真我','vivo':'vivo','iqoo':'iQOO','meizu':'魅族','lenovo':'联想','google':'谷歌','pixel':'谷歌','moto':'摩托罗拉','motorola':'摩托罗拉','nokia':'诺基亚','sony':'索尼','xperia':'索尼','asus':'华硕','zenfone':'华硕','360':'360','nubia':'努比亚','nothing':'Nothing','coolpad':'酷派','letv':'乐视','zte':'中兴','blackshark':'黑鲨','tcl':'TCL'};
+function F(ua,m,d){var u=ua.toLowerCase();for(var k in m)if(u.indexOf(k)!==-1)return m[k];return d}
+function GV(ua,p){var r=new RegExp(p+'[\\/\\s]?([0-9]+[\\.0-9]*)','i'),m=ua.match(r);return m?m[1]:''}
+function OSV(ua,o){if(o==='Android')return GV(ua,'Android');if(o==='iOS'){var v=GV(ua,'OS\\s+([0-9_]+)');if(v)return v.replace(/_/g,'.');v=GV(ua,'iPhone OS\\s+([0-9_]+)');return v?v.replace(/_/g,'.'):''}if(o==='macOS'){var v=GV(ua,'Mac OS X\\s+([0-9_]+)');return v?v.replace(/_/g,'.'):''}return''}
+function DT(ua){var u=ua.toLowerCase();if(u.indexOf('iphone')!==-1)return'手机';if(u.indexOf('ipad')!==-1||u.indexOf('tablet')!==-1)return'平板';if(u.indexOf('watch')!==-1)return'手表';if(u.indexOf('tv')!==-1)return'电视';if(u.indexOf('mobile')!==-1)return'手机';return'电脑'}
+function DB(ua){var u=ua.toLowerCase();for(var k in BM)if(u.indexOf(k)!==-1)return BM[k];return'未知'}
+function DM(ua){var ms=['SM-[A-Z0-9]+','RMX[0-9]+','CPH[0-9]+','Pixel\\s?[0-9a-z]+','iPhone[0-9,]+'];for(var i=0;i<ms.length;i++){var r=new RegExp(ms[i],'i'),m=ua.match(r);if(m)return m[0]}return'--'}
+function parse(){var u=I.value.trim();if(!u){R.classList.remove('s');return}
+var b=F(u,{'edg':'Edge','chrome':'Chrome','crios':'Chrome','firefox':'Firefox','fxios':'Firefox','safari':'Safari','opr':'Opera','samsungbrowser':'Samsung Internet','micromessenger':'微信'},'未知'),bv='';
+if(b==='Chrome')bv=GV(u,'Chrome');else if(b==='Edge')bv=GV(u,'Edg');else if(b==='Firefox')bv=GV(u,'Firefox');else if(b==='Safari')bv=GV(u,'Version');else if(b==='Opera')bv=GV(u,'OPR')||GV(u,'Opera');
+var os=F(u,{'windows nt 10':'Windows','windows nt 6.3':'Windows 8.1','windows nt 6.2':'Windows 8','windows nt 6.1':'Windows 7','iphone os':'iOS','mac os x':'macOS','android':'Android','linux':'Linux','chrome os':'ChromeOS','harmonyos':'HarmonyOS'},'未知'),ov=OSV(u,os);
+BV.textContent=b;BVV.textContent=bv||'--';OV.textContent=os;OVV.textContent=ov||'--';BRV.textContent=DB(u);MV.textContent=DM(u);TV.textContent=DT(u);RUD.textContent=u;R.classList.add('s')}
+P.addEventListener('click',parse);
+U.addEventListener('click',function(){I.value=navigator.userAgent;parse()});
+C.addEventListener('click',function(){I.value='';R.classList.remove('s')});
+CRB.addEventListener('click',function(){navigator.clipboard.writeText('浏览器: '+BV.textContent+' '+BVV.textContent+'\n系统: '+OV.textContent+' '+OVV.textContent+'\n品牌: '+BRV.textContent+'\n型号: '+MV.textContent+'\n类型: '+TV.textContent)});
+MIB.addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')});
+window.addEventListener('load',function(){setTimeout(function(){I.value=navigator.userAgent;parse()},50)});
 </script>
 </body>
 </html>
