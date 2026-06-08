@@ -15,10 +15,10 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】两枚独立固定按钮占据顶部区域：
+ *  【样式说明】两枚独立按钮固定占据顶部区域：
  *    - 左上：主页按钮 🏠
  *    - 右上：菜单按钮 ···
- *    按钮固定占据顶部，网页内容通过 padding 下移不遮挡。
+ *    所有页面统一添加 body padding，网页内容在按钮下方显示。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -91,15 +91,19 @@
         '</div></div>';
   }
 
+  function addBodyPadding() {
+    // 所有页面统一添加顶部内边距，确保内容在按钮下方
+    // 使用 !important 防止被页面原有样式覆盖
+    var style = document.createElement('style');
+    style.textContent = 'body { padding-top: 74px !important; }';
+    document.head.appendChild(style);
+  }
+
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
+    addBodyPadding();
     document.body.insertAdjacentHTML('beforeend', buildHTML());
-
-    // 固定按钮占据顶部区域，padding 使内容下移不被遮挡
-    if (!document.body.classList.contains('navbar-overlay')) {
-      document.body.style.paddingTop = '74px';
-    }
   }
 
   function bindEvents() {
