@@ -18,7 +18,7 @@
  *  【样式说明】两枚独立按钮固定占据顶部区域：
  *    - 左上：主页按钮 🏠
  *    - 右上：菜单按钮 ···
- *    所有页面统一添加 body padding，网页内容在按钮下方显示。
+ *    所有页面通过 spacer 占位确保内容在按钮下方显示。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -75,6 +75,7 @@
     }
 
     return '' +
+      '<div id="wiseNavbarSpacer" style="height:74px;flex-shrink:0;width:100%;"></div>' +
       '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
         '<span class="material-symbols-rounded">home</span></a>' +
       '<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">' +
@@ -91,19 +92,12 @@
         '</div></div>';
   }
 
-  function addBodyPadding() {
-    // 所有页面统一添加顶部内边距，确保内容在按钮下方
-    // 使用 !important 防止被页面原有样式覆盖
-    var style = document.createElement('style');
-    style.textContent = 'body { padding-top: 74px !important; }';
-    document.head.appendChild(style);
-  }
-
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
-    addBodyPadding();
-    document.body.insertAdjacentHTML('beforeend', buildHTML());
+
+    // 在 body 最前面插入 spacer + 按钮，spacer 将后续内容推下
+    document.body.insertAdjacentHTML('afterbegin', buildHTML());
   }
 
   function bindEvents() {
