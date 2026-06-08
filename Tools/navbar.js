@@ -15,10 +15,10 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】两枚独立浮动按钮（类似相框效果）：
- *    - 左上：主页按钮 🏠（不贴边）
- *    - 右上：菜单按钮 ···（不贴边）
- *    纯浮动在页面之上，不影响原有网页内容布局。
+ *  【样式说明】两枚独立固定按钮占据顶部区域：
+ *    - 左上：主页按钮 🏠
+ *    - 右上：菜单按钮 ···
+ *    按钮固定占据顶部，网页内容通过 padding 下移不遮挡。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -95,7 +95,11 @@
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
     document.body.insertAdjacentHTML('beforeend', buildHTML());
-    // 纯浮动按钮，不占用页面空间，无需 padding
+
+    // 固定按钮占据顶部区域，padding 使内容下移不被遮挡
+    if (!document.body.classList.contains('navbar-overlay')) {
+      document.body.style.paddingTop = '74px';
+    }
   }
 
   function bindEvents() {
