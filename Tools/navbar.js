@@ -8,6 +8,8 @@
  *  【维护方式】后续只需修改下方的 NAV_ITEMS 数组，添加/删除/修改
  *  导航条目，所有引用此脚本的页面都会同步更新，无需逐个页面修改。
  *  
+ *  导航数据还会暴露到 window.WiseNavbarData，供主页底部抽屉动态渲染。
+ *  
  *  【使用方法】在任意页面的 <head> 中引入：
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
@@ -35,9 +37,15 @@
     { icon: 'underline',   label: 'Underline', href: '/Tools/Underline/' },
     { icon: 'functions',   label: 'Calculator', href: '/Tools/Content%20Calculator/' },
     { icon: 'open_in_new', label: 'JumpTools', href: '/Tools/JumpTools/' },
+    { icon: 'music_note',  label: 'Music',     href: '/Music/' },
     { icon: 'dashboard',   label: 'zashboard', href: '/Tools/zashboard/' },
     { icon: 'dashboard',   label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
+
+  /* ──────────────────────────────────────────────
+     暴露数据给外部使用（如主页底部抽屉）
+     ────────────────────────────────────────────── */
+  window.WiseNavbarData = NAV_ITEMS.slice();
 
   /* ──────────────────────────────────────────────
      网站配置
@@ -51,11 +59,9 @@
      内部逻辑 — 通常无需修改
      ══════════════════════════════════════════════ */
 
-  // 自动注入 Material Symbols Rounded 字体（确保图标正确显示）
+  // 自动注入 Material Symbols Rounded 字体
   function injectFonts() {
-    // 避免重复注入
     if (document.querySelector('link[href*="Material+Symbols+Rounded"]')) return;
-    
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0';
@@ -65,8 +71,8 @@
   // 获取当前页面路径（标准化）
   function getCurrentPath() {
     let p = window.location.pathname;
-    p = p.replace(/\/index\.html$/, '');   // 去掉 index.html
-    p = p.replace(/\/+$/, '');             // 去掉末尾斜杠
+    p = p.replace(/\/index\.html$/, '');
+    p = p.replace(/\/+$/, '');
     return p || '/';
   }
 
@@ -75,16 +81,12 @@
     const cur = getCurrentPath();
     const target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
     if (cur === target) return true;
-    // 对于非首页，支持路径前缀匹配（如 /Tools/Double/xxx 也匹配 Double）
     if (target !== '/' && cur.startsWith(target)) return true;
     return false;
   }
 
   // 生成导航栏 HTML
   function buildHTML() {
-    const isOverlay = document.body.classList.contains('navbar-overlay');
-
-    // 桌面端链接
     const links = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
       return `<a class="wise-nav-link${act}" href="${item.href}">
@@ -93,7 +95,6 @@
       </a>`;
     }).join('');
 
-    // 移动端抽屉链接
     const drawerLinks = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
       return `<a class="wise-nav-drawer-link${act}" href="${item.href}">
@@ -140,14 +141,11 @@
 
   // 注入导航栏到页面
   function inject() {
-    if (document.getElementById('wiseNavbar')) return; // 防止重复注入
+    if (document.getElementById('wiseNavbar')) return;
 
-    // 先注入字体，再生成导航栏
     injectFonts();
-    
     document.body.insertAdjacentHTML('afterbegin', buildHTML());
-    
-    // body padding（非 overlay 模式）
+
     if (!document.body.classList.contains('navbar-overlay')) {
       document.body.style.paddingTop = '52px';
     }
@@ -179,17 +177,14 @@
     });
     if (close) close.addEventListener('click', closeDrawer);
 
-    // 点击遮罩关闭
     drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
-    // ESC 键关闭
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
-    // 抽屉内链接点击后关闭
     drawer.querySelectorAll('.wise-nav-drawer-link').forEach(el => {
       el.addEventListener('click', closeDrawer);
     });
   }
 
-  // 启动
+  // 启动 — 主页有自己的抽屉布局，不自动注入顶部导航栏
   function init() {
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => { inject(); bindEvents(); });
@@ -199,5 +194,8 @@
     }
   }
 
-  init();
+  // 只在非主页时自动注入顶部导航栏；主页通过 WiseNavbarData 读取数据
+  if (getCurrentPath() !== '/') {
+    init();
+  }
 })();
