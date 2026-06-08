@@ -20,11 +20,12 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1;margin-b
 .card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden}
 .pad{padding:20px 24px}
 .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.ua-row{display:flex;gap:8px;align-items:stretch}
-.ua-row textarea{flex:1;min-height:160px}
-.ua-copy-btn{display:flex;align-items:center;justify-content:center;width:48px;min-width:48px;background:var(--s);color:var(--b);border:none;border-radius:var(--rs);cursor:pointer;transition:all .15s;flex-shrink:0}
-.ua-copy-btn:hover{background:var(--pp);color:var(--kd)}
+.ua-wrap{position:relative}
+.ua-wrap textarea{width:100%;min-height:160px;padding-top:36px}
+.ua-copy-btn{position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;gap:4px;background:var(--c);color:var(--b);border:1.5px solid var(--s);border-radius:var(--rs);padding:4px 10px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;z-index:1;line-height:1}
+.ua-copy-btn:hover{background:var(--pp);color:var(--kd);border-color:var(--p)}
 .ua-copy-btn:active{transform:scale(.95)}
+.ua-copy-btn .material-symbols-rounded{font-size:14px}
 textarea{width:100%;background:var(--s);color:var(--k);font-family:'Inter',monospace;font-size:13px;font-weight:500;border:2px solid transparent;border-radius:var(--rs);padding:12px 14px;outline:none;resize:vertical;min-height:80px;transition:all .2s;line-height:1.5}
 textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .btn{display:flex;align-items:center;justify-content:center;height:46px;padding:0 24px;border-radius:var(--rs);font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .15s;gap:6px}
@@ -51,10 +52,9 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
   <div class="bdg"><span class="material-symbols-rounded">device_hub</span> UA Analyzer</div>
   <h1>UA 信息读取</h1>
   <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
-  <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">text_snippet</span> User-Agent</label>
-  <div class="ua-row">
+  <div class="ua-wrap">
+    <button class="ua-copy-btn" id="copyUABtn" title="复制 User-Agent"><span class="material-symbols-rounded">content_copy</span> 复制</button>
     <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
-    <button class="ua-copy-btn" id="copyUABtn" title="复制 User-Agent"><span class="material-symbols-rounded" style="font-size:20px">content_copy</span></button>
   </div>
   <button class="btn btn-p" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
   <div class="rw">
@@ -200,7 +200,11 @@ document.getElementById('copyUABtn').addEventListener('click', function(){
   navigator.clipboard.writeText(text).then(function(){
     var btn = document.getElementById('copyUABtn');
     btn.querySelector('.material-symbols-rounded').textContent = 'check';
-    setTimeout(function(){ btn.querySelector('.material-symbols-rounded').textContent = 'content_copy'; }, 1500);
+    btn.childNodes[1].textContent = ' 已复制';
+    setTimeout(function(){
+      btn.querySelector('.material-symbols-rounded').textContent = 'content_copy';
+      btn.childNodes[1].textContent = ' 复制';
+    }, 1500);
   });
 });
 document.getElementById('cpyBtn').addEventListener('click', function(){
