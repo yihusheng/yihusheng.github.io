@@ -25,18 +25,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .pc:hover{background:var(--s);color:#d03238}
 .pc .material-symbols-rounded{font-size:18px}
 .sv{background:var(--s);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
-.sr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sr{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .ip{display:flex;align-items:center;gap:6px}
 .ip label{font-size:11px;font-weight:700;color:var(--b);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-.inp-sm{width:60px;height:34px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 8px;font-family:'Inter',monospace;font-size:13px;font-weight:600;text-align:center;background:var(--c);color:var(--k);outline:none;transition:all .15s}
+.inp-sm{width:64px;height:34px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 8px;font-family:'Inter',monospace;font-size:13px;font-weight:600;text-align:center;background:var(--c);color:var(--k);outline:none;transition:all .15s}
 .inp-sm:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .ip .un{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase}
-.qr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.ql{font-size:9px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.08em;margin-right:2px}
-.qc{background:var(--c);border:none;padding:3px 10px;border-radius:var(--rp);font-size:10px;font-weight:700;cursor:pointer;color:var(--b);font-family:inherit;transition:all .12s}
-.qc:hover{background:var(--pp);color:var(--kd)}
-.qc.act{background:var(--k);color:var(--p)}
-.nt{display:flex;flex-direction:column;gap:3px}
 .nr{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;transition:background .12s}
 .nr:focus-within{background:var(--s)}
 .nr.hl{background:var(--pp)}
@@ -81,19 +75,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     </div>
     <div class="sv">
       <div class="sr">
-        <div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0.1" class="inp-sm"><span class="un">g</span></div>
+        <div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
         <div class="ip"><label>总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-      </div>
-      <div class="qr">
-        <span class="ql">快捷</span>
-        <div id="tpA">
-          <button class="qc" data-w="15">15</button>
-          <button class="qc" data-w="30">30</button>
-          <button class="qc" data-w="50">50</button>
-          <button class="qc" data-w="100">100</button>
-          <button class="qc" data-w="200">200</button>
-          <button class="qc" data-w="500">500</button>
-        </div>
       </div>
     </div>
     <div class="nt">
@@ -103,6 +86,18 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftA">—<span class="ru">g</span></span></div></div><input type="number" id="fatA" placeholder="0" class="ni"><span class="nu">g</span></div>
       <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbA">—<span class="ru">g</span></span></div></div><input type="number" id="carA" placeholder="0" class="ni"><span class="nu">g</span></div>
       <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbA">—<span class="ru">g</span></span></div></div><input type="number" id="fibA" placeholder="0" class="ni"><span class="nu">g</span></div>
+    </div>
+    <div class="sv" style="margin-top:12px;margin-bottom:0">
+      <div class="sr"><span class="ql" style="font-size:9px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.08em">总重快捷</span>
+        <div id="tpA" style="display:flex;gap:4px;flex-wrap:wrap">
+          <button class="qc" data-w="15">15</button>
+          <button class="qc" data-w="30">30</button>
+          <button class="qc" data-w="50">50</button>
+          <button class="qc" data-w="100">100</button>
+          <button class="qc" data-w="200">200</button>
+          <button class="qc" data-w="500">500</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="card card-pad" id="pb">
@@ -115,19 +110,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     </div>
     <div class="sv">
       <div class="sr">
-        <div class="ip"><label>每份</label><input type="number" id="sB" value="100" step="any" min="0.1" class="inp-sm"><span class="un">g</span></div>
+        <div class="ip"><label>每份</label><input type="number" id="sB" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
         <div class="ip"><label>总重</label><input type="number" id="twB" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-      </div>
-      <div class="qr">
-        <span class="ql">快捷</span>
-        <div id="tpB">
-          <button class="qc" data-w="15">15</button>
-          <button class="qc" data-w="30">30</button>
-          <button class="qc" data-w="50">50</button>
-          <button class="qc" data-w="100">100</button>
-          <button class="qc" data-w="200">200</button>
-          <button class="qc" data-w="500">500</button>
-        </div>
       </div>
     </div>
     <div class="nt">
@@ -138,12 +122,24 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbB">—<span class="ru">g</span></span></div></div><input type="number" id="carB" placeholder="0" class="ni"><span class="nu">g</span></div>
       <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbB">—<span class="ru">g</span></span></div></div><input type="number" id="fibB" placeholder="0" class="ni"><span class="nu">g</span></div>
     </div>
+    <div class="sv" style="margin-top:12px;margin-bottom:0">
+      <div class="sr"><span class="ql" style="font-size:9px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.08em">总重快捷</span>
+        <div id="tpB" style="display:flex;gap:4px;flex-wrap:wrap">
+          <button class="qc" data-w="15">15</button>
+          <button class="qc" data-w="30">30</button>
+          <button class="qc" data-w="50">50</button>
+          <button class="qc" data-w="100">100</button>
+          <button class="qc" data-w="200">200</button>
+          <button class="qc" data-w="500">500</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="card"><div class="ft"><div class="ft-t">换算公式</div><div class="ft-f"><strong>盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;·&nbsp; <strong>kcal = kJ ÷ 4.184</strong></div></div></div>
 </div>
 <script>
-(function(){const P=['A','B'];const g=id=>{const e=document.getElementById(id);if(!e)return null;const v=e.value.trim();if(v==='')return null;const n=parseFloat(v);return isNaN(n)||n<0?null:n};const f=(n,d)=>{if(n===null||isNaN(n))return'—';if(n===0)return'0';return parseFloat(n.toFixed(d)).toString()};const c=p=>{const s=g('s'+p)||100;document.getElementById('s'+p).value=s;const na=g('na'+p),kj=g('kj'+p),pro=g('pro'+p),fat=g('fat'+p),car=g('car'+p),fib=g('fib'+p);const sp=na!==null?(na*2.54/1000)/s:null,kp=kj!==null?(kj/4.184)/s:null,pp=pro!==null?pro/s:null,fp=fat!==null?fat/s:null,cp=car!==null?car/s:null,fip=fib!==null?fib/s:null;document.getElementById('salt'+p).textContent=sp!==null?f(sp,3):'—';document.getElementById('kcal'+p).textContent=kp!==null?f(kp,2):'—';document.getElementById('pr'+p).textContent=pp!==null?f(pp,2):'—';document.getElementById('ft'+p).textContent=fp!==null?f(fp,2):'—';document.getElementById('cb'+p).textContent=cp!==null?f(cp,2):'—';document.getElementById('fb'+p).textContent=fip!==null?f(fip,2):'—';const tw=g('tw'+p);const t=pg=>pg!==null&&tw!==null&&tw>0?f(pg*tw,2):'—';document.getElementById('ts'+p).textContent=t(sp);document.getElementById('tk'+p).textContent=t(kp);document.getElementById('tpr'+p).textContent=t(pp);document.getElementById('tft'+p).textContent=t(fp);document.getElementById('tcb'+p).textContent=t(cp);document.getElementById('tfb'+p).textContent=t(fip);const tc=document.getElementById('tp'+p);if(tc)tc.querySelectorAll('.qc').forEach(c=>c.classList.toggle('act',tw!==null&&Math.abs(parseFloat(c.dataset.w)-tw)<.01))};const ca=()=>P.forEach(c);P.forEach(p=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e){e.addEventListener('input',()=>c(p));e.addEventListener('change',()=>c(p))}});const tp=document.getElementById('tp'+p);if(tp)tp.addEventListener('click',e=>{const t=e.target.closest('.qc');if(!t)return;document.getElementById('tw'+p).value=t.dataset.w;c(p)});const cb=document.querySelector('#p'+p+' .pc');if(cb)cb.addEventListener('click',()=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e)e.value=id.startsWith('s')?'100':''});c(p)})});ca()})();
+(function(){const P=['A','B'];const g=id=>{const e=document.getElementById(id);if(!e)return null;const v=e.value.trim();if(v==='')return null;const n=parseFloat(v);return isNaN(n)||n<0?null:n};const f=(n,d)=>{if(n===null||isNaN(n))return'—';if(n===0)return'0';return parseFloat(n.toFixed(d)).toString()};const c=p=>{const s=g('s'+p)||100;const na=g('na'+p),kj=g('kj'+p),pro=g('pro'+p),fat=g('fat'+p),car=g('car'+p),fib=g('fib'+p);const sp=na!==null?(na*2.54/1000)/s:null,kp=kj!==null?(kj/4.184)/s:null,pp=pro!==null?pro/s:null,fp=fat!==null?fat/s:null,cp=car!==null?car/s:null,fip=fib!==null?fib/s:null;document.getElementById('salt'+p).textContent=sp!==null?f(sp,3):'—';document.getElementById('kcal'+p).textContent=kp!==null?f(kp,2):'—';document.getElementById('pr'+p).textContent=pp!==null?f(pp,2):'—';document.getElementById('ft'+p).textContent=fp!==null?f(fp,2):'—';document.getElementById('cb'+p).textContent=cp!==null?f(cp,2):'—';document.getElementById('fb'+p).textContent=fip!==null?f(fip,2):'—';const tw=g('tw'+p);const t=pg=>pg!==null&&tw!==null&&tw>0?f(pg*tw,2):'—';document.getElementById('ts'+p).textContent=t(sp);document.getElementById('tk'+p).textContent=t(kp);document.getElementById('tpr'+p).textContent=t(pp);document.getElementById('tft'+p).textContent=t(fp);document.getElementById('tcb'+p).textContent=t(cp);document.getElementById('tfb'+p).textContent=t(fip);const tc=document.getElementById('tp'+p);if(tc)tc.querySelectorAll('.qc').forEach(c=>c.classList.toggle('act',tw!==null&&Math.abs(parseFloat(c.dataset.w)-tw)<.01))};const ca=()=>P.forEach(c);P.forEach(p=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e){e.addEventListener('input',()=>c(p));e.addEventListener('change',()=>c(p))}});const tp=document.getElementById('tp'+p);if(tp)tp.addEventListener('click',e=>{const t=e.target.closest('.qc');if(!t)return;document.getElementById('tw'+p).value=t.dataset.w;c(p)});const cb=document.querySelector('#p'+p+' .pc');if(cb)cb.addEventListener('click',()=>{['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p].forEach(id=>{const e=document.getElementById(id);if(e)e.value=id.startsWith('s')?'100':''});c(p)})});ca()})();
 </script>
 </body>
 </html>
