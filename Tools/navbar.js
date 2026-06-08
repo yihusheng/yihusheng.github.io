@@ -1,66 +1,109 @@
-/* ═══════════════════════════════════════════
-   Wise Navbar — 统一工具导航栏 (JavaScript)
-   用法：在工具页面的 <head> 中引入此脚本，
-   然后调用 WiseNavbar.init()
-   ═══════════════════════════════════════════ */
+/**
+ * ═══════════════════════════════════════════════════════════════
+ *  Wise Navbar — yihusheng 网站统一导航栏
+ *  
+ *  【核心理念】所有导航数据集中在此文件顶部的 NAV_ITEMS 数组中。
+ *  无论哪个页面引用此脚本，都会自动读取该数组生成导航栏。
+ *  
+ *  【维护方式】后续只需修改下方的 NAV_ITEMS 数组，添加/删除/修改
+ *  导航条目，所有引用此脚本的页面都会同步更新，无需逐个页面修改。
+ *  
+ *  【使用方法】在任意页面的 <head> 中引入：
+ *    <link rel="stylesheet" href="/Tools/navbar.css">
+ *    <script src="/Tools/navbar.js"></script>
+ *  
+ *  对于全屏 SPA（如 zashboard / Metacubexd），给 <body> 添加
+ *  class="navbar-overlay" 即可切换为半透明覆盖模式。
+ * ═══════════════════════════════════════════════════════════════
+ */
 
-const WiseNavbar = (() => {
-  // ── 工具菜单配置 ──
-  const tools = [
-    { id: 'dashboard',  label: '主页',     icon: '⌂',  path: '/' },
-    { id: 'double',     label: 'Double',   icon: '⨯',  path: '/Tools/Double/' },
-    { id: 'mac',        label: 'MAC',      icon: '⊞',  path: '/Tools/MAC/' },
-    { id: 'underline',  label: 'Underline',icon: '▭',  path: '/Tools/Underline/' },
-    { id: 'calculator', label: '計算器',   icon: '∑',  path: '/Tools/Content%20Calculator/' },
-    { id: 'jumptools',  label: '跳转',     icon: '↗',  path: '/Tools/JumpTools/' },
-    { id: 'zashboard',  label: 'zashboard',icon: '◉',  path: '/Tools/zashboard/' },
-    { id: 'metacubexd', label: 'MetaCubeXD',icon: '◆', path: '/Tools/Metacubexd/' },
-    { id: 'music',      label: '音乐解锁', icon: '♪',  path: '/Music/' },
+(function () {
+  'use strict';
+
+  /* ──────────────────────────────────────────────
+     ★★★ 导航数据 — 修改这里 = 更新所有页面 ★★★
+     ──────────────────────────────────────────────
+     格式：{ icon, label, href }
+     icon: Material Symbols Rounded 图标名（完整列表见 Google Fonts）
+     label: 显示文字
+     href: 链接路径（从根目录 / 开始）
+  */
+  const NAV_ITEMS = [
+    { icon: 'home',        label: '首页',      href: '/' },
+    { icon: 'calculate',   label: 'Double',    href: '/Tools/Double/' },
+    { icon: 'lan',         label: 'MAC Info',  href: '/Tools/MAC/' },
+    { icon: 'underline',   label: 'Underline', href: '/Tools/Underline/' },
+    { icon: 'functions',   label: 'Calculator', href: '/Tools/Content%20Calculator/' },
+    { icon: 'open_in_new', label: 'JumpTools', href: '/Tools/JumpTools/' },
+    { icon: 'music_note',  label: 'Music',     href: '/Music/' },
+    { icon: 'dashboard',   label: 'zashboard', href: '/Tools/zashboard/' },
+    { icon: 'dashboard',   label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
 
-  // ── 判断当前页面 ID ──
-  function getCurrentPageId() {
-    const path = window.location.pathname.replace(/\/+$/, '') || '/';
-    for (const t of tools) {
-      const tPath = t.path.replace(/\/+$/, '') || '/';
-      if (path === tPath) return t.id;
-    }
-    // 模糊匹配
-    for (const t of tools) {
-      const tPath = t.path.replace(/\/+$/, '');
-      if (tPath && path.startsWith(tPath)) return t.id;
-    }
-    return 'dashboard';
+  /* ──────────────────────────────────────────────
+     网站配置
+     ────────────────────────────────────────────── */
+  const SITE = {
+    name: 'yihusheng',
+    short: 'Y',
+  };
+
+  /* ══════════════════════════════════════════════
+     内部逻辑 — 通常无需修改
+     ══════════════════════════════════════════════ */
+
+  // 获取当前页面路径（标准化）
+  function getCurrentPath() {
+    let p = window.location.pathname;
+    p = p.replace(/\/index\.html$/, '');   // 去掉 index.html
+    p = p.replace(/\/+$/, '');             // 去掉末尾斜杠
+    return p || '/';
   }
 
-  // ── 构建 Navbar HTML ──
-  function buildHTML(currentId) {
-    const isOverlay = currentId === 'zashboard' || currentId === 'metacubexd';
+  // 判断某项是否匹配当前页面
+  function isActive(itemHref) {
+    const cur = getCurrentPath();
+    const target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
+    if (cur === target) return true;
+    // 对于非首页，支持路径前缀匹配（如 /Tools/Double/xxx 也匹配 Double）
+    if (target !== '/' && cur.startsWith(target)) return true;
+    return false;
+  }
 
-    let linksHTML = '';
-    for (const t of tools) {
-      const active = t.id === currentId ? ' class="active"' : '';
-      linksHTML += `<a href="${t.path}"${active}><span class="nv-icon">${t.icon}</span> ${t.label}</a>`;
-    }
+  // 生成导航栏 HTML
+  function buildHTML() {
+    const isOverlay = document.body.classList.contains('navbar-overlay');
 
-    let drawerLinksHTML = '';
-    for (const t of tools) {
-      const active = t.id === currentId ? ' class="active"' : '';
-      drawerLinksHTML += `<a href="${t.path}"${active}><span class="nv-icon">${t.icon}</span> ${t.label}</a>`;
-    }
+    // 桌面端链接
+    const links = NAV_ITEMS.map(item => {
+      const act = isActive(item.href) ? ' active' : '';
+      return `<a class="wise-nav-link${act}" href="${item.href}">
+        <span class="nv-icon material-symbols-rounded">${item.icon}</span>
+        ${item.label}
+      </a>`;
+    }).join('');
+
+    // 移动端抽屉链接
+    const drawerLinks = NAV_ITEMS.map(item => {
+      const act = isActive(item.href) ? ' active' : '';
+      return `<a class="wise-nav-drawer-link${act}" href="${item.href}">
+        <span class="nv-icon material-symbols-rounded">${item.icon}</span>
+        ${item.label}
+      </a>`;
+    }).join('');
 
     return `
-<nav class="wise-navbar${isOverlay ? ' wise-navbar-overlay' : ''}" id="wiseNavbar">
+<nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="主导航">
   <div class="wise-navbar-inner">
-    <a href="/" class="wise-nav-logo">
-      <span class="wise-nav-logo-icon">W</span>
-      Tools
+    <a class="wise-nav-logo" href="/" aria-label="回到首页">
+      <span class="wise-nav-logo-icon">${SITE.short}</span>
+      <span>${SITE.name}</span>
     </a>
     <div class="wise-nav-links">
-      ${linksHTML}
+      ${links}
     </div>
-    <button class="wise-nav-toggle" id="wiseNavToggle" aria-label="打开导航菜单">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+    <button class="wise-nav-toggle" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <line x1="4" y1="6" x2="20" y2="6"/>
         <line x1="4" y1="12" x2="20" y2="12"/>
         <line x1="4" y1="18" x2="20" y2="18"/>
@@ -69,66 +112,79 @@ const WiseNavbar = (() => {
   </div>
 </nav>
 
-<div class="wise-nav-drawer" id="wiseNavDrawer">
+<div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
   <div class="wise-nav-drawer-panel">
     <div class="wise-nav-drawer-header">
-      <span class="wise-nav-drawer-title">📋 导航菜单</span>
-      <button class="wise-nav-drawer-close" id="wiseNavDrawerClose" aria-label="关闭菜单">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <span class="wise-nav-drawer-title">导航菜单</span>
+      <button class="wise-nav-drawer-close" id="wiseNavDrawerClose" aria-label="关闭导航菜单">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <line x1="18" y1="6" x2="6" y2="18"/>
           <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
-    ${drawerLinksHTML}
+    ${drawerLinks}
   </div>
 </div>`;
   }
 
-  // ── 注入 Navbar ──
+  // 注入导航栏到页面
   function inject() {
-    if (document.getElementById('wiseNavbar')) return; // 避免重复注入
+    if (document.getElementById('wiseNavbar')) return; // 防止重复注入
 
-    const currentId = getCurrentPageId();
-    const html = buildHTML(currentId);
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = html;
-    document.body.prepend(wrapper);
+    document.body.insertAdjacentHTML('afterbegin', buildHTML());
+    
+    // body padding（非 overlay 模式）
+    if (!document.body.classList.contains('navbar-overlay')) {
+      document.body.style.paddingTop = '52px';
+    }
+  }
 
-    // ── 绑定事件 ──
+  // 绑定交互事件
+  function bindEvents() {
     const toggle = document.getElementById('wiseNavToggle');
     const drawer = document.getElementById('wiseNavDrawer');
-    const closeBtn = document.getElementById('wiseNavDrawerClose');
+    const close  = document.getElementById('wiseNavDrawerClose');
+    if (!toggle || !drawer) return;
 
-    if (toggle && drawer) {
-      toggle.addEventListener('click', () => drawer.classList.add('open'));
+    function open() {
+      drawer.classList.add('open');
+      drawer.setAttribute('aria-hidden', 'false');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
     }
-    if (closeBtn && drawer) {
-      closeBtn.addEventListener('click', () => drawer.classList.remove('open'));
-    }
-    if (drawer) {
-      drawer.addEventListener('click', (e) => {
-        if (e.target === drawer) drawer.classList.remove('open');
-      });
+    function closeDrawer() {
+      drawer.classList.remove('open');
+      drawer.setAttribute('aria-hidden', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
     }
 
-    // ── 如果是 SPA 类型页面，追加 overlay class ──
-    if (currentId === 'zashboard' || currentId === 'metacubexd') {
-      document.body.classList.add('navbar-overlay');
-    }
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      drawer.classList.contains('open') ? closeDrawer() : open();
+    });
+    if (close) close.addEventListener('click', closeDrawer);
+
+    // 点击遮罩关闭
+    drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
+    // ESC 键关闭
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+    // 抽屉内链接点击后关闭
+    drawer.querySelectorAll('.wise-nav-drawer-link').forEach(el => {
+      el.addEventListener('click', closeDrawer);
+    });
   }
 
-  // ── 初始化（DOM 就绪后自动执行） ──
+  // 启动
   function init() {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', inject);
+      document.addEventListener('DOMContentLoaded', () => { inject(); bindEvents(); });
     } else {
       inject();
+      bindEvents();
     }
   }
 
-  return { init };
+  init();
 })();
-
-// 自动初始化
-WiseNavbar.init();
