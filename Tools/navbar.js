@@ -35,7 +35,7 @@
   window.WiseNavbarData = NAV_ITEMS.slice();
 
   function injectFonts() {
-    if (document.querySelector('link[href*="Material+Symbols+Rounded"]')) return;
+    if (document.querySelector('link[href*="Material+Symbols+Rounded"')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0';
@@ -43,12 +43,14 @@
   }
 
   function injectSpacerCSS() {
+    // 导航按钮尺寸: top=16px, height=42px ⇒ 底部在 58px
+    // spacer 留出 62px (16 + 42 + 4px 余量) 避免遮挡，同时不产生过多空白
     var style = document.createElement('style');
     style.id = 'wiseNavbarSpacerCSS';
     style.textContent =
-      'body { padding-top: 74px !important; }' +
-      'body > #app { padding-top: 74px !important; box-sizing: border-box !important; }' +
-      'body > #__nuxt { padding-top: 74px !important; box-sizing: border-box !important; }';
+      'body { padding-top: 62px !important; }' +
+      'body > #app { padding-top: 62px !important; box-sizing: border-box !important; }' +
+      'body > #__nuxt { padding-top: 62px !important; box-sizing: border-box !important; }';
     document.head.appendChild(style);
   }
 
