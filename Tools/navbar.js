@@ -15,9 +15,9 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】顶部固定导航条：
- *    - 最左：主页按钮（墨底+绿色 home 图标）
- *    - 最右：菜单按钮（同风格，点击打开导航抽屉）
+ *  【样式说明】右上角悬浮胶囊双按钮：
+ *    - 主页按钮（🏠） + 分割线 + 菜单按钮（···）
+ *    悬浮不占位，不影响页面布局。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -95,18 +95,15 @@
     }).join('');
 
     return `
-<!-- Wise Navbar: Top Bar -->
+<!-- Wise Floating Navbar -->
 <nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="导航">
-  <div class="wise-nav-left">
-    <a class="wise-nav-btn" href="/" aria-label="回到首页">
-      <span class="material-symbols-rounded">home</span>
-    </a>
-  </div>
-  <div class="wise-nav-right">
-    <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
-      <span class="material-symbols-rounded">apps</span>
-    </button>
-  </div>
+  <a class="wise-nav-btn" href="/" aria-label="回到首页">
+    <span class="material-symbols-rounded">home</span>
+  </a>
+  <div class="wise-nav-divider"></div>
+  <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
+    <span class="material-symbols-rounded">apps</span>
+  </button>
 </nav>
 
 <div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
@@ -130,12 +127,8 @@
     if (document.getElementById('wiseNavbar')) return;
 
     injectFonts();
-    document.body.insertAdjacentHTML('afterbegin', buildHTML());
-
-    // 顶部固定条，需要给 body 加 padding 避免内容被遮挡
-    if (!document.body.classList.contains('navbar-overlay')) {
-      document.body.style.paddingTop = '56px';
-    }
+    document.body.insertAdjacentHTML('beforeend', buildHTML());
+    // 悬浮按钮不占位，不需要 body padding
   }
 
   // 绑定交互事件（仅非首页调用）
@@ -182,7 +175,7 @@
 
   /* ══════════════════════════════════════════════
      入口：首页只暴露数据，不注入导航栏
-     其他页面自动注入顶部导航条
+     其他页面自动注入悬浮双按钮
      ══════════════════════════════════════════════ */
   if (!isHomePage()) {
     init();
