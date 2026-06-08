@@ -15,8 +15,10 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  对于全屏 SPA（如 zashboard / Metacubexd），给 <body> 添加
- *  class="navbar-overlay" 即可切换为半透明覆盖模式。
+ *  【样式说明】导航栏为右下角悬浮双按钮：
+ *    - 左侧：主页按钮（房子图标）
+ *    - 右侧：菜单按钮（点击打开导航抽屉）
+ *  两个按钮保持相同风格（墨底+绿字）。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -32,29 +34,21 @@
      href: 链接路径（从根目录 / 开始）
   */
   const NAV_ITEMS = [
-    { icon: 'home',        label: '首页',      href: '/' },
-    { icon: 'calculate',   label: 'Double',    href: '/Tools/Double/' },
-    { icon: 'lan',         label: 'MAC Info',  href: '/Tools/MAC/' },
-    { icon: 'underline',   label: 'Underline', href: '/Tools/Underline/' },
-    { icon: 'functions',   label: 'Calculator', href: '/Tools/Content%20Calculator/' },
-    { icon: 'open_in_new', label: 'JumpTools', href: '/Tools/JumpTools/' },
-    { icon: 'music_note',  label: 'Music',     href: '/Music/' },
-    { icon: 'dashboard',   label: 'zashboard', href: '/Tools/zashboard/' },
-    { icon: 'dashboard',   label: 'Metacubexd', href: '/Tools/Metacubexd/' },
+    { icon: 'home',             label: '首页',      href: '/' },
+    { icon: 'calculate',        label: 'Double',    href: '/Tools/Double/' },
+    { icon: 'lan',              label: 'MAC Info',  href: '/Tools/MAC/' },
+    { icon: 'format_underlined',label: 'Underline', href: '/Tools/Underline/' },
+    { icon: 'functions',        label: 'Calculator', href: '/Tools/Content%20Calculator/' },
+    { icon: 'open_in_new',      label: 'JumpTools', href: '/Tools/JumpTools/' },
+    { icon: 'music_note',       label: 'Music',     href: '/Music/' },
+    { icon: 'dashboard',        label: 'zashboard', href: '/Tools/zashboard/' },
+    { icon: 'dashboard',        label: 'Metacubexd', href: '/Tools/Metacubexd/' },
   ];
 
   /* ──────────────────────────────────────────────
      暴露数据给外部使用（如主页底部抽屉）
      ────────────────────────────────────────────── */
   window.WiseNavbarData = NAV_ITEMS.slice();
-
-  /* ──────────────────────────────────────────────
-     网站配置
-     ────────────────────────────────────────────── */
-  const SITE = {
-    name: 'yihusheng',
-    short: 'Y',
-  };
 
   /* ══════════════════════════════════════════════
      内部逻辑 — 通常无需修改
@@ -91,16 +85,8 @@
     return false;
   }
 
-  // 生成导航栏 HTML
+  // 生成悬浮导航栏 HTML
   function buildHTML() {
-    const links = NAV_ITEMS.map(item => {
-      const act = isActive(item.href) ? ' active' : '';
-      return `<a class="wise-nav-link${act}" href="${item.href}">
-        <span class="nv-icon material-symbols-rounded">${item.icon}</span>
-        ${item.label}
-      </a>`;
-    }).join('');
-
     const drawerLinks = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
       return `<a class="wise-nav-drawer-link${act}" href="${item.href}">
@@ -110,23 +96,15 @@
     }).join('');
 
     return `
-<nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="主导航">
-  <div class="wise-navbar-inner">
-    <a class="wise-nav-logo" href="/" aria-label="回到首页">
-      <span class="wise-nav-logo-icon">${SITE.short}</span>
-      <span>${SITE.name}</span>
-    </a>
-    <div class="wise-nav-links">
-      ${links}
-    </div>
-    <button class="wise-nav-toggle" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="4" y1="12" x2="20" y2="12"/>
-        <line x1="4" y1="18" x2="20" y2="18"/>
-      </svg>
-    </button>
-  </div>
+<!-- Wise Floating Navbar -->
+<nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="导航">
+  <a class="wise-nav-btn" href="/" aria-label="回到首页">
+    <span class="material-symbols-rounded">home</span>
+  </a>
+  <div class="wise-nav-divider"></div>
+  <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
+    <span class="material-symbols-rounded">apps</span>
+  </button>
 </nav>
 
 <div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
@@ -150,11 +128,8 @@
     if (document.getElementById('wiseNavbar')) return;
 
     injectFonts();
-    document.body.insertAdjacentHTML('afterbegin', buildHTML());
-
-    if (!document.body.classList.contains('navbar-overlay')) {
-      document.body.style.paddingTop = '52px';
-    }
+    document.body.insertAdjacentHTML('beforeend', buildHTML());
+    // 悬浮按钮不需要 padding
   }
 
   // 绑定交互事件（仅非首页调用）
@@ -200,11 +175,11 @@
   }
 
   /* ══════════════════════════════════════════════
-     入口：首页只暴露数据，不注入顶部导航栏
-     其他页面自动注入完整的导航栏
+     入口：首页只暴露数据，不注入导航栏
+     其他页面自动注入悬浮双按钮导航
      ══════════════════════════════════════════════ */
   if (!isHomePage()) {
     init();
   }
-  // 首页：什么也不做，仅通过 window.WiseNavbarData 暴露数据
+  // 首页：仅通过 window.WiseNavbarData 暴露数据
 })();
