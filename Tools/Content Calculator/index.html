@@ -13,27 +13,20 @@
 :root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px;--r-sm:8px}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px}
 .wrap{width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;margin-top:4px}
-/* header */
-.hdr{display:flex;align-items:center;gap:10px;margin-bottom:2px}
 .bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;width:fit-content}
 .bdg .material-symbols-rounded{font-size:13px}
-h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
-.sub{font-size:13px;color:var(--m);margin-bottom:6px}
-/* card */
 .card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden}
 .card-pad{padding:24px}
-/* grid */
 .g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-/* product header */
 .ph{display:flex;align-items:center;gap:10px;margin-bottom:16px}
-.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0}
+.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pb .material-symbols-rounded{font-size:18px;color:var(--b)}
 .pt{flex:1}
 .pt h2{font-size:16px;font-weight:900;letter-spacing:-.02em}
 .pt span{font-size:11px;color:var(--m);font-weight:500}
 .pc{background:none;border:none;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all .15s;flex-shrink:0}
 .pc:hover{background:var(--s);color:#d03238}
 .pc .material-symbols-rounded{font-size:18px}
-/* serving */
 .sv{background:var(--s);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
 .sr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ip{display:flex;align-items:center;gap:6px}
@@ -46,7 +39,6 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
 .qc{background:var(--c);border:none;padding:3px 10px;border-radius:var(--rp);font-size:10px;font-weight:700;cursor:pointer;color:var(--b);font-family:inherit;transition:all .12s}
 .qc:hover{background:var(--pp);color:var(--kd)}
 .qc.act{background:var(--k);color:var(--p)}
-/* nutrient table */
 .nt{display:flex;flex-direction:column;gap:3px}
 .nr{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:10px;transition:background .12s}
 .nr:focus-within{background:var(--s)}
@@ -68,12 +60,10 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
 .ni{width:52px;height:28px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 6px;font-family:'Inter',monospace;font-size:12px;font-weight:600;text-align:right;background:var(--c);color:var(--k);outline:none;transition:all .12s;flex-shrink:0}
 .ni:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .nu{font-size:10px;font-weight:600;color:var(--m);min-width:20px;flex-shrink:0}
-/* footer */
 .ft{background:var(--k);padding:16px 24px;text-align:center}
 .ft .ft-t{font-size:12px;font-weight:700;color:var(--p);margin-bottom:4px}
 .ft .ft-f{font-size:10px;color:rgba(232,235,230,.5);line-height:1.6}
 .ft .ft-f strong{color:var(--p);font-weight:600}
-/* mobile */
 @media(max-width:720px){
 .g{grid-template-columns:1fr}
 .wrap{max-width:480px}
@@ -82,17 +72,13 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
 </head>
 <body>
 <div class="wrap">
-<div class="hdr">
-  <div class="bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
-</div>
-<h1>配料表转换器</h1>
-<p class="sub">双产品营养含量对比计算</p>
+<div class="bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
 
 <div class="g" id="grid">
   <!-- Product A -->
   <div class="card card-pad" id="pa">
     <div class="ph">
-      <div class="pb">A</div>
+      <div class="pb"><span class="material-symbols-rounded">calculate</span></div>
       <div class="pt"><h2>产品 A</h2><span>输入配料表数据</span></div>
       <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
     </div>
@@ -126,7 +112,7 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
   <!-- Product B -->
   <div class="card card-pad" id="pb">
     <div class="ph">
-      <div class="pb">B</div>
+      <div class="pb"><span class="material-symbols-rounded">calculate</span></div>
       <div class="pt"><h2>产品 B</h2><span>输入配料表数据</span></div>
       <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
     </div>
@@ -149,7 +135,7 @@ h1{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
     </div>
     <div class="nt">
       <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsB">—<span class="ru">g</span></span></div></div><input type="number" id="naB" placeholder="0" class="ni"><span class="nu">mg</span></div>
-      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkB">—<span class="ru">kcal</span></span></div></div><input type="number" id="kjB" placeholder="0" class="ni"><span class="nu">kJ</span></div>
+      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkB">—<span class="ru">kcal</span></span></span></div></div><input type="number" id="kjB" placeholder="0" class="ni"><span class="nu">kJ</span></div>
       <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprB">—<span class="ru">g</span></span></div></div><input type="number" id="proB" placeholder="0" class="ni"><span class="nu">g</span></div>
       <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftB">—<span class="ru">g</span></span></div></div><input type="number" id="fatB" placeholder="0" class="ni"><span class="nu">g</span></div>
       <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbB">—<span class="ru">g</span></span></div></div><input type="number" id="carB" placeholder="0" class="ni"><span class="nu">g</span></div>
