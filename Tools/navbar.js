@@ -15,10 +15,9 @@
  *    <link rel="stylesheet" href="/Tools/navbar.css">
  *    <script src="/Tools/navbar.js"></script>
  *  
- *  【样式说明】导航栏为右下角悬浮双按钮：
- *    - 左侧：主页按钮（房子图标）
- *    - 右侧：菜单按钮（点击打开导航抽屉）
- *  两个按钮保持相同风格（墨底+绿字）。
+ *  【样式说明】顶部固定导航条：
+ *    - 最左：主页按钮（墨底+绿色 home 图标）
+ *    - 最右：菜单按钮（同风格，点击打开导航抽屉）
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -85,7 +84,7 @@
     return false;
   }
 
-  // 生成悬浮导航栏 HTML
+  // 生成导航栏 HTML
   function buildHTML() {
     const drawerLinks = NAV_ITEMS.map(item => {
       const act = isActive(item.href) ? ' active' : '';
@@ -96,15 +95,18 @@
     }).join('');
 
     return `
-<!-- Wise Floating Navbar -->
+<!-- Wise Navbar: Top Bar -->
 <nav class="wise-navbar" id="wiseNavbar" role="navigation" aria-label="导航">
-  <a class="wise-nav-btn" href="/" aria-label="回到首页">
-    <span class="material-symbols-rounded">home</span>
-  </a>
-  <div class="wise-nav-divider"></div>
-  <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
-    <span class="material-symbols-rounded">apps</span>
-  </button>
+  <div class="wise-nav-left">
+    <a class="wise-nav-btn" href="/" aria-label="回到首页">
+      <span class="material-symbols-rounded">home</span>
+    </a>
+  </div>
+  <div class="wise-nav-right">
+    <button class="wise-nav-btn" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">
+      <span class="material-symbols-rounded">apps</span>
+    </button>
+  </div>
 </nav>
 
 <div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">
@@ -128,8 +130,12 @@
     if (document.getElementById('wiseNavbar')) return;
 
     injectFonts();
-    document.body.insertAdjacentHTML('beforeend', buildHTML());
-    // 悬浮按钮不需要 padding
+    document.body.insertAdjacentHTML('afterbegin', buildHTML());
+
+    // 顶部固定条，需要给 body 加 padding 避免内容被遮挡
+    if (!document.body.classList.contains('navbar-overlay')) {
+      document.body.style.paddingTop = '56px';
+    }
   }
 
   // 绑定交互事件（仅非首页调用）
@@ -176,7 +182,7 @@
 
   /* ══════════════════════════════════════════════
      入口：首页只暴露数据，不注入导航栏
-     其他页面自动注入悬浮双按钮导航
+     其他页面自动注入顶部导航条
      ══════════════════════════════════════════════ */
   if (!isHomePage()) {
     init();
