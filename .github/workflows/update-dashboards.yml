@@ -53,7 +53,22 @@ jobs:
           curl -sL "https://github.com/MetaCubeX/metacubexd/releases/download/${V}/compressed-dist.tgz" -o /tmp/m.tgz
           mkdir -p /tmp/ms
           tar -xzf /tmp/m.tgz -C /tmp/ms
-          S=/tmp/ms
+          
+          # compressed-dist.tgz 可能包含子目录，自动检测源目录
+          if [ -d "/tmp/ms/compressed-dist" ]; then
+            S=/tmp/ms/compressed-dist
+          elif [ -d "/tmp/ms/_nuxt" ]; then
+            S=/tmp/ms
+          else
+            # 查找包含 index.html 的目录
+            S=$(find /tmp/ms -name index.html -exec dirname {} \; | head -1)
+            if [ -z "$S" ]; then
+              echo "ERROR: no index.html found in release artifact"
+              ls -la /tmp/ms/
+              exit 1
+            fi
+          fi
+          echo "Source dir: $S"
 
           # compressed-dist.tgz 可能用 _index.html 或 index.html
           if [ -f "$S/index.html" ]; then
