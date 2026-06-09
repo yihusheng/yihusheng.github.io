@@ -11,8 +11,8 @@
 <script src="/Tools/navbar.js"></script>
 <style>
 .sty{display:inline-flex;flex-direction:column;align-items:center;cursor:pointer;position:relative}
-.sty input{position:absolute;opacity:0;width:0;height:0}
-.sty .s{font-size:14px;line-height:1;color:var(--b);height:14px}
+.sty input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.sty .s{font-size:14px;line-height:1;color:var(--b)}
 .sty .t{font-size:10px;font-weight:600;color:var(--b);padding:3px 10px;background:var(--s);border-radius:var(--rp);margin-top:2px}
 .sty:has(input:checked) .t{background:var(--k);color:var(--p)}
 .sty:has(input:checked) .s{color:var(--p)}
