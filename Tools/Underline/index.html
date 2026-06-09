@@ -18,6 +18,8 @@
 .sty:has(input:checked) .s{color:var(--p)}
 .sty:hover .t{background:var(--pp)}
 .sty:has(input:checked):hover .t{background:var(--kd)}
+.cii{width:42px;padding:2px 4px;font-size:14px;text-align:center;border:2px solid var(--s);border-radius:var(--rm);outline:none;background:var(--c);color:var(--k);font-family:var(--f)}
+.cii:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 </style>
 </head>
 <body>
@@ -42,7 +44,7 @@
       <label class="sty"><input type="radio" name="st" value="dotted"><span class="s">┅</span><span class="t">点线</span></label>
       <label class="sty"><input type="radio" name="st" value="wavy"><span class="s">〰</span><span class="t">波浪</span></label>
       <label class="sty"><input type="radio" name="st" value="double"><span class="s">═</span><span class="t">双线</span></label>
-      <label class="sty"><input type="radio" name="st" value="sub"><span class="s">⠛</span><span class="t">盲文</span></label>
+      <input type="text" id="customChar" class="cii" placeholder="⠛" maxlength="2" value="⠛">
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm);margin-top:var(--sm)">
       <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
@@ -63,10 +65,10 @@
 <script>
 var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),RS=document.getElementsByName('st');
-var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid';
+var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid',CC=document.getElementById('customChar');
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
-function gss(){var v=gs();if(v==='sub')return LS;LS=v;return v}
-function gjc(){var v=gs(),c={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333',sub:'\u281b'};return c[v]||'\u0332'}
+function gss(){var v=gs();return v==='sub'?LS:(LS=v)}
+function gjc(){var c=CC.value.trim();if(c)return c[0];var v=gs(),m={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333'};return m[v]||'\u0332'}
 function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
 function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
@@ -77,7 +79,7 @@ function gp(){var t=T.value||'预览',c=gjc(),r='';for(var i=0;i<t.length;i++)r+
 function cp(t){if(t==='all'){var txt=T.value||'预览',s=gss(),html='<!DOCTYPE html><html><body><span style="text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px">'+txt+'</span></body></html>';navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
 function jn(){navigator.clipboard.writeText(gp()).then(function(){TT.textContent='已组合';TT.className='toast s';setTimeout(function(){TT.className='toast';TT.textContent='已复制'},2000)})}
 function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
-var inputs=[T,TC,LC,TK,OF,FS];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up)
+var inputs=[T,TC,LC,TK,OF,FS,CC];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up)
 document.getElementById('copyBtn').addEventListener('click',function(){cp('all')});document.getElementById('joinBtn').addEventListener('click',jn);document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')});document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')});up()
 </script>
 </body>
