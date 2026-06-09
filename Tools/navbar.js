@@ -11,9 +11,8 @@
  *  导航数据通过 window.WiseNavbarData 暴露给全局，
  *  主页底部抽屉读取此数据动态渲染导航卡片。
  *  
- *  【使用方法】在任意页面的 <head> 中引入：
- *    <link rel="stylesheet" href="/Tools/navbar.css">
- *    <script src="/Tools/navbar.js"></script>
+ *  【布局方案】使用 flex 布局让导航栏和 SPA 内容自动分配高度，
+ *  不再使用 position:fixed + padding-top 的 hack 方式。
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -42,19 +41,21 @@
     document.head.appendChild(link);
   }
 
-  function injectSpacerCSS() {
-    // ── overlay 模式（Metacubexd/zashboard）不需要 spacer ──
-    // 按钮设计为半透明浮在内容之上，加 padding 会推下整个 SPA 界面产生空白
-    if (document.body && document.body.classList.contains('navbar-overlay')) return;
-
-    // 导航按钮尺寸: top=16px, height=42px ⇒ 底部在 58px
-    // spacer 留出 62px (16 + 42 + 4px 余量) 避免遮挡，同时不产生过多空白
+  function injectFlexCSS() {
+    var isOverlay = document.body && document.body.classList.contains('navbar-overlay');
     var style = document.createElement('style');
-    style.id = 'wiseNavbarSpacerCSS';
-    style.textContent =
-      'body { padding-top: 62px !important; }' +
-      'body > #app { padding-top: 62px !important; box-sizing: border-box !important; }' +
-      'body > #__nuxt { padding-top: 62px !important; box-sizing: border-box !important; }';
+    style.id = 'wiseNavbarFlexCSS';
+    if (isOverlay) {
+      // ── Overlay SPA (Metacubexd / zashboard)：严格 100dvh flex 布局 ──
+      // 导航栏 + SPA 内容自动分配高度，无需 padding-top 手动计算
+      style.textContent =
+        'html, body { height: 100%; margin: 0; padding: 0; }' +
+        'body { display: flex; flex-direction: column; }' +
+        'body > #app, body > #__nuxt { flex: 1; min-height: 0; overflow: hidden; }';
+    } else {
+      // ── 普通页面：自然流布局，不强制高度 ──
+      style.textContent = 'body { margin: 0; padding: 0; }';
+    }
     document.head.appendChild(style);
   }
 
@@ -86,10 +87,12 @@
     }
 
     return '' +
-      '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
-        '<span class="material-symbols-rounded">home</span></a>' +
-      '<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">' +
-        '<span class="material-symbols-rounded">apps</span></button>' +
+      '<nav class="wise-navbar" id="wiseNavbar">' +
+        '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
+          '<span class="material-symbols-rounded">home</span></a>' +
+        '<button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false">' +
+          '<span class="material-symbols-rounded">apps</span></button>' +
+      '</nav>' +
       '<div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true">' +
         '<div class="wise-nav-drawer-panel">' +
           '<div class="wise-nav-drawer-header">' +
@@ -105,7 +108,7 @@
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
-    injectSpacerCSS();
+    injectFlexCSS();
     document.body.insertAdjacentHTML('afterbegin', buildHTML());
   }
 
