@@ -65,6 +65,37 @@
 
 <div class="toast" id="toastMsg"></div>
 
-<script src="/src/scripts/jumptools.js"></script>
+<script>
+var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink'),TM=document.getElementById('toastMsg');
+
+function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else if(u.includes('oneplus'))b='oneplus';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
+
+function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
+
+function gBN(b,i){if(i)return'苹果 App Store';switch(b){case'huawei':return'华为应用市场';case'honor':return'荣耀应用市场';case'xiaomi':return'小米应用商店';case'oppo':return'OPPO软件商店';case'oneplus':return'一加商店';case'vivo':return'vivo应用商店';case'samsung':return'三星应用商店';default:return'通用市场协议'}}
+
+var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl,hasPkg;
+
+function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS)
+brandLink=pkg?gBSL(pkg,bi):null;var bUrl=brandLink||'#',bTxt=brandLink||'—— 请输入包名 ——';BPL.textContent=bTxt;BPL.href=bUrl;BPL.style.pointerEvents=pkg&&brandLink?'auto':'none';BPL.style.opacity=pkg&&brandLink?'1':'.6'
+universalLink=pkg?gUL(pkg,bi):null;var uTxt=universalLink||'—— 请输入包名 ——';UPL.textContent=uTxt;UPL.href=uUrl;UPL.style.pointerEvents=pkg&&universalLink?'auto':'none';UPL.style.opacity=pkg&&universalLink?'1':'.6'
+webLinkUrl=pkg?gWS(pkg,bi):'#';WL.textContent=webLinkUrl||'—— 请输入包名 ——';WL.href=webLinkUrl||'#';WL.style.pointerEvents=pkg?'auto':'none';WL.style.opacity=pkg?'1':'.6'
+hasPkg=!!pkg}
+
+function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://;omi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
+
+function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
+
+function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
+
+function sT(m,d){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},d||1800)}
+
+async function c2c(t,m){if(!t){sT('无有效链接');return}try{await navigator.clipboard.writeText(t);sT(m||'已复制')}catch(e){sT('复制失败')}}
+
+PI.addEventListener('input',upd);BS.addEventListener('change',function(e){cManual=e.target.value;upd()});document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){if(!hasPkg||!brandLink){sT('请填写有效包名');return}c2c(brandLink,'专用链接已复制')});document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){if(!hasPkg||!universalLink){sT('请填写有效包名');return}c2c(universalLink,'通用链接已复制')});document.getElementById('copyWebLinkBtn').addEventListener('click',function(){if(!hasPkg||!webLinkUrl||webLinkUrl==='#'){sT('请填写有效包名');return}c2c(webLinkUrl,'网页链接已复制')})
+
+function init(){var a=gAuto(),s=a.brand;if(a.isIOS)s='apple';else if(s==='honor'||s==='oneplus')s='oppo';else if(!['huawei','xiaomi','oppo','vivo','samsung','generic_android'].includes(s))s='generic_android';for(var i=0;i<BS.options.length;i++){if(BS.options[i].value===s){BS.selectedIndex=i;break}}cManual=BS.value;upd()}
+init()
+</script>
 </body>
 </html>
