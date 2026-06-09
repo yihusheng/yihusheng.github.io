@@ -69,9 +69,10 @@
 var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),RS=document.getElementsByName('st');
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid',CC=document.getElementById('customChar');
+var SMAP={'\u2501':'\u0332','\u254c':'\u0324','\u2545':'\u0323','\u3030':'\u0330','\u2550':'\u0333'};
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function gss(){var v=gs();return v==='sub'?LS:(LS=v)}
-function gjc(){var c=CC.value.trim();if(c)return c[0];var v=gs(),m={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333'};return m[v]||'\u0332'}
+function gjc(){var c=CC.value.trim();if(c){var ch=c[0];return SMAP[ch]||ch}var v=gs(),m={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333'};return m[v]||'\u0332'}
 function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
 function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
