@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/src/css/wise.css">
-<link rel="stylesheet" href="/src/css/mac.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
 </head>
@@ -67,7 +66,7 @@ var VN=document.getElementById('vendorName'),OP=document.getElementById('ouiPref
 function fmt(v){var h=v.replace(/[^a-fA-F0-9]/g,'').toUpperCase(),p=h.match(/.{1,2}/g);return p?p.join(':'):''}
 I.addEventListener('input',function(){I.removeAttribute('maxlength');var c=I.selectionStart,o=I.value,f=fmt(o);I.value=f;I.setAttribute('maxlength','17');var d=f.length-o.length,n=c+d;if(n<0)n=0;if(n>f.length)n=f.length;I.setSelectionRange(n,n);hE()});
 I.addEventListener('keydown',function(e){if(e.key==='Backspace'&&I.selectionStart>0&&I.value[I.selectionStart-1]===':'&&I.selectionStart===I.selectionEnd){e.preventDefault();var v=I.value,s=I.selectionStart;I.value=fmt(v.substring(0,s-2)+v.substring(s));I.setSelectionRange(s-2,s-2)}if(e.key==='Enter')P()});
-I.addEventListener('paste',function(e){e.preventDefault();I.value=fmt((e.clipboardData||window.clipboardData('text'));I.setSelectionRange(I.value.length,I.value.length);hE()});
+I.addEventListener('paste',function(e){e.preventDefault();I.value=fmt((e.clipboardData||window.clipboardData).getData('text'));I.setSelectionRange(I.value.length,I.value.length);hE()});
 function sE(m){EM.textContent=m;EM.classList.add('s');IW.classList.add('er')}
 function hE(){EM.classList.remove('s');IW.classList.remove('er')}
 function vM(m){return/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(m)}
