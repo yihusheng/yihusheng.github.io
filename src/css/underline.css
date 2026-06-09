@@ -1,7 +1,5 @@
 /* Underline — 下划线生成器 */
-.wrap{max-width:560px}
-textarea{width:100%;background:var(--c);color:var(--k);font-family:'Inter',sans-serif;font-size:15px;font-weight:500;border:2px solid var(--k);border-radius:var(--rs);padding:12px 14px;outline:none;resize:vertical;min-height:68px;transition:all .2s}
-textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+textarea{font-size:15px;font-weight:500;padding:12px 14px;min-height:68px}
 .pbox{background:var(--s);border:1px dashed rgba(14,15,12,.1);border-radius:var(--rs);padding:28px 20px;text-align:center;min-height:90px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .chips{display:flex;gap:4px;flex-wrap:wrap}
 .cl{position:relative}.cl input{position:absolute;opacity:0;width:0;height:0}
@@ -11,7 +9,7 @@ textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rg
 .sg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.sg .gr{margin-bottom:0}
 .rh{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--b);margin-bottom:4px}.rh span{color:var(--m);font-weight:400}
 input[type=range]{-webkit-appearance:none;width:100%;background:transparent;height:6px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:16px;width:16px;border-radius:50%;background:var(--k);cursor:pointer;margin-top:-6px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+input[type=range]::-webkit-sl:none;height:16px;width:16px;border-radius:50%;background:var(--k);cursor:pointer;margin-top:-6px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.12)}
 input[type=range]::-webkit-slider-runnable-track{width:100%;height:4px;background:var(--s);border-radius:2px}
 .cr{display:flex;gap:12px}.cg{flex:1}.cg label{display:block;font-size:11px;font-weight:600;color:var(--b);margin-bottom:3px}
 input[type=color]{-webkit-appearance:none;border:none;width:100%;height:36px;border-radius:var(--rs);cursor:pointer;padding:0;background:none}
