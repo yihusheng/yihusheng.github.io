@@ -60,3 +60,9 @@ input[type=color]::-webkit-color-swatch{border:none;border-radius:10px}
 .ch{display:flex;align-items:center;gap:4px;padding:6px 14px;background:var(--s);color:var(--b);border-radius:var(--rp);font-size:12px;font-weight:600;cursor:pointer}
 .cl input:checked+.ch{background:var(--k);color:var(--p)}
 .cl:hover .ch{background:var(--pp)}
+.ch::before{font-size:14px;margin-right:2px}
+.s-solid::before{content:'\2501\2501'}
+.s-dashed::before{content:'\254C\254C'}
+.s-dotted::before{content:'\2505\2505'}
+.s-wavy::before{content:'\3030\3030'}
+.s-double::before{content:'\2550\2550'}
