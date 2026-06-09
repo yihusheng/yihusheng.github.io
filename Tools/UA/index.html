@@ -13,17 +13,17 @@
 <body>
 <div class="wrap">
 <div class="card" style="padding:24px">
-  <div class="bdg"><span class="material-symbols-rounded">device_hub</span> UA Analyzer</div>
+  <div class="badge-positive"><span class="material-symbols-rounded">device_hub</span> UA Analyzer</div>
   <h1>UA 信息读取</h1>
   <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
   <div class="ua-box">
     <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
-    <button class="ua-cp" id="copyUABtn"><span class="material-symbols-rounded">content_copy</span> 复制</button>
+    <button class="btn-sm" id="copyUABtn"><span class="material-symbols-rounded" style="font-size:13px">content_copy</span> 复制</button>
   </div>
-  <button class="btn btn-p" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
+  <button class="btn-primary" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
   <div class="rw">
-    <button class="btn btn-s" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 本机 UA</button>
-    <button class="btn btn-s" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
+    <button class="btn-secondary" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 本机 UA</button>
+    <button class="btn-secondary" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
   </div>
 </div>
 <div class="card rs" id="resultCard">
@@ -40,8 +40,8 @@
     </div>
     <div class="raw" id="rawD"></div>
     <div class="rw">
-      <button class="btn btn-s" id="cpyBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果</button>
-      <button class="btn btn-s" id="dbBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
+      <button class="btn-secondary" id="cpyBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果</button>
+      <button class="btn-secondary" id="dbBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
     </div>
   </div>
 </div>

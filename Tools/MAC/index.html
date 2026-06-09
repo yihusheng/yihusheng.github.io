@@ -13,7 +13,7 @@
 <body>
 <div class="wrap">
 <div class="card" style="padding:24px">
-  <div class="bdg"><span class="material-symbols-rounded" style="font-size:14px">lan</span> Network Tool</div>
+  <div class="badge-positive"><span class="material-symbols-rounded" style="font-size:14px">lan</span> Network Tool</div>
   <h1>MAC 地址查询</h1>
   <p class="sub">输入 MAC 地址查询设备厂商信息</p>
   <div class="in-w" id="inputWrap">
@@ -21,21 +21,14 @@
     <span class="ic material-symbols-rounded">search</span>
   </div>
   <div class="em" id="errorMsg">格式无效，请输入如 A1:B2:C3:D4:E5:F6</div>
-  <button class="btn btn-p" id="searchBtn" style="margin-top:16px"><span class="material-symbols-rounded" style="font-size:18px">search</span> 地址查询</button>
+  <button class="btn-primary" id="searchBtn" style="margin-top:16px"><span class="material-symbols-rounded" style="font-size:18px">search</span> 地址查询</button>
 </div>
 <div class="card" id="resultCard" style="display:none">
-  <div class="rh">
-    <div class="b"></div>
-    <h2>查询结果</h2>
-    <span class="tag" id="dataSourceBadge">API</span>
-  </div>
+  <div class="rh"><div class="b"></div><h2>查询结果</h2><span class="badge-positive" id="dataSourceBadge">API</span></div>
   <div class="rc">
     <div class="ri">
       <div class="rv">
-        <div>
-          <div class="rvl">厂商 / Vendor</div>
-          <div class="rvn" id="vendorName">--</div>
-        </div>
+        <div><div class="rvl">厂商 / Vendor</div><div class="rvn" id="vendorName">--</div></div>
         <div class="rvi"><span class="material-symbols-rounded">business</span></div>
       </div>
       <div class="dg">
@@ -44,20 +37,12 @@
         <div class="di"><div class="dl">国家/地区</div><div class="dv" id="countryName">--</div></div>
         <div class="di"><div class="dl">数据源</div><div class="dv" id="apiSource">--</div></div>
       </div>
-      <div class="aw" id="addressContainer">
-        <div class="al">详细地址</div>
-        <div class="at" id="fullAddress"></div>
-      </div>
+      <div class="aw" id="addressContainer"><div class="al">详细地址</div><div class="at" id="fullAddress"></div></div>
     </div>
-    <div class="rt"><button id="resetBtn"><span class="material-symbols-rounded" style="font-size:16px">refresh</span> 查询新的地址</button></div>
+    <div class="rt"><button id="resetBtn"><span class="material-symbols-rounded">refresh</span> 查询新的地址</button></div>
   </div>
 </div>
-<div class="card" id="loadingCard" style="display:none">
-  <div class="ld s">
-    <div class="sp"></div>
-    <span>正在查询厂商信息...</span>
-  </div>
-</div>
+<div class="card" id="loadingCard" style="display:none"><div class="ld s"><div class="sp"></div><span>正在查询厂商信息...</span></div></div>
 <div class="card"><div class="ft"><p>IEEE OUI &bull; maclookup.app</p></div></div>
 </div>
 <script>
