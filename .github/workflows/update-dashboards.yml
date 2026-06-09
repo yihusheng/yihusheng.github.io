@@ -56,14 +56,14 @@ jobs:
           rm -rf $M/_nuxt && cp -r $S/_nuxt $M/
           cp $S/sw.js $M/sw.js
           for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
-          rm -f $M/workbox-*.js 2>/dev/null; for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
+          rm -f $M/workbox-*.js 2>/dev/null
+          for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
           cp $S/manifest.webmanifest $M/ 2>/dev/null || true
           cp $S/.nojekyll $M/ 2>/dev/null || true
           for f in favicon.ico favicon.svg pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
             [ -f "$S/$f" ] && cp "$S/$f" $M/ 2>/dev/null || true
           done
 
-          # Inject navbar into HTML files
           for f in index.html 200.html 404.html; do
             [ -f "$S/$f" ] && cp "$S/$f" "$M/$f"
             [ -f "$M/$f" ] || continue
@@ -92,16 +92,30 @@ jobs:
         if: steps.zv.outputs.skip == 'false'
         run: |
           V=${{ steps.zv.outputs.latest }}
-          curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${V}/dist-cdn-fonts.zip" -o /tmp/z.zip
+          curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${V}/dist-no-fonts.zip" -o /tmp/z.zip
           unzip -qo /tmp/z.zip -d /tmp/zs
-          S=/tmp/zs
 
-          rm -rf $Z/assets && cp -r $S/assets $Z/
+          # dist zip 可能包含 dist/ 前缀目录，自动检测
+          if [ -d "/tmp/zs/dist" ]; then
+            S=/tmp/zs/dist
+          elif [ -d "/tmp/zs/assets" ]; then
+            S=/tmp/zs
+          else
+            # 查找包含 index.html 的目录
+            S=$(find /tmp/zs -name index.html -exec dirname {} \; | head -1)
+          fi
+          echo "Source dir: $S"
+
+          rm -rf $Z/assets
+          [ -d "$S/assets" ] && cp -r $S/assets $Z/ || echo "WARNING: no assets dir"
+
           for f in favicon.ico favicon.svg apple-touch-icon.png pwa-*.png manifest.webmanifest registerSW.js sw.js; do
             [ -f "$S/$f" ] && cp "$S/$f" $Z/ 2>/dev/null || true
           done
 
-          # Inject navbar
+          # index.html
+          [ -f "$S/index.html" ] && cp "$S/index.html" $Z/index.html
+
           grep -q '/Tools/navbar.css' "$Z/index.html" 2>/dev/null && NEED_INJECT=false || NEED_INJECT=true
           if [ "$NEED_INJECT" = true ]; then
             sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$Z/index.html"
