@@ -1,7 +1,5 @@
 /* JumpTools — 跳转链接 · 应用商店直达 */
 .wrap{max-width:640px}
-select{height:44px;background:var(--c);border:2px solid var(--k);border-radius:var(--rs);padding:0 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;outline:none;transition:all .2s;width:100%}
-select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .srow select{width:auto;min-width:200px}
 .lc{background:var(--s);border-radius:var(--rs);padding:16px;margin-top:12px;transition:all .1s}
