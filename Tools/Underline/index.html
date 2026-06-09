@@ -71,7 +71,9 @@ function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss
 function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
 var html='<span style="'+gst()+'">'+t+'</span>'
-P.textContent=tDecorationPStylelcTh';UnderofPcfsContent.text gp.value',r i.length;i++)r+=t[i]+c;return r}
+P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px'
+CO.textContent=css;HO.textContent=html}
+function gp(){var t=T.value||'预览',c=gjc(),r='';for(var i=0;i<t.length;i++)r+=t[i]+c;return r}
 function cp(t){if(t==='all'){var txt=T.value||'预览',html='<span style="'+gst()+'">'+txt+'</span>';navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
 function jn(){navigator.clipboard.writeText(gp()).then(function(){TT.textContent='已拼接';TT.className='toast s';setTimeout(function(){TT.className='toast';TT.textContent='已复制'},2000)})}
 function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
