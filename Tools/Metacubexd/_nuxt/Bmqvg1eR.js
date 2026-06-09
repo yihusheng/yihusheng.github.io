@@ -1,1 +1,0 @@
-// This is a placeholder. The actual content comes from Metacubexd gh-pages.
