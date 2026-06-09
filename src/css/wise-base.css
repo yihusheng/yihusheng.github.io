@@ -112,10 +112,6 @@ h1 {
   outline: none;
   transition: all 0.2s;
 }
-.inp:focus {
-  border-color: var(--p);
-  box-shadow: 0 0 0 3px rgba(159,232,112,0.2);
-}
 .inp::placeholder { color: rgba(134,134,133,0.4); }
 
 /* ── Buttons ── */
@@ -149,7 +145,7 @@ h1 {
 .btn-s:hover { background: var(--pp); color: var(--kd); }
 
 /* ── Row ── */
-.rw { display: flex; gap: 8px; }
+.rw { display: flex; gap: 8px; flex-wrap: wrap; }
 
 /* ── Footer ── */
 .ft {
@@ -183,14 +179,7 @@ h1 {
   font-size: 14px;
   font-weight: 600;
   color: var(--k);
-  word-break: break-all;
-}
-
-/* ── Result show/hide ── */
-.rs { display: none; }
-.rs.s { display: block; }
-
-/* ── Toast ── */
+ /*─.rs/*─ Toast ── */
 .toast {
   position: fixed;
   bottom: 80px;
@@ -209,3 +198,62 @@ h1 {
   white-space: nowrap;
 }
 .toast.s { opacity: 1; }
+
+/* ═══════════════════════════════════════════
+   Shared Form Elements (由各工具 CSS 补充特有属性)
+   ═══════════════════════════════════════════ */
+
+/* ── Focus ring（所有表单元素共享）── */
+.inp:focus, textarea:focus, select:focus {
+  border-color: var(--p);
+  box-shadow: 0 0 0 3px rgba(159,232,112,.2);
+  outline: none;
+}
+
+/* ── Textarea base ── */
+textarea {
+  border: 2px solid var(--k);
+  border-radius: var(--rs);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: all .2s;
+  resize: vertical;
+}
+textarea:focus { background: var(--c); }
+
+/* ── Select base ── */
+select {
+  height: 44px;
+  background: var(--c);
+  border: 2px solid var(--k);
+  border-radius: var(--rs);
+  padding: 0 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--k);
+  cursor: pointer;
+  outline: none;
+  transition: all .2s;
+}
+
+/* ── Loading spinner ── */
+.ld {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px;
+}
+.ld.s { display: flex; }
+.sp {
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--pp);
+  border-top-color: var(--p);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.ld span { font-size: 13px; font-weight: 500; color: var(--b); }
