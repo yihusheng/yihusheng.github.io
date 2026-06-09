@@ -49,31 +49,61 @@ jobs:
       - name: Update Metacubexd
         if: steps.mv.outputs.skip == 'false'
         run: |
-          curl -sL https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip -o /tmp/m.zip
-          unzip -qo /tmp/m.zip -d /tmp/ms
-          S=/tmp/ms/metacubexd-gh-pages
+          V=${{ steps.mv.outputs.latest }}
+          curl -sL "https://github.com/MetaCubeX/metacubexd/releases/download/${V}/compressed-dist.tgz" -o /tmp/m.tgz
+          mkdir -p /tmp/ms
+          tar -xzf /tmp/m.tgz -C /tmp/ms
+          S=/tmp/ms
 
+          # compressed-dist.tgz 可能用 _index.html 或 index.html
+          if [ -f "$S/index.html" ]; then
+            IDX=index.html
+          elif [ -f "$S/_index.html" ]; then
+            IDX=_index.html
+          else
+            echo "ERROR: no index.html found in release artifact"
+            ls -la "$S/"
+            exit 1
+          fi
+          echo "Using $IDX as index"
+
+          # _nuxt (核心资源)
           rm -rf $M/_nuxt && cp -r $S/_nuxt $M/
-          cp $S/sw.js $M/sw.js
-          for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
-          rm -f $M/workbox-*.js 2>/dev/null
-          for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
-          cp $S/manifest.webmanifest $M/ 2>/dev/null || true
-          cp $S/.nojekyll $M/ 2>/dev/null || true
-          for f in favicon.ico favicon.svg pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
+
+          # _fonts (部分版本携带)
+          rm -rf $M/_fonts 2>/dev/null || true
+          [ -d "$S/_fonts" ] && cp -r $S/_fonts $M/
+
+          # workbox (sw 依赖)
+          rm -f $M/workbox-*.js 2>/dev/null || true
+          for f in $S/workbox-*.js; do
+            [ -f "$f" ] && cp "$f" $M/
+          done
+
+          # 其他静态文件
+          for f in sw.js manifest.webmanifest .nojekyll favicon.ico favicon.svg \
+                   pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
             [ -f "$S/$f" ] && cp "$S/$f" $M/ 2>/dev/null || true
           done
 
-          for f in index.html 200.html 404.html; do
-            [ -f "$S/$f" ] && cp "$S/$f" "$M/$f"
+          # index 文件 + 导航栏注入
+          for f in $IDX 200.html 404.html; do
+            if [ -f "$S/$f" ]; then
+              cp "$S/$f" "$M/$f"
+            elif [ "$f" != "$IDX" ]; then
+              # 200.html / 404.html 不存在则从 index 创建（SPA 路由需要）
+              [ -f "$M/$IDX" ] && cp "$M/$IDX" "$M/$f" && echo "  Created $f from $IDX"
+            fi
             [ -f "$M/$f" ] || continue
             grep -q '/Tools/navbar.css' "$M/$f" && continue
             sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$M/$f"
             sed -i 's|<body>|<body class="navbar-overlay">|' "$M/$f"
-            echo "  Injected: $M/$f"
+            echo "  Injected navbar: $M/$f"
           done
+
+          # config.js
           [ -f "$M/config.js" ] || echo 'window.__METACUBEXD_CONFIG__={defaultBackendURL:""}' > $M/config.js
-          echo "Metacubexd ${{ steps.mv.outputs.latest }} done"
+          echo "Metacubexd ${V} done"
 
       # ═══════════════════════════════
       # Zashboard
