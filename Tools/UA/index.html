@@ -12,46 +12,44 @@
 </head>
 <body>
 <div class="wrap">
-<div class="card" style="padding:24px">
-  <div class="badge-positive"><span class="material-symbols-rounded">device_hub</span> UA Analyzer</div>
-  <h1>UA 信息读取</h1>
-  <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
-  <div class="ua-box">
-    <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
-    <button class="btn-secondary" id="copyUABtn">复制</button>
-  </div>
-  <button class="btn-primary" id="parseBtn">解析</button>
-  <div class="rw">
-    <button class="btn-secondary" id="useMyUABtn">本机 UA</button>
-    <button class="btn-secondary" id="clearBtn">清空</button>
-  </div>
-</div>
-<div class="card rs" id="resultCard">
-  <div class="pad">
-    <label class="lbl">解析结果</label>
-    <div class="dg">
-      <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
-      <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
-      <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
-      <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
-      <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brVal">--</div></div>
-      <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
-      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
-    </div>
-    <div class="raw" id="rawD"></div>
-    <div class="rw">
-      <button class="btn-secondary" id="cpyBtn">复制结果</button>
-      <button class="btn-secondary" id="dbBtn">设备数据库</button>
+  <div class="card" style="padding:var(--sxl)">
+    <div class="badge-positive">UA Analyzer</div>
+    <h1 style="margin-top:4px">UA 信息读取</h1>
+    <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
+    <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..." style="width:100%;background:var(--s);border:2px solid transparent;border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:13px;min-height:100px;line-height:1.5;outline:none"></textarea>
+    <button class="btn-primary" id="parseBtn" style="margin-top:var(--ss)">解析</button>
+    <div class="rw" style="margin-top:var(--ss)">
+      <button class="btn-secondary" id="useMyUABtn" style="flex:1">本机 UA</button>
+      <button class="btn-secondary" id="clearBtn" style="flex:1">清空</button>
     </div>
   </div>
-</div>
-<div class="card"><div class="ft"><p>数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank">KHwang9883/MobileModels</a></p></div></div>
+
+  <div class="card rs" id="resultCard">
+    <div class="pad">
+      <label class="lbl">解析结果</label>
+      <div class="dg">
+        <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
+        <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
+        <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
+        <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
+        <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brVal">--</div></div>
+        <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
+        <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
+      </div>
+      <div class="code-box" id="rawD" style="margin-top:var(--sm);font-size:11px;max-height:100px;overflow:auto"></div>
+      <div class="rw" style="margin-top:var(--ss)">
+        <button class="btn-secondary" id="cpyBtn" style="flex:1">复制结果</button>
+        <button class="btn-secondary" id="dbBtn" style="flex:1">设备数据库</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center"><p style="font-size:11px;color:rgba(232,235,230,.5)">数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank" style="color:var(--p);text-decoration:none">KHwang9883/MobileModels</a></p></div>
 </div>
 <script>
-var DB={};
-var BRANDS=[['xiaomi','小米'],['mi ','小米'],['redmi','红米'],['poco','POCO'],['huawei','华为'],['honor','荣耀'],['samsung','三星'],['sm-','三星'],['iphone','苹果'],['ipad','苹果'],['oneplus','一加'],['oppo','OPPO'],['realme','真我'],['vivo','vivo'],['iqoo','iQOO'],['meizu','魅族'],['pixel','谷歌'],['moto','摩托罗拉'],['nokia','诺基亚'],['sony','索尼'],['asus','华硕'],['nothing','Nothing']];
+var BRANDS=[['xiaomi','小米'],['mi ','小米'],['redmi','红米'],['poco','POCO'],['huawei','华为'],['honor','荣耀'],['samsung','三星'],['sm-','三星'],['iphone','苹果'],['ipad','苹果'],['oneplus','一加'],['oppo','OPPO'],['realme','真我'],['vivo','vivo'],['iqoo','iQOO'],['meizu','魅族'],['pixel','谷歌'],['moto','摩托罗拉'],['nokia','诺基亚'],['sony','索尼'],['asus','华硕']];
 function getBrand(u){var l=u.toLowerCase();for(var i=0;i<BRANDS.length;i++){if(l.indexOf(BRANDS[i][0])!==-1)return BRANDS[i][1]}return''}
-function parse(){var u=document.getElementById('uaInput').value.trim();if(!u)return;var l=u.toLowerCase(),b='未知',bv='',os='未知',ov='';
+function parse(){var u=document.getElementById('uaInput').value.trim();if(!u)return;var l=u.toLowerCase(),b='?',bv='',os='?',ov='';
 if(l.indexOf('edg')!==-1){b='Edge';bv=(u.match(/Edg\/([\d.]+)/)||[])[1]||''}
 else if(l.indexOf('chrome')!==-1){b='Chrome';bv=(u.match(/Chrome\/([\d.]+)/)||[])[1]||''}
 else if(l.indexOf('firefox')!==-1){b='Firefox';bv=(u.match(/Firefox\/([\d.]+)/)||[])[1]||''}
@@ -62,21 +60,17 @@ else if(l.indexOf('ios')!==-1||l.indexOf('iphone os')!==-1){os='iOS';var v=u.mat
 else if(l.indexOf('mac os x')!==-1){os='macOS';var v=u.match(/Mac OS X\s([\d_]+)/);if(v)ov=v[1].replace(/_/g,'.')}
 else if(l.indexOf('windows')!==-1){os='Windows'}
 var model='--';var m=u.match(/Android\s[\d.]+;\s*([A-Za-z0-9_-]+)\s*(?:Build|\))/);if(m)model=m[1]
-document.getElementById('bVal').textContent=b;
-document.getElementById('bvVal').textContent=bv||'--';
-document.getElementById('oVal').textContent=os;
-document.getElementById('ovVal').textContent=ov||'--';
-document.getElementById('brVal').textContent=getBrand(u)||'--';
-document.getElementById('mVal').textContent=model;
-document.getElementById('tVal').textContent=l.indexOf('mobile')!==-1?'手机':'电脑';
-document.getElementById('rawD').textContent=u;
-document.getElementById('resultCard').classList.add('s')}
-document.getElementById('parseBtn').addEventListener('click',parse);
-document.getElementById('useMyUABtn').addEventListener('click',function(){document.getElementById('uaInput').value=navigator.userAgent;parse()});
-document.getElementById('clearBtn').addEventListener('click',function(){document.getElementById('uaInput').value='';document.getElementById('resultCard').classList.remove('s')});
-document.getElementById('copyUABtn').addEventListener('click',function(){var t=document.getElementById('uaInput').value;if(!t)return;navigator.clipboard.writeText(t)});
-document.getElementById('cpyBtn').addEventListener('click',function(){var t='浏览器: '+document.getElementById('bVal').textContent+' '+document.getElementById('bvVal').textContent+'\n系统: '+document.getElementById('oVal').textContent+' '+document.getElementById('ovVal').textContent+'\n型号: '+document.getElementById('mVal').textContent;navigator.clipboard.writeText(t)});
-document.getElementById('dbBtn').addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')});
+document.getElementById('bVal').textContent=b;document.getElementById('bvVal').textContent=bv||'--'
+document.getElementById('oVal').textContent=os;document.getElementById('ovVal').textContent=ov||'--'
+document.getElementById('brVal').textContent=getBrand(u)||'--'
+document.getElementById('mVal').textContent=model
+document.getElementById('tVal').textContent=l.indexOf('mobile')!==-1?'手机':'电脑'
+document.getElementById('rawD').textContent=u;document.getElementById('resultCard').classList.add('s')}
+document.getElementById('parseBtn').addEventListener('click',parse)
+document.getElementById('useMyUABtn').addEventListener('click',function(){document.getElementById('uaInput').value=navigator.userAgent;parse()})
+document.getElementById('clearBtn').addEventListener('click',function(){document.getElementById('uaInput').value='';document.getElementById('resultCard').classList.remove('s')})
+document.getElementById('cpyBtn').addEventListener('click',function(){var t='浏览器: '+document.getElementById('bVal').textContent+' '+document.getElementById('bvVal').textContent+'\n系统: '+document.getElementById('oVal').textContent+' '+document.getElementById('ovVal').textContent;navigator.clipboard.writeText(t)})
+document.getElementById('dbBtn').addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')})
 window.addEventListener('load',function(){document.getElementById('uaInput').value=navigator.userAgent;setTimeout(parse,100)})
 </script>
 </body>
