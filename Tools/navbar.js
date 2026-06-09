@@ -11,9 +11,9 @@
  *  导航数据通过 window.WiseNavbarData 暴露给全局，
  *  主页底部抽屉读取此数据动态渲染导航卡片。
  *  
- *  【注入策略】按钮使用 position:fixed 浮动于页面内容之上，
- *  不干扰页面自身的布局（flex/grid/absolute）。
- *  注入到 body 末尾 (beforeend)，避免干扰 SPA hydration。
+ *  【注入策略】
+ *  - 如果页面已有静态 navbar HTML（SPA 推荐），只绑定事件 + 填充抽屉
+ *  - 否则动态创建并注入到 body 末尾 (beforeend)
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -43,13 +43,9 @@
   }
 
   function injectSpacerCSS() {
-    // ── overlay 模式（Metacubexd/zashboard）：按钮浮在内容之上，不需要 spacer ──
     if (document.body && document.body.classList.contains('navbar-overlay')) return;
-
     var style = document.createElement('style');
     style.id = 'wiseNavbarSpacerCSS';
-    // 导航按钮尺寸: top=16px, height=42px ⇒ 底部在 58px
-    // spacer 留出 62px 避免遮挡
     style.textContent =
       'body { padding-top: 62px !important; }' +
       'body > #app { padding-top: 62px !important; box-sizing: border-box !important; }' +
@@ -74,7 +70,7 @@
     return false;
   }
 
-  function buildHTML() {
+  function buildDrawerLinks() {
     var html = '';
     for (var i = 0; i < NAV_ITEMS.length; i++) {
       var item = NAV_ITEMS[i];
@@ -83,7 +79,10 @@
         '<span class="nv-icon material-symbols-rounded">' + item.icon + '</span>' +
         item.label + '</a>';
     }
+    return html;
+  }
 
+  function buildHTML() {
     return '' +
       '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">' +
         '<span class="material-symbols-rounded">home</span></a>' +
@@ -97,15 +96,23 @@
               '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
                 '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>' +
               '</svg></button></div>' +
-          html +
+          buildDrawerLinks() +
         '</div></div>';
+  }
+
+  function populateDrawer() {
+    var panel = document.querySelector('.wise-nav-drawer-panel');
+    if (!panel) return;
+    // 检查是否已有链接（静态 HTML 可能只有 header）
+    var existing = panel.querySelector('.wise-nav-drawer-link');
+    if (existing) return; // 已有链接则跳过
+    panel.insertAdjacentHTML('beforeend', buildDrawerLinks());
   }
 
   function inject() {
     if (document.getElementById('wiseNavToggle')) return;
     injectFonts();
     injectSpacerCSS();
-    // 注入到 body 末尾 (beforeend)，避免干扰 SPA 的初始 DOM 结构
     document.body.insertAdjacentHTML('beforeend', buildHTML());
   }
 
@@ -143,9 +150,29 @@
 
   function init() {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() { inject(); bindEvents(); });
+      document.addEventListener('DOMContentLoaded', function() {
+        var alreadyExists = !!document.getElementById('wiseNavToggle');
+        if (!alreadyExists) {
+          injectFonts();
+          injectSpacerCSS();
+          inject();
+        } else {
+          // 静态 HTML 已有 navbar，只需注入字体和填充抽屉
+          injectFonts();
+          populateDrawer();
+        }
+        bindEvents();
+      });
     } else {
-      inject();
+      var alreadyExists = !!document.getElementById('wiseNavToggle');
+      if (!alreadyExists) {
+        injectFonts();
+        injectSpacerCSS();
+        inject();
+      } else {
+        injectFonts();
+        populateDrawer();
+      }
       bindEvents();
     }
   }
