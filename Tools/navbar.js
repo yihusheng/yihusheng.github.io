@@ -43,6 +43,10 @@
   }
 
   function injectSpacerCSS() {
+    // ── overlay 模式（Metacubexd/zashboard）不需要 spacer ──
+    // 按钮设计为半透明浮在内容之上，加 padding 会推下整个 SPA 界面产生空白
+    if (document.body && document.body.classList.contains('navbar-overlay')) return;
+
     // 导航按钮尺寸: top=16px, height=42px ⇒ 底部在 58px
     // spacer 留出 62px (16 + 42 + 4px 余量) 避免遮挡，同时不产生过多空白
     var style = document.createElement('style');
