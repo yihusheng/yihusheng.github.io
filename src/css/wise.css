@@ -28,11 +28,11 @@ h1{font-size:28px;font-weight:900;letter-spacing:-.03em}
 .pad{padding:var(--sxl)}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:var(--sm) var(--sxl);border-radius:var(--rx);font-family:var(--f);font-size:16px;font-weight:600;cursor:pointer;border:none;gap:var(--sx)}
-.btn-p,.btn-primary{background:var(--p);color:var(--op);width:100%}
+.btn-p,.btn-primary{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:var(--sm) var(--sxl);border-radius:var(--rx);font-family:var(--f);font-size:16px;font-weight:600;cursor:pointer;border:none;gap:var(--sx);background:var(--p);color:var(--op);width:100%}
 .btn-p:hover,.btn-primary:hover{background:var(--pa)}
-.btn-s,.btn-secondary{background:var(--s);color:var(--k)}
+.btn-s,.btn-secondary{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:var(--sm) var(--sxl);border-radius:var(--rx);font-family:var(--f);font-size:16px;font-weight:600;cursor:pointer;border:none;gap:var(--sx);background:var(--s);color:var(--k)}
 .btn-s:hover,.btn-secondary:hover{background:var(--pp);color:var(--kd)}
-.btn-t,.btn-tertiary{background:var(--c);color:var(--k);border:1px solid var(--k)}
+.btn-t,.btn-tertiary{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:var(--sm) var(--sxl);border-radius:var(--rx);font-family:var(--f);font-size:16px;font-weight:600;cursor:pointer;border:none;gap:var(--sx);background:var(--c);color:var(--k);border:1px solid var(--k)}
 .btn-sm{background:var(--k);color:var(--p);border-radius:var(--rs);padding:5px 10px;font-size:11px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:2px}
 
 .inp{width:100%;height:50px;background:var(--c);border:2px solid var(--k);border-radius:var(--rm);padding:0 var(--sl);font-family:var(--f);font-size:16px;color:var(--k);outline:none}
