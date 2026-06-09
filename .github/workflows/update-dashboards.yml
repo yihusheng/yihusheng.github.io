@@ -1,0 +1,281 @@
+name: Update Dashboards (Metacubexd & Zashboard)
+
+on:
+  schedule:
+    # 每周日凌晨 2:00 检查更新
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: '强制更新（忽略版本检查）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+env:
+  METACUBEXD_DIR: Tools/Metacubexd
+  ZASHBOARD_DIR: Tools/zashboard
+
+jobs:
+  update-dashboards:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ═══════════════════════════════════════════
+      # 1. 检测 Metacubexd 最新版本
+      # ═══════════════════════════════════════════
+      - name: Check Metacubexd version
+        id: meta_ver
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest \
+            | jq -r '.tag_name // "v0"')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+
+          # 从已有文件提取当前版本
+          CURRENT=""
+          if [ -f "${{ env.METACUBEXD_DIR }}/index.html" ]; then
+            CURRENT=$(grep -oP 'appVersion:"\K[^"]+' "${{ env.METACUBEXD_DIR }}/index.html" || echo "")
+          fi
+          echo "current=${CURRENT:-none}" >> $GITHUB_OUTPUT
+
+          if [ "$LATEST" = "$CURRENT" ] && [ "${{ inputs.force_update }}" != "true" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+          echo "Metacubexd: current=$CURRENT → latest=$LATEST"
+
+      # ═══════════════════════════════════════════
+      # 2. 更新 Metacubexd
+      # ═══════════════════════════════════════════
+      - name: Update Metacubexd
+        if: steps.meta_ver.outputs.skip == 'false'
+        run: |
+          echo "⬇️ 下载 Metacubexd gh-pages 分支..."
+          curl -sL https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip \
+            -o /tmp/metacubexd.zip
+          unzip -qo /tmp/metacubexd.zip -d /tmp/meta_src
+          SRC=/tmp/meta_src/metacubexd-gh-pages
+
+          echo "📁 替换 _nuxt..."
+          rm -rf ${{ env.METACUBEXD_DIR }}/_nuxt
+          cp -r $SRC/_nuxt ${{ env.METACUBEXD_DIR }}/
+
+          echo "📁 替换 sw/workbox..."
+          cp $SRC/sw.js ${{ env.METACUBEXD_DIR }}/sw.js
+          cp $SRC/workbox-*.js ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
+          # 清理旧版 workbox
+          ls ${{ env.METACUBEXD_DIR }}/workbox-*.js 2>/dev/null \
+            | grep -vF "$(ls $SRC/workbox-*.js 2>/dev/null | xargs basename)" \
+            | xargs rm -f 2>/dev/null || true
+
+          echo "📄 更新 manifest / .nojekyll / 图标..."
+          cp $SRC/manifest.webmanifest ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
+          cp $SRC/.nojekyll ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
+          # 图标通常不变，但如果有变化也同步
+          for f in favicon.ico favicon.svg pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
+            [ -f "$SRC/$f" ] && cp "$SRC/$f" "${{ env.METACUBEXD_DIR }}/" 2>/dev/null || true
+          done
+
+          echo "🔧 注入导航栏到 index.html..."
+          python3 << 'PYEOF'
+import os, shutil
+
+META_DIR = os.environ['METACUBEXD_DIR']
+SRC = '/tmp/meta_src/metacubexd-gh-pages'
+
+NAVBAR_HEAD = (
+    '<!-- ═══ 统一导航栏 (overlay 半透明覆盖模式) ═══ -->\n'
+    '<link rel="stylesheet" href="/Tools/navbar.css">\n'
+    '<script src="/Tools/navbar.js"></script>'
+)
+
+def inject_navbar(filepath, src_fallback=None):
+    """注入 navbar 引用和 overlay class 到 HTML"""
+    # 优先用源文件，fallback 到现有文件
+    if src_fallback and os.path.exists(src_fallback):
+        shutil.copy2(src_fallback, filepath)
+
+    if not os.path.exists(filepath):
+        print(f"  ⚠️  跳过不存在的文件: {filepath}")
+        return
+
+    with open(filepath, 'r', encoding='utf-8') as f:
+        html = f.read()
+
+    changed = False
+
+    # 注入 navbar CSS/JS
+    if '/Tools/navbar.css' not in html:
+        html = html.replace('<head>', '<head>\n' + NAVBAR_HEAD)
+        changed = True
+
+    # 添加 overlay class
+    if 'navbar-overlay' not in html:
+        html = html.replace('<body>', '<body class="navbar-overlay">')
+        changed = True
+
+    if changed:
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(html)
+        print(f"  ✅ 已更新: {filepath}")
+    else:
+        print(f"  ➖ 无需修改: {filepath}")
+
+# 处理三个入口文件
+for fname in ['index.html', '200.html', '404.html']:
+    target = os.path.join(META_DIR, fname)
+    src_fb = os.path.join(SRC, fname) if os.path.exists(os.path.join(SRC, fname)) else None
+    inject_navbar(target, src_fb)
+
+# 确保 config.js 存在（有时 gh-pages 没有）
+if not os.path.exists(os.path.join(META_DIR, 'config.js')):
+    with open(os.path.join(META_DIR, 'config.js'), 'w') as f:
+        f.write('window.__METACUBEXD_CONFIG__={defaultBackendURL:""}\n')
+    print("  ✅ 已创建 config.js")
+
+PYEOF
+          echo "✅ Metacubexd 更新完成 (版本: ${{ steps.meta_ver.outputs.latest }})"
+
+      # ═══════════════════════════════════════════
+      # 3. 检测 Zashboard 最新版本
+      # ═══════════════════════════════════════════
+      - name: Check Zashboard version
+        id: zash_ver
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/Zephyruso/zashboard/releases/latest \
+            | jq -r '.tag_name // "v0"')
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+
+          # 通过记录文件跟踪版本
+          VERSION_FILE="${{ env.ZASHBOARD_DIR }}/.version"
+          CURRENT=""
+          if [ -f "$VERSION_FILE" ]; then
+            CURRENT=$(cat "$VERSION_FILE")
+          fi
+          echo "current=${CURRENT:-none}" >> $GITHUB_OUTPUT
+
+          if [ "$LATEST" = "$CURRENT" ] && [ "${{ inputs.force_update }}" != "true" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+          echo "Zashboard: current=$CURRENT → latest=$LATEST"
+
+      # ═══════════════════════════════════════════
+      # 4. 更新 Zashboard
+      # ═══════════════════════════════════════════
+      - name: Update Zashboard
+        if: steps.zash_ver.outputs.skip == 'false'
+        run: |
+          VER=${{ steps.zash_ver.outputs.latest }}
+          echo "⬇️ 下载 Zashboard ${VER} (dist-cdn-fonts)..."
+          curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${VER}/dist-cdn-fonts.zip" \
+            -o /tmp/zashboard.zip
+          unzip -qo /tmp/zashboard.zip -d /tmp/zash_src
+          SRC=/tmp/zash_src
+
+          echo "📁 替换 assets..."
+          rm -rf ${{ env.ZASHBOARD_DIR }}/assets
+          cp -r $SRC/assets ${{ env.ZASHBOARD_DIR }}/
+
+          echo "📄 更新核心文件..."
+          for f in favicon.ico favicon.svg apple-touch-icon.png pwa-192x192.png pwa-512x512.png \
+                    pwa-maskable-192x192.png pwa-maskable-512x512.png \
+                    manifest.webmanifest registerSW.js sw.js; do
+            [ -f "$SRC/$f" ] && cp "$SRC/$f" "${{ env.ZASHBOARD_DIR }}/" 2>/dev/null || true
+          done
+
+          echo "🔧 注入导航栏到 index.html..."
+          python3 << 'PYEOF'
+import os
+
+ZASH_DIR = os.environ['ZASHBOARD_DIR']
+SRC = '/tmp/zash_src'
+VER = os.environ.get('VER', 'unknown')
+
+NAVBAR_HEAD = (
+    '<!-- ═══ 统一导航栏 (overlay 半透明覆盖模式) ═══ -->\n'
+    '<link rel="stylesheet" href="/Tools/navbar.css">\n'
+    '<script src="/Tools/navbar.js"></script>'
+)
+
+# 从源文件复制 index.html
+src_idx = os.path.join(SRC, 'index.html')
+target_idx = os.path.join(ZASH_DIR, 'index.html')
+
+if os.path.exists(src_idx):
+    import shutil
+    shutil.copy2(src_idx, target_idx)
+    print(f"  📄 已复制新版 index.html")
+
+with open(target_idx, 'r', encoding='utf-8') as f:
+    html = f.read()
+
+changed = False
+
+# 注入 navbar CSS/JS（在 <title> 之后或 <head> 开始处）
+if '/Tools/navbar.css' not in html:
+    html = html.replace('<head>', '<head>\n' + NAVBAR_HEAD)
+    changed = True
+
+# 添加 overlay class（zashboard 已有 class，需要追加）
+if 'navbar-overlay' not in html:
+    html = html.replace('<body class="', '<body class="navbar-overlay ')
+    html = html.replace('<body>', '<body class="navbar-overlay">')
+    changed = True
+
+if changed:
+    with open(target_idx, 'w', encoding='utf-8') as f:
+        f.write(html)
+    print(f"  ✅ 导航栏注入完成")
+else:
+    print(f"  ➖ 无需修改")
+
+# 写入版本号
+with open(os.path.join(ZASH_DIR, '.version'), 'w') as f:
+    f.write(VER)
+print(f"  ✅ 版本号已记录: {VER}")
+
+PYEOF
+          echo "✅ Zashboard 更新完成 (版本: ${{ steps.zash_ver.outputs.latest }})"
+
+      # ═══════════════════════════════════════════
+      # 5. 提交更新（只要有变更就提交）
+      # ═══════════════════════════════════════════
+      - name: Commit changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add ${{ env.METACUBEXD_DIR }}/ ${{ env.ZASHBOARD_DIR }}/
+          git diff --staged --quiet || git commit -m "chore: auto-update dashboards [skip ci]"
+          git pull --rebase
+          git push
+
+      # ═══════════════════════════════════════════
+      # 6. 部署到 GitHub Pages
+      # ═══════════════════════════════════════════
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
