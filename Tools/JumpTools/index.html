@@ -7,30 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/src/css/wise-base.css">
+<link rel="stylesheet" href="/src/css/jumptools.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
-<style>
-.wrap{max-width:640px}
-.pad{padding:24px}
-.bdg{margin-bottom:8px}
-h1{font-size:30px;margin-bottom:3px}
-.sub{font-size:14px;margin-bottom:16px}
-.lbl{margin-bottom:8px}
-select{height:44px;background:var(--c);border:2px solid var(--k);border-radius:var(--rs);padding:0 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;outline:none;transition:all .2s;width:100%}
-select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
-.srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.srow .bdg{margin-bottom:0}
-.lc{background:var(--s);border-radius:var(--rs);padding:16px;margin-top:12px;transition:all .1s}
-.ll{font-size:13px;font-weight:700;color:var(--k);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.lt{display:block;background:var(--c);padding:12px 14px;border-radius:10px;font-family:'SF Mono','Monaco','Courier New',monospace;font-size:13px;word-break:break-all;color:var(--k);text-decoration:none;border:1px solid transparent;transition:.2s;width:100%}
-.lt:hover{background:var(--pp);border-color:var(--p)}
-.cpy{font-size:12px;color:var(--m);margin-top:6px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:color .15s;padding:2px 0}
-.cpy:hover{color:var(--k)}
-.cpy .material-symbols-rounded{font-size:14px}
-.alert{background:var(--pp);border-left:3px solid var(--p);padding:12px 16px;border-radius:var(--rs);font-size:12px;color:var(--kd);line-height:1.6;margin-top:16px}
-.nt{text-align:center;font-size:12px;color:var(--m);margin-top:16px}
-@media(min-width:640px){.srow select{width:auto;min-width:200px}}
-</style>
 </head>
 <body>
 <div class="wrap">
@@ -86,38 +65,6 @@ select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 
 <div class="toast" id="toastMsg"></div>
 
-<script>
-var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink'),TM=document.getElementById('toastMsg');
-
-function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else if(u.includes('oneplus'))b='oneplus';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
-
-function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
-
-function gBN(b,i){if(i)return'苹果 App Store';switch(b){case'huawei':return'华为应用市场';case'honor':return'荣耀应用市场';case'xiaomi':return'小米应用商店';case'oppo':return'OPPO软件商店';case'oneplus':return'一加商店';case'vivo':return'vivo应用商店';case'samsung':return'三星应用商店';default:return'通用市场协议'}}
-
-var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl,hasPkg;
-
-function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS)
-brandLink=pkg?gBSL(pkg,bi):null;var bUrl=brandLink||'#',bTxt=brandLink||'—— 请输入包名 ——';BPL.textContent=bTxt;BPL.href=bUrl;BPL.style.pointerEvents=pkg&&brandLink?'auto':'none';BPL.style.opacity=pkg&&brandLink?'1':'.6'
-universalLink=pkg?gUL(pkg,bi):null;varLinkal包名 ——';UPL.textContent=uTxt;UPL.href=uUrl;UPL.style.pointerEvents=pkg&&universalLink?'auto':'none';UPL.style.opacity=pkg&&universalLink?'1':'.6'
-webLinkUrl=pkg?gWS(pkg,bi):'#';WL.textContent=webLinkUrl||'—— 请输入包名 ——';WL.href=webLinkUrl||'#';WL.style.pointerEvents=pkg?'auto':'none';WL.style.opacity=pkg?'1':'.6'
-hasPkg=!!pkg}
-
-function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://;omi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
-
-function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
-
-function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
-
-function sT(m,d){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},d||1800)}
-
-async function c2c(t,m){if(!t){sT('无有效链接');return}try{await navigator.clipboard.writeText(t);sT(m||'已复制')}catch(e){sT('复制失败')}}
-
-PI.addEventListener('input',upd);BS.addEventListener('change',function(e){cManual=e.target.value;();Manual '+IOS)}BrandBtn').('clickkg包专用Link(!请有效包名');return}c2c(universalLink,'通用链接已复制')})
-document.getElementById('copyWebLinkBtn').addEventListener('click',function(){if(!hasPkg||!webLinkUrl||webLinkUrl==='#'){sT('请填写有效包名');return}c2c(webLinkUrl,'网页链接已复制')})
-
-function init(){var a=gAuto(),s=a.brand;if(a.isIOS)s='apple';else if(s==='honor'||s==='oneplus')s='oppo';else if(!['huawei','xiaomi','oppo','vivo','samsung','generic_android'].includes(s))s='generic_android';for(var i=0;i<BS.options.length;i++){if(BS.options[i].value===s){BS.selectedIndex=i;break}}cManual=BS.value;upd()}
-init()
-</script>
+<script src="/src/scripts/jumptools.js"></script>
 </body>
 </html>
