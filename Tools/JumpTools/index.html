@@ -16,11 +16,13 @@
     <div class="badge-positive">App Store Links</div>
     <h1 style="margin-top:4px">跳转链接</h1>
     <p class="sub">输入包名 · 自动生成商店直达链接</p>
+
     <label class="lbl">应用包名</label>
     <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
+
     <div style="display:flex;align-items:center;gap:var(--ss);flex-wrap:wrap;margin-top:var(--sl)">
-      <span class="badge-positive">选择品牌</span>
-      <select id="brandSelect" style="flex:1;min-width:160px">
+      <span class="badge-positive" style="flex-shrink:0">选择品牌</span>
+      <select id="brandSelect" style="flex:1;min-width:120px">
         <option value="auto">自动检测</option>
         <option value="huawei">华为 / 荣耀</option>
         <option value="xiaomi">小米 / Redmi</option>
@@ -33,44 +35,64 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="pad">
-      <div style="margin-bottom:var(--sl)">
-        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss);display:flex;align-items:center;gap:6px"><span style="color:var(--p)">*</span> 品牌专用链接 <span id="brandHintBadge" class="badge-positive" style="font-size:10px;padding:2px 8px">—</span></div>
-        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="brandProtocolLink">请输入包名</div>
-        <button class="btn-secondary" id="copyBrandLinkBtn">复制专用链接</button>
+  <div class="card" style="padding:var(--sxl)">
+    <div style="margin-bottom:var(--sl)">
+      <div style="display:flex;align-items:center;gap:var(--ss);margin-bottom:var(--ss)">
+        <div style="width:32px;height:32px;background:var(--pp);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-rounded" style="font-size:16px;color:var(--kd)">star</span></div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--b)">品牌专用</div>
+          <div style="font-size:10px;color:var(--m)" id="brandHintBadge">自动检测</div>
+        </div>
+        <span id="brandCopyOk" style="display:none;font-size:10px;color:var(--pos);font-weight:600">已复制</span>
       </div>
-      <div style="margin-bottom:var(--sl)">
-        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss)"><span style="color:var(--p)">*</span> 通用市场链接</div>
-        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="universalProtocolLink">请输入包名</div>
-        <button class="btn-secondary" id="copyUniversalLinkBtn">复制通用链接</button>
+      <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:11px;word-break:break-all;color:var(--k);margin-bottom:var(--ss);line-height:1.5;min-height:20px" id="brandProtocolLink">请输入有效包名</div>
+      <button class="btn-secondary" id="copyBrandLinkBtn" style="height:38px;font-size:14px">复制链接</button>
+    </div>
+
+    <div style="margin-bottom:var(--sl)">
+      <div style="display:flex;align-items:center;gap:var(--ss);margin-bottom:var(--ss)">
+        <div style="width:32px;height:32px;background:var(--pp);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-rounded" style="font-size:16px;color:var(--kd)">public</span></div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--b)">通用市场</div>
+          <div style="font-size:10px;color:var(--m)">协议直达</div>
+        </div>
+        <span id="universalCopyOk" style="display:none;font-size:10px;color:var(--pos);font-weight:600">已复制</span>
       </div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss)"><span style="color:var(--p)">*</span> 网页商店</div>
-        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="webLink">请输入包名</div>
-        <button class="btn-secondary" id="copyWebLinkBtn">复制网页链接</button>
+      <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:11px;word-break:break-all;color:var(--k);margin-bottom:var(--ss);line-height:1.5;min-height:20px" id="universalProtocolLink">请输入有效包名</div>
+      <button class="btn-secondary" id="copyUniversalLinkBtn" style="height:38px;font-size:14px">复制链接</button>
+    </div>
+
+    <div>
+      <div style="display:flex;align-items:center;gap:var(--ss);margin-bottom:var(--ss)">
+        <div style="width:32px;height:32px;background:var(--pp);border-radius:var(--rm);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span class="material-symbols-rounded" style="font-size:16px;color:var(--kd)">language</span></div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:700;color:var(--b)">网页商店</div>
+          <div style="font-size:10px;color:var(--m)">浏览器备选</div>
+        </div>
+        <span id="webCopyOk" style="display:none;font-size:10px;color:var(--pos);font-weight:600">已复制</span>
       </div>
+      <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:11px;word-break:break-all;color:var(--k);margin-bottom:var(--ss);line-height:1.5;min-height:20px" id="webLink">请输入有效包名</div>
+      <button class="btn-secondary" id="copyWebLinkBtn" style="height:38px;font-size:14px">复制链接</button>
     </div>
   </div>
 
   <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center">
-    <p style="font-size:11px;color:rgba(232,235,230,.5)">在浏览器中直接点击链接可能无法跳转，请使用复制按钮</p>
+    <p style="font-size:11px;color:rgba(232,235,230,.5)">点击链接可能不跳转，请使用复制按钮</p>
   </div>
 </div>
-<div class="toast" id="toastMsg"></div>
 <script>
-var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink'),TM=document.getElementById('toastMsg');
+var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink');
+var bCO=document.getElementById('brandCopyOk'),uCO=document.getElementById('universalCopyOk'),wCO=document.getElementById('webCopyOk');
 function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
 function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
 function gBN(b,i){if(i)return'App Store';switch(b){case'huawei':return'华为';case'honor':return'荣耀';case'xiaomi':return'小米';case'oppo':return'OPPO';case'oneplus':return'一加';case'vivo':return'vivo';case'samsung':return'三星';default:return'通用'}}
-var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl,hasPkg;
-function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS);brandLink=pkg?gBSL(pkg,bi):null;universalLink=pkg?gUL(pkg,bi):null;webLinkUrl=pkg?gWS(pkg,bi):'#';BPL.textContent=brandLink||'请输入有效包名';BPL.href=brandLink||'#';UPL.textContent=universalLink||'请输入有效包名';UPL.href=universalLink||'#';WL.textContent=webLinkUrl||'请输入有效包名';WL.href=webLinkUrl||'#';hasPkg=!!pkg}
+var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl;
+function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS);brandLink=pkg?gBSL(pkg,bi):null;universalLink=pkg?gUL(pkg,bi):null;webLinkUrl=pkg?gWS(pkg,bi):null;BPL.textContent=brandLink||'请输入有效包名';BPL.href=brandLink||'#';UPL.textContent=universalLink||'请输入有效包名';UPL.href=universalLink||'#';WL.textContent=webLinkUrl||'请输入有效包名';WL.href=webLinkUrl||'#'}
 function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://com.huawei.appmarket/'+pk;case'xiaomi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
 function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
-function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
-function sT(m){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},1800)}
-async function c2c(t,m){if(!t){sT('无有效链接');return}try{await navigator.clipboard.writeText(t);sT(m||'已复制')}catch(e){sT('复制失败')}}
-PI.addEventListener('input',upd);BS.addEventListener('change',function(){cManual=BS.value;upd()});document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){c2c(brandLink,'专用链接已复制')});document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){c2c(universalLink,'通用链接已复制')});document.getElementById('copyWebLinkBtn').addEventListener('click',function(){c2c(webLinkUrl,'网页链接已复制')})
+function gWS(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
+function cp(t,el,ok){if(!t){return}try{navigator.clipboard.writeText(t);ok.style.display='inline';setTimeout(function(){ok.style.display='none'},1500)}catch(e){}}
+PI.addEventListener('input',upd);BS.addEventListener('change',function(){cManual=BS.value;upd()});document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){cp(brandLink,BPL,bCO)});document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){cp(universalLink,UPL,uCO)});document.getElementById('copyWebLinkBtn').addEventListener('click',function(){cp(webLinkUrl,WL,wCO)})
 function init(){var a=gAuto(),s=a.brand;if(a.isIOS)s='apple';else if(s==='honor'||s==='oneplus')s='oppo';else if(!['huawei','xiaomi','oppo','vivo','samsung','generic_android'].includes(s))s='generic_android';for(var i=0;i<BS.options.length;i++){if(BS.options[i].value===s){BS.selectedIndex=i;break}}cManual=BS.value;upd()}
 init()
 </script>
