@@ -12,6 +12,7 @@
  *  主页底部抽屉读取此数据动态渲染导航卡片。
  *  
  *  【注入策略】
+ *  - 检测页面内容而非 URL 路径，避免 404 fallback 首页误注入
  *  - 如果页面已有静态 navbar HTML（SPA 推荐），只绑定事件 + 填充抽屉
  *  - 否则动态创建并注入到 body 末尾 (beforeend)
  * ═══════════════════════════════════════════════════════════════
@@ -33,6 +34,17 @@
   ];
 
   window.WiseNavbarData = NAV_ITEMS.slice();
+
+  // ── 检测是否实际在首页（兼顾 404 fallback 场景）──
+  function isHomePage() {
+    // URL 路径就是根
+    var path = window.location.pathname;
+    path = path.replace(/\/index\.html$/, '').replace(/\/+$/, '');
+    if (path === '' || path === '/') return true;
+    // DOM 里有首页特征元素（404 fallback 返回了首页）
+    if (document.querySelector('.phone-screen, #app .dynamic-island, #drawerSections')) return true;
+    return false;
+  }
 
   function injectFonts() {
     if (document.querySelector('link[href*="Material+Symbols+Rounded"')) return;
@@ -59,8 +71,6 @@
     p = p.replace(/\/+$/, '');
     return p || '/';
   }
-
-  function isHomePage() { return getCurrentPath() === '/'; }
 
   function isActive(itemHref) {
     var cur = getCurrentPath();
@@ -103,9 +113,8 @@
   function populateDrawer() {
     var panel = document.querySelector('.wise-nav-drawer-panel');
     if (!panel) return;
-    // 检查是否已有链接（静态 HTML 可能只有 header）
     var existing = panel.querySelector('.wise-nav-drawer-link');
-    if (existing) return; // 已有链接则跳过
+    if (existing) return;
     panel.insertAdjacentHTML('beforeend', buildDrawerLinks());
   }
 
@@ -157,7 +166,6 @@
           injectSpacerCSS();
           inject();
         } else {
-          // 静态 HTML 已有 navbar，只需注入字体和填充抽屉
           injectFonts();
           populateDrawer();
         }
