@@ -1,0 +1,12 @@
+/* UA — User-Agent 信息读取 */
+.wrap{max-width:640px}
+.ua-box{position:relative}
+.ua-box textarea{width:100%;background:var(--s);color:var(--k);font-family:'Inter',monospace;font-size:13px;font-weight:500;border:2px solid transparent;border-radius:var(--rs);padding:12px 14px;outline:none;resize:vertical;min-height:160px;transition:all .2s;line-height:1.5}
+textarea:focus{background:var(--c);border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.ua-cp{position:absolute;top:8px;right:8px;display:inline-flex;align-items:center;gap:4px;background:var(--k);color:var(--p);border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s;opacity:.7}
+.ua-cp:hover{opacity:1;transform:scale(1.04)}
+.ua-cp:active{transform:scale(.96)}
+.ua-cp .material-symbols-rounded{font-size:13px}
+.rw{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.rw .btn{flex:1;min-width:100px}
+.raw{background:var(--k);border-radius:var(--rs);padding:12px 14px;font-family:'Courier New',monospace;font-size:11px;color:var(--p);word-break:break-all;margin-top:12px;line-height:1.6;max-height:130px;overflow:auto}
