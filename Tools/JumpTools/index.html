@@ -68,7 +68,7 @@
     </div>
   </div>
   <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center">
-    <p style="font-size:11px;color:rgba(232,235,230,.5)">点击链接可能不跳转，请使用复制按钮</p>
+    <p style="font-size:11px;color:rgba(232,235,230,.5)">点击链接可直接跳转，或使用复制按钮分享</p>
   </div>
 </div>
 <script>
@@ -78,7 +78,8 @@ function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.te
 function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
 function gBN(b,i){if(i)return'App Store';switch(b){case'huawei':return'华为';case'honor':return'荣耀';case'xiaomi':return'小米';case'oppo':return'OPPO';case'oneplus':return'一加';case'vivo':return'vivo';case'samsung':return'三星';default:return'通用'}}
 var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl;
-function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS);brandLink=pkg?gBSL(pkg,bi):null;universalLink=pkg?gUL(pkg,bi):null;webLinkUrl=pkg?gWS(pkg,bi):null;BPL.textContent=brandLink||'请输入有效包名';UPL.textContent=universalLink||'请输入有效包名';WL.textContent=webLinkUrl||'请输入有效包名'}
+function rL(u,t){return u?('<a href="'+u+'"'+(t?' target="_blank"':'')+' style="color:var(--pp);text-decoration:underline;cursor:pointer">'+u+'</a>'):'请输入有效包名'}
+function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS);brandLink=pkg?gBSL(pkg,bi):null;universalLink=pkg?gUL(pkg,bi):null;webLinkUrl=pkg?gWS(pkg,bi):null;BPL.innerHTML=rL(brandLink,false);UPL.innerHTML=rL(universalLink,false);WL.innerHTML=rL(webLinkUrl,true)}
 function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://com.huawei.appmarket/'+pk;case'xiaomi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
 function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
 function gWS(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
