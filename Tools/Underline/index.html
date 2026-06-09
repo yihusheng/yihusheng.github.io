@@ -9,11 +9,21 @@
 <link rel="stylesheet" href="/src/css/wise.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
+<style>
+.sty{display:inline-flex;flex-direction:column;align-items:center;cursor:pointer;position:relative}
+.sty input{position:absolute;opacity:0;width:0;height:0}
+.sty .s{font-size:14px;line-height:1;color:var(--b);height:14px}
+.sty .t{font-size:10px;font-weight:600;color:var(--b);padding:3px 10px;background:var(--s);border-radius:var(--rp);margin-top:1px}
+.sty:has(input:checked) .t{background:var(--k);color:var(--p)}
+.sty:has(input:checked) .s{color:var(--p)}
+.sty:hover .t{background:var(--pp)}
+.sty:has(input:checked):hover .t{background:var(--kd)}
+</style>
 </head>
 <body>
 <div class="wrap">
   <div class="card" style="padding:var(--sxl)">
-    <div class="badge-positive"><span class="material-symbols-rounded">format_underlined</span> Text Decorator</div>
+    <div class="badge-positive">Text Decorator</div>
     <h1 style="margin-top:4px">下划线生成器</h1>
     <p class="sub">实时预览</p>
     <label class="lbl">输入文本</label>
@@ -24,24 +34,24 @@
       <label class="lbl">实时预览</label>
       <div style="background:var(--s);border-radius:var(--rm);padding:28px 20px;text-align:center;min-height:90px;display:flex;align-items:center;justify-content:center"><span id="preview" style="font-size:24px;font-family:var(--f)">Atmospheric Design</span></div>
     </div>
-    <div style="padding:0 var(--sxl) var(--sl)"><button class="btn-primary" id="copyBtn">复制带样式文本</button></div>
+    <div style="padding:0 var(--sxl) var(--sl)"><button class="btn-primary" id="copyBtn">复制</button></div>
   </div>
   <div class="card">
     <div class="pad">
       <label class="lbl">线条样式</label>
-      <div style="display:flex;gap:4px;flex-wrap:wrap">
-        <label class="cl"><input type="radio" name="st" value="solid" checked><span class="ch"><span style="font-size:14px">━</span> 实线</span></label>
-        <label class="cl"><input type="radio" name="st" value="dashed"><span class="ch"><span style="font-size:14px">╌</span> 虚线</span></label>
-        <label class="cl"><input type="radio" name="st" value="dotted"><span class="ch"><span style="font-size:14px">┅</span> 点线</span></label>
-        <label class="cl"><input type="radio" name="st" value="wavy"><span class="ch"><span style="font-size:14px">〰</span> 波浪</span></label>
-        <label class="cl"><input type="radio" name="st" value="double"><span class="ch"><span style="font-size:14px">═</span> 双线</span></label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <label class="sty"><input type="radio" name="st" value="solid" checked><span class="s">━</span><span class="t">实线</span></label>
+        <label class="sty"><input type="radio" name="st" value="dashed"><span class="s">╌</span><span class="t">虚线</span></label>
+        <label class="sty"><input type="radio" name="st" value="dotted"><span class="s">┅</span><span class="t">点线</span></label>
+        <label class="sty"><input type="radio" name="st" value="wavy"><span class="s">〰</span><span class="t">波浪</span></label>
+        <label class="sty"><input type="radio" name="st" value="double"><span class="s">═</span><span class="t">双线</span></label>
       </div>
     </div>
     <div class="pad" style="padding-top:0">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm)">
         <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
-        <div><label class="lbl">偏移</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
-        <div><label class="lbl">字号</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
+        <div><label class="lbl">偏移</label><div><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
+        <div><label class="lbl">字号</label><div><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
       </div>
       <div style="margin-top:var(--sm)"><label class="lbl">颜色</label><div style="display:flex;gap:var(--sm)"><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">文本</label><input type="color" id="textColor" value="#0e0f0c"></div><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">线条</label><input type="color" id="lineColor" value="#9fe870"></div></div></div>
     </div>
@@ -51,7 +61,7 @@
       <label class="lbl">代码</label>
       <div class="code-box" style="position:relative;min-height:40px;font-size:11px"><span style="position:absolute;top:2px;right:2px;background:rgba(159,232,112,.1);color:var(--p);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px">CSS</span><code id="cssOut"></code></div>
       <div class="code-box" style="position:relative;min-height:40px;margin-top:var(--ss);font-size:11px"><span style="position:absolute;top:2px;right:2px;background:rgba(159,232,112,.1);color:var(--p);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px">HTML</span><code id="htmlOut"></code></div>
-      <div class="rw" style="margin-top:var(--ss)"><button class="btn-secondary" id="copyCssBtn" style="flex:1">CSS</button><button class="btn-secondary" id="copyHtmlBtn" style="flex:1">HTML</button></div>
+      <div class="rw"><button class="btn-secondary" id="copyCssBtn" style="flex:1">CSS</button><button class="btn-secondary" id="copyHtmlBtn" style="flex:1">HTML</button></div>
     </div>
   </div>
   <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center"><p style="font-size:11px;color:rgba(232,235,230,.5)">Wise Underline Generator</p></div>
