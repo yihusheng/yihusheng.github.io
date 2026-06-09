@@ -1,20 +1,6 @@
 /**
  * ═══════════════════════════════════════════════════════════════
  *  Wise Navbar — yihusheng 网站统一导航栏
- *  
- *  【核心理念】所有导航数据集中在此文件顶部的 NAV_ITEMS 数组中。
- *  无论哪个页面引用此脚本，都会自动读取该数组生成导航栏。
- *  
- *  【维护方式】后续只需修改下方的 NAV_ITEMS 数组，添加/删除/修改
- *  导航条目，所有引用此脚本的页面都会同步更新，无需逐个页面修改。
- *  
- *  导航数据通过 window.WiseNavbarData 暴露给全局，
- *  主页底部抽屉读取此数据动态渲染导航卡片。
- *  
- *  【注入策略】
- *  - 检测页面内容而非 URL 路径，避免 404 fallback 首页误注入
- *  - 如果页面已有静态 navbar HTML（SPA 推荐），只绑定事件 + 填充抽屉
- *  - 否则动态创建并注入到 body 末尾 (beforeend)
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -35,14 +21,15 @@
 
   window.WiseNavbarData = NAV_ITEMS.slice();
 
-  // ── 检测是否实际在首页（兼顾 404 fallback 场景）──
+  // ── DOM 就绪后检测是否首页（路径 + 页面内容双重判断）──
   function isHomePage() {
-    // URL 路径就是根
-    var path = window.location.pathname;
-    path = path.replace(/\/index\.html$/, '').replace(/\/+$/, '');
-    if (path === '' || path === '/') return true;
-    // DOM 里有首页特征元素（404 fallback 返回了首页）
-    if (document.querySelector('.phone-screen, #app .dynamic-island, #drawerSections')) return true;
+    var path = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
+    // 显式首页路径
+    if (path === '/' || path === '/Music') return true;
+    // DOM 特征（404 fallback 返回了首页内容）
+    if (document.getElementById('drawerSections')) return true;
+    if (document.querySelector('.phone-screen')) return true;
+    if (document.querySelector('.dynamic-island')) return true;
     return false;
   }
 
@@ -65,15 +52,8 @@
     document.head.appendChild(style);
   }
 
-  function getCurrentPath() {
-    var p = window.location.pathname;
-    p = p.replace(/\/index\.html$/, '');
-    p = p.replace(/\/+$/, '');
-    return p || '/';
-  }
-
   function isActive(itemHref) {
-    var cur = getCurrentPath();
+    var cur = window.location.pathname.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
     var target = itemHref.replace(/\/index\.html$/, '').replace(/\/+$/, '') || '/';
     if (cur === target) return true;
     if (target !== '/' && cur.startsWith(target)) return true;
@@ -157,35 +137,25 @@
     }
   }
 
-  function init() {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', function() {
-        var alreadyExists = !!document.getElementById('wiseNavToggle');
-        if (!alreadyExists) {
-          injectFonts();
-          injectSpacerCSS();
-          inject();
-        } else {
-          injectFonts();
-          populateDrawer();
-        }
-        bindEvents();
-      });
+  function doInit() {
+    // DOM 就绪后重新判断，避免在 <head> 阶段误判
+    if (isHomePage()) return;
+
+    var alreadyExists = !!document.getElementById('wiseNavToggle');
+    if (!alreadyExists) {
+      injectFonts();
+      injectSpacerCSS();
+      inject();
     } else {
-      var alreadyExists = !!document.getElementById('wiseNavToggle');
-      if (!alreadyExists) {
-        injectFonts();
-        injectSpacerCSS();
-        inject();
-      } else {
-        injectFonts();
-        populateDrawer();
-      }
-      bindEvents();
+      injectFonts();
+      populateDrawer();
     }
+    bindEvents();
   }
 
-  if (!isHomePage()) {
-    init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', doInit);
+  } else {
+    doInit();
   }
 })();
