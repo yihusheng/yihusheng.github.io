@@ -32,7 +32,7 @@
   <div class="card" style="padding:var(--sxl)">
     <label class="lbl">实时预览</label>
     <div style="background:var(--s);border-radius:var(--rm);padding:28px 20px;text-align:center;min-height:90px;display:flex;align-items:center;justify-content:center"><span id="preview" style="font-size:24px;font-family:var(--f)">Atmospheric Design</span></div>
-    <div style="padding:0"><button class="btn-primary" id="copyBtn">复制带样式文本</button></div>
+    <div class="rw" style="margin-top:var(--sm)"><button class="btn-primary" id="copyBtn" style="flex:1">复制样式</button><button class="btn-secondary" id="joinBtn" style="flex:1">拼接字符</button></div>
   </div>
   <div class="card" style="padding:var(--sxl)">
     <label class="lbl">线条样式</label>
@@ -64,15 +64,18 @@ var T=document.getElementById('inputText'),P=document.getElementById('preview'),
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),RS=document.getElementsByName('st');
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal');
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
+function gst(t){return'text-decoration-line:underline;text-decoration-style:'+gs()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
 function up(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
-var html='<span style="text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px">'+t+'</span>'
+var html='<span style="'+gst()+'">'+t+'</span>'
 P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px'
 CO.textContent=css;HO.textContent=html}
-function cp(t){if(t==='all'){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([HO.textContent],{type:'text/html'}),'text/plain':new Blob([T.value||'预览'],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
+function gp(){var s=gs(),c={solid:'━',dashed:'╌',dotted:'┅',wavy:'〰',double:'═'},ch=c[s]||'━',t=T.value||'预览',ln='';for(var i=0;i<t.length;i++){if(t.charCodeAt(i)>255)ln+=ch+ch;else ln+=ch}return ln+'\n'+t+'\n'+ln}
+function cp(t){if(t==='all'){var txt=T.value||'预览',html='<span style="'+gst()+'">'+txt+'</span>';navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
+function jn(){navigator.clipboard.writeText(gp()).then(function(){TT.textContent='已拼接';TT.className='toast s';setTimeout(function(){TT.className='toast';TT.textContent='已复制'},2000)})}
 function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
 var inputs=[T,TC,LC,TK,OF,FS];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up)
-document.getElementById('copyBtn').addEventListener('click',function(){cp('all')});document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')});document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')});up()
+document.getElementById('copyBtn').addEventListener('click',function(){cp('all')});document.getElementById('joinBtn').addEventListener('click',jn);document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')});document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')});up()
 </script>
 </body>
 </html>
