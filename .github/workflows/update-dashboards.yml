@@ -12,11 +12,9 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: "update-dashboards"
   cancel-in-progress: false
 
 env:
@@ -26,14 +24,13 @@ env:
 jobs:
   update:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
       # ═══════════════════════════════
       # Metacubexd
+      # 导航栏由 Cloudflare Pages _middleware 在边缘注入，
+      # 此工作流只负责更新源文件，不做任何修改。
       # ═══════════════════════════════
       - name: Check Metacubexd version
         id: mv
@@ -55,7 +52,6 @@ jobs:
           mkdir -p /tmp/ms
           tar -xzf /tmp/m.tgz -C /tmp/ms
 
-          # 自动检测源目录
           S=""
           if [ -d "/tmp/ms/compressed-dist" ]; then
             S=/tmp/ms/compressed-dist
@@ -66,88 +62,46 @@ jobs:
             [ -n "$NUXT_DIR" ] && S=$(dirname "$NUXT_DIR")
           fi
           if [ -z "$S" ] || [ ! -d "$S" ]; then
-            echo "ERROR: Cannot find source directory with _nuxt"
-            find /tmp/ms -type f | head -30
+            echo "ERROR: Cannot find source directory"
             exit 1
           fi
           echo "Source dir: $S"
 
-          # 检查 index.html
           IDX=""
-          if [ -f "$S/index.html" ]; then
-            IDX=index.html
-          elif [ -f "$S/_index.html" ]; then
-            IDX=_index.html
-          else
-            echo "ERROR: no index.html in $S"
-            exit 1
-          fi
-          echo "Index file: $IDX"
+          [ -f "$S/index.html" ] && IDX=index.html
+          [ -z "$IDX" ] && [ -f "$S/_index.html" ] && IDX=_index.html
+          [ -z "$IDX" ] && { echo "ERROR: no index.html"; exit 1; }
 
-          # 清理旧文件（包括 sw.js / workbox 避免 SW 缓存干扰）
-          rm -rf "$M/_nuxt" "$M/_fonts"
-          rm -f "$M"/sw.js "$M"/workbox-*.js 2>/dev/null || true
+          rm -rf "$M/_nuxt" "$M/_fonts" "$M"/workbox-*.js 2>/dev/null || true
           mkdir -p "$M"
 
-          # _nuxt
-          echo "Copying _nuxt ($(find $S/_nuxt -type f | wc -l) files)..."
           cp -r "$S/_nuxt" "$M/"
+          echo "Copied _nuxt ($(find $M/_nuxt -type f | wc -l) files)"
 
-          # _fonts
-          if [ -d "$S/_fonts" ]; then
-            cp -r "$S/_fonts" "$M/"
-            echo "Copied _fonts ($(find $M/_fonts -type f | wc -l) files)"
-          fi
+          [ -d "$S/_fonts" ] && cp -r "$S/_fonts" "$M/" && echo "Copied _fonts"
 
-          # 静态文件（跳过 sw.js 和 workbox-*.js）
-          for f in manifest.webmanifest .nojekyll favicon.ico favicon.svg \
-                   pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
-            for g in "$S"/$f; do
-              [ -f "$g" ] && cp "$g" "$M/" 2>/dev/null || true
-            done
-          done
-
-          # HTML 文件
+          # 拷贝所有文件（保持原始，不做导航栏注入）
           for f in $IDX 200.html 404.html; do
             if [ -f "$S/$f" ]; then
               cp "$S/$f" "$M/$f"
             elif [ "$f" != "$IDX" ] && [ -f "$M/$IDX" ]; then
               cp "$M/$IDX" "$M/$f"
-              echo "  Created $f from $IDX"
-            fi
-            [ -f "$M/$f" ] && echo "  Copied: $M/$f"
-          done
-
-          # 注入导航栏 HTML + 强制注销旧 SW
-          NAV_HTML='<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页"><span class="material-symbols-rounded">home</span></a><button class="wise-nav-btn wise-nav-btn-menu" id="wiseNavToggle" aria-label="打开导航菜单" aria-expanded="false"><span class="material-symbols-rounded">apps</span></button><div class="wise-nav-drawer" id="wiseNavDrawer" aria-hidden="true"><div class="wise-nav-drawer-panel"><div class="wise-nav-drawer-header"><span class="wise-nav-drawer-title">导航菜单</span><button class="wise-nav-drawer-close" id="wiseNavDrawerClose" aria-label="关闭导航菜单"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div></div></div>'
-          SW_KILL='<script>if("serviceWorker"in navigator){navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){console.log("[navbar] unregistering SW:",x.scope);x.unregister()})});caches.keys&&caches.keys().then(function(k){k.forEach(function(n){caches.delete(n)})})}</script>'
-
-          for f in index.html 200.html 404.html; do
-            F="$M/$f"
-            if [ -f "$F" ]; then
-              # 注入 CSS/JS 引用
-              if ! grep -q '/Tools/navbar.css' "$F" 2>/dev/null; then
-                sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$F"
-              fi
-              # 强制注销 SW（在 navbar.js 之前执行）
-              if ! grep -q 'serviceWorker.*unregister' "$F" 2>/dev/null; then
-                sed -i "s|<body class=\"\([^\"]*\)\">|<body class=\"navbar-overlay \1\">${SW_KILL}${NAV_HTML}|" "$F"
-                sed -i "s|<body>|<body class=\"navbar-overlay\">${SW_KILL}${NAV_HTML}|" "$F"
-              fi
-              echo "  Navbar + SW-kill injected in $f"
             fi
           done
 
-          # 确保 sw.js 不存在
-          rm -f "$M"/sw.js "$M"/workbox-*.js
-          echo "  Removed sw.js / workbox files"
+          for f in sw.js manifest.webmanifest favicon.ico favicon.svg \
+                   pwa-*.png maskable-icon-*.png apple-touch-icon-*.png config.js .nojekyll; do
+            for g in "$S"/$f; do
+              [ -f "$g" ] && cp "$g" "$M/" 2>/dev/null || true
+            done
+          done
 
-          # config.js
           [ -f "$M/config.js" ] || echo 'window.__METACUBEXD_CONFIG__={defaultBackendURL:""}' > "$M/config.js"
-          echo "Metacubexd ${V} done ($(find $M/_nuxt -type f | wc -l) nuxt files)"
+          echo "Metacubexd ${V} done (no source modification)"
 
       # ═══════════════════════════════
       # Zashboard
+      # 导航栏同样由 _middleware 注入
       # ═══════════════════════════════
       - name: Check Zashboard version
         id: zv
@@ -168,7 +122,6 @@ jobs:
           mkdir -p /tmp/zs
           unzip -qo /tmp/z.zip -d /tmp/zs
 
-          # 自动检测源目录
           if [ -d "/tmp/zs/dist" ]; then
             S=/tmp/zs/dist
           elif [ -d "/tmp/zs/assets" ]; then
@@ -180,41 +133,26 @@ jobs:
 
           mkdir -p "$Z"
           rm -rf "$Z/assets"
-          [ -d "$S/assets" ] && cp -r "$S/assets" "$Z/" || echo "WARNING: no assets dir"
+          [ -d "$S/assets" ] && cp -r "$S/assets" "$Z/"
 
-          for f in favicon.ico favicon.svg apple-touch-icon.png pwa-*.png manifest.webmanifest registerSW.js sw.js; do
+          for f in index.html favicon.ico favicon.svg apple-touch-icon.png \
+                   pwa-*.png manifest.webmanifest registerSW.js sw.js; do
             for g in "$S"/$f; do
               [ -f "$g" ] && cp "$g" "$Z/" 2>/dev/null || true
             done
           done
 
-          # index.html
-          [ -f "$S/index.html" ] && cp "$S/index.html" "$Z/index.html"
-
-          if ! grep -q '/Tools/navbar.css' "$Z/index.html" 2>/dev/null; then
-            sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$Z/index.html"
-            sed -i 's|<body class="|<body class="navbar-overlay |' "$Z/index.html"
-            sed -i 's|<body>|<body class="navbar-overlay">|' "$Z/index.html"
-            echo "Navbar injected"
-          fi
           echo "$V" > "$Z/.version"
-          echo "Zashboard $V done"
+          echo "Zashboard $V done (no source modification)"
 
       # ═══════════════════════════════
-      # Commit & Deploy
+      # Commit（触发 Cloudflare Pages 自动部署）
       # ═══════════════════════════════
       - name: Commit
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add $M/ $Z/
-          git diff --staged --quiet || git commit -m "chore: auto-update dashboards [skip ci]"
+          git diff --staged --quiet || git commit -m "chore: auto-update dashboards"
           git pull --rebase
           git push
-
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-      - id: deploy
-        uses: actions/deploy-pages@v4
