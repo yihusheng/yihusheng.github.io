@@ -1,0 +1,211 @@
+/* ═══════════════════════════════════════════
+   Wise Base — 工具页面共享基础样式
+   所有 Wise 系列工具统一的 CSS 变量 + 组件
+   ═══════════════════════════════════════════ */
+
+/* ── CSS 变量 ── */
+:root {
+  --p: #9fe870;
+  --op: #0e0f0c;
+  --pa: #cdffad;
+  --pp: #e2f6d5;
+  --k: #0e0f0c;
+  --kd: #163300;
+  --b: #454745;
+  --m: #868685;
+  --c: #ffffff;
+  --s: #e8ebe6;
+  --r: 24px;
+  --rs: 12px;
+  --rp: 9999px;
+  --neg: #d03238;
+}
+
+/* ── Reset ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Body ── */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--s);
+  color: var(--k);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ── Wrap ── */
+.wrap {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* ── Badge ── */
+.bdg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--pp);
+  color: var(--kd);
+  padding: 4px 12px;
+  border-radius: var(--rp);
+  font-size: 11px;
+  font-weight: 700;
+  width: fit-content;
+  margin-bottom: 6px;
+}
+.bdg .material-symbols-rounded { font-size: 13px; }
+
+/* ── Heading / Sub ── */
+h1 {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+  margin-bottom: 2px;
+}
+.sub {
+  font-size: 13px;
+  color: var(--m);
+  margin-bottom: 14px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--c);
+  border-radius: var(--r);
+  box-shadow: 0 4px 24px rgba(14,15,12,0.06);
+  overflow: hidden;
+}
+.pad { padding: 20px 24px; }
+
+/* ── Label ── */
+.lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--b);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Input ── */
+.inp {
+  width: 100%;
+  height: 50px;
+  background: var(--c);
+  border: 2px solid var(--k);
+  border-radius: var(--rs);
+  padding: 0 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--k);
+  outline: none;
+  transition: all 0.2s;
+}
+.inp:focus {
+  border-color: var(--p);
+  box-shadow: 0 0 0 3px rgba(159,232,112,0.2);
+}
+.inp::placeholder { color: rgba(134,134,133,0.4); }
+
+/* ── Buttons ── */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 24px;
+  border-radius: var(--rs);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  gap: 6px;
+}
+.btn-p {
+  background: var(--k);
+  color: var(--p);
+  box-shadow: 0 3px 12px rgba(14,15,12,0.1);
+  width: 100%;
+}
+.btn-p:hover { background: var(--kd); transform: translateY(-1px); }
+.btn-p:active { transform: scale(0.97); }
+.btn-s {
+  background: var(--s);
+  color: var(--b);
+}
+.btn-s:hover { background: var(--pp); color: var(--kd); }
+
+/* ── Row ── */
+.rw { display: flex; gap: 8px; }
+
+/* ── Footer ── */
+.ft {
+  background: var(--k);
+  padding: 14px 24px;
+  text-align: center;
+}
+.ft p { font-size: 11px; color: rgba(232,235,230,0.5); }
+.ft a { color: var(--p); text-decoration: none; }
+
+/* ── Info Grid ── */
+.dg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.di {
+  background: var(--s);
+  border-radius: var(--rs);
+  padding: 14px;
+}
+.dl {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--b);
+  margin-bottom: 4px;
+}
+.dv {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--k);
+  word-break: break-all;
+}
+
+/* ── Result show/hide ── */
+.rs { display: none; }
+.rs.s { display: block; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--k);
+  color: var(--p);
+  padding: 8px 18px;
+  border-radius: var(--rp);
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.s { opacity: 1; }
