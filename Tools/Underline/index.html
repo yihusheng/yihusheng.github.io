@@ -1,1 +1,87 @@
-<label class="sty"><span class="s" style="font-size:5px">自定义</span><input type="text" id="customChar" class="cii" placeholder="⠛" maxlength="2"></label>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>下划线生成器</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link rel="stylesheet" href="/src/css/wise.css">
+<link rel="stylesheet" href="/Tools/navbar.css">
+<script src="/Tools/navbar.js"></script>
+<style>
+.sty{display:inline-flex;flex-direction:column;align-items:center;cursor:pointer;position:relative}
+.sty input[type=radio]{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.sty .s{font-size:10px;line-height:1;color:var(--b);margin-bottom:2px;font-weight:600}
+.sty .t{font-size:10px;font-weight:600;color:var(--b);padding:3px 10px;background:var(--s);border-radius:var(--rp)}
+.sty:has(input[type=radio]:checked) .t{background:var(--k);color:var(--p)}
+.sty:has(input[type=radio]:checked) .s{color:var(--p)}
+.sty:hovert(--has(input[type=radio]:checked):hover .t{background:var(--kd)}
+.cii{padding:3px 10px;font-size:10px;font-weight:600;text-align:center;border:2px solid var(--s);border-radius:var(--rp);outline:none;background:var(--s);color:var(--k);font-family:var(--f);width:48px}
+.cii:focus{border-color:var(--k);background:var(--c)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card" style="padding:var(--sxl)">
+    <div class="badge-positive"><span class="material-symbols-rounded">format_underlined</span> Text Decorator</div>
+    <h1 style="margin-top:4px">下划线生成器</h1>
+    <p class="sub">实时预览</p>
+    <label class="lbl">输入文本</label>
+    <textarea id="inputText" style="width:100%;border:2px solid var(--k);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--f);font-size:15px;font-weight:500;outline:none;min-height:68px;resize:none">Atmospheric Design</textarea>
+  </div>
+  <div class="card" style="padding:var(--sxl)">
+    <label class="lbl">实时预览</label>
+    <div style="background:var(--s);border-radius:var(--rm);padding:28px 20px;text-align:center;min-height:90px;display:flex;align-items:center;justify-content:center"><span id="preview" style="font-size:24px;font-family:var(--f)">Atmospheric Design</span></div>
+    <div class="rw" style="margin-top:var(--sm)"><button class="btn-primary" id="copyBtn" style="flex:1">复制样式</button><button class="btn-secondary" id="joinBtn" style="flex:1">组合字符</button></div>
+  </div>
+  <div class="card" style="padding:var(--sxl)">
+    <label class="lbl">线条样式</label>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <label class="sty"><input type="radio" name="st" value="solid" checked><span class="s">━</span><span class="t">实线</span></label>
+      <label class="sty"><input type="radio" name="st" value="dashed"><span class="s">╌</span><span class="t">虚线</span></label>
+      <label class="sty"><input type="radio" name="st" value="dotted"><span class="s">┅</span><span class="t">点线</span></label>
+      <label class="sty"><input type="radio" name="st" value="wavy"><span class="s">〰</span><span class="t">波浪</span></label>
+      <label class="sty"><input type="radio" name="st" value="double"><span class="s">═</span><span class="t">双线</span></label>
+      <label class="sty"><span class="s" style="font-size:5px">自定义</span><input type="text" id="customChar" class="cii" placeholder="⠛" maxlength="2"></label>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm);margin-top:var(--sm)">
+      <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
+      <div><label class="lbl">偏移</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
+      <div><label class="lbl">字号</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
+    </div>
+    <div style="margin-top:var(--sm)"><label class="lbl">颜色</label><div style="display:flex;gap:var(--sm)"><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">文本</label><input type="color" id="textColor" value="#0e0f0c"></div><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">线条</label><input type="color" id="lineColor" value="#9fe870"></div></div></div>
+  </div>
+  <div class="card" style="padding:var(--sxl)">
+    <label class="lbl">代码</label>
+    <div class="code-box" style="position:relative;min-height:40px;font-size:11px"><span style="position:absolute;top:2px;right:2px;background:rgba(159,232,112,.1);color:var(--p);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px">CSS</span><code id="cssOut"></code></div>
+    <div class="code-box" style="position:relative;min-height:40px;margin-top:var(--ss);font-size:11px"><span style="position:absolute;top:2px;right:2px;background:rgba(159,232,112,.1);color:var(--p);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px">HTML</span><code id="htmlOut"></code></div>
+    <div class="rw" style="margin-top:var(--ss)"><button class="btn-secondary" id="copyCssBtn" style="flex:1">CSS</button><button class="btn-secondary" id="copyHtmlBtn" style="flex:1">HTML</button></div>
+  </div>
+  <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center"><p style="font-size:11px;color:rgba(232,235,230,.5)">Wise Underline Generator</p></div>
+</div>
+<div class="toast" id="toast">已复制</div>
+<script>
+var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
+var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),RS=document.getElementsByName('st');
+var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid',CC=document.getElementById('customChar');
+function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
+function gss(){var v=gs();return LS=v}
+function isCmb(c){var n=c.charCodeAt(0);return(n>=0x0300&&n<=0x036f)||(n>=0x1dc0&&n<=0x1dff)||(n>=0xfe20&&n<=0xfe2f)||(n>=0x20d0&&n<=0x20ff)}
+function gjc(){var c=CC.value.trim();if(c){var ch=c[0];if(isCmb(ch))return ch;return ch}var v=gs(),m={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333'};return m[v]||'\u0332'}
+function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
+function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
+var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
+var html='<span style="'+gst()+'">'+t+'</span>'
+P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px'
+CO.textContent=css;HO.textContent=html}
+function gp(){var t=T.value||'预览',c=gjc(),r='';for(var i=0;i<t.length;i++)r+=t[i]+c;return r}
+function cp(t){if(t==='all'){var txt=T.value||'预览',s=gss(),html='<!DOCTYPE html><html><body><span style="text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px">'+txt+'</span></body></html>';navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([txt],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
+function jn(){navigator.clipboard.writeText(gp()).then(function(){TT.textContent='已组合';TT.className='toast s';setTimeout(function(){TT.className='toast';TT.textContent='已复制'},2000)})}
+function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
+for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',function(){CC.value='';up()})
+var inputs=[T,TC,LC,TK,OF,FS,CC];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up)
+document.getElementById('copyBtn').addEventListener('click',function(){cp('all')});document.getElementById('joinBtn').addEventListener('click',jn);document.getElementById('copyCssBtn').addEventListener('click',function(){cp('css')});document.getElementById('copyHtmlBtn').addEventListener('click',function(){cp('html')});up()
+</script>
+</body>
+</html>
