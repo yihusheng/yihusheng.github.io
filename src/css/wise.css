@@ -4,10 +4,11 @@
   --p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;
   --k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;
   --c:#fff;--s:#e8ebe6;
-  --neg:#d03238;
+  --pos:#2ead4b;--neg:#d03238;
   --rs:8px;--rm:12px;--rx:24px;--rp:9999px;
   --sx:4px;--ss:8px;--sm:12px;--sl:16px;--sxl:24px;
   --f:'Inter',sans-serif;--fm:'SF Mono',monospace;
+  --r-sm:8px;
 }
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -26,17 +27,19 @@ h1{font-size:28px;font-weight:900;letter-spacing:-.03em}
 .btn-s:hover,.btn-secondary:hover{background:var(--pp);color:var(--kd)}
 
 .inp{width:100%;height:50px;background:var(--c);border:2px solid var(--k);border-radius:var(--rm);padding:0 var(--sl);font-family:var(--f);font-size:16px;color:var(--k);outline:none}
-.inp:focus,.inp:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.inp:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 textarea{border:2px solid var(--k);border-radius:var(--rm);font-family:var(--f);outline:none;resize:vertical;padding:var(--sm) var(--sl)}
 textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 select{height:44px;background:var(--c);border:2px solid var(--k);border-radius:var(--rm);padding:0 var(--sm);font-family:var(--f);font-size:13px;font-weight:600;color:var(--k);cursor:pointer;outline:none}
 select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .lbl{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--b);margin-bottom:var(--sx);display:flex;align-items:center;gap:2px}
 
-input[type=range]{-webkit-appearance:none;width:100%;background:transparent}
+input[type=range]{-webkit-appearance:none;width:100%;background:transparent;height:6px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;height:18px;width:18px;border-radius:50%;background:var(--p);cursor:pointer;margin-top:-7px;border:3px solid var(--k)}
 input[type=range]::-webkit-slider-runnable-track{width:100%;height:4px;background:var(--s);border-radius:2px}
 input[type=color]{-webkit-appearance:none;border:2px solid var(--s);border-radius:var(--rm);width:100%;height:36px;cursor:pointer;padding:0;background:none}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:none;border-radius:10px}
 
 .bdg,.badge-positive{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:2px var(--sm);border-radius:var(--rp);font-size:11px;font-weight:700;width:fit-content}
 
@@ -52,17 +55,11 @@ input[type=color]{-webkit-appearance:none;border:2px solid var(--s);border-radiu
 .sp{width:26px;height:26px;border:3px solid var(--pp);border-top-color:var(--p);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .code-box{background:var(--k);color:var(--p);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;overflow:auto;margin-top:10px}
+.ft{background:var(--k);padding:var(--sl) var(--sxl);text-align:center}
+.ft p{font-size:11px;color:rgba(232,235,230,.5)}
+.ft a{color:var(--p);text-decoration:none}
 
-.cl{position:relative;display:inline-flex}
-.cl input{position:absolute;top:0;left:0;width:0;height:0;opacity:0;pointer-events:none}
-.cl::before{position:absolute;top:2px;left:2px;font-size:9px;pointer-events:none;line-height:1;color:var(--b);z-index:1}
-.cl:has(input:checked)::before{color:var(--p)}
-.cl[data-s=solid]::before{content:'\2501\2501'}
-.cl[data-s=dashed]::before{content:'\254C\254C'}
-.cl[data-s=dotted]::before{content:'\2505\2505'}
-.cl[data-s=wavy]::before{content:'\3030\3030'}
-.cl[data-s=double]::before{content:'\2550\2550'}
-.ch{display:flex;align-items:center;justify-content:center;padding:6px 10px;padding-top:12px;background:var(--s);color:var(--b);border-radius:var(--rp);font-size:11px;font-weight:600;cursor:pointer;min-width:48px}
+.cl{position:relative}.cl input{position:absolute;opacity:0;width:0;height:0}
+.ch{display:flex;align-items:center;gap:4px;padding:6px 14px;background:var(--s);color:var(--b);border-radius:var(--rp);font-size:12px;font-weight:600;cursor:pointer}
 .cl input:checked+.ch{background:var(--k);color:var(--p)}
 .cl:hover .ch{background:var(--pp)}
-.cl:has(input:checked):hover .ch{background:var(--kd)}
