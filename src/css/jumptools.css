@@ -1,11 +1,1 @@
-/* JumpTools — 跳转链接 */
-.srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.srow select{width:auto;min-width:200px}
-.ll{font-size:13px;font-weight:700;color:var(--wise-ink);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.lt{display:block;background:var(--wise-canvas);padding:12px 14px;border-radius:10px;font-family:'SF Mono','Monaco','Courier New',monospace;font-size:13px;word-break:break-all;color:var(--wise-ink);text-decoration:none;border:1px solid transparent;transition:.2s;width:100%}
-.lt:hover{background:var(--wise-primary-pale);border-color:var(--wise-primary)}
-.cpy{font-size:12px;color:var(--wise-mute);margin-top:6px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:color .15s;padding:2px 0}
-.cpy:hover{color:var(--wise-ink)}
-.cpy .material-symbols-rounded{font-size:14px}
-.alert{background:var(--wise-primary-pale);border-left:3px solid var(--wise-primary);padding:12px 16px;border-radius:var(--wise-radius-md);font-size:12px;color:var(--wise-ink-deep);line-height:1.6;margin-top:16px}
-.nt{text-align:center;font-size:12px;color:var(--wise-mute);margin-top:16px}
+/* merged into wise.css */
