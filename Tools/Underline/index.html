@@ -6,7 +6,7 @@
 <title>下划线生成器</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-<link rel="stylesheet" href="/src/css/wise-base.css">
+<link rel="stylesheet" href="/src/css/wise.css">
 <link rel="stylesheet" href="/src/css/underline.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
@@ -20,13 +20,11 @@
   <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">edit</span> 输入文本</label>
   <textarea id="inputText" placeholder="在此输入文本...">Atmospheric Design</textarea>
 </div>
-
 <div class="card">
   <div class="pad"><label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">visibility</span> 实时预览</label>
   <div class="pbox"><span id="preview">Atmospheric Design</span></div></div>
   <div style="padding:0 24px 20px"><button class="btn btn-p" id="copyBtn"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button></div>
 </div>
-
 <div class="card">
   <div class="pad">
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">format_underlined</span> 线条样式</label>
@@ -48,30 +46,27 @@
     <div class="ts"><span class="ts-l">作为链接 &lt;a&gt;</span><label class="ts-w"><input type="checkbox" id="isLink"><span class="sl"></span></label></div>
   </div>
 </div>
-
 <div class="card">
   <div class="pad">
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">code</span> 代码</label>
-    <div class="cb"><div class="cb-l">CSS</div><code id="cssOut"></code></div>
-    <div class="cb"><div class="cb-l">HTML</div><code id="htmlOut"></code></div>
+    <div class="code-box" style="position:relative;min-height:40px"><div class="cb-l">CSS</div><code id="cssOut"></code></div>
+    <div class="code-box" style="position:relative;min-height:40px;margin-top:10px"><div class="cb-l">HTML</div><code id="htmlOut"></code></div>
     <div class="rw" style="margin-top:10px"><button class="btn btn-s" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button><button class="btn btn-s" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button></div>
   </div>
 </div>
-
 <div class="card"><div class="ft"><p>Wise Underline Generator &bull; 实时预览</p></div></div>
 </div>
 <div class="toast" id="toast">已复制</div>
-
 <script>
 var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),LK=document.getElementById('isLink'),RS=document.getElementsByName('st');
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal');
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function up(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
-var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif}',html=lnk?'<a href=\"#\" class=\"ul\">'+t+'</a>':'<span class=\"ul\">'+t+'</span>'
+var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif}',html=lnk?'<a href="#" class="ul">'+t+'</a>':'<span class="ul">'+t+'</span>'
 P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px';P.style.fontFamily='Inter,sans-serif'
 CO.textContent=css;HO.textContent=html}
-function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif';return lnk?'<a href=\"#\" style=\"'+is+'\">'+t+'</a>':'<span style=\"'+is+'\">'+t+'</span>'}
+function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,lnk=LK.checked,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif';return lnk?'<a href="#" style="'+is+'">'+t+'</a>':'<span style="'+is+'">'+t+'</span>'}
 function cp(t){if(t==='all'){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([gi()],{type:'text/html'}),'text/plain':new Blob([T.value||'预览'],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
 function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
 var inputs=[T,TC,LC,TK,OF,FS,LK];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up)

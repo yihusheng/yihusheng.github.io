@@ -6,7 +6,7 @@
 <title>MAC 地址查询</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-<link rel="stylesheet" href="/src/css/wise-base.css">
+<link rel="stylesheet" href="/src/css/wise.css">
 <link rel="stylesheet" href="/src/css/mac.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
@@ -17,16 +17,13 @@
   <div class="bdg"><span class="material-symbols-rounded" style="font-size:14px">lan</span> Network Tool</div>
   <h1>MAC 地址查询</h1>
   <p class="sub">输入 MAC 地址查询设备厂商信息</p>
-
   <div class="in-w" id="inputWrap">
     <input type="text" id="macInput" placeholder="A1:B2:C3:D4:E5:F6" maxlength="17" autocomplete="off" spellcheck="false">
     <span class="ic material-symbols-rounded">search</span>
   </div>
   <div class="em" id="errorMsg">格式无效，请输入如 A1:B2:C3:D4:E5:F6</div>
-
   <button class="btn btn-p" id="searchBtn" style="margin-top:16px"><span class="material-symbols-rounded" style="font-size:18px">search</span> 地址查询</button>
 </div>
-
 <div class="card" id="resultCard" style="display:none">
   <div class="rh">
     <div class="b"></div>
@@ -56,33 +53,26 @@
     <div class="rt"><button id="resetBtn"><span class="material-symbols-rounded" style="font-size:16px">refresh</span> 查询新的地址</button></div>
   </div>
 </div>
-
 <div class="card" id="loadingCard" style="display:none">
   <div class="ld s">
     <div class="sp"></div>
     <span>正在查询厂商信息...</span>
   </div>
 </div>
-
 <div class="card"><div class="ft"><p>IEEE OUI &bull; maclookup.app</p></div></div>
 </div>
-
 <script>
 var I=document.getElementById('macInput'),S=document.getElementById('searchBtn'),R=document.getElementById('resetBtn'),RC=document.getElementById('resultCard'),LC=document.getElementById('loadingCard'),EM=document.getElementById('errorMsg'),IW=document.getElementById('inputWrap');
 var VN=document.getElementById('vendorName'),OP=document.getElementById('ouiPrefix'),AT=document.getElementById('addressType'),CN=document.getElementById('countryName'),AS=document.getElementById('apiSource'),AC=document.getElementById('addressContainer'),FA=document.getElementById('fullAddress'),DS=document.getElementById('dataSourceBadge');
-
 function fmt(v){var h=v.replace(/[^a-fA-F0-9]/g,'').toUpperCase(),p=h.match(/.{1,2}/g);return p?p.join(':'):''}
 I.addEventListener('input',function(){I.removeAttribute('maxlength');var c=I.selectionStart,o=I.value,f=fmt(o);I.value=f;I.setAttribute('maxlength','17');var d=f.length-o.length,n=c+d;if(n<0)n=0;if(n>f.length)n=f.length;I.setSelectionRange(n,n);hE()});
 I.addEventListener('keydown',function(e){if(e.key==='Backspace'&&I.selectionStart>0&&I.value[I.selectionStart-1]===':'&&I.selectionStart===I.selectionEnd){e.preventDefault();var v=I.value,s=I.selectionStart;I.value=fmt(v.substring(0,s-2)+v.substring(s));I.setSelectionRange(s-2,s-2)}if(e.key==='Enter')P()});
-I.addEventListener('paste',function(e){e.preventDefault();I.value=fmt((e.clipboardData||window.clipboardData).getData('text'));I.setSelectionRange(I.value.length,I.value.length);hE()});
-
+I.addEventListener('paste',function(e){e.preventDefault();I.value=fmt((e.clipboardData||window.clipboardData('text'));I.setSelectionRange(I.value.length,I.value.length);hE()});
 function sE(m){EM.textContent=m;EM.classList.add('s');IW.classList.add('er')}
 function hE(){EM.classList.remove('s');IW.classList.remove('er')}
 function vM(m){return/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(m)}
 function gAT(m){var b=parseInt(m.substring(0,2),16);return(b&2)===2?'Local (Random)':(b&1)===1?'Multicast':'Unicast'}
-
 async function cP(){try{var c=new AbortController();setTimeout(function(){c.abort()},5000);var r=await fetch('https://cors.maxcloud.fun/?url=https://httpbin.org/get',{signal:c.signal});return r.ok}catch(e){return false}}
-
 async function P(){var m=I.value.trim();if(!vM(m)){sE('格式无效，请输入如 A1:B2:C3:D4:E5:F6');return}
 LC.style.display='block';RC.style.display='none';AC.classList.remove('s')
 try{if(!await cP())throw new Error('Proxy unavailable');var c=new AbortController(),t=setTimeout(function(){c.abort()},8000),r=await fetch('https://cors.maxcloud.fun/?url=https://api.maclookup.app/v2/macs/'+m,{signal:c.signal});clearTimeout(t)
@@ -95,7 +85,6 @@ else throw new Error('Invalid')}
 else throw new Error('HTTP '+r.status)}catch(e){var t='查询失败';if(e.name==='AbortError')t='请求超时';else if(e.message==='Proxy unavailable')t='代理不可用';else if(e.message.includes('Failed'))t='网络异常'
 VN.textContent=t;VN.style.color='var(--neg)';OP.textContent='--';CN.textContent='--';AC.classList.remove('s')}
 finally{LC.style.display='none';RC.style.display='block'}}
-
 S.addEventListener('click',P);R.addEventListener('click',function(){I.value='';RC.style.display='none';hE();I.focus()})
 </script>
 </body>
