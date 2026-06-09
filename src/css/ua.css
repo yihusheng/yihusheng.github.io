@@ -1,6 +1,6 @@
 /* UA — User-Agent 信息读取 */
 .ua-box{position:relative}
-.ua-box textarea{width:100%;background:var(--s);font-family:'Inter',monospace;font-size:13px;font-weight:500;border:2px solid transparent;padding:12px 14px;min-height:160px;line-height:1.5}
-.ua-box textarea:focus{background:var(--c)}
+.ua-box textarea{width:100%;background:var(--wise-canvas-soft);font-family:'Inter',monospace;font-size:13px;font-weight:500;border:2px solid transparent;padding:12px 14px;min-height:160px;line-height:1.5}
+.ua-box textarea:focus{background:var(--wise-canvas)}
 .raw{max-height:130px;margin-top:12px}
 .rw .btn{flex:1;min-width:100px}
