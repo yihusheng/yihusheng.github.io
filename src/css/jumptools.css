@@ -1,0 +1,15 @@
+/* JumpTools — 跳转链接 · 应用商店直达 */
+.wrap{max-width:640px}
+select{height:44px;background:var(--c);border:2px solid var(--k);border-radius:var(--rs);padding:0 12px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;outline:none;transition:all .2s;width:100%}
+select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.srow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.srow select{width:auto;min-width:200px}
+.lc{background:var(--s);border-radius:var(--rs);padding:16px;margin-top:12px;transition:all .1s}
+.ll{font-size:13px;font-weight:700;color:var(--k);margin-bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lt{display:block;background:var(--c);padding:12px 14px;border-radius:10px;font-family:'SF Mono','Monaco','Courier New',monospace;font-size:13px;word-break:break-all;color:var(--k);text-decoration:none;border:1px solid transparent;transition:.2s;width:100%}
+.lt:hover{background:var(--pp);border-color:var(--p)}
+.cpy{font-size:12px;color:var(--m);margin-top:6px;cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:color .15s;padding:2px 0}
+.cpy:hover{color:var(--k)}
+.cpy .material-symbols-rounded{font-size:14px}
+.alert{background:var(--pp);border-left:3px solid var(--p);padding:12px 16px;border-radius:var(--rs);font-size:12px;color:var(--kd);line-height:1.6;margin-top:16px}
+.nt{text-align:center;font-size:12px;color:var(--m);margin-top:16px}
