@@ -66,7 +66,7 @@ var TC=document.getElementById('textColor'),LC=document.getElementById('lineColo
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid';
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function gss(){var v=gs();if(v==='sub')return LS;LS=v;return v}
-function gjc(){var v=gs();if(v==='sub')return'ₓ';var c={solid:'━',dashed:'╌',dotted:'┅',wavy:'〰',double:'═'};return c[v]||'━'}
+function gjc(){var v=gs(),c={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333',sub:'\u2093'};return c[v]||'\u0332'}
 function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
 function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
