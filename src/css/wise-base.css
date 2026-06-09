@@ -44,6 +44,7 @@ body {
   gap: 12px;
   margin-top: 8px;
 }
+.wrap-lg { max-width: 640px; }
 
 /* ── Badge ── */
 .bdg {
@@ -207,7 +208,7 @@ h1 {
 .toast.s { opacity: 1; }
 
 /* ═══════════════════════════════════════════
-   Shared Form Elements（各工具 CSS 补充特有属性）
+   Shared Form Elements
    ═══════════════════════════════════════════ */
 
 /* ── Focus ring ── */
@@ -263,3 +264,47 @@ select {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .ld span { font-size: 13px; font-weight: 500; color: var(--b); }
+
+/* ═══════════════════════════════════════════
+   Shared UI Components
+   ═══════════════════════════════════════════ */
+
+/* ── Code block（深色底 + 绿色代码）── */
+.code-box {
+  background: var(--k);
+  color: var(--p);
+  border-radius: var(--rs);
+  padding: 12px 14px;
+  font-family: 'SF Mono', 'Courier New', monospace;
+  font-size: 12px;
+  word-break: break-all;
+  line-height: 1.6;
+  overflow: auto;
+  margin-top: 10px;
+}
+
+/* ── Gray section（浅灰底+圆角）── */
+.sct {
+  background: var(--s);
+  border-radius: var(--rs);
+  padding: 16px;
+}
+
+/* ── Small round button（深色底+绿色字的迷你按钮）── */
+.btn-sm {
+  background: var(--k);
+  color: var(--p);
+  border: none;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all .15s;
+}
+.btn-sm:hover { opacity: 1; transform: scale(1.04); }
+.btn-sm:active { transform: scale(.96); }
