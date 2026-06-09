@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/src/css/wise.css">
-<link rel="stylesheet" href="/src/css/jumptools.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
 </head>
@@ -17,8 +16,7 @@
   <div class="bdg"><span class="material-symbols-rounded">open_in_new</span> App Store Links</div>
   <h1>跳转链接</h1>
   <p class="sub">输入包名 · 自动生成商店直达链接</p>
-  <label class="lbl" style="margin-top:4px"><span class="material-symbols-rounded" style="font-size:13px">package</span> 应用包名</label>
-  <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
+  <label class="lbl" style="margin-top:4px"><span class="应用="" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
   <div class="srow" style="margin-top:16px">
     <span class="bdg"><span class="material-symbols-rounded">smartphone</span> 选择品牌</span>
     <select id="brandSelect">
@@ -67,7 +65,7 @@ brandLink=pkg?gBSL(pkg,bi):null;var bUrl=brandLink||'#',bTxt=brandLink||'—— 
 universalLink=pkg?gUL(pkg,bi):null;var uTxt=universalLink||'—— 请输入包名 ——';UPL.textContent=uTxt;UPL.href=uUrl;UPL.style.pointerEvents=pkg&&universalLink?'auto':'none';UPL.style.opacity=pkg&&universalLink?'1':'.6'
 webLinkUrl=pkg?gWS(pkg,bi):'#';WL.textContent=webLinkUrl||'—— 请输入包名 ——';WL.href=webLinkUrl||'#';WL.style.pointerEvents=pkg?'auto':'none';WL.style.opacity=pkg?'1':'.6'
 hasPkg=!!pkg}
-function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://;omi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
+function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://com.huawei.appmarket/'+pk;case'xiaomi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
 function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
 function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
 function sT(m,d){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},d||1800)}
