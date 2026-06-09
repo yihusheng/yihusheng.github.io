@@ -49,53 +49,28 @@ jobs:
       - name: Update Metacubexd
         if: steps.mv.outputs.skip == 'false'
         run: |
-          set -e  # 错误时立即退出
           V=${{ steps.mv.outputs.latest }}
-          
           echo "Downloading Metacubexd ${V}..."
           curl -sL "https://github.com/MetaCubeX/metacubexd/releases/download/${V}/compressed-dist.tgz" -o /tmp/m.tgz
-          
           mkdir -p /tmp/ms
-          echo "Extracting tar file..."
-          tar -tzf /tmp/m.tgz | head -20  # 显示前20个文件，调试用
           tar -xzf /tmp/m.tgz -C /tmp/ms
-          
-          echo "Extracted directory structure:"
-          ls -laR /tmp/ms | head -50
-          
+
           # 自动检测源目录
           S=""
           if [ -d "/tmp/ms/compressed-dist" ]; then
             S=/tmp/ms/compressed-dist
-            echo "Found: compressed-dist"
           elif [ -d "/tmp/ms/_nuxt" ]; then
             S=/tmp/ms
-            echo "Found: _nuxt at root of extraction"
           else
-            # 递归查找包含 _nuxt 的目录
             NUXT_DIR=$(find /tmp/ms -type d -name "_nuxt" | head -1)
-            if [ -n "$NUXT_DIR" ]; then
-              S=$(dirname "$NUXT_DIR")
-              echo "Found: _nuxt at $(dirname $NUXT_DIR)"
-            fi
+            [ -n "$NUXT_DIR" ] && S=$(dirname "$NUXT_DIR")
           fi
-          
           if [ -z "$S" ] || [ ! -d "$S" ]; then
             echo "ERROR: Cannot find source directory with _nuxt"
-            echo "Full extraction tree:"
             find /tmp/ms -type f | head -30
             exit 1
           fi
-          
-          echo "Source directory: $S"
-          echo "Contents of $S:"
-          ls -la "$S/"
-          
-          # 检查必要的目录/文件
-          if [ ! -d "$S/_nuxt" ]; then
-            echo "ERROR: _nuxt directory not found in $S"
-            exit 1
-          fi
+          echo "Source dir: $S"
 
           # 检查 index.html
           IDX=""
@@ -104,106 +79,59 @@ jobs:
           elif [ -f "$S/_index.html" ]; then
             IDX=_index.html
           else
-            echo "ERROR: no index.html found in $S"
+            echo "ERROR: no index.html in $S"
             exit 1
           fi
           echo "Index file: $IDX"
 
-          # 清理目标目录
-          echo "Cleaning target directory $M..."
+          # 清理旧文件
           rm -rf "$M/_nuxt" "$M/_fonts"
-          
-          # 清理单文件
-          rm -f "$M/workbox-"*.js 2>/dev/null || true
-          rm -f "$M/sw.js" "$M/favicon.ico" "$M/favicon.svg" "$M/manifest.webmanifest" 2>/dev/null || true
-          rm -f "$M"/pwa-*.png "$M"/maskable-icon-*.png "$M"/apple-touch-icon*.png 2>/dev/null || true
-          rm -f "$M"/200.html "$M"/404.html "$M"/$IDX "$M/config.js" 2>/dev/null || true
-          
-          # 确保目标目录存在
+          rm -f "$M"/workbox-*.js 2>/dev/null || true
+
+          # 确保 target 存在
           mkdir -p "$M"
-          
-          # 逐个复制，带详细检查
-          
-          # 1. 复制 _nuxt (必须存在)
-          echo "Copying _nuxt..."
-          if [ -d "$S/_nuxt" ]; then
-            cp -r "$S/_nuxt" "$M/_nuxt" || { echo "ERROR: Failed to copy _nuxt"; exit 1; }
-            echo "✓ _nuxt copied ($(find $M/_nuxt -type f | wc -l) files)"
-          else
-            echo "ERROR: _nuxt not found in source"
-            exit 1
-          fi
 
-          # 2. 复制 _fonts (可选)
-          echo "Copying _fonts..."
+          # _nuxt
+          echo "Copying _nuxt ($(find $S/_nuxt -type f | wc -l) files)..."
+          cp -r "$S/_nuxt" "$M/"
+
+          # _fonts
           if [ -d "$S/_fonts" ]; then
-            cp -r "$S/_fonts" "$M/_fonts"
-            echo "✓ _fonts copied ($(find $M/_fonts -type f | wc -l) files)"
-          else
-            echo "⊘ _fonts not found (optional)"
+            cp -r "$S/_fonts" "$M/"
+            echo "Copied _fonts ($(find $M/_fonts -type f | wc -l) files)"
           fi
 
-          # 3. 复制 workbox 文件
-          echo "Copying workbox files..."
-          WORKBOX_COUNT=0
+          # workbox
           for f in "$S"/workbox-*.js; do
-            if [ -f "$f" ]; then
-              cp "$f" "$M/" && ((WORKBOX_COUNT++))
-            fi
+            [ -f "$f" ] && cp "$f" "$M/"
           done
-          [ $WORKBOX_COUNT -gt 0 ] && echo "✓ Copied $WORKBOX_COUNT workbox files" || echo "⊘ No workbox files found"
 
-          # 4. 复制其他单个文件
-          echo "Copying static files..."
-          for f in sw.js manifest.webmanifest .nojekyll favicon.ico favicon.svg; do
-            if [ -f "$S/$f" ]; then
-              cp "$S/$f" "$M/" 2>/dev/null && echo "  ✓ $f"
-            fi
-          done
-          
-          # 5. 复制图片文件（使用更安全的方式）
-          for pattern in "pwa-*.png" "maskable-icon-*.png" "apple-touch-icon*.png"; do
-            for f in "$S"/$pattern; do
-              [ -f "$f" ] && cp "$f" "$M/" 2>/dev/null && echo "  ✓ $(basename $f)"
+          # 静态文件
+          for f in sw.js manifest.webmanifest .nojekyll favicon.ico favicon.svg \
+                   pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
+            for g in "$S"/$f; do
+              [ -f "$g" ] && cp "$g" "$M/" 2>/dev/null || true
             done
           done
 
-          # 6. 复制/创建 HTML 文件 + 导航栏注入
-          echo "Copying HTML files..."
+          # HTML + 导航栏注入
           for f in $IDX 200.html 404.html; do
             if [ -f "$S/$f" ]; then
               cp "$S/$f" "$M/$f"
-              echo "  ✓ $f (from source)"
-            elif [ "$f" != "$IDX" ]; then
-              # 200.html / 404.html 不存在则从 index 创建（SPA 路由需要）
-              if [ -f "$M/$IDX" ]; then
-                cp "$M/$IDX" "$M/$f"
-                echo "  ✓ $f (created from $IDX)"
-              fi
+            elif [ "$f" != "$IDX" ] && [ -f "$M/$IDX" ]; then
+              cp "$M/$IDX" "$M/$f"
+              echo "  Created $f from $IDX"
             fi
-            
-            # 注入导航栏
-            if [ -f "$M/$f" ]; then
-              if ! grep -q '/Tools/navbar.css' "$M/$f"; then
-                sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$M/$f"
-                sed -i 's|<body>|<body class="navbar-overlay">|' "$M/$f"
-                echo "  ✓ navbar injected: $M/$f"
-              fi
-            fi
+            [ -f "$M/$f" ] || continue
+            grep -q '/Tools/navbar.css' "$M/$f" && continue
+            sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$M/$f"
+            sed -i 's|<body>|<body class="navbar-overlay">|' "$M/$f"
+            echo "  Injected navbar: $M/$f"
           done
 
-          # 7. 创建 config.js (如果不存在)
-          if [ ! -f "$M/config.js" ]; then
-            echo 'window.__METACUBEXD_CONFIG__={defaultBackendURL:""}' > "$M/config.js"
-            echo "✓ config.js created"
-          fi
-          
-          echo ""
-          echo "═══════════════════════════════════════"
-          echo "✓ Metacubexd ${V} updated successfully"
-          echo "═══════════════════════════════════════"
-          echo "Final directory structure:"
-          ls -la "$M/"
+          # config.js
+          [ -f "$M/config.js" ] || echo 'window.__METACUBEXD_CONFIG__={defaultBackendURL:""}' > "$M/config.js"
+          echo "Metacubexd ${V} done ($(find $M/_nuxt -type f | wc -l) nuxt files)"
 
       # ═══════════════════════════════
       # Zashboard
@@ -221,94 +149,43 @@ jobs:
       - name: Update Zashboard
         if: steps.zv.outputs.skip == 'false'
         run: |
-          set -e  # 错误时立即退出
           V=${{ steps.zv.outputs.latest }}
-          
           echo "Downloading Zashboard ${V}..."
           curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${V}/dist-no-fonts.zip" -o /tmp/z.zip
-          
           mkdir -p /tmp/zs
-          echo "Extracting zip file..."
           unzip -qo /tmp/z.zip -d /tmp/zs
-          
-          echo "Extracted directory structure:"
-          ls -laR /tmp/zs | head -50
-          
-          # dist zip 可能包含 dist/ 前缀目录，自动检测
-          S=""
+
+          # 自动检测源目录
           if [ -d "/tmp/zs/dist" ]; then
             S=/tmp/zs/dist
-            echo "Found: dist directory"
           elif [ -d "/tmp/zs/assets" ]; then
             S=/tmp/zs
-            echo "Found: assets at root of extraction"
           else
-            # 查找包含 index.html 的目录
-            INDEX_DIR=$(find /tmp/zs -name "index.html" -type f | head -1)
-            if [ -n "$INDEX_DIR" ]; then
-              S=$(dirname "$INDEX_DIR")
-              echo "Found: index.html at $(dirname $INDEX_DIR)"
-            fi
+            S=$(find /tmp/zs -name index.html -exec dirname {} \; | head -1)
           fi
-          
-          if [ -z "$S" ] || [ ! -d "$S" ]; then
-            echo "ERROR: Cannot find source directory"
-            find /tmp/zs -type f | head -30
-            exit 1
-          fi
-          
-          echo "Source directory: $S"
-          echo "Contents of $S:"
-          ls -la "$S/"
-          
+          echo "Source dir: $S"
+
           mkdir -p "$Z"
+          rm -rf "$Z/assets"
+          [ -d "$S/assets" ] && cp -r "$S/assets" "$Z/" || echo "WARNING: no assets dir"
 
-          # 清理旧的 assets 目录
-          rm -rf "$Z/assets" 2>/dev/null || true
-
-          # 复制 assets 目录
-          if [ -d "$S/assets" ]; then
-            cp -r "$S/assets" "$Z/"
-            echo "✓ assets directory copied"
-          else
-            echo "⊘ assets directory not found"
-          fi
-
-          # 复制单个文件
-          for f in favicon.ico favicon.svg apple-touch-icon.png manifest.webmanifest registerSW.js sw.js; do
-            if [ -f "$S/$f" ]; then
-              cp "$S/$f" "$Z/" 2>/dev/null && echo "  ✓ $f"
-            fi
-          done
-          
-          # 复制 pwa 相关图片
-          for f in "$S"/pwa-*.png; do
-            [ -f "$f" ] && cp "$f" "$Z/" 2>/dev/null && echo "  ✓ $(basename $f)"
+          for f in favicon.ico favicon.svg apple-touch-icon.png pwa-*.png manifest.webmanifest registerSW.js sw.js; do
+            for g in "$S"/$f; do
+              [ -f "$g" ] && cp "$g" "$Z/" 2>/dev/null || true
+            done
           done
 
-          # 复制 index.html
-          if [ -f "$S/index.html" ]; then
-            cp "$S/index.html" "$Z/index.html"
-            echo "✓ index.html copied"
-          else
-            echo "ERROR: index.html not found"
-            exit 1
-          fi
+          # index.html
+          [ -f "$S/index.html" ] && cp "$S/index.html" "$Z/index.html"
 
-          # 注入导航栏
-          if ! grep -q '/Tools/navbar.css' "$Z/index.html"; then
+          if ! grep -q '/Tools/navbar.css' "$Z/index.html" 2>/dev/null; then
             sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$Z/index.html"
             sed -i 's|<body class="|<body class="navbar-overlay |' "$Z/index.html"
             sed -i 's|<body>|<body class="navbar-overlay">|' "$Z/index.html"
-            echo "✓ navbar injected"
+            echo "Navbar injected"
           fi
-          
           echo "$V" > "$Z/.version"
-          
-          echo ""
-          echo "═══════════════════════════════════════"
-          echo "✓ Zashboard ${V} updated successfully"
-          echo "═══════════════════════════════════════"
+          echo "Zashboard $V done"
 
       # ═══════════════════════════════
       # Commit & Deploy
