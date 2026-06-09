@@ -66,7 +66,7 @@ jobs:
 
           echo "Replacing sw/workbox..."
           cp $SRC/sw.js ${{ env.METACUBEXD_DIR }}/sw.js
-          cp $SRC/workbox-*.js ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
+          cp $SRC/workboxET}/ 2>/dev/null || true
           ls ${{ env.METACUBEXD_DIR }}/workbox-*.js 2>/dev/null \
             | grep -vF "$(ls $SRC/workbox-*.js 2>/dev/null | xargs basename)" \
             | xargs rm -f 2>/dev/null || true
@@ -79,29 +79,8 @@ jobs:
           done
 
           echo "Injecting navbar..."
-          python3 -c "
-import os, shutil
-d = os.environ['METACUBEXD_DIR']
-s = '/tmp/meta_src/metacubexd-gh-pages'
-nb = '<!-- navbar -->\n<link rel=\"stylesheet\" href=\"/Tools/navbar.css\">\n<script src=\"/Tools/navbar.js\"></script>'
-for f in ['index.html','200.html','404.html']:
-    t = os.path.join(d, f)
-    fb = os.path.join(s, f)
-    if os.path.exists(fb): shutil.copy2(fb, t)
-    if not os.path.exists(t): continue
-    with open(t, encoding='utf-8') as fh: h = fh.read()
-    c = False
-    if '/Tools/navbar.css' not in h:
-        h = h.replace('<head>', '<head>\n' + nb); c = True
-    if 'navbar-overlay' not in h:
-        h = h.replace('<body>', '<body class=\"navbar-overlay\">'); c = True
-    if c:
-        with open(t, 'w', encoding='utf-8') as fh: fh.write(h)
-        print('  Updated:', t)
-if not os.path.exists(os.path.join(d, 'config.js')):
-    with open(os.path.join(d, 'config.js'), 'w') as f:
-        f.write('window.__METACUBEXD_CONFIG__={defaultBackendURL:\"\"}\n')
-"
+          echo "aW1wb3J0IG9zLCBzaHV0aWwKZCA9IG9zLmVudmlyb24uZ2V0KCdNRVRBQ1VCRVhEX0RJUicpCnMgPSAnL3RtcC9tZXRhX3NyYy9tZXRhY3ViZXhkLWdoLXBhZ2VzJwpuYiA9ICc8IS0tIG5hdmJhciAtLT4+CiAgICAKICAgIDxzY3JpcHQgc3JjPSIvVG9vbHMvbmF2YmFyLmpzIj48L3NjcmlwdD4nCmZvciBmIGluIFsnaW5kZXguaHRtbCcsJzIwMC5odG1sJywnNDA0Lmh0bWwnXToKICAgIHQgPSBvcy5wYXRoLmpvaW4oZCwgZikKICAgIGZiID0gb3MucGF0aC5qb2luKHMsIGYpCiAgICBpZiBvcy5wYXRoLmV4aXN0cyhmYik6IHNodXRpbC5jb3B5MihmYiwgdCkKICAgIGlmIG5vdCBvcy5wYXRoLmV4aXN0cyh0KTogY29udGludWUKICAgIHdpdGggb3Blbih0LCBlbmNvZGluZz0ndXRmLTgnKSBhcyBmaDogaCA9IGZoLnJlYWQoKQogICAgYyA9IEZhbHNlCiAgICBpZiAnL1Rvb2xzL25hdmJhci5jc3MnIG5vdCBpbiBoOgogICAgICAgIGggPSBoLnJlcGxhY2UoJzxoZWFkPicsICc8aGVhZD5cbicgKyBuYik7IGMgPSBUcnVlCiAgICBpZiAnbmF2YmFyLW92ZXJsYXknIG5vdCBpbiBoOgogICAgICAgIGggPSBoLnJlcGxhY2UoJzxiaW9keT4nLCAnPGJvZHkgY2xhc3M9Im5hdmJhci1vdmVybGF5Ij4nKTsgYyA9IFRydWUKICAgIGlmIGM6CiAgICAgICAgd2l0aCBvcGVuKHQsICd3JywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZmg6IGZoLndyaXRlKGgpCiAgICAgICAgcHJpbnQoJyAgVXBkYXRlZDonLCB0KQppZiBub3Qgb3MucGF0aC5leGlzdHMob3MucGF0aC5qb2luKGQsICdjb25maWcuanMnKSk6CiAgICB3aXRoIG9wZW4ob3MucGF0aC5qb2luKGQsICdjb25maWcuanMnKSwgJ3cnKSBhcyBmOgogICAgICAgIGYud3JpdGUoJ3dpbmRvdy5fX01FVEFDVUJFWERfQ09ORklHX189e2RlZmF1bHRCYWNrZW5kVVJMOiIifVxuJykK" | base64 -d > /tmp/inject_meta.py
+          python3 /tmp/inject_meta.py
           echo "Metacubexd updated to ${{ steps.meta_ver.outputs.latest }}"
 
       # ── Zashboard version check ──
@@ -145,25 +124,8 @@ if not os.path.exists(os.path.join(d, 'config.js')):
           done
 
           echo "Injecting navbar..."
-          python3 -c "
-import os, shutil
-d = os.environ['ZASHBOARD_DIR']
-s = '/tmp/zash_src'
-nb = '<!-- navbar -->\n<link rel=\"stylesheet\" href=\"/Tools/navbar.css\">\n<script src=\"/Tools/navbar.js\"></script>'
-src_idx = os.path.join(s, 'index.html')
-tgt_idx = os.path.join(d, 'index.html')
-if os.path.exists(src_idx): shutil.copy2(src_idx, tgt_idx)
-with open(tgt_idx, encoding='utf-8') as f: h = f.read()
-c = False
-if '/Tools/navbar.css' not in h:
-    h = h.replace('<head>', '<head>\n' + nb); c = True
-if 'navbar-overlay' not in h:
-    h = h.replace('<body class=\"', '<body class=\"navbar-overlay ')
-    h = h.replace('<body>', '<body class=\"navbar-overlay\">'); c = True
-if c:
-    with open(tgt_idx, 'w', encoding='utf-8') as f: f.write(h)
-    print('Navbar injected')
-"
+          echo "aW1wb3J0IG9zLCBzaHV0aWwKZCA9IG9zLmVudmlyb24uZ2V0KCdaQVNIT0JBUkRfRElSJyktCnMgPSAnL3RtcC96YXNoX3NyYycKbmIgPSAnPCEtLSBuYXZiYXIgLS0+PgogICAgCiAgICA8c2NyaXB0IHNyYz0iL1Rvb2xzL25hdmJhci5qcyI+PC9zY3JpcHQ+JwpzcmNfaWR4ID0gb3MucGF0aC5qb2luKHMsICdpbmRleC5odG1sJykKdGd0X2lkeCA9IG9zLnBhdGguam9pbihkLCAnaW5kZXguaHRtbCcpCmlmIG9zLnBhdGguZXhpc3RzKHNyY19pZHgpOiBzaHV0aWwuY29weTIoc3JjX2lkeCwgdGd0X2lkeCkKd2l0aCBvcGVuKHRndF9pZHgsIGVuY29kaW5nPSd1dGYtOCcpIGFzIGY6IGggPSBmLnJlYWQoKQpjID0gRmFsc2UKaWYgJy9Ub29scy9uYXZiYXIuY3NzJyBub3QgaW4gaDoKICAgIGggPSBoLnJlcGxhY2UoJzxoZWFkPicsICc8aGVhZD5cbicgKyBuYik7IGMgPSBUcnVlCmlmICduYXZiYXItb3ZlcmxheScgbm90IGluIGg6CiAgICBoID0gaC5yZXBsYWNlKCc8Ym9keSBjbGFzcz0iJywgJzxib2R5IGNsYXNzPSJuYXZiYXItb3ZlcmxheSAnKQogICAgaCA9IGgucmVwbGFjZSgnPGJvZHk+JywgJzxib2R5IGNsYXNzPSJuYXZiYXItb3ZlcmxheSI+Jyk7IGMgPSBUcnVlCmlmIGM6CiAgICB3aXRoIG9wZW4odGd0X2lkeCwgJ3cnLCBlbmNvZGluZz0ndXRmLTgnKSBhcyBmOiBmLndyaXRlKGgpCiAgICBwcmludCgnTmF2YmFyIGluamVjdGVkJykK" | base64 -d > /tmp/inject_zash.py
+          python3 /tmp/inject_zash.py
           echo "$VER" > ${{ env.ZASHBOARD_DIR }}/.version
           echo "Zashboard updated to ${{ steps.zash_ver.outputs.latest }}"
 
