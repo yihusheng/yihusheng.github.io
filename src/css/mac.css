@@ -1,0 +1,26 @@
+/* MAC — MAC 地址查询 */
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.in-w{display:flex;align-items:center;border:2px solid var(--k);border-radius:var(--rs);overflow:hidden;transition:all .2s;background:var(--c)}
+.in-w:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
+.in-w.er{border-color:var(--neg)}
+.in-w input{flex:1;height:50px;background:transparent;border:none;outline:none;padding:0 14px;font-family:'Inter',monospace;font-size:17px;font-weight:700;letter-spacing:2px;color:var(--k)}
+.in-w input::placeholder{color:rgba(134,134,133,.35);font-weight:500;font-size:13px}
+.in-w .ic{padding:0 12px;color:var(--m);flex-shrink:0;font-size:20px}
+.in-w:focus-within .ic{color:var(--p)}
+.em{color:var(--neg);font-size:12px;margin-top:6px;height:18px;opacity:0;transition:opacity .2s;font-weight:500}
+.em.s{opacity:1}
+.sec{padding:24px}
+.rh{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:0 24px;padding-top:20px}
+.rh .b{width:4px;height:22px;background:var(--p);border-radius:var(--rp);flex-shrink:0}
+.rh h2{font-size:18px;font-weight:800;letter-spacing:-.02em}
+.rh .tag{font-size:10px;background:var(--pp);color:var(--kd);padding:3px 10px;border-radius:var(--rp);font-weight:700;margin-left:auto;text-transform:uppercase}
+.rc{border-top:1px solid rgba(14,15,12,.06);padding:0 24px 24px}
+.ri{background:var(--s);border-radius:var(--r);padding:20px}
+.rv{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.rvl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--b);margin-bottom:4px}
+.rvn{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;color:var(--k)}
+.rvi{width:42px;height:42px;background:var(--pp);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rvi .material-symbols-rounded{font-size:22px;color:var(--kd)}
+.rt{text-align:center;margin-top:14px}
+.rt button{border:none;background:none;font-size:13px;font-weight:600;color:var(--k);cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:var(--rs);transition:all .15s}
+.rt button:hover{background:var(--pp)}
