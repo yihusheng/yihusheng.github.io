@@ -1,4 +1,4 @@
-name: Update Dashboards (Metacubexd and Zashboard)
+name: Update Dashboards
 
 on:
   schedule:
@@ -20,129 +20,113 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  METACUBEXD_DIR: Tools/Metacubexd
-  ZASHBOARD_DIR: Tools/zashboard
+  M: Tools/Metacubexd
+  Z: Tools/zashboard
 
 jobs:
-  update-dashboards:
+  update:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
-      # ── Metacubexd version check ──
+      # ═══════════════════════════════
+      # Metacubexd
+      # ═══════════════════════════════
       - name: Check Metacubexd version
-        id: meta_ver
+        id: mv
         run: |
           LATEST=$(curl -s https://api.github.com/repos/MetaCubeX/metacubexd/releases/latest \
             | jq -r '.tag_name // "v0"')
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
-          CURRENT=""
-          if [ -f "${{ env.METACUBEXD_DIR }}/index.html" ]; then
-            CURRENT=$(grep -oP 'appVersion:"\K[^"]+' "${{ env.METACUBEXD_DIR }}/index.html" || echo "")
-          fi
-          echo "current=${CURRENT:-none}" >> $GITHUB_OUTPUT
-          if [ "$LATEST" = "$CURRENT" ] && [ "${{ inputs.force_update }}" != "true" ]; then
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-          echo "Metacubexd: current=$CURRENT -> latest=$LATEST"
+          CUR=""
+          [ -f "$M/index.html" ] && CUR=$(grep -oP 'appVersion:"\K[^"]+' "$M/index.html" || echo "")
+          echo "cur=${CUR:-none}" >> $GITHUB_OUTPUT
+          [ "$LATEST" = "$CUR" -a "${{ inputs.force_update }}" != "true" ] && echo "skip=true" >> $GITHUB_OUTPUT || echo "skip=false" >> $GITHUB_OUTPUT
 
-      # ── Update Metacubexd ──
       - name: Update Metacubexd
-        if: steps.meta_ver.outputs.skip == 'false'
+        if: steps.mv.outputs.skip == 'false'
         run: |
-          echo "Downloading Metacubexd gh-pages..."
-          curl -sL https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip -o /tmp/meta.zip
-          unzip -qo /tmp/meta.zip -d /tmp/meta_src
-          SRC=/tmp/meta_src/metacubexd-gh-pages
+          curl -sL https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip -o /tmp/m.zip
+          unzip -qo /tmp/m.zip -d /tmp/ms
+          S=/tmp/ms/metacubexd-gh-pages
 
-          echo "Replacing _nuxt..."
-          rm -rf ${{ env.METACUBEXD_DIR }}/_nuxt
-          cp -r $SRC/_nuxt ${{ env.METACUBEXD_DIR }}/
-
-          echo "Replacing sw/workbox..."
-          cp $SRC/sw.js ${{ env.METACUBEXD_DIR }}/sw.js
-          cp $SRC/workboxET}/ 2>/dev/null || true
-          ls ${{ env.METACUBEXD_DIR }}/workbox-*.js 2>/dev/null \
-            | grep -vF "$(ls $SRC/workbox-*.js 2>/dev/null | xargs basename)" \
-            | xargs rm -f 2>/dev/null || true
-
-          echo "Updating manifest / icons..."
-          cp $SRC/manifest.webmanifest ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
-          cp $SRC/.nojekyll ${{ env.METACUBEXD_DIR }}/ 2>/dev/null || true
+          rm -rf $M/_nuxt && cp -r $S/_nuxt $M/
+          cp $S/sw.js $M/sw.js
+          for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
+          rm -f $M/workbox-*.js 2>/dev/null; for f in $S/workbox-*.js; do [ -f "$f" ] && cp "$f" $M/; done
+          cp $S/manifest.webmanifest $M/ 2>/dev/null || true
+          cp $S/.nojekyll $M/ 2>/dev/null || true
           for f in favicon.ico favicon.svg pwa-*.png maskable-icon-*.png apple-touch-icon-*.png; do
-            [ -f "$SRC/$f" ] && cp "$SRC/$f" "${{ env.METACUBEXD_DIR }}/" 2>/dev/null || true
+            [ -f "$S/$f" ] && cp "$S/$f" $M/ 2>/dev/null || true
           done
 
-          echo "Injecting navbar..."
-          echo "aW1wb3J0IG9zLCBzaHV0aWwKZCA9IG9zLmVudmlyb24uZ2V0KCdNRVRBQ1VCRVhEX0RJUicpCnMgPSAnL3RtcC9tZXRhX3NyYy9tZXRhY3ViZXhkLWdoLXBhZ2VzJwpuYiA9ICc8IS0tIG5hdmJhciAtLT4+CiAgICAKICAgIDxzY3JpcHQgc3JjPSIvVG9vbHMvbmF2YmFyLmpzIj48L3NjcmlwdD4nCmZvciBmIGluIFsnaW5kZXguaHRtbCcsJzIwMC5odG1sJywnNDA0Lmh0bWwnXToKICAgIHQgPSBvcy5wYXRoLmpvaW4oZCwgZikKICAgIGZiID0gb3MucGF0aC5qb2luKHMsIGYpCiAgICBpZiBvcy5wYXRoLmV4aXN0cyhmYik6IHNodXRpbC5jb3B5MihmYiwgdCkKICAgIGlmIG5vdCBvcy5wYXRoLmV4aXN0cyh0KTogY29udGludWUKICAgIHdpdGggb3Blbih0LCBlbmNvZGluZz0ndXRmLTgnKSBhcyBmaDogaCA9IGZoLnJlYWQoKQogICAgYyA9IEZhbHNlCiAgICBpZiAnL1Rvb2xzL25hdmJhci5jc3MnIG5vdCBpbiBoOgogICAgICAgIGggPSBoLnJlcGxhY2UoJzxoZWFkPicsICc8aGVhZD5cbicgKyBuYik7IGMgPSBUcnVlCiAgICBpZiAnbmF2YmFyLW92ZXJsYXknIG5vdCBpbiBoOgogICAgICAgIGggPSBoLnJlcGxhY2UoJzxiaW9keT4nLCAnPGJvZHkgY2xhc3M9Im5hdmJhci1vdmVybGF5Ij4nKTsgYyA9IFRydWUKICAgIGlmIGM6CiAgICAgICAgd2l0aCBvcGVuKHQsICd3JywgZW5jb2Rpbmc9J3V0Zi04JykgYXMgZmg6IGZoLndyaXRlKGgpCiAgICAgICAgcHJpbnQoJyAgVXBkYXRlZDonLCB0KQppZiBub3Qgb3MucGF0aC5leGlzdHMob3MucGF0aC5qb2luKGQsICdjb25maWcuanMnKSk6CiAgICB3aXRoIG9wZW4ob3MucGF0aC5qb2luKGQsICdjb25maWcuanMnKSwgJ3cnKSBhcyBmOgogICAgICAgIGYud3JpdGUoJ3dpbmRvdy5fX01FVEFDVUJFWERfQ09ORklHX189e2RlZmF1bHRCYWNrZW5kVVJMOiIifVxuJykK" | base64 -d > /tmp/inject_meta.py
-          python3 /tmp/inject_meta.py
-          echo "Metacubexd updated to ${{ steps.meta_ver.outputs.latest }}"
+          # Inject navbar into HTML files
+          for f in index.html 200.html 404.html; do
+            [ -f "$S/$f" ] && cp "$S/$f" "$M/$f"
+            [ -f "$M/$f" ] || continue
+            grep -q '/Tools/navbar.css' "$M/$f" && continue
+            sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$M/$f"
+            sed -i 's|<body>|<body class="navbar-overlay">|' "$M/$f"
+            echo "  Injected: $M/$f"
+          done
+          [ -f "$M/config.js" ] || echo 'window.__METACUBEXD_CONFIG__={defaultBackendURL:""}' > $M/config.js
+          echo "Metacubexd ${{ steps.mv.outputs.latest }} done"
 
-      # ── Zashboard version check ──
+      # ═══════════════════════════════
+      # Zashboard
+      # ═══════════════════════════════
       - name: Check Zashboard version
-        id: zash_ver
+        id: zv
         run: |
           LATEST=$(curl -s https://api.github.com/repos/Zephyruso/zashboard/releases/latest \
             | jq -r '.tag_name // "v0"')
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
-          VERSION_FILE="${{ env.ZASHBOARD_DIR }}/.version"
-          CURRENT=""
-          [ -f "$VERSION_FILE" ] && CURRENT=$(cat "$VERSION_FILE")
-          echo "current=${CURRENT:-none}" >> $GITHUB_OUTPUT
-          if [ "$LATEST" = "$CURRENT" ] && [ "${{ inputs.force_update }}" != "true" ]; then
-            echo "skip=true" >> $GITHUB_OUTPUT
-          else
-            echo "skip=false" >> $GITHUB_OUTPUT
-          fi
-          echo "Zashboard: current=$CURRENT -> latest=$LATEST"
+          CUR=""; [ -f "$Z/.version" ] && CUR=$(cat "$Z/.version")
+          echo "cur=${CUR:-none}" >> $GITHUB_OUTPUT
+          [ "$LATEST" = "$CUR" -a "${{ inputs.force_update }}" != "true" ] && echo "skip=true" >> $GITHUB_OUTPUT || echo "skip=false" >> $GITHUB_OUTPUT
 
-      # ── Update Zashboard ──
       - name: Update Zashboard
-        if: steps.zash_ver.outputs.skip == 'false'
+        if: steps.zv.outputs.skip == 'false'
         run: |
-          VER=${{ steps.zash_ver.outputs.latest }}
-          echo "Downloading Zashboard $VER..."
-          curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${VER}/dist-cdn-fonts.zip" \
-            -o /tmp/zash.zip
-          unzip -qo /tmp/zash.zip -d /tmp/zash_src
-          SRC=/tmp/zash_src
+          V=${{ steps.zv.outputs.latest }}
+          curl -sL "https://github.com/Zephyruso/zashboard/releases/download/${V}/dist-cdn-fonts.zip" -o /tmp/z.zip
+          unzip -qo /tmp/z.zip -d /tmp/zs
+          S=/tmp/zs
 
-          echo "Replacing assets..."
-          rm -rf ${{ env.ZASHBOARD_DIR }}/assets
-          cp -r $SRC/assets ${{ env.ZASHBOARD_DIR }}/
-
-          echo "Updating core files..."
-          for f in favicon.ico favicon.svg apple-touch-icon.png pwa-192x192.png pwa-512x512.png \
-                    pwa-maskable-192x192.png pwa-maskable-512x512.png \
-                    manifest.webmanifest registerSW.js sw.js; do
-            [ -f "$SRC/$f" ] && cp "$SRC/$f" "${{ env.ZASHBOARD_DIR }}/" 2>/dev/null || true
+          rm -rf $Z/assets && cp -r $S/assets $Z/
+          for f in favicon.ico favicon.svg apple-touch-icon.png pwa-*.png manifest.webmanifest registerSW.js sw.js; do
+            [ -f "$S/$f" ] && cp "$S/$f" $Z/ 2>/dev/null || true
           done
 
-          echo "Injecting navbar..."
-          echo "aW1wb3J0IG9zLCBzaHV0aWwKZCA9IG9zLmVudmlyb24uZ2V0KCdaQVNIT0JBUkRfRElSJyktCnMgPSAnL3RtcC96YXNoX3NyYycKbmIgPSAnPCEtLSBuYXZiYXIgLS0+PgogICAgCiAgICA8c2NyaXB0IHNyYz0iL1Rvb2xzL25hdmJhci5qcyI+PC9zY3JpcHQ+JwpzcmNfaWR4ID0gb3MucGF0aC5qb2luKHMsICdpbmRleC5odG1sJykKdGd0X2lkeCA9IG9zLnBhdGguam9pbihkLCAnaW5kZXguaHRtbCcpCmlmIG9zLnBhdGguZXhpc3RzKHNyY19pZHgpOiBzaHV0aWwuY29weTIoc3JjX2lkeCwgdGd0X2lkeCkKd2l0aCBvcGVuKHRndF9pZHgsIGVuY29kaW5nPSd1dGYtOCcpIGFzIGY6IGggPSBmLnJlYWQoKQpjID0gRmFsc2UKaWYgJy9Ub29scy9uYXZiYXIuY3NzJyBub3QgaW4gaDoKICAgIGggPSBoLnJlcGxhY2UoJzxoZWFkPicsICc8aGVhZD5cbicgKyBuYik7IGMgPSBUcnVlCmlmICduYXZiYXItb3ZlcmxheScgbm90IGluIGg6CiAgICBoID0gaC5yZXBsYWNlKCc8Ym9keSBjbGFzcz0iJywgJzxib2R5IGNsYXNzPSJuYXZiYXItb3ZlcmxheSAnKQogICAgaCA9IGgucmVwbGFjZSgnPGJvZHk+JywgJzxib2R5IGNsYXNzPSJuYXZiYXItb3ZlcmxheSI+Jyk7IGMgPSBUcnVlCmlmIGM6CiAgICB3aXRoIG9wZW4odGd0X2lkeCwgJ3cnLCBlbmNvZGluZz0ndXRmLTgnKSBhcyBmOiBmLndyaXRlKGgpCiAgICBwcmludCgnTmF2YmFyIGluamVjdGVkJykK" | base64 -d > /tmp/inject_zash.py
-          python3 /tmp/inject_zash.py
-          echo "$VER" > ${{ env.ZASHBOARD_DIR }}/.version
-          echo "Zashboard updated to ${{ steps.zash_ver.outputs.latest }}"
+          # Inject navbar
+          grep -q '/Tools/navbar.css' "$Z/index.html" 2>/dev/null && NEED_INJECT=false || NEED_INJECT=true
+          if [ "$NEED_INJECT" = true ]; then
+            sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$Z/index.html"
+            sed -i 's|<body class="|<body class="navbar-overlay |' "$Z/index.html"
+            sed -i 's|<body>|<body class="navbar-overlay">|' "$Z/index.html"
+            echo "Navbar injected"
+          fi
+          echo "$V" > $Z/.version
+          echo "Zashboard $V done"
 
-      # ── Commit changes ──
-      - name: Commit changes
+      # ═══════════════════════════════
+      # Commit & Deploy
+      # ═══════════════════════════════
+      - name: Commit
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add ${{ env.METACUBEXD_DIR }}/ ${{ env.ZASHBOARD_DIR }}/
+          git add $M/ $Z/
           git diff --staged --quiet || git commit -m "chore: auto-update dashboards [skip ci]"
           git pull --rebase
           git push
 
-      # ── Deploy to Pages ──
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-      - id: deployment
+      - id: deploy
         uses: actions/deploy-pages@v4
