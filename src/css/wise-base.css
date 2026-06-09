@@ -179,7 +179,14 @@ h1 {
   font-size: 14px;
   font-weight: 600;
   color: var(--k);
- /*─.rs/*─ Toast ── */
+  word-break: break-all;
+}
+
+/* ── Result show/hide ── */
+.rs { display: none; }
+.rs.s { display: block; }
+
+/* ── Toast ── */
 .toast {
   position: fixed;
   bottom: 80px;
@@ -200,17 +207,17 @@ h1 {
 .toast.s { opacity: 1; }
 
 /* ═══════════════════════════════════════════
-   Shared Form Elements (由各工具 CSS 补充特有属性)
+   Shared Form Elements（各工具 CSS 补充特有属性）
    ═══════════════════════════════════════════ */
 
-/* ── Focus ring（所有表单元素共享）── */
+/* ── Focus ring ── */
 .inp:focus, textarea:focus, select:focus {
   border-color: var(--p);
   box-shadow: 0 0 0 3px rgba(159,232,112,.2);
   outline: none;
 }
 
-/* ── Textarea base ── */
+/* ── Textarea ── */
 textarea {
   border: 2px solid var(--k);
   border-radius: var(--rs);
@@ -221,7 +228,7 @@ textarea {
 }
 textarea:focus { background: var(--c); }
 
-/* ── Select base ── */
+/* ── Select ── */
 select {
   height: 44px;
   background: var(--c);
@@ -248,8 +255,7 @@ select {
 }
 .ld.s { display: flex; }
 .sp {
-  width: 26px;
-  height: 26px;
+  width: 26px; height: 26px;
   border: 3px solid var(--pp);
   border-top-color: var(--p);
   border-radius: 50%;
