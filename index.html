@@ -32,9 +32,8 @@
       --md-sys-color-primary: #9fe870;
       --md-sys-color-on-primary: #0e0f0c;
       --md-sys-color-primary-container: #0e0f0c;
-      --md-sys-color-on-primary-container: #9fe870;
-      --md-sys-color-secondary-container: #e8ebe6;
-      --md-sys-color-on-secondary-container: #0e0f0c;
+      --md-sys-color-on-primary-container #;
+md-sys-color-secondary-containerebemd-on #0f0c;
       --md-sys-color-surface: #ffffff;
       --md-sys-color-surface-container: #e8ebe6;
       --md-sys-color-on-surface: #0e0f0c;
@@ -45,16 +44,7 @@
       --phone-screen-bg: #e8ebe6;
       --player-bg: #e8ebe6;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      font-feature-settings: "calt";
-      background-color: #e8ebe6;
-      overflow: hidden;
-      touch-action: manipulation;
-      -webkit-user-select: none; user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-font-smoothing: antialiased;
+    box;0;     :-ui, fontature      #e6:      manipulation-t -webkit-font-smoothing: antialiased;
       transition: background-image 0.5s ease;
       background-size: cover; background-position: center; background-repeat: no-repeat;
     }
@@ -64,8 +54,7 @@
       overflow: hidden; position: relative;
       color: var(--md-sys-color-on-surface);
       border-radius: 0; box-shadow: none;
-      display: flex; flex-direction: column;
-      padding-top: env(safe-area-inset-top);
+      display: flex; flex-direction: padding(safe-area-inset-top);
     }
     @supports (height: 100dvh) { .phone-screen { height: 100dvh; } }
     .dynamic-island {
@@ -73,59 +62,38 @@
       width: 126px; height: 38px;
       background-color: var(--island-bg); border-radius: 20px;
       z-index: 500;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition:175, 0.885, 0.32, 1.275);
       display: flex; align-items: center; justify-content: center;
       overflow: hidden; box-shadow: 0 4px 16px rgba(14,15,12,0.3);
       cursor: pointer;
       top: calc(env(safe-area-inset-top, 12px) + 10px);
     }
-    .dynamic-island.active { width: 320px; height: 150px; border-radius: 36px; background-color: var(--island-expand-bg); }
+    .dynamic-is {px; height: 150px; border-radius: 36px; background-color: var(--island-expand-bg); }
     .island-default {
-      display: flex; align-items: center; justify-content: space-between;
-      width: 100%; padding: 0 14px; gap: 8px;
+      display;; space;
+ width: 100%; padding: 0 14px; gap: 8px;
       opacity: 1; pointer-events: auto; transition: opacity 0.2s ease;
-      position: absolute; height: 100%; z-index: 10;
-    }
-    .dynamic-island.active .island-default { opacity: 0; pointer-events: none; }
-    .island-time { font-size: 0.85rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
-    .island-weather { display: flex; align-items: center; gap: 5px; }
-    .island-weather-icon { font-size: 1.15rem; color: var(--md-sys-color-primary); line-height: 1; }
-    .island-weather-temp { font-size: 0.75rem; font-weight: 600; color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
+      position 10.active opacity pointer none {  fontfff-variant; display gap5 . font15 var land-weather-temp { font-size: 0.75rem; font-weight: 600; color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
     .island-weather-detail {
       display: flex; align-items: center; justify-content: space-between;
       width: 100%; padding: 20px 24px;
       opacity: 0; pointer-events: none; transition: opacity 0.2s ease 0.1s;
       position: absolute; top: 0; height: 100%; z-index: 20;
     }
-    .dynamic-island.active .island-weather-detail { opacity: 1; pointer-events: auto; }
-    .detail-left { display: flex; flex-direction: column; align-items: flex-start; }
-    .detail-icon-lg { font-size: 2.8rem; line-height: 1; margin-bottom: 10px; color: var(--md-sys-color-primary); }
-    .detail-temp-wrap { display: flex; flex-direction: column; }
-    .detail-temp-now { font-size: 2.2rem; font-weight: 900; color: var(--md-sys-color-primary); line-height: 1; }
-    .detail-temp-range { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 4px; font-weight: 500; }
-    .detail-right { text-align: right; display: flex; flex-direction: column; gap: 6px; }
-    .detail-desc { font-size: 1.05rem; font-weight: 700; color: #fff; }
-    .location-display { font-size: 0.8rem; color: rgba(255,255,255,0.4); margin-bottom: 2px; font-weight: 500; }
-    .detail-meta { font-size: 0.75rem; color: rgba(255,255,255,0.38); display: flex; flex-direction: column; gap: 3px; font-weight: 400; }
-    .detail-meta .material-symbols-rounded { font-size: 0.85rem; vertical-align: middle; color: rgba(255,255,255,0.45); margin-right: 2px; }
+    .dynamic-island.active .island-weather-detail { opacity: auto {:;-startdetail:;110 var-primarydetail-t:: column; }
+ .now2.2rem; font-weight: 900; color: var(--md-sys-color-primary); line-height: 1; }
+    .detail-temp-range { font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 4px; font-weight;-right display-direction: }
+-d font1.05rem font color .-size.rem; color: rgba(255,2552detail font-size: 0.75rem; color: rgba255, display flex column  font; .s font0.-align;(255.45); margin-right: 2px; }
     .player-content { padding: calc(env(safe-area-inset-top, 20px) + 100px) 24px 70px; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; z-index: 1; }
-    .player-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: var(--player-bg); filter: blur(60px) saturate(1.2); transform: scale(1.3); opacity: 0.3; transition: background-color 0.6s ease; }
-    .album-art { width: 280px; height: 280px; object-fit: cover; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,12,0.05); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 75vw; background: var(--wise-canvas); }
-    .album-art.change { transform: scale(0.9); opacity: 0.7; }
-    .song-info { text-align: center; margin-bottom: 12px; width: 100%; padding: 0 8px; }
-    .song-title-main { font-weight: 900; font-size: 1.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; line-height: 1.15; }
-    .artist-name { font-size: 1.05rem; color: var(--wise-ink-deep); font-weight: 600; letter-spacing: -0.2px; }
-    .m3-slider-root { width: 100%; height: 60px; position: relative; display: flex; align-items: center; margin-bottom: 0; flex-shrink: 0; }
-    .m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(14,15,12,0.1); border-radius: 2px; z-index: 1; top: 28px; left: 0; width: 100%; }
+    .player-background { position: absolute; top: 0; left:0100%; height: 100%; z-index: -1; background-color: var(--player-bg); filter: blur(60px) saturate(1.2); transform: scale(1.3); opacity: 0.3; transition: background-color 0.6s ease; }
+    .album-art { width: 280px; height: 280px; object-fit: cover; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,,:.ez(1,album width100%; padding: 0 8px; }
+    .song-title-main { font-weight: 900; font-size: 1.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; line-height: 1.15;    . font.(--ep-weight600-spacingpxm {: position flex center margin:-s;   m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(14,15,12,0.1); border-radius: 2px; z-index: 1; top: 28px; left: 0; width: 100%; }
     .m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 20px; }
     .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
-    @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
-    .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
-    .m3-slider-thumb-vertical { position: absolute; top: 30px; left: 0%; width: 4px; height: 20px; background-color: var(--md-sys-color-primary); border-radius: 2px; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; box-shadow: 0 2px 8px rgba(14,15,12,0.15); }
+    @keyframes wavy-move { from transformX }:(- left0  height20;-color: varmd-color border  transform%,%);:-e none; box-shadow: 0 2px 8px rgba(14,15,12,0.15); }
     .m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; appearance: none; background: transparent; z-index: 20 !important; cursor: pointer; outline: none; margin: 0; }
-    .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
-    .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
-    .time-labels { width: 100%; display: flex; justify-content: space-between; margin-top: 4px; color: var(--md-sys-color-on-surface-variant); font-size: 0.75rem; font-weight: 600; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+    .m3-slider-input::-webkit-slider-th -webkit-app; height0 width;: none; transparent; cursor: pointer; box-shadow: none; }
+    .idermoz {0 ;; pointer:   time%;;: margin4:-s-surface font0.75;: flex:;ariant-numeric: tabular-nums; }
     .controls { display: flex; gap: 16px; align-items: center; flex-shrink: 0; margin-top: 8px; }
     .btn { background: var(--wise-canvas-soft-darker); color: var(--md-sys-color-on-secondary-container); border: none; cursor: pointer; border-radius: 24px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 1px 3px rgba(14,15,12,0.06); }
     .btn:active { transform: scale(0.92); background: var(--wise-canvas-soft); }
@@ -286,73 +254,11 @@
     }
     .playlist-item:active { background: var(--md-sys-color-surface-container); }
     .playlist-item.active {
-      background: var(--md-sys-color-surface-container);
-    }
-    .playlist-item-thumb {
-      width: 44px; height: 44px; border-radius: 10px;
-      object-fit: cover; flex-shrink: 0;
-      background: var(--wise-canvas-soft);
-    }
-    .playlist-item-info {
-      flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
-    }
-    .playlist-item-title {
-      font-size: 0.9rem; font-weight: 600;
-      color: var(--md-sys-color-on-surface);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .playlist-item.active .playlist-item-title {
-      color: var(--md-sys-color-primary);
-    }
-    .playlist-item-artist {
-      font-size: 0.75rem; font-weight: 500;
-      color: var(--md-sys-color-on-surface-variant);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .playlist-item-indicator {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--md-sys-color-primary);
-      flex-shrink: 0;
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .playlist-item.active .playlist-item-indicator {
-      opacity: 1;
-    }
-    .playlist-item-index {
-      font-size: 0.75rem; font-weight: 600;
-      color: var(--md-sys-color-on-surface-variant);
-      flex-shrink: 0; width: 20px; text-align: center;
-      opacity: 0.5;
-    }
-    .playlist-item.active .playlist-item-index {
-      opacity: 0;
-    }
-
-    @media screen and (min-width: 768px) {
-      body { background-color: var(--wise-canvas-soft); background-size: cover; background-position: center; background-attachment: fixed; display: flex; justify-content: flex-end; align-items: flex-end; padding: 20px; }
-      .phone-screen { width: 375px; height: 812px; border-radius: 40px; box-shadow: 0 0 0 10px var(--wise-ink), 0 0 0 12px rgba(14,15,12,0.2), 0 30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
+      background: var(--md(--wise-ink), 0 0 0 12px30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
       .player-content { padding-top: calc(env(safe-area-inset-top, 20px) + 100px); }
-      .playlist-sheet { max-height: 65%; }
-    }
-    @media screen and (min-width: 1024px) { body { padding: 30px; } .phone-screen { width: 390px; height: 844px; } }
-  </style>
-</head>
-<body>
-<div class="phone-screen" id="app">
-  <div class="dynamic-island" id="island">
-    <div class="island-default">
-      <span class="island-time" id="islandTime">12:00</span>
-      <div class="island-weather">
-        <span class="island-weather-icon material-symbols-rounded" id="islandWeatherIcon">wb_sunny</span>
-        <span class="island-weather-temp" id="islandWeatherTemp">--°</span>
-      </div>
-    </div>
-    <div class="island-weather-detail">
-      <div class="detail-left">
-        <span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
-        <div class="detail-temp-wrap">
-          <span class="detail-temp-now" id="detailTemp">25°</span>
-          <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
+      .playlist-sheet%; @:) padding<div-screen">
+ class id class-default">
+      <span class="island-time"Time">12"">un</       ="detail-wrap classnowdetailspan <-t=":28° L:20°</span>
         </div>
       </div>
       <div class="detail-right">
@@ -360,107 +266,58 @@
         <div class="detail-desc" id="detailDesc">晴朗</div>
         <div class="detail-meta">
           <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
-          <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="player-content">
-    <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover">
+          <span="-s_d</>
+      </player-back <" crossorigin src="" class="album-art" alt="album cover">
     <div class="song-info">
-      <h1 id="mainTitle" class="song-title-main">Title</h1>
-      <p id="mainArtist" class="artist-name">Artist</p>
+      <h1 id="mainTitle"songTitle1=" classArtist</p>
     </div>
     <div class="m3-slider-root">
       <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
       <div class="m3-slider-track-active-container" id="activeTrack">
-        <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio="none">
-          <path class="m3-slider-wavy-path" d="M0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 T420,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10" />
+        <svg width="600" height="20" viewBox="0 0 600 20" preserveAspectRatio <avy1010100,,1010300340,10 T T,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10" />
         </svg>
       </div>
       <div class="m3-slider-thumb-vertical" id="sliderThumb"></div>
-      <input type="range" class="m3-slider-input" id="audioSlider" min="0" max="100" value="0" title="progress">
-    </div>
-    <div class="time-labels">
-      <span id="currTime">0:00</span>
-      <span id="durTime">0:00</span>
-    </div>
-    <div class="controls">
-      <button class="btn btn-shuffle active" id="shuffleBtn" aria-label="shuffle"><span class="material-symbols-rounded">shuffle</span></button>
+      <input type="range" class="m3-slider-inputaudio"0" titleprogressdivtime="">span <">   ">
+-shshuffleBtn" aria-label="shuffle"><span class="material-symbols-rounded">shuffle</span></button>
       <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
-      <button class="btn btn-play" id="playBtn" aria-label="play/pause"><span class="material-symbols-rounded" id="playIcon">play_arrow</span></button>
-      <button class="btn" id="nextBtn" aria-label="next"><span class="material-symbols-rounded">skip_next</span></button>
-      <button class="btn btn-shuffle" id="playlistBtn" aria-label="playlist"><span class="material-symbols-rounded">queue_music</span></button>
+      <button class="btn btn-play" id="play-label"><material"_arrow</span></button>
+      <button class="""><="list="s-roundedqueue></>
     </div>
   </div>
   <div class="bottom-drawer" id="drawer">
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
-      <div class="drawer-header">
-        <div class="drawer-title">快捷工具</div>
+      <div class="-header class-title工具</div>
         <div class="drawer-subtitle">所有应用</div>
       </div>
       <div class="drawer-sections" id="drawerSections"></div>
     </div>
     <div class="drawer-footer">
       <div class="drawer-footer-text">
-        &copy; 2026 &middot; <a href="/Music" class="drawer-footer-secret">&#10005;</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 播放列表弹窗 -->
-<div class="playlist-overlay" id="playlistOverlay">
-  <div class="playlist-backdrop" id="playlistBackdrop"></div>
-  <div class="playlist-sheet">
+        &copy; 2026 &middot <er>
+divdiv -->
+"">
+listlist <playlist-sheet">
     <div class="playlist-handle-area" id="playlistHandle">
-      <div class="playlist-handle"></div>
-    </div>
-    <div class="playlist-header">
-      <div class="playlist-header-left">
-        <span class="playlist-header-title">播放列表</span>
-        <span class="playlist-header-count" id="playlistCount">0 首</span>
-      </div>
-      <button class="playlist-repeat-btn" id="playlistRepeatBtn" aria-label="toggle repeat">
-        <span class="material-symbols-rounded">repeat</span>
-      </button>
-    </div>
-    <div class="playlist-body" id="playlistBody"></div>
+      <div class="playlist-handle"></div        ">
+列表-headerCount     playlist repeat-s      <="playlist-body" id="playlistBody"></div>
   </div>
 </div>
 
 <audio id="audio" preload="metadata"></audio>
-<canvas id="colorCanvas" style="display: none;"></canvas>
+<canvas id="colorCanvas" style="display: none;"></>
 
-<script>
-(function renderDrawer() {
-  const container = document.getElementById('drawerSections');
-  if (!container) return;
-  const items = window.WiseNavbarData || [];
-  const seen = new Set();
-  const filtered = items.filter(item => {
-    if (item.href === '/' || item.href === '/index.html') return false;
-    const key = item.href;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  container.innerHTML = filtered.map((item, i) => `
-    <a class="drawer-row" href="${item.href}">
+()er (! bar const seen = new Set();
+  const filtered = items.filter(item if ||;
+ if.has(key)) return;
+    returnitem="drawer-row" href="${item.href}">
       <div class="drawer-row-icon"><span class="material-symbols-rounded">${item.icon}</span></div>
       <div class="drawer-row-info">
         <div class="drawer-row-label">${item.label}</div>
         <div class="drawer-row-hint">${item.href}</div>
       </div>
-      <div class="drawer-row-arrow"><span class="material-symbols-rounded">chevron_right</span></div>
-    </a>
-  `).join('');
-})();
-
-const ColorUtils = {
-  hexToRgb: (hex) => { const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : null; },
+      <div class="drawer-row-arrow"><span class="material-symbols-rounded></).Utils gb: r\d})(a2 return[ parseInt], b16 null; },
   rgbToHsl: (r,g,b) => { r/=255; g/=255; b/=255; const M=Math.max(r,g,b), m=Math.min(r,g,b); let h,s,l=(M+m)/2; if(M===m){h=s=0;}else{const d=M-m; s=l>0.5?d/(2-M-m):d/(M+m); switch(M){case r:h=(g-b)/d+(g<b?6:0);break; case g:h=(b-r)/d+2;break; case b:h=(r-g)/d+4;break;} h/=6;} return {h:h*360,s:s*100,l:l*100}; },
   hslToString: (h,s,l) => 'hsl('+h+','+s+'%,'+l+'%)',
   extractColorFromUrl: (url,cb) => {
@@ -497,7 +354,7 @@ function getRandomIndex() {
 
 async function loadMusicList() {
   try {
-    const res = await fetch('src/scripts/music.json?' + Date.now());
+    const res = await fetch('/src/scripts/music.json?' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     songs = await res.json();
     console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
@@ -550,8 +407,7 @@ const weatherCodeMap = {
 function updateThemeColor() { const c=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim(); if(c) themeColorMeta.setAttribute('content',c); }
 function updateTime() { const n=new Date(); document.getElementById('islandTime').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
 
-async function getLocationByIP() {
-  try { const r=await fetch('https://ipapi.co/json/'); if(!r.ok) throw Error(); const d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city}; } catch(e) {
+async function getLocationBy { const r=await fetch('https://ipapi.co/json/'); if(!r.ok) throw Error(); const d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city}; } catch(e) {
     if(location.protocol==='http:'){ try { const r2=await fetch('http://ip-api.com/json/?lang=zh-CN'); if(r2.ok){ const d2=await r2.json(); if(d2.status==='success') return {lat:d2.lat,lon:d2.lon,city:d2.city}; } } catch(e2){} }
   } return null;
 }
@@ -564,49 +420,27 @@ async function fetchWeather() {
         document.getElementById('locationDisplay').textContent='正在请求位置...';
         const p=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true,maximumAge:3e5}));
         lat=p.coords.latitude; lon=p.coords.longitude;
-        CookieUtils.set('weather_lat',lat,30); CookieUtils.set('weather_lon',lon,30);
-      } catch(e) {
-        const ip=await getLocationByIP();
-        if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
+        CookieUtils.set('30weather30)=       ipip.city_lCookieon',lon,30);}
         else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
       }
     } else {
       const ip=await getLocationByIP();
-      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
+      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.setatCookieon);lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
     }
   }
   try {
-    if(!locName){ try { const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); const ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
-    if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
-    const wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
+    if(!locName){ try { const l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh==alityld.to '+);Name }
+('.includeslocation').textContent;
+('ete/+++'emperaturerelative2,&2__minzone=auto');
     const d=await wr.json(); const c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
-    document.getElementById('islandWeatherTemp').textContent=t+'°'; document.getElementById('islandWeatherIcon').textContent=w.i;
-    document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'°';
-    document.getElementById('detailDesc').textContent=w.d;
-    document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'° L:'+Math.round(da.temperature_2m_min[0])+'°';
-    document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';
-    document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
-    document.documentElement.style.setProperty('--island-expand-bg',w.b);
-  } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
-}
-
-function toggleIsland(){island.classList.toggle('active');}
-function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
+    documentTemp.getElementByIdContent('detailIcon;.getElementByIddetail°';
+.getElementByIdtext;
+ContentMathemperature[Mathemperature_2m_min[0])+'°';
+    document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Mathpeed';
+detailidity').inner='material_d. documentisw {document('Display失败IsoggleSong)return;audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
 function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
-document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSong());
-
-function toggleShuffle() {
-  isShuffle = !isShuffle;
-  document.getElementById('shuffleBtn').classList.toggle('active', isShuffle);
-}
-document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
-
-document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
-
-function getNextIndex() {
-  if (isRepeat) return currentSongIndex;
-  return isShuffle ? getRandomIndex() : (currentSongIndex + 1) % songs.length;
+document.getElementById('playBtn').addEventListener('click',()=>audio.paused?playSong():pauseSonguffle = documentclass isdocument'). toggle('EventListenerlist()Repeat;
+ getcurrent + 1) % songs.length;
 }
 function getPrevIndex() {
   if (isRepeat) return currentSongIndex;
@@ -623,83 +457,22 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 document.getElementById('prevBtn').addEventListener('click', ()=>{
   if(!songs.length) return;
   currentSongIndex = getPrevIndex();
-  loadSong(songs[currentSongIndex]);
-  playSong();
-});
-
-function loadSong(song){
-  if (!song || !song.src) return;
-  document.getElementById('mainTitle').innerText = song.title;
-  document.getElementById('mainArtist').innerText = song.artist;
-  const mc = document.getElementById('mainCover');
-  mc.src = '';
-
-  loadEmbeddedCover(song.src, function(coverDataUrl) {
-    if (coverDataUrl) {
-      mc.src = coverDataUrl;
-      ColorUtils.extractColorFromUrl(coverDataUrl, rgb => {
-        const t = ColorUtils.generateTheme(rgb);
-        for (const [k, v] of Object.entries(t)) document.documentElement.style.setProperty(k, v);
-        updateThemeColor();
-      });
-    } else if (song.cover) {
-      mc.src = song.cover;
-      ColorUtils.extractColorFromUrl(song.cover, rgb => {
-        const t = ColorUtils.generateTheme(rgb);
-        for (const [k, v] of Object.entries(t)) document.documentElement.style.setProperty(k, v);
-        updateThemeColor();
-      });
-    }
-  });
-
-  audio.src = song.src;
-  mc.onload = () => {
-    if ('mediaSession' in navigator)
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: song.title, artist: song.artist, album: '',
-        artwork: [{ src: mc.src || '', sizes: '512x512', type: 'image/jpeg' }]
-      });
-  };
-  if ('mediaSession' in navigator)
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.title, artist: song.artist, artwork: [{ src: '', sizes: '512x512', type: 'image/jpeg' }]
-    });
-}
-
-let isDragging=false;
-const audioSlider=document.getElementById('audioSlider'),activeTrack=document.getElementById('activeTrack'),inactiveTrack=document.getElementById('inactiveTrack'),sliderThumb=document.getElementById('sliderThumb');
-audio.addEventListener('timeupdate',()=>{const{duration,currentTime}=audio;if(isNaN(duration))return;const p=currentTime/duration*100;if(!isDragging)updateUI(p);if(currentTime>=duration&&duration>0)document.getElementById('nextBtn').click();});
-audioSlider.addEventListener('input',()=>{isDragging=true;updateUI(audioSlider.value);});
-audioSlider.addEventListener('change',()=>{isDragging=false;audio.currentTime=audioSlider.value/100*audio.duration;});
-function updateUI(p){p=isNaN(p)?0:Math.max(0,Math.min(100,p));audioSlider.value=p;activeTrack.style.width=p+'%';inactiveTrack.style.left=p+'%';inactiveTrack.style.width=(100-p)+'%';sliderThumb.style.left=p+'%';const cur=isDragging?p/100*audio.duration:audio.currentTime;document.getElementById('currTime').innerText=isNaN(cur)?'0:00':Math.floor(cur/60)+':'+String(Math.floor(cur%60)).padStart(2,'0');document.getElementById('durTime').innerText=isNaN(audio.duration)?'0:00':Math.floor(audio.duration/60)+':'+String(Math.floor(audio.duration%60)).padStart(2,'0');}
-if('mediaSession'in navigator){navigator.mediaSession.setActionHandler('play',playSong);navigator.mediaSession.setActionHandler('pause',pauseSong);navigator.mediaSession.setActionHandler('previoustrack',()=>document.getElementById('prevBtn').click());navigator.mediaSession.setActionHandler('nexttrack',()=>document.getElementById('nextBtn').click());}
+  load[current();
+(s (!;
+main;
+inner = (' =Cover function {
+Url = ColorFrom, t(r (](t.style v();
+ else) = ColorUrl {
+ Color       ,entriesElement,        updateThemeColor    songload ('ator. new:artist artwork '',512/j });
+'atoretadata      artist artwork sizes',' isSlideraudio('Trackactiveumbiderupdatecurrentif))currentisif>').',=true.value('is;.value.d){:Math));active%.leftactive)+Th%Draaudio;').NaN00)+%2('=)?Math60(apadifatormediaplayavigHandler);navigator.mediaSession.setActionHandler('previoustrack',()=>document.getElementById('prevBtn').click());navigator.mediaSession.setActionHandler('nexttrack',()=>document.getElementById('nextBtn').click());}
 function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');}
-document.addEventListener('keydown',e=>{if(e.key===' '){e.preventDefault();audio.paused?playSong():pauseSong();}else if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('prevBtn').click();}else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('nextBtn').click();}});
-async function loadBingWallpaper(){if(window.innerWidth<768)return;try{const r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');const d=await r.json();if(d.images&&d.images.length>0){const u='https://www.bing.com'+d.images[0].url;const img=new Image();img.src=u;img.onload=()=>{document.body.style.backgroundImage='url('+u+')';};}}catch(e){}}
-
-function openPlaylist() {
+down.key();():pauseSong();}else if(e.key==.preventDefaultBtn(e').getElementById();B(windowwww.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');const d=await r.json();if(d.images&&d.images.length>0){const u='https://www.bing.com'+d.images[0].url;const img=new Image();img.src=u;img.onload=()=>{document.body.style.backgroundImage() {
   const overlay = document.getElementById('playlistOverlay');
   if (!songs || songs.length === 0) return;
   renderPlaylist();
-  overlay.classList.add('open');
-}
-
-function closePlaylist() {
-  document.getElementById('playlistOverlay').classList.remove('open');
-}
-
-function renderPlaylist() {
-  const body = document.getElementById('playlistBody');
-  const repeatBtn = document.getElementById('playlistRepeatBtn');
+  overlay.classList.addlist.getElementByIdclass render constplay const('listRepeatBtn');
   repeatBtn.classList.toggle('active', isRepeat);
-  document.getElementById('playlistCount').textContent = songs.length + ' 首';
-  body.innerHTML = songs.map((song, i) => {
-    const isActive = i === currentSongIndex;
-    const thumbSrc = song.cover || '';
-    return `
-      <div class="playlist-item${isActive ? ' active' : ''}" data-index="${i}">
-        <img class="playlist-item-thumb" src="${thumbSrc}" alt="" loading="lazy"
-          onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 44 44%22><rect fill=%22%23e8ebe6%22 width=%2244%22 height=%2244%22/><text x=%2222%22 y=%2228%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22%23868685%22>♪</text></svg>'">
+  document.getElementById('list.length首(( === thumb || <Active}"ml,<svg22/s%2204422224%22 height=%2244%22/><text x=%2222%22 y=%2228%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22%23868685%22>♪</text></svg>'">
         <div class="playlist-item-info">
           <div class="playlist-item-title">${song.title}</div>
           <div class="playlist-item-artist">${song.artist}</div>
