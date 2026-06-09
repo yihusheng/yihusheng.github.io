@@ -42,7 +42,7 @@
       <label class="sty"><input type="radio" name="st" value="dotted"><span class="s">┅</span><span class="t">点线</span></label>
       <label class="sty"><input type="radio" name="st" value="wavy"><span class="s">〰</span><span class="t">波浪</span></label>
       <label class="sty"><input type="radio" name="st" value="double"><span class="s">═</span><span class="t">双线</span></label>
-      <label class="sty"><input type="radio" name="st" value="sub"><span class="s">ₓ</span><span class="t">下标</span></label>
+      <label class="sty"><input type="radio" name="st" value="sub"><span class="s">⠛</span><span class="t">盲文</span></label>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm);margin-top:var(--sm)">
       <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
@@ -66,7 +66,7 @@ var TC=document.getElementById('textColor'),LC=document.getElementById('lineColo
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal'),LS='solid';
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function gss(){var v=gs();if(v==='sub')return LS;LS=v;return v}
-function gjc(){var v=gs(),c={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333',sub:'\u2093'};return c[v]||'\u0332'}
+function gjc(){var v=gs(),c={solid:'\u0332',dashed:'\u0324',dotted:'\u0323',wavy:'\u0330',double:'\u0333',sub:'\u281b'};return c[v]||'\u0332'}
 function gst(){return'text-decoration-line:underline;text-decoration-style:'+gss()+';text-decoration-color:'+LC.value+';text-decoration-thickness:'+TK.value+'px;text-underline-offset:'+OF.value+'px;color:'+TC.value+';font-size:'+FS.value+'px'}
 function up(){var t=T.value||'预览',s=gss(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
 var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
