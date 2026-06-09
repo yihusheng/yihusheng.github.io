@@ -18,9 +18,9 @@
   <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
   <div class="ua-box">
     <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
-    <button class="btn-sm" id="copyUABtn"><span class="material-symbols-rounded" style="font-size:13px">content_copy</span> 复制</button>
+    <button class="btn-secondary" id="copyUABtn"><span class="material-symbols-rounded" style="font-size:13px">content_copy</span> 复制</button>
   </div>
-  <button class="btn-primary" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
+  <button class="btn-primary" id="parseBtn"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
   <div class="rw">
     <button class="btn-secondary" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 本机 UA</button>
     <button class="btn-secondary" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
@@ -28,7 +28,7 @@
 </div>
 <div class="card rs" id="resultCard">
   <div class="pad">
-    <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">analytics</span> 解析结果</label>
+    <label class="lbl">解析结果</label>
     <div class="dg">
       <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
       <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
@@ -40,8 +40,8 @@
     </div>
     <div class="raw" id="rawD"></div>
     <div class="rw">
-      <button class="btn-secondary" id="cpyBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> 复制结果</button>
-      <button class="btn-secondary" id="dbBtn"><span class="material-symbols-rounded" style="font-size:14px">open_in_new</span> 设备数据库</button>
+      <button class="btn-secondary" id="cpyBtn">复制结果</button>
+      <button class="btn-secondary" id="dbBtn">设备数据库</button>
     </div>
   </div>
 </div>
@@ -137,7 +137,7 @@ function parse() {
   document.getElementById('ovVal').textContent = ov || '--';
   document.getElementById('brVal').textContent = brand;
   document.getElementById('mVal').textContent = modelText;
-  document.getElementById('tVal').textContent = type;
+  document.getElementByIdtValtextContent = type;
   document.getElementById('rawD').textContent = ua;
   document.getElementById('resultCard').classList.add('s');
 }
