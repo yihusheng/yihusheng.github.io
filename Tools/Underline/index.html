@@ -17,7 +17,7 @@
 .sty:has(input[type=radio]:checked) .t{background:var(--k);color:var(--p)}
 .sty:has(input[type=radio]:checked) .s{color:var(--p)}
 .sty:has(input[type=radio]:checked):hover .t{background:var(--kd)}
-.cii{padding:3px 10px;font-size:10px;font-weight:600;text-align:center;border:2px solid var(--s);border-radius:var(--rp);outline:none;background:var(--s);color:var(--k);font-family:var(--f);width:48px}
+.cii{padding:1px 10px;font-size:10px;font-weight:600;text-align:center;border:2px solid var(--s);border-radius:var(--rp);outline:none;background:var(--s);color:var(--k);font-family:var(--f);width:48px}
 .cii:focus{border-color:var(--k);background:var(--c)}
 </style>
 </head>
@@ -43,7 +43,7 @@
       <label class="sty"><input type="radio" name="st" value="dotted"><span class="s">┅</span><span class="t">点线</span></label>
       <label class="sty"><input type="radio" name="st" value="wavy"><span class="s">〰</span><span class="t">波浪</span></label>
       <label class="sty"><input type="radio" name="st" value="double"><span class="s">═</span><span class="t">双线</span></label>
-      <label class="sty"><span class="s" style="font-size:5px">自定义</span><input type="text" id="customChar" class="cii" placeholder="⠛" maxlength="2"></label>
+      <label class="sty"><span class="s" style="font-size:6px">自定义</span><input type="text" id="customChar" class="cii" placeholder="⠛" maxlength="2"></label>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm);margin-top:var(--sm)">
       <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
