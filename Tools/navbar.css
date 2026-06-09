@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════
-   Wise Navbar — Flex-based 顶部导航栏
-   使用 flex 布局：body 为 flex column，
-   导航栏与内容区自动分配高度。
+   Wise Navbar — 两枚独立浮动按钮
+   左上：主页 🏠 | 右上：菜单 ···
+   position:fixed 浮动在内容之上，不干扰页面布局
    ═══════════════════════════════════════════ */
 
 :root {
@@ -17,27 +17,18 @@
   --nv-surface-soft: #e8ebe6;
 }
 
-/* ── Navbar bar（flex item，固定在顶部） ── */
-.wise-navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px;
-  min-height: 48px;
-  flex-shrink: 0;
-  z-index: 9999;
-  box-sizing: border-box;
-}
-
-/* ── Button base ── */
+/* ── Button base (shared) ── */
 .wise-nav-btn {
-  width: 36px;
-  height: 36px;
+  position: fixed;
+  top: 16px;
+  z-index: 9999;
+  width: 42px;
+  height: 42px;
   border: none;
   background: var(--nv-surface-soft);
   color: var(--nv-body);
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,11 +49,17 @@
 }
 
 .wise-nav-btn .material-symbols-rounded {
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   font-variation-settings: 'FILL' 1, 'wght' 400;
 }
 
-/* ── Drawer（底部弹出面板，仍使用 fixed 定位） ── */
+/* ── Home button: top-left ── */
+.wise-nav-btn-home { left: 16px; }
+
+/* ── Menu button: top-right ── */
+.wise-nav-btn-menu { right: 16px; }
+
+/* ── Drawer (bottom sheet) ── */
 .wise-nav-drawer {
   display: none;
   position: fixed;
@@ -166,11 +163,7 @@
   background: rgba(159,232,112,0.15);
 }
 
-/* ── Overlay mode（全屏 SPA：Metacubexd / zashboard） ── */
-body.navbar-overlay .wise-navbar {
-  background: transparent;
-}
-
+/* ── Overlay mode for full-screen SPAs ── */
 body.navbar-overlay .wise-nav-btn {
   background: rgba(255,255,255,0.12);
   color: #fff;
@@ -181,15 +174,14 @@ body.navbar-overlay .wise-nav-btn:hover { background: rgba(255,255,255,0.2); }
 
 /* ── Desktop ── */
 @media screen and (min-width: 768px) {
-  .wise-navbar {
-    padding: 8px 20px;
-    min-height: 52px;
-  }
   .wise-nav-btn {
-    width: 40px; height: 40px;
-    border-radius: 14px;
+    top: 24px;
+    width: 46px; height: 46px;
+    border-radius: 16px;
   }
-  .wise-nav-btn .material-symbols-rounded { font-size: 1.35rem; }
+  .wise-nav-btn-home { left: 24px; }
+  .wise-nav-btn-menu { right: 24px; }
+  .wise-nav-btn .material-symbols-rounded { font-size: 1.45rem; }
   .wise-nav-drawer-panel {
     max-width: 360px;
     left: auto;
