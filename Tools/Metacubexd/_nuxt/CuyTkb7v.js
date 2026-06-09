@@ -1,1 +1,1 @@
-// placeholder
+function e(e){var t=typeof e;return e!=null&&(t==`object`||t==`function`)}export{e as t};
