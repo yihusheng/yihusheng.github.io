@@ -114,7 +114,7 @@ jobs:
             done
           done
 
-          # HTML 文件（Metacubexd 不注入 navbar）
+          # HTML 文件
           for f in $IDX 200.html 404.html; do
             if [ -f "$S/$f" ]; then
               cp "$S/$f" "$M/$f"
@@ -123,6 +123,17 @@ jobs:
               echo "  Created $f from $IDX"
             fi
             [ -f "$M/$f" ] && echo "  Copied: $M/$f"
+          done
+
+          # 注入导航栏
+          for f in index.html 200.html 404.html; do
+            F="$M/$f"
+            if [ -f "$F" ] && ! grep -q '/Tools/navbar.css' "$F" 2>/dev/null; then
+              sed -i 's|<head>|<head>\n<!-- navbar -->\n<link rel="stylesheet" href="/Tools/navbar.css">\n<script src="/Tools/navbar.js"></script>|' "$F"
+              sed -i 's|<body>|<body class="navbar-overlay">|' "$F"
+              sed -i 's|<body class="\([^"]*\)">|<body class="navbar-overlay \1">|' "$F"
+              echo "  Navbar injected in $f"
+            fi
           done
 
           # config.js
