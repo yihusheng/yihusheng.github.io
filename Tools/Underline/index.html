@@ -13,7 +13,7 @@
 <body>
 <div class="wrap">
 <div class="card" style="padding:24px">
-  <div class="bdg"><span class="material-symbols-rounded">format_underlined</span> Text Decorator</div>
+  <div class="badge-positive"><span class="material-symbols-rounded">format_underlined</span> Text Decorator</div>
   <h1>下划线生成器</h1>
   <p class="sub">实时预览 · 即改即得</p>
   <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">edit</span> 输入文本</label>
@@ -22,7 +22,7 @@
 <div class="card">
   <div class="pad"><label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">visibility</span> 实时预览</label>
   <div class="pbox"><span id="preview">Atmospheric Design</span></div></div>
-  <div style="padding:0 24px 20px"><button class="btn btn-p" id="copyBtn"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button></div>
+  <div style="padding:0 24px 20px"><button class="btn-primary" id="copyBtn"><span class="material-symbols-rounded" style="font-size:16px">content_copy</span> 复制带样式文本</button></div>
 </div>
 <div class="card">
   <div class="pad">
@@ -50,10 +50,12 @@
     <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">code</span> 代码</label>
     <div class="code-box" style="position:relative;min-height:40px"><div class="cb-l">CSS</div><code id="cssOut"></code></div>
     <div class="code-box" style="position:relative;min-height:40px;margin-top:10px"><div class="cb-l">HTML</div><code id="htmlOut"></code></div>
-    <div class="rw" style="margin-top:10px"><button class="btn btn-s" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button><button class="btn btn-s" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button></div>
+    <div class="rw" style="margin-top:10px"><button class="btn-secondary" id="copyCssBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> CSS</button><button class="btn-secondary" id="copyHtmlBtn"><span class="material-symbols-rounded" style="font-size:14px">content_copy</span> HTML</button></div>
   </div>
 </div>
-<div class="card"><div class="ft"><p>Wise Underline Generator &bull; 实时预览></n=" id="toast">已复制</div>
+<div class="card"><div class="ft"><p>Wise Underline Generator &bull; 实时预览</p></div></div>
+</div>
+<div class="toast" id="toast">已复制</div>
 <script>
 var T=document.getElementById('inputText'),P=document.getElementById('preview'),CO=document.getElementById('cssOut'),HO=document.getElementById('htmlOut'),TT=document.getElementById('toast');
 var TC=document.getElementById('textColor'),LC=document.getElementById('lineColor'),TK=document.getElementById('thick'),OF=document.getElementById('offset'),FS=document.getElementById('fontSize'),LK=document.getElementById('isLink'),RS=document.getElementsByName('st');

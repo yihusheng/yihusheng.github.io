@@ -13,13 +13,13 @@
 <body>
 <div class="wrap">
 <div class="card" style="padding:24px">
-  <div class="bdg"><span class="material-symbols-rounded">open_in_new</span> App Store Links</div>
+  <div class="badge-positive"><span class="material-symbols-rounded">open_in_new</span> App Store Links</div>
   <h1>跳转链接</h1>
   <p class="sub">输入包名 · 自动生成商店直达链接</p>
   <label class="lbl" style="margin-top:4px"><span class="material-symbols-rounded" style="font-size:13px">package</span> 应用包名</label>
   <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
   <div class="srow" style="margin-top:16px">
-    <span class="bdg"><span class="material-symbols-rounded">smartphone</span> 选择品牌</span>
+    <span class="badge-positive"><span class="material-symbols-rounded">smartphone</span> 选择品牌</span>
     <select id="brandSelect">
       <option value="auto">🤖 自动检测</option>
       <option value="huawei">华为 / 荣耀</option>
@@ -32,7 +32,7 @@
     </select>
   </div>
   <div class="lc">
-    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">star</span> 品牌专用链接 <span id="brandHintBadge" class="bdg" style="font-size:10px;padding:2px 8px">—</span></div>
+    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">star</span> 品牌专用链接 <span id="brandHintBadge" class="badge-positive" style="font-size:10px;padding:2px 8px">—</span></div>
     <a href="#" id="brandProtocolLink" class="lt" target="_self">—— 等待输入包名 ——</a>
     <span class="cpy" id="copyBrandLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制专用链接</span>
   </div>
