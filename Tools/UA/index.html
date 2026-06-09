@@ -29,13 +29,13 @@
   <div class="card" id="resultCard" style="display:none;padding:var(--sxl)">
     <label class="lbl">解析结果</label>
     <div class="dg">
-      <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
+      <div class="di"><div class="dl">浏览器</div><div style="display:flex;align-items:center;gap:8px;margin-top:2px"><div class="dv" id="bVal">--</div><img id="bLogo" src="" style="width:24px;height:24px;object-fit:contain;display:none;opacity:.8" alt="Browser Logo"></div></div>
       <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
-      <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
+      <div class="di"><div class="dl">操作系统</div><div style="display:flex;align-items:center;gap:8px;margin-top:2px"><div class="dv" id="oVal">--</div><img id="oLogo" src="" style="width:24px;height:24px;object-fit:contain;display:none;opacity:.8" alt="OS Logo"></div></div>
       <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
       <div class="di"><div class="dl">设备品牌</div><div style="display:flex;align-items:center;gap:8px;margin-top:2px"><div class="dv" id="brVal">--</div><img id="brLogo" src="" style="width:24px;height:24px;object-fit:contain;display:none;opacity:.8" alt="Brand Logo"></div></div>
       <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
-      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
+      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div style="display:flex;align-items:center;gap:8px;margin-top:2px"><div class="dv" id="tVal">--</div><img id="tLogo" src="" style="width:24px;height:24px;object-fit:contain;display:none;opacity:.8" alt="Type Logo"></div></div>
     </div>
     <div class="code-box" id="rawD" style="margin-top:var(--sm);font-size:11px;max-height:100px;overflow:auto"></div>
     <div class="rw" style="margin-top:var(--ss)">
@@ -46,10 +46,14 @@
   <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center"><p style="font-size:11px;color:rgba(232,235,230,.5)">数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank" style="color:var(--p);text-decoration:none">KHwang9883/MobileModels</a></p></div>
 </div>
 <script>
-var BRAND_ICONS={'小米':'xiaomi','红米':'redmi','华为':'huawei','荣耀':'honor','三星':'samsung','苹果':'apple','一加':'oneplus','OPPO':'oppo','vivo':'vivo','魅族':'meizu','谷歌':'google','索尼':'sony','华硕':'asus','realme':'realme','motorola':'motorola','nokia':'nokia'};
+var BRAND_ICONS={'小米':'xiaomi','红米':'xiaomi','华为':'huawei','荣耀':'honor','三星':'samsung','苹果':'apple','一加':'oneplus','OPPO':'oppo','vivo':'vivo','魅族':'meizu','谷歌':'google','索尼':'sony','华硕':'asus','realme':'realme','motorola':'motorola','nokia':'nokia'};
+var BROWSER_ICONS={'Chrome':'googlechrome','Firefox':'firefoxbrowser','Safari':'safari','Edge':'microsoftedge','Opera':'opera'};
+var OS_ICONS={'Android':'android','iOS':'ios','macOS':'macos','Windows':'windows','Linux':'linux'};
+var TYPE_ICONS={'手机':'smartphone','电脑':'laptop'};
 var DB={'24129PN74C':['小米','Xiaomi 15'],'2410DPN6CC':['小米','Xiaomi 15 Pro'],'25019PNF3C':['小米','Xiaomi 15 Ultra'],'23127PN0CC':['小米','Xiaomi 14'],'23116PN5BC':['小米','Xiaomi 14 Pro'],'24031PN0DC':['小米','Xiaomi 14 Ultra'],'2211133C':['小米','Xiaomi 13'],'2210132C':['小米','Xiaomi 13 Pro'],'2201123C':['小米','Xiaomi 12'],'23113RKC6C':['红米','Redmi K70'],'22127RK46C':['红米','Redmi K60 Pro'],'M2012K11C':['红米','Redmi K40 Pro'],'PJZ110':['一加','OnePlus 13'],'PJD110':['一加','OnePlus 12'],'SM-S9280':['三星','S24 Ultra'],'SM-S9180':['三星','S23 Ultra'],'V2324A':['vivo','X100 Pro'],'PHY110':['OPPO','Find X7 Ultra'],'ALN-AL00':['华为','Mate 60 Pro'],'BVL-AN00':['荣耀','Magic6']};
 var BRANDS=[['xiaomi','小米'],['mi ','小米'],['redmi','红米'],['huawei','华为'],['honor','荣耀'],['samsung','三星'],['iphone','苹果'],['oneplus','一加'],['oppo','OPPO'],['vivo','vivo'],['meizu','魅族'],['pixel','谷歌'],['sony','索尼'],['asus','华硕']];
 function getBrand(u){var l=u.toLowerCase();for(var i=0;i<BRANDS.length;i++){if(l.indexOf(BRANDS[i][0])!==-1)return BRANDS[i][1]}return''}
+function sLogo(el,map,val){if(map[val]){el.src='https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/'+map[val]+'.svg';el.style.display='block'}else{el.style.display='none'}}
 function parse(){var u=document.getElementById('uaInput').value.trim();if(!u)return;var l=u.toLowerCase(),b='?',bv='',os='?',ov='',db='';
 if(l.indexOf('edg')!==-1){b='Edge';bv=(u.match(/Edg\/([\d.]+)/)||[])[1]||''}
 else if(l.indexOf('chrome')!==-1){b='Chrome';bv=(u.match(/Chrome\/([\d.]+)/)||[])[1]||''}
@@ -62,12 +66,16 @@ else if(l.indexOf('mac os x')!==-1){os='macOS';var v=u.match(/Mac OS X\s([\d_]+)
 else if(l.indexOf('windows')!==-1){os='Windows'}
 var model='--';var m=u.match(/Android\s[\d.]+;\s*([A-Za-z0-9_-]+)\s*(?:\)|Build)/);if(m){var c=m[1].toUpperCase();if(DB[c]){model=DB[c][0]+' '+DB[c][1]+' ('+c+')';db=DB[c][0]}else model=c}else{m=u.match(/iPhone(\d+,\d+)/);if(m){model='iPhone '+m[1].replace(',','/')}}
 var br=db||getBrand(u)||'--';
+var t=l.indexOf('mobile')!==-1?'手机':'电脑';
 document.getElementById('bVal').textContent=b;document.getElementById('bvVal').textContent=bv||'--'
 document.getElementById('oVal').textContent=os;document.getElementById('ovVal').textContent=ov||'--'
 document.getElementById('brVal').textContent=br
 document.getElementById('mVal').textContent=model
-document.getElementById('tVal').textContent=l.indexOf('mobile')!==-1?'手机':'电脑'
-var logo=document.getElementById('brLogo');if(BRAND_ICONS[br]){logo.src='https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/'+BRAND_ICONS[br]+'.svg';logo.style.display='block'}else{logo.style.display='none'}
+document.getElementById('tVal').textContent=t
+sLogo(document.getElementById('bLogo'),BROWSER_ICONS,b);
+sLogo(document.getElementById('oLogo'),OS_ICONS,os);
+sLogo(document.getElementById('brLogo'),BRAND_ICONS,br);
+sLogo(document.getElementById('tLogo'),TYPE_ICONS,t);
 document.getElementById('rawD').textContent=u;document.getElementById('resultCard').style.display=''}
 document.getElementById('parseBtn').addEventListener('click',parse)
 document.getElementById('useMyUABtn').addEventListener('click',function(){document.getElementById('uaInput').value=navigator.userAgent;parse()})
