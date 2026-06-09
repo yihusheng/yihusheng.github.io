@@ -17,7 +17,7 @@
     <h1 style="margin-top:4px">下划线生成器</h1>
     <p class="sub">实时预览 · 即改即得</p>
     <label class="lbl">输入文本</label>
-    <textarea id="inputText" class="inp" style="height:68px;font-size:15px;font-weight:500;padding:12px 14px;resize:none" placeholder="在此输入文本...">Atmospheric Design</textarea>
+    <textarea id="inputText" style="width:100%;border:2px solid var(--k);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--f);font-size:15px;font-weight:500;outline:none;min-height:68px;resize:none">Atmospheric Design</textarea>
   </div>
 
   <div class="card">
@@ -41,11 +41,11 @@
     </div>
     <div class="pad" style="padding-top:0">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--sm)">
-        <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2" style="width:100%"></div>
-        <div><label class="lbl">偏移</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3" style="width:100%"></div>
-        <div><label class="lbl">字号</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24" style="width:100%"></div>
+        <div><label class="lbl">粗细</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>1</span><span id="thickVal">2px</span><span>10</span></div><input type="range" id="thick" min="1" max="10" value="2"></div>
+        <div><label class="lbl">偏移</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>0</span><span id="offVal">3px</span><span>20</span></div><input type="range" id="offset" min="0" max="20" value="3"></div>
+        <div><label class="lbl">字号</label><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--b);margin-bottom:4px"><span>12</span><span id="fsVal">24px</span><span>72</span></div><input type="range" id="fontSize" min="12" max="72" value="24"></div>
       </div>
-      <div style="margin-top:var(--sm)"><label class="lbl">颜色</label><div style="display:flex;gap:var(--sm)"><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">文本</label><input type="color" id="textColor" value="#0e0f0c" style="width:100%;height:36px;border:none;border-radius:var(--rm);cursor:pointer"></div><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">线条</label><input type="color" id="lineColor" value="#9fe870" style="width:100%;height:36px;border:none;border-radius:var(--rm);cursor:pointer"></div></div></div>
+      <div style="margin-top:var(--sm)"><label class="lbl">颜色</label><div style="display:flex;gap:var(--sm)"><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">文本</label><input type="color" id="textColor" value="#0e0f0c"></div><div style="flex:1"><label style="display:block;font-size:10px;font-weight:600;color:var(--b);margin-bottom:2px">线条</label><input type="color" id="lineColor" value="#9fe870"></div></div></div>
     </div>
   </div>
 
@@ -67,10 +67,10 @@ var TC=document.getElementById('textColor'),LC=document.getElementById('lineColo
 var TV=document.getElementById('thickVal'),OV=document.getElementById('offVal'),FV=document.getElementById('fsVal');
 function gs(){for(var i=0;i<RS.length;i++)if(RS[i].checked)return RS[i].value;return'solid'}
 function up(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value;TV.textContent=th+'px';OV.textContent=of+'px';FV.textContent=fs+'px'
-var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif}'
+var css='.ul{text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px}'
 P.textContent=t;P.style.textDecorationLine='underline';P.style.textDecorationStyle=s;P.style.textDecorationColor=lc;P.style.textDecorationThickness=th+'px';P.style.textUnderlineOffset=of+'px';P.style.color=tc;P.style.fontSize=fs+'px'
 CO.textContent=css}
-function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px;font-family:Inter,sans-serif';return'<span style="'+is+'">'+t+'</span>'}
+function gi(){var t=T.value||'预览',s=gs(),tc=TC.value,lc=LC.value,th=TK.value,of=OF.value,fs=FS.value,is='text-decoration-line:underline;text-decoration-style:'+s+';text-decoration-color:'+lc+';text-decoration-thickness:'+th+'px;text-underline-offset:'+of+'px;color:'+tc+';font-size:'+fs+'px';return'<span style="'+is+'">'+t+'</span>'}
 function cp(t){if(t==='all'){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([gi()],{type:'text/html'}),'text/plain':new Blob([T.value||'预览'],{type:'text/plain'})})]).then(function(){st()})}else{navigator.clipboard.writeText(t==='css'?CO.textContent:HO.textContent).then(function(){st()})}}
 function st(){TT.className='toast s';setTimeout(function(){TT.className='toast'},2000)}
 var inputs=[T,TC,LC,TK,OF,FS];for(var i=0;i<inputs.length;i++)inputs[i].addEventListener('input',up);for(var i=0;i<RS.length;i++)RS[i].addEventListener('change',up)

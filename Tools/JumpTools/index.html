@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>跳转链接 · 应用商店直达</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
@@ -12,66 +12,65 @@
 </head>
 <body>
 <div class="wrap">
-<div class="card" style="padding:24px">
-  <div class="badge-positive"><span class="material-symbols-rounded">open_in_new</span> App Store Links</div>
-  <h1>跳转链接</h1>
-  <p class="sub">输入包名 · 自动生成商店直达链接</p>
-  <label class="lbl"><span class="material-symbols-rounded" style="font-size:13px">package</span> 应用包名</label>
-  <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
-  <div class="srow">
-    <span class="badge-positive"><span class="material-symbols-rounded">smartphone</span> 选择品牌</span>
-    <select id="brandSelect">
-      <option value="auto">🤖 自动检测</option>
-      <option value="huawei">华为 / 荣耀</option>
-      <option value="xiaomi">小米 / Redmi</option>
-      <option value="oppo">OPPO / 一加</option>
-      <option value="vivo">vivo / iQOO</option>
-      <option value="samsung">三星</option>
-      <option value="generic_android">通用 Android</option>
-      <option value="apple">苹果 iPhone / iPad</option>
-    </select>
+  <div class="card" style="padding:var(--sxl)">
+    <div class="badge-positive">App Store Links</div>
+    <h1 style="margin-top:4px">跳转链接</h1>
+    <p class="sub">输入包名 · 自动生成商店直达链接</p>
+    <label class="lbl">应用包名</label>
+    <input type="text" id="packageInput" class="inp" placeholder="例如: com.tencent.mm" value="com.instagram.android">
+    <div style="display:flex;align-items:center;gap:var(--ss);flex-wrap:wrap;margin-top:var(--sl)">
+      <span class="badge-positive">选择品牌</span>
+      <select id="brandSelect" style="flex:1;min-width:160px">
+        <option value="auto">自动检测</option>
+        <option value="huawei">华为 / 荣耀</option>
+        <option value="xiaomi">小米 / Redmi</option>
+        <option value="oppo">OPPO / 一加</option>
+        <option value="vivo">vivo / iQOO</option>
+        <option value="samsung">三星</option>
+        <option value="generic_android">通用 Android</option>
+        <option value="apple">苹果 iPhone</option>
+      </select>
+    </div>
   </div>
-  <div class="lc">
-    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">star</span> 品牌专用链接 <span id="brandHintBadge" class="badge-positive" style="font-size:10px;padding:2px 8px">—</span></div>
-    <a href="#" id="brandProtocolLink" class="lt" target="_self">—— 等待输入包名 ——</a>
-    <span class="cpy" id="copyBrandLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制专用链接</span>
+
+  <div class="card">
+    <div class="pad">
+      <div style="margin-bottom:var(--sl)">
+        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss);display:flex;align-items:center;gap:6px"><span style="color:var(--p)">*</span> 品牌专用链接 <span id="brandHintBadge" class="badge-positive" style="font-size:10px;padding:2px 8px">—</span></div>
+        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="brandProtocolLink">请输入包名</div>
+        <button class="btn-secondary" id="copyBrandLinkBtn">复制专用链接</button>
+      </div>
+      <div style="margin-bottom:var(--sl)">
+        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss)"><span style="color:var(--p)">*</span> 通用市场链接</div>
+        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="universalProtocolLink">请输入包名</div>
+        <button class="btn-secondary" id="copyUniversalLinkBtn">复制通用链接</button>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--k);margin-bottom:var(--ss)"><span style="color:var(--p)">*</span> 网页商店</div>
+        <div style="background:var(--s);border-radius:var(--rm);padding:var(--sm) var(--sl);font-family:var(--fm);font-size:12px;word-break:break-all;color:var(--k);margin-bottom:var(--ss)" id="webLink">请输入包名</div>
+        <button class="btn-secondary" id="copyWebLinkBtn">复制网页链接</button>
+      </div>
+    </div>
   </div>
-  <div class="lc">
-    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">public</span> 通用市场链接</div>
-    <a href="#" id="universalProtocolLink" class="lt" target="_self">—— 等待输入包名 ——</a>
-    <span class="cpy" id="copyUniversalLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制通用链接</span>
+
+  <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center">
+    <p style="font-size:11px;color:rgba(232,235,230,.5)">在浏览器中直接点击链接可能无法跳转，请使用复制按钮</p>
   </div>
-  <div class="lc">
-    <div class="ll"><span class="material-symbols-rounded" style="font-size:16px;color:var(--p)">language</span> 网页商店 (备选)</div>
-    <a href="#" id="webLink" class="lt" target="_blank">—— 等待输入包名 ——</a>
-    <span class="cpy" id="copyWebLinkBtn"><span class="material-symbols-rounded">content_copy</span> 复制网页链接</span>
-  </div>
-  <div class="alert">
-    <strong>⚠️ 注意：</strong>在浏览器中直接点击链接可能无法跳转。<br>
-    💡 请使用下方的<strong>复制</strong>按钮，将链接粘贴到系统浏览器地址栏打开，或发送到微信/短信中点击。
-  </div>
-  <div class="nt">💡 点击链接本身也可能成功，若无效请使用复制功能</div>
-</div>
-<div class="card"><div class="ft"><p>自动检测品牌 · 一键直达应用商店</p></div></div>
 </div>
 <div class="toast" id="toastMsg"></div>
 <script>
 var cManual='auto',PI=document.getElementById('packageInput'),BS=document.getElementById('brandSelect'),BH=document.getElementById('brandHintBadge'),BPL=document.getElementById('brandProtocolLink'),UPL=document.getElementById('universalProtocolLink'),WL=document.getElementById('webLink'),TM=document.getElementById('toastMsg');
-function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else if(u.includes('oneplus'))b='oneplus';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
+function gAuto(){var u=navigator.userAgent.toLowerCase(),i=/iphone|ipad|ipod/.test(u),a=/android/.test(u),h=/harmonyos|huawei|hmos/i.test(u),b='generic_android',p='android',f=false;if(i){p='ios';b='apple';f=true}else if(h||(a&&(u.includes('huawei')||u.includes('honor')))){if(u.includes('honor'))b='honor';else b='huawei'}else if(a){if(u.includes('xiaomi')||u.includes('mi ')||u.includes('redmi')||u.includes('poco'))b='xiaomi';else if(u.includes('oppo')||u.includes('realme')||(u.includes('oneplus')&&!u.includes('oppo')))b='oppo';else if(u.includes('vivo')||u.includes('iqoo'))b='vivo';else if(u.includes('samsung')||u.includes('sm-'))b='samsung';else if(u.includes('honor'))b='honor';else if(u.includes('huawei'))b='huawei';else b='generic_android'}else{p='other';b='desktop'}return{brand:b,platform:p,isIOS:f}}
 function gEff(){var a=gAuto(),s=cManual;if(s==='auto')return a;var b=s,p=a.platform,i=false;if(s==='apple'){i=true;p='ios'}else if(s==='generic_android'){p='android'}else{i=false;p='android'}return{brand:b,platform:p,isIOS:i}}
-function gBN(b,i){if(i)return'苹果 App Store';switch(b){case'huawei':return'华为应用市场';case'honor':return'荣耀应用市场';case'xiaomi':return'小米应用商店';case'oppo':return'OPPO软件商店';case'oneplus':return'一加商店';case'vivo':return'vivo应用商店';case'samsung':return'三星应用商店';default:return'通用市场协议'}}
+function gBN(b,i){if(i)return'App Store';switch(b){case'huawei':return'华为';case'honor':return'荣耀';case'xiaomi':return'小米';case'oppo':return'OPPO';case'oneplus':return'一加';case'vivo':return'vivo';case'samsung':return'三星';default:return'通用'}}
 var pkg,bi,brand,isIOS,brandLink,universalLink,webLinkUrl,hasPkg;
-function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS)
-brandLink=pkg?gBSL(pkg,bi):null;var bUrl=brandLink||'#',bTxt=brandLink||'—— 请输入包名 ——';BPL.textContent=bTxt;BPL.href=bUrl;BPL.style.pointerEvents=pkg&&brandLink?'auto':'none';BPL.style.opacity=pkg&&brandLink?'1':'.6'
-universalLink=pkg?gUL(pkg,bi):null;var uTxt=universalLink||'—— 请输入包名 ——';UPL.textContent=uTxt;UPL.href=uUrl;UPL.style.pointerEvents=pkg&&universalLink?'auto':'none';UPL.style.opacity=pkg&&universalLink?'1':'.6'
-webLinkUrl=pkg?gWS(pkg,bi):'#';WL.textContent=webLinkUrl||'—— 请输入包名 ——';WL.href=webLinkUrl||'#';WL.style.pointerEvents=pkg?'auto':'none';WL.style.opacity=pkg?'1':'.6'
-hasPkg=!!pkg}
+function upd(){pkg=PI.value.trim();bi=gEff();brand=bi.brand;isIOS=bi.isIOS;BH.textContent=cManual!=='auto'?'手动: '+gBN(brand,isIOS):'自动: '+gBN(brand,isIOS);brandLink=pkg?gBSL(pkg,bi):null;universalLink=pkg?gUL(pkg,bi):null;webLinkUrl=pkg?gWS(pkg,bi):'#';BPL.textContent=brandLink||'请输入有效包名';BPL.href=brandLink||'#';UPL.textContent=universalLink||'请输入有效包名';UPL.href=universalLink||'#';WL.textContent=webLinkUrl||'请输入有效包名';WL.href=webLinkUrl||'#';hasPkg=!!pkg}
 function gBSL(p,b){if(!p)return null;var pk=p.trim(),br=b.brand;if(b.isIOS)return'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software';switch(br){case'huawei':case'honor':return'app://com.huawei.appmarket/'+pk;case'xiaomi':return'mimarket://details?id='+pk;case'oppo':case'oneplus':return'oppomarket://details?packagename='+pk;case'vivo':return'vivomarket://details?id='+pk;case'samsung':return'samsungapps://ProductDetail/'+pk;default:return'market://details?id='+pk}}
 function gUL(p,b){if(!p)return null;var pk=p.trim();return b.isIOS?'itms-apps://itunes.apple.com/search?term='+encodeURIComponent(pk)+'&entity=software':'market://details?id='+pk}
 function gWS(p,b){if(!p)return'#';var pk=p.trim();return b.isIOS?'https://apps.apple.com/search?term='+encodeURIComponent(pk):'https://play.google.com/store/apps/details?id='+pk}
-function sT(m,d){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},d||1800)}
+function sT(m){TM.textContent=m;TM.classList.add('s');setTimeout(function(){TM.classList.remove('s')},1800)}
 async function c2c(t,m){if(!t){sT('无有效链接');return}try{await navigator.clipboard.writeText(t);sT(m||'已复制')}catch(e){sT('复制失败')}}
-PI.addEventListener('input',upd);BS.addEventListener('change',function(e){cManual=e.target.value;upd()});document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){if(!hasPkg||!brandLink){sT('请填写有效包名');return}c2c(brandLink,'专用链接已复制')});document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){if(!hasPkg||!universalLink){sT('请填写有效包名');return}c2c(universalLink,'通用链接已复制')});document.getElementById('copyWebLinkBtn').addEventListener('click',function(){if(!hasPkg||!webLinkUrl||webLinkUrl==='#'){sT('请填写有效包名');return}c2c(webLinkUrl,'网页链接已复制')})
+PI.addEventListener('input',upd);BS.addEventListener('change',function(){cManual=BS.value;upd()});document.getElementById('copyBrandLinkBtn').addEventListener('click',function(){c2c(brandLink,'专用链接已复制')});document.getElementById('copyUniversalLinkBtn').addEventListener('click',function(){c2c(universalLink,'通用链接已复制')});document.getElementById('copyWebLinkBtn').addEventListener('click',function(){c2c(webLinkUrl,'网页链接已复制')})
 function init(){var a=gAuto(),s=a.brand;if(a.isIOS)s='apple';else if(s==='honor'||s==='oneplus')s='oppo';else if(!['huawei','xiaomi','oppo','vivo','samsung','generic_android'].includes(s))s='generic_android';for(var i=0;i<BS.options.length;i++){if(BS.options[i].value===s){BS.selectedIndex=i;break}}cManual=BS.value;upd()}
 init()
 </script>
