@@ -12,7 +12,7 @@
     { icon: 'calculate',        label: 'Double',    href: '/Tools/Double/' },
     { icon: 'lan',              label: 'MAC Info',  href: '/Tools/MAC/' },
     { icon: 'format_underlined',label: 'Underline', href: '/Tools/Underline/' },
-    { icon: 'functions',        label: 'Calculator', href: '/Tools/Content%20Calculator/' },
+    { icon: 'functions',        label: 'Calculator', href: '/Tools/Calculator/' },
     { icon: 'open_in_new',      label: 'JumpTools', href: '/Tools/JumpTools/' },
     { icon: 'device_hub',       label: 'UA Info',   href: '/Tools/UA/' },
     { icon: 'dashboard',        label: 'zashboard', href: '/Tools/zashboard/' },
