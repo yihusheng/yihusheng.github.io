@@ -7,11 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/src/css/wise-base.css">
+<link rel="stylesheet" href="/src/css/double.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
-<style>
-.inp{font-family:'Inter',monospace;font-size:16px;font-weight:600}
-</style>
 </head>
 <body>
 <div class="wrap">
@@ -23,11 +21,10 @@
   <input id="input" class="inp" type="text" value="1072693248" placeholder="输入双字数值">
   <label class="lbl" style="margin-top:16px"><span class="material-symbols-rounded" style="font-size:13px">tag</span> 浮点结果</label>
   <input id="result" class="inp" type="text" value="1" placeholder="输入浮点数">
-  <button class="btn" id="calculate" style="margin-top:20px"><span class="material-symbols-rounded" style="font-size:18px">sync_alt</span> 开始转换</button>
+  <button class="btn btn-p" id="calculate" style="margin-top:20px"><span class="material-symbols-rounded" style="font-size:18px">sync_alt</span> 开始转换</button>
 </div>
 <div class="card"><div class="ft"><p>有能力的请支持下作者：137362300@qq.com</p></div></div>
 </div>
-
 <script>
 var inp=document.getElementById('input'),res=document.getElementById('result'),btn=document.getElementById('calculate');
 btn.onclick=function(){var v=inp.value,n=parseFloat(v);if(isNaN(n)){res.value='数值不正确。';return}var r=1+(n-1072693248)/Math.pow(2,20);res.value=r%1===0?r.toFixed(0):r.toFixed(2)}
