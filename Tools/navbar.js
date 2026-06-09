@@ -48,9 +48,9 @@
     var style = document.createElement('style');
     style.id = 'wiseNavbarSpacerCSS';
     style.textContent =
-      'body { padding-top: 62px !important; }' +
-      'body > #app { padding-top: 62px !important; box-sizing: border-box !important; }' +
-      'body > #__nuxt { padding-top: 62px !important; box-sizing: border-box !important; }';
+      'body { padding-top: 52px !important; }' +
+      'body > #app { padding-top: 52px !important; box-sizing: border-box !important; }' +
+      'body > #__nuxt { padding-top: 52px !important; box-sizing: border-box !important; }';
     document.head.appendChild(style);
   }
 
