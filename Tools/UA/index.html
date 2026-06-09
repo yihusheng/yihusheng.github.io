@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>UA 信息读取</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500900=" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 <link rel="stylesheet" href="/src/css/wise.css">
-<link rel="stylesheet" href="/src/css/ua.css">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
 </head>
@@ -15,12 +15,12 @@
 <div class="card" style="padding:24px">
   <div class="bdg"><span class="material-symbols-rounded">device_hub</span> UA Analyzer</div>
   <h1>UA 信息读取</h1>
-  <p class-A系统、浏览器信息</p>
+  <p class="sub">解析 User-Agent 获取设备、系统、浏览器信息</p>
   <div class="ua-box">
     <textarea id="uaInput" placeholder="粘贴 User-Agent 字符串..."></textarea>
     <button class="ua-cp" id="copyUABtn"><span class="material-symbols-rounded">content_copy</span> 复制</button>
   </div>
-  btn="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
+  <button class="btn btn-p" id="parseBtn" style="margin-top:12px"><span class="material-symbols-rounded" style="font-size:16px">search</span> 解析</button>
   <div class="rw">
     <button class="btn btn-s" id="useMyUABtn"><span class="material-symbols-rounded" style="font-size:14px">smartphone</span> 本机 UA</button>
     <button class="btn btn-s" id="clearBtn"><span class="material-symbols-rounded" style="font-size:14px">delete</span> 清空</button>
@@ -62,10 +62,17 @@ var DB = {
   'SM-S9280':['三星','Galaxy S24 Ultra'],'SM-S9180':['三星','Galaxy S23 Ultra'],
   'SM-S9080':['三星','Galaxy S22 Ultra'],'SM-S9210':['三星','Galaxy S24'],
   'V2324A':['vivo','X100 Pro'],'V2309A':['vivo','X100'],'V2241A':['vivo','X90'],
-  'PHY110':['OPPO','Find X7 Ultra'],'PHZ110':['OPPO','7'],
-['00'],
--AN00':['荣耀','P':':'], A mi ['s '],
-ivoOO'],
+  'PHY110':['OPPO','Find X7 Ultra'],'PHZ110':['OPPO','Find X7'],
+  'LIO-AN00':['华为','Mate 30 Pro'],'NOH-AN00':['华为','Mate 40 Pro'],
+  'ALN-AL00':['华为','Mate 60 Pro'],'BRA-AL00':['华为','Mate 60'],
+  'BVL-AN00':['荣耀','Magic6'],'PTP-AN00':['荣耀','Magic7'],
+  'SM-A5560':['三星','Galaxy A55 5G'],'SM-A5460':['三星','Galaxy A54 5G']
+};
+var BRANDS = [
+  ['xiaomi','小米'],['mi ','小米'],['redmi','红米'],['poco','POCO'],
+  ['huawei','华为'],['honor','荣耀'],['samsung','三星'],['sm-','三星'],
+  ['iphone','苹果'],['ipad','苹果'],['oneplus','一加'],
+  ['oppo','OPPO'],['realme','真我'],['vivo','vivo'],['iqoo','iQOO'],
   ['meizu','魅族'],['pixel','谷歌'],['moto','摩托罗拉'],['motorola','摩托罗拉'],
   ['nokia','诺基亚'],['sony','索尼'],['xperia','索尼'],['asus','华硕'],
   ['nothing','Nothing'],['nubia','努比亚'],['zte','中兴'],
@@ -97,9 +104,9 @@ function parse() {
   else if (u.indexOf('firefox')!==-1) { b='Firefox'; bv=(ua.match(/Firefox\/([\d.]+)/)||[])[1]||''; }
   else if (u.indexOf('safari')!==-1) { b='Safari'; bv=(ua.match(/Version\/([\d.]+)/)||[])[1]||''; }
   else if (u.indexOf('opr')!==-1) { b='Opera'; bv=(ua.match(/OPR\/([\d.]+)/)||[])[1]||''; }
-  else if (u.indexOf('micromessenger')!==-1';
- '';
-')!==-1) { os='Android'; ov=(ua.match(/Android\s([\d.]+)/)||[])[1]||''; }
+  else if (u.indexOf('micromessenger')!==-1) b='微信';
+  var os = '未知', ov = '';
+  if (u.indexOf('android')!==-1) { os='Android'; ov=(ua.match(/Android\s([\d.]+)/)||[])[1]||''; }
   else if (u.indexOf('iphone os')!==-1 || u.indexOf('ios')!==-1) { os='iOS'; var v=ua.match(/OS\s([\d_]+)/); if(v) ov=v[1].replace(/_/g,'.'); }
   else if (u.indexOf('mac os x')!==-1) { os='macOS'; var v=ua.match(/Mac OS X\s([\d_]+)/); if(v) ov=v[1].replace(/_/g,'.'); }
   else if (u.indexOf('windows nt 10')!==-1) os='Windows 10/11';
