@@ -23,23 +23,21 @@
       <button class="btn-secondary" id="clearBtn" style="flex:1">清空</button>
     </div>
   </div>
-  <div class="card rs" id="resultCard">
-    <div class="pad">
-      <label class="lbl">解析结果</label>
-      <div class="dg">
-        <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
-        <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
-        <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
-        <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
-        <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brVal">--</div></div>
-        <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
-        <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
-      </div>
-      <div class="code-box" id="rawD" style="margin-top:var(--sm);font-size:11px;max-height:100px;overflow:auto"></div>
-      <div class="rw" style="margin-top:var(--ss)">
-        <button class="btn-secondary" id="cpyBtn" style="flex:1">复制结果</button>
-        <button class="btn-secondary" id="dbBtn" style="flex:1">设备数据库</button>
-      </div>
+  <div class="card" id="resultCard" style="display:none;padding:var(--sxl)">
+    <label class="lbl">解析结果</label>
+    <div class="dg">
+      <div class="di"><div class="dl">浏览器</div><div class="dv" id="bVal">--</div></div>
+      <div class="di"><div class="dl">版本</div><div class="dv" id="bvVal">--</div></div>
+      <div class="di"><div class="dl">操作系统</div><div class="dv" id="oVal">--</div></div>
+      <div class="di"><div class="dl">系统版本</div><div class="dv" id="ovVal">--</div></div>
+      <div class="di"><div class="dl">设备品牌</div><div class="dv" id="brVal">--</div></div>
+      <div class="di"><div class="dl">设备型号</div><div class="dv" id="mVal">--</div></div>
+      <div class="di" style="grid-column:1/-1"><div class="dl">设备类别</div><div class="dv" id="tVal">--</div></div>
+    </div>
+    <div class="code-box" id="rawD" style="margin-top:var(--sm);font-size:11px;max-height:100px;overflow:auto"></div>
+    <div class="rw" style="margin-top:var(--ss)">
+      <button class="btn-secondary" id="cpyBtn" style="flex:1">复制结果</button>
+      <button class="btn-secondary" id="dbBtn" style="flex:1">设备数据库</button>
     </div>
   </div>
   <div class="card-dark" style="padding:var(--sl) var(--sxl);text-align:center"><p style="font-size:11px;color:rgba(232,235,230,.5)">数据参考 <a href="https://github.com/KHwang9883/MobileModels" target="_blank" style="color:var(--p);text-decoration:none">KHwang9883/MobileModels</a></p></div>
@@ -64,10 +62,10 @@ document.getElementById('oVal').textContent=os;document.getElementById('ovVal').
 document.getElementById('brVal').textContent=db||getBrand(u)||'--'
 document.getElementById('mVal').textContent=model
 document.getElementById('tVal').textContent=l.indexOf('mobile')!==-1?'手机':'电脑'
-document.getElementById('rawD').textContent=u;document.getElementById('resultCard').classList.add('s')}
+document.getElementById('rawD').textContent=u;document.getElementById('resultCard').style.display=''}
 document.getElementById('parseBtn').addEventListener('click',parse)
 document.getElementById('useMyUABtn').addEventListener('click',function(){document.getElementById('uaInput').value=navigator.userAgent;parse()})
-document.getElementById('clearBtn').addEventListener('click',function(){document.getElementById('uaInput').value='';document.getElementById('resultCard').classList.remove('s')})
+document.getElementById('clearBtn').addEventListener('click',function(){document.getElementById('uaInput').value='';document.getElementById('resultCard').style.display='none'})
 document.getElementById('cpyBtn').addEventListener('click',function(){var t='浏览器: '+document.getElementById('bVal').textContent+' '+document.getElementById('bvVal').textContent+'\n系统: '+document.getElementById('oVal').textContent+' '+document.getElementById('ovVal').textContent;navigator.clipboard.writeText(t)})
 document.getElementById('dbBtn').addEventListener('click',function(){window.open('https://github.com/KHwang9883/MobileModels','_blank')})
 window.addEventListener('load',function(){document.getElementById('uaInput').value=navigator.userAgent;setTimeout(parse,100)})
