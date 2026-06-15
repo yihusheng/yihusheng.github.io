@@ -100,15 +100,15 @@ body {
 .song-title-main { font-weight: 900; font-size: 1.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; line-height: 1.15; }
 .artist-name { font-size: 1.05rem; color: var(--wise-ink-deep); font-weight: 600; letter-spacing: -0.2px; }
 
-/* ===== 歌词视图：固定高度 = 封面区域，防止控件上移 ===== */
+/* ===== 歌词视图：精确 355+16=371px = 封面区高度，控件零位移 ===== */
 .lyrics-view {
   display: none;
   width: 100%;
-  min-height: 366px;
-  max-height: 366px;
+  min-height: 355px;
+  max-height: 355px;
   overflow-y: auto;
   margin-bottom: 16px;
-  padding: 4px 8px;
+  padding: 0 8px;
   -webkit-overflow-scrolling: touch;
   border-radius: 16px;
   background: rgba(14,15,12,0.03);
@@ -362,6 +362,5 @@ body {
   .phone-screen { width: 375px; height: 812px; border-radius: 40px; box-shadow: 0 0 0 10px var(--wise-ink), 0 0 0 12px rgba(14,15,12,0.2), 0 30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
   .player-content { padding-top: calc(env(safe-area-inset-top, 20px) + 100px); }
   .playlist-sheet { max-height: 65%; }
-  .lyrics-view { min-height: 340px; max-height: 340px; }
 }
 @media screen and (min-width: 1024px) { body { padding: 30px; } .phone-screen { width: 390px; height: 844px; } }
