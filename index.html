@@ -43,14 +43,15 @@
   </div>
   <div class="player-content">
     <div class="player-background"></div>
-    <!-- 封面+歌词容器：高度由封面撑开，歌词 absolute 覆盖，控件永不位移 -->
     <div class="cover-lyrics-wrapper">
       <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
       <div class="song-info" id="songInfo">
         <h1 id="mainTitle" class="song-title-main">Title</h1>
         <p id="mainArtist" class="artist-name">Artist</p>
       </div>
+      <!-- 歌词视图：backdrop(关闭) + scroll(歌词行跳转) + 空白区(无操作) -->
       <div class="lyrics-view" id="lyricsView">
+        <div class="lyrics-backdrop" id="lyricsBackdrop"></div>
         <div class="lyrics-scroll" id="lyricsContent">
           <div class="lyrics-empty">暂无歌词</div>
         </div>
