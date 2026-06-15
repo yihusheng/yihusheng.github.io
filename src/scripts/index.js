@@ -296,15 +296,22 @@ function renderLyrics() {
   container.innerHTML = html;
 }
 
+// ── 原地切换：封面 ↔ 歌词 ──
 function toggleLyrics() {
   lyricsVisible = !lyricsVisible;
-  var panel = document.getElementById('lyricsPanel');
+  var mc = document.getElementById('mainCover');
+  var si = document.getElementById('songInfo');
+  var lv = document.getElementById('lyricsView');
   if (lyricsVisible) {
-    panel.classList.add('open');
+    mc.style.display = 'none';
+    si.style.display = 'none';
+    lv.classList.add('open');
     if (lyricsData.length === 0) renderLyrics();
     updateLyricHighlight();
   } else {
-    panel.classList.remove('open');
+    mc.style.display = '';
+    si.style.display = '';
+    lv.classList.remove('open');
   }
 }
 
@@ -332,6 +339,19 @@ function updateLyricHighlight() {
   }
 }
 
+// ── 歌词区域点击：点击歌词行 → 跳转；点击空白 → 关闭 ──
+document.getElementById('lyricsView').addEventListener('click', function(e) {
+  if (e.target.classList.contains('lyric-line')) {
+    var idx = parseInt(e.target.dataset.index, 10);
+    if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) {
+      currentHowl.seek(lyricsData[idx].time);
+    }
+  } else {
+    // 点击空白区域 → 切回封面
+    toggleLyrics();
+  }
+});
+
 // ── Howler.js 加载歌曲 ──
 function loadSong(song){
   if (!song || !song.src) return;
@@ -350,6 +370,11 @@ function loadSong(song){
   var mc = document.getElementById('mainCover');
   mc.src = '';
 
+  // 切歌时如果在歌词模式，先切回封面
+  if (lyricsVisible) {
+    toggleLyrics();
+  }
+
   // 重置 UI
   updateUI(0);
   app.classList.remove('playing');
@@ -358,7 +383,7 @@ function loadSong(song){
   // 重置歌词
   lyricsData = [];
   currentLyricIndex = -1;
-  if (lyricsVisible) renderLyrics();
+  renderLyrics();
 
   // 加载封面
   loadEmbeddedCover(song.src, function(coverDataUrl) {
@@ -557,10 +582,8 @@ document.getElementById('playlistRepeatBtn').addEventListener('click', function(
   this.classList.toggle('active', isRepeat);
 });
 
-// ── 封面点击 → 歌词 ──
+// ── 封面点击 → 歌词原地切换 ──
 document.getElementById('mainCover').addEventListener('click', toggleLyrics);
-// 歌词面板下拉关闭
-document.getElementById('lyricsPanelHandle').addEventListener('click', toggleLyrics);
 
 function init(){
   updateTime();
