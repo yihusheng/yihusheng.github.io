@@ -47,7 +47,12 @@
   </div>
   <div class="player-content">
     <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
+    <div class="cover-wrap" id="coverWrap">
+      <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
+      <div class="cover-placeholder" id="coverPlaceholder">
+        <span class="material-symbols-rounded">music_note</span>
+      </div>
+    </div>
     <div class="song-info">
       <h1 id="mainTitle" class="song-title-main">Title</h1>
       <p id="mainArtist" class="artist-name">Artist</p>
@@ -66,10 +71,6 @@
       <span id="currTime">0:00</span>
       <span id="durTime">0:00</span>
     </div>
-    <!-- 内嵌歌词容器 -->
-    <div class="lyrics-container" id="lyricsContainer">
-      <div class="lyrics-scroll" id="lyricsScroll"></div>
-    </div>
     <div class="controls">
       <button class="btn btn-shuffle active" id="shuffleBtn" aria-label="shuffle"><span class="material-symbols-rounded">shuffle</span></button>
       <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
@@ -78,6 +79,23 @@
       <button class="btn btn-shuffle" id="playlistBtn" aria-label="playlist"><span class="material-symbols-rounded">queue_music</span></button>
     </div>
   </div>
+
+  <!-- 歌词面板（类网易云，覆盖在播放区域内） -->
+  <div class="lyrics-panel" id="lyricsPanel">
+    <div class="lyrics-panel-header">
+      <button class="lyrics-panel-back" id="lyricsPanelBack" aria-label="返回">
+        <span class="material-symbols-rounded">keyboard_arrow_down</span>
+      </button>
+      <div class="lyrics-panel-info">
+        <div class="lyrics-panel-title" id="lyricsPanelTitle">歌曲名</div>
+        <div class="lyrics-panel-artist" id="lyricsPanelArtist">艺术家</div>
+      </div>
+    </div>
+    <div class="lyrics-panel-body" id="lyricsPanelBody">
+      <div class="lyrics-panel-empty">暂无歌词</div>
+    </div>
+  </div>
+
   <div class="bottom-drawer" id="drawer">
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
@@ -112,17 +130,6 @@
     </div>
     <div class="playlist-body" id="playlistBody"></div>
   </div>
-</div>
-
-<!-- 歌词弹窗 -->
-<div class="lyrics-modal" id="lyricsModal">
-  <div class="lyrics-modal-header">
-    <span class="lyrics-modal-title" id="lyricsModalTitle">歌曲名</span>
-    <button class="lyrics-modal-close" id="lyricsModalClose" aria-label="关闭歌词">
-      <span class="material-symbols-rounded">close</span>
-    </button>
-  </div>
-  <div class="lyrics-modal-body" id="lyricsModalBody"></div>
 </div>
 
 <canvas id="colorCanvas" style="display: none;"></canvas>
