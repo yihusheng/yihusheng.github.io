@@ -10,13 +10,13 @@ const NodeID3 = require('node-id3');
 
 const musicDir = path.join(__dirname, '..', 'music');
 const outputFile = path.join(__dirname, 'music.json');
-const lyricsDir = path.join(__dirname, '..', 'lyrics');
+const lyricsDir = path.join(__dirname, '..', 'music');
 
 const AUDIO_EXTS = ['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac'];
 const COVER_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
 const LYRIC_EXTS = ['.lrc', '.txt'];
 
-// 确保歌词目录存在
+// 确保歌词目录存在（和音乐同目录）
 if (!fs.existsSync(lyricsDir)) {
   fs.mkdirSync(lyricsDir, { recursive: true });
 }
@@ -68,7 +68,7 @@ const songs = audioFiles.map((mp3File) => {
       const lyricsText = tags.unsynchronisedLyrics.text || tags.unsynchronisedLyrics;
       if (lyricsText && lyricsText.trim()) {
         const lrcFile = baseName + '.lrc';
-        const lrcPath = path.join(lyricsDir, lrcFile);
+        const lrcPath = path.join(musicDir, lrcFile);
         if (!fs.existsSync(lrcPath)) {
           fs.writeFileSync(lrcPath, lyricsText, 'utf-8');
           console.log(`  📝 提取歌词: ${lrcFile}`);
@@ -91,24 +91,14 @@ const songs = audioFiles.map((mp3File) => {
     }
   }
 
-  // 外部歌词匹配
+  // 外部歌词匹配（优先在 music 目录查找）
   let lrcFile = extractedLyrics;
   if (!lrcFile) {
-    // 检查 lyrics 目录
     for (const ext of LYRIC_EXTS) {
-      const lrcPath = path.join(lyricsDir, baseName + ext);
+      const lrcPath = path.join(musicDir, baseName + ext);
       if (fs.existsSync(lrcPath)) {
         lrcFile = baseName + ext;
         break;
-      }
-    }
-    // 检查 music 目录
-    if (!lrcFile) {
-      for (const ext of LYRIC_EXTS) {
-        if (files.includes(baseName + ext)) {
-          lrcFile = baseName + ext;
-          break;
-        }
       }
     }
   }
@@ -131,7 +121,7 @@ const songs = audioFiles.map((mp3File) => {
 
   // 只有有歌词时才添加 lrc 字段
   if (lrcFile) {
-    song.lrc = `./src/lyrics/${encodeURIComponent(lrcFile)}`;
+    song.lrc = `./src/music/${encodeURIComponent(lrcFile)}`;
   }
 
   return song;

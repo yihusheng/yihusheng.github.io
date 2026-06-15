@@ -43,7 +43,7 @@
   </div>
   <div class="player-content">
     <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover">
+    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
     <div class="song-info">
       <h1 id="mainTitle" class="song-title-main">Title</h1>
       <p id="mainArtist" class="artist-name">Artist</p>
@@ -87,6 +87,7 @@
   </div>
 </div>
 
+<!-- 播放列表弹窗 -->
 <div class="playlist-overlay" id="playlistOverlay">
   <div class="playlist-backdrop" id="playlistBackdrop"></div>
   <div class="playlist-sheet">
@@ -106,9 +107,25 @@
   </div>
 </div>
 
-<audio id="audio" preload="metadata"></audio>
+<!-- 歌词面板 -->
+<div class="lyrics-panel" id="lyricsPanel">
+  <div class="lyrics-panel-sheet">
+    <div class="lyrics-panel-handle-area" id="lyricsPanelHandle">
+      <div class="lyrics-panel-handle"></div>
+    </div>
+    <div class="lyrics-panel-header">
+      <span class="lyrics-panel-title">歌词</span>
+    </div>
+    <div class="lyrics-panel-body" id="lyricsContent">
+      <div class="lyrics-empty">暂无歌词</div>
+    </div>
+  </div>
+</div>
+
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
 <script src="/Tools/navbar.js"></script>
 <script src="/src/scripts/index.js"></script>
 </body>
