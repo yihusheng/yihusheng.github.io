@@ -98,6 +98,8 @@ var currentSongId = null;
 var lyricsData = [];
 var lyricsVisible = false;
 var currentLyricIndex = -1;
+var currentSongLrcUrl = null;
+var lrcLoadId = 0;
 
 function getRandomIndex() {
   if (songs.length <= 1) return 0;
@@ -277,10 +279,20 @@ function parseLRC(lrcText) {
 
 function loadLyrics(lrcUrl, callback) {
   if (!lrcUrl) { callback(null); return; }
-  fetch(lrcUrl)
-    .then(function(r) { return r.text(); })
-    .then(function(text) { callback(parseLRC(text)); })
-    .catch(function() { callback(null); });
+  console.log('📝 加载歌词:', lrcUrl);
+  fetch(lrcUrl, { cache: 'no-cache' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    })
+    .then(function(text) {
+      console.log('✅ 歌词加载成功 (' + text.length + ' 字符)');
+      callback(parseLRC(text));
+    })
+    .catch(function(err) {
+      console.error('❌ 歌词加载失败:', lrcUrl, err.message || err);
+      callback(null);
+    });
 }
 
 function renderLyrics() {
@@ -306,8 +318,26 @@ function toggleLyrics() {
     mc.style.display = 'none';
     si.style.display = 'none';
     lv.classList.add('open');
-    if (lyricsData.length === 0) renderLyrics();
-    updateLyricHighlight();
+    if (lyricsData.length > 0) {
+      renderLyrics();
+      updateLyricHighlight();
+    } else if (currentSongLrcUrl) {
+      // 歌词还没加载好，显示加载中并重新请求
+      document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">歌词加载中...</div>';
+      var lid = ++lrcLoadId;
+      loadLyrics(currentSongLrcUrl, function(data) {
+        if (lid !== lrcLoadId) return; // 过期请求忽略
+        if (data && data.length > 0) {
+          lyricsData = data;
+          renderLyrics();
+          updateLyricHighlight();
+        } else {
+          document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+        }
+      });
+    } else {
+      renderLyrics();
+    }
   } else {
     mc.style.display = '';
     si.style.display = '';
@@ -347,7 +377,6 @@ document.getElementById('lyricsView').addEventListener('click', function(e) {
       currentHowl.seek(lyricsData[idx].time);
     }
   } else {
-    // 点击空白区域 → 切回封面
     toggleLyrics();
   }
 });
@@ -356,7 +385,6 @@ document.getElementById('lyricsView').addEventListener('click', function(e) {
 function loadSong(song){
   if (!song || !song.src) return;
 
-  // 销毁上一个 Howl 实例
   if (currentHowl) {
     currentHowl.unload();
     currentHowl = null;
@@ -370,20 +398,17 @@ function loadSong(song){
   var mc = document.getElementById('mainCover');
   mc.src = '';
 
-  // 切歌时如果在歌词模式，先切回封面
-  if (lyricsVisible) {
-    toggleLyrics();
-  }
+  // 切歌时在歌词模式 → 切回封面
+  if (lyricsVisible) toggleLyrics();
 
-  // 重置 UI
+  // 重置
   updateUI(0);
   app.classList.remove('playing');
   document.getElementById('playIcon').innerText = 'play_arrow';
-
-  // 重置歌词
   lyricsData = [];
   currentLyricIndex = -1;
-  renderLyrics();
+  currentSongLrcUrl = song.lrc || null;
+  lrcLoadId = 0;
 
   // 加载封面
   loadEmbeddedCover(song.src, function(coverDataUrl) {
@@ -433,9 +458,11 @@ function loadSong(song){
     }
   });
 
-  // 加载歌词
+  // 后台静默加载歌词
   if (song.lrc) {
+    var lid = ++lrcLoadId;
     loadLyrics(song.lrc, function(data) {
+      if (lid !== lrcLoadId) return;
       if (data && data.length > 0) {
         lyricsData = data;
         if (lyricsVisible) {
@@ -460,7 +487,7 @@ function loadSong(song){
     });
 }
 
-// ── 进度条追踪 (requestAnimationFrame) ──
+// ── 进度条追踪 ──
 var isDragging = false;
 var audioSlider = document.getElementById('audioSlider'),
     activeTrack = document.getElementById('activeTrack'),
@@ -500,7 +527,6 @@ audioSlider.addEventListener('change', function() {
   if (currentHowl) currentHowl.seek(audioSlider.value / 100 * currentHowl.duration());
 });
 
-// Media Session
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', playSong);
   navigator.mediaSession.setActionHandler('pause', pauseSong);
@@ -582,7 +608,6 @@ document.getElementById('playlistRepeatBtn').addEventListener('click', function(
   this.classList.toggle('active', isRepeat);
 });
 
-// ── 封面点击 → 歌词原地切换 ──
 document.getElementById('mainCover').addEventListener('click', toggleLyrics);
 
 function init(){
