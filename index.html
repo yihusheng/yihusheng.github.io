@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
   <link rel="stylesheet" href="/src/css/index.css">
   <link rel="stylesheet" href="/Tools/navbar.css">
+  <!-- Howler.js 音频引擎 -->
+  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
+  <!-- jsmediatags 读取MP3内嵌封面 -->
+  <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.5/dist/jsmediatags.min.js"></script>
 </head>
 <body>
 <div class="phone-screen" id="app">
@@ -62,6 +66,10 @@
       <span id="currTime">0:00</span>
       <span id="durTime">0:00</span>
     </div>
+    <!-- 歌词容器 -->
+    <div class="lyrics-container" id="lyricsContainer">
+      <div class="lyrics-scroll" id="lyricsScroll"></div>
+    </div>
     <div class="controls">
       <button class="btn btn-shuffle active" id="shuffleBtn" aria-label="shuffle"><span class="material-symbols-rounded">shuffle</span></button>
       <button class="btn" id="prevBtn" aria-label="previous"><span class="material-symbols-rounded">skip_previous</span></button>
@@ -106,7 +114,6 @@
   </div>
 </div>
 
-<audio id="audio" preload="metadata"></audio>
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
 <script src="/Tools/navbar.js"></script>
