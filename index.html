@@ -12,10 +12,6 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
   <link rel="stylesheet" href="/src/css/index.css">
   <link rel="stylesheet" href="/Tools/navbar.css">
-  <!-- Howler.js 音频引擎 -->
-  <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
-  <!-- jsmediatags 读取MP3内嵌封面 -->
-  <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.5/dist/jsmediatags.min.js"></script>
 </head>
 <body>
 <div class="phone-screen" id="app">
@@ -45,43 +41,13 @@
       </div>
     </div>
   </div>
-
   <div class="player-content">
     <div class="player-background"></div>
-
-    <!-- 封面+歌名区域（点击后变为歌词区域） -->
-    <div class="cover-info-area" id="coverInfoArea">
-      <!-- 封面模式 -->
-      <div class="cover-mode" id="coverMode">
-        <div class="cover-wrap" id="coverWrap">
-          <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
-          <div class="cover-placeholder" id="coverPlaceholder">
-            <span class="material-symbols-rounded">music_note</span>
-          </div>
-        </div>
-        <div class="song-info">
-          <h1 id="mainTitle" class="song-title-main">Title</h1>
-          <p id="mainArtist" class="artist-name">Artist</p>
-        </div>
-      </div>
-
-      <!-- 歌词模式 -->
-      <div class="lyrics-mode" id="lyricsMode">
-        <div class="lyrics-header">
-          <button class="lyrics-back-btn" id="lyricsBackBtn" aria-label="返回封面">
-            <span class="material-symbols-rounded">keyboard_arrow_down</span>
-          </button>
-          <div class="lyrics-header-info">
-            <div class="lyrics-header-title" id="lyricsHeaderTitle">歌曲名</div>
-            <div class="lyrics-header-artist" id="lyricsHeaderArtist">艺术家</div>
-          </div>
-        </div>
-        <div class="lyrics-body" id="lyricsBody">
-          <div class="lyrics-empty">暂无歌词</div>
-        </div>
-      </div>
+    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover">
+    <div class="song-info">
+      <h1 id="mainTitle" class="song-title-main">Title</h1>
+      <p id="mainArtist" class="artist-name">Artist</p>
     </div>
-
     <div class="m3-slider-root">
       <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
       <div class="m3-slider-track-active-container" id="activeTrack">
@@ -104,7 +70,6 @@
       <button class="btn btn-shuffle" id="playlistBtn" aria-label="playlist"><span class="material-symbols-rounded">queue_music</span></button>
     </div>
   </div>
-
   <div class="bottom-drawer" id="drawer">
     <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
@@ -141,6 +106,7 @@
   </div>
 </div>
 
+<audio id="audio" preload="metadata"></audio>
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
 <script src="/Tools/navbar.js"></script>
