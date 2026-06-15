@@ -36,6 +36,12 @@
     "src": "./src/music/%E7%87%95%E6%B1%A0%20-%20%E9%87%91%E5%B1%B1%E5%AF%BA.mp3"
   },
   {
+    "title": "坐忘道",
+    "artist": "王朝1982",
+    "cover": "./src/music/%E7%8E%8B%E6%9C%9D1982%20-%20%E5%9D%90%E5%BF%98%E9%81%93.jpg",
+    "src": "./src/music/%E7%8E%8B%E6%9C%9D1982%20-%20%E5%9D%90%E5%BF%98%E9%81%93.mp3"
+  },
+  {
     "title": "蓮花空行",
     "artist": "珂拉琪 Collage",
     "cover": "./src/music/%E7%8F%82%E6%8B%89%E7%90%AA%20Collage%20-%20%E8%93%AE%E8%8A%B1%E7%A9%BA%E8%A1%8C.jpg",
