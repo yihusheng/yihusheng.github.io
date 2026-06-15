@@ -1,3 +1,9 @@
+/**
+ * Music Player - 使用 Howler.js 重构
+ * 修复：切换歌曲进度条重置问题
+ * 新增：歌词显示功能
+ */
+
 (function renderDrawer() {
   const container = document.getElementById('drawerSections');
   if (!container) return;
@@ -22,6 +28,7 @@
   `).join('');
 })();
 
+// ==================== 颜色工具 ====================
 const ColorUtils = {
   hexToRgb: function(hex) {
     var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -78,17 +85,111 @@ const ColorUtils = {
   }
 };
 
+// ==================== Cookie 工具 ====================
 const CookieUtils = {
   set: function(n,v,d){var e=new Date();e.setTime(e.getTime()+(d||30)*864e5);document.cookie=n+'='+v+';expires='+e.toUTCString()+';path=/';},
   get: function(n){var v=document.cookie.match('(^|;)\\s*'+n+'=([^;]*)');return v?v[2]:null;},
   remove: function(n){document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';}
 };
 
+// ==================== 播放器核心 ====================
 var songs = [];
 var currentSongIndex = 0;
 var isShuffle = true;
 var isRepeat = false;
+var sound = null;  // Howler 实例
+var currentLyrics = [];  // 当前歌词
+var currentLyricIndex = -1;  // 当前歌词索引
 
+// DOM 元素
+var app = document.getElementById('app');
+var island = document.getElementById('island');
+var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+var audioSlider = document.getElementById('audioSlider');
+var activeTrack = document.getElementById('activeTrack');
+var inactiveTrack = document.getElementById('inactiveTrack');
+var sliderThumb = document.getElementById('sliderThumb');
+var lyricsScroll = document.getElementById('lyricsScroll');
+
+// ==================== 歌词解析 ====================
+function parseLRC(lrcText) {
+  if (!lrcText) return [];
+  var lines = lrcText.split('\n');
+  var lyrics = [];
+  var timeRegex = /\[(\d{2}):(\d{2})\.(\d{2,3})\]/g;
+  
+  lines.forEach(function(line) {
+    var match;
+    var timeMatches = [];
+    while ((match = timeRegex.exec(line)) !== null) {
+      var minutes = parseInt(match[1], 10);
+      var seconds = parseInt(match[2], 10);
+      var ms = parseInt(match[3].padEnd(3, '0'), 10);
+      var time = minutes * 60 + seconds + ms / 1000;
+      timeMatches.push(time);
+    }
+    
+    var text = line.replace(timeRegex, '').trim();
+    if (text && timeMatches.length > 0) {
+      timeMatches.forEach(function(time) {
+        lyrics.push({ time: time, text: text });
+      });
+    }
+  });
+  
+  lyrics.sort(function(a, b) { return a.time - b.time; });
+  return lyrics;
+}
+
+function renderLyrics() {
+  if (!lyricsScroll) return;
+  
+  if (currentLyrics.length === 0) {
+    lyricsScroll.innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+    return;
+  }
+  
+  var html = currentLyrics.map(function(line, i) {
+    return '<div class="lyric-line" data-index="' + i + '">' + line.text + '</div>';
+  }).join('');
+  
+  lyricsScroll.innerHTML = html;
+  currentLyricIndex = -1;
+}
+
+function updateLyrics(currentTime) {
+  if (currentLyrics.length === 0) return;
+  
+  var newIndex = -1;
+  for (var i = 0; i < currentLyrics.length; i++) {
+    if (currentTime >= currentLyrics[i].time) {
+      newIndex = i;
+    } else {
+      break;
+    }
+  }
+  
+  if (newIndex !== currentLyricIndex) {
+    currentLyricIndex = newIndex;
+    
+    // 更新高亮
+    var lines = lyricsScroll.querySelectorAll('.lyric-line');
+    lines.forEach(function(line, i) {
+      line.classList.toggle('active', i === newIndex);
+    });
+    
+    // 滚动到当前行
+    if (newIndex >= 0 && lines[newIndex]) {
+      var containerHeight = lyricsScroll.parentElement.offsetHeight;
+      var lineTop = lines[newIndex].offsetTop;
+      var lineHeight = lines[newIndex].offsetHeight;
+      var scrollTop = lineTop - containerHeight / 2 + lineHeight / 2;
+      lyricsScroll.style.transform = 'translateY(-' + Math.max(0, scrollTop) + 'px)';
+    }
+  }
+}
+
+// ==================== 播放控制 ====================
 function getRandomIndex() {
   if (songs.length <= 1) return 0;
   var idx;
@@ -97,21 +198,125 @@ function getRandomIndex() {
   return idx;
 }
 
-async function loadMusicList() {
-  try {
-    var res = await fetch('/src/scripts/music.json?' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    songs = await res.json();
-    console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
-  } catch (e) {
-    console.error('❌ 加载 music.json 失败:', e);
-    songs = [];
+function getNextIndex() {
+  if (isRepeat) return currentSongIndex;
+  return isShuffle ? getRandomIndex() : (currentSongIndex + 1) % songs.length;
+}
+
+function getPrevIndex() {
+  if (isRepeat) return currentSongIndex;
+  if (isShuffle) return getRandomIndex();
+  return (currentSongIndex - 1 + songs.length) % songs.length;
+}
+
+// 重置进度条到0（修复bug的关键）
+function resetProgress() {
+  audioSlider.value = 0;
+  activeTrack.style.width = '0%';
+  inactiveTrack.style.left = '0%';
+  inactiveTrack.style.width = '100%';
+  sliderThumb.style.left = '0%';
+  document.getElementById('currTime').innerText = '0:00';
+  document.getElementById('durTime').innerText = '0:00';
+}
+
+function loadSong(song) {
+  if (!song || !song.src) return;
+  
+  // 销毁之前的 Howl 实例
+  if (sound) {
+    sound.unload();
+    sound = null;
   }
-  if (songs.length === 0) {
-    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src/music 目录', cover: '', src: '' }];
+  
+  // 重置进度条
+  resetProgress();
+  
+  // 重置歌词
+  currentLyrics = [];
+  currentLyricIndex = -1;
+  renderLyrics();
+  
+  // 更新界面
+  document.getElementById('mainTitle').innerText = song.title;
+  document.getElementById('mainArtist').innerText = song.artist;
+  var mc = document.getElementById('mainCover');
+  mc.src = '';
+  mc.classList.add('change');
+  
+  // 创建新的 Howl 实例
+  sound = new Howl({
+    src: [song.src],
+    html5: true,
+    preload: true,
+    volume: 0.8,
+    onload: function() {
+      var duration = sound.duration();
+      document.getElementById('durTime').innerText = formatTime(duration);
+      mc.classList.remove('change');
+    },
+    onplay: function() {
+      app.classList.add('playing');
+      document.getElementById('playIcon').innerText = 'pause';
+      updateMediaSession(song);
+      requestAnimationFrame(updateProgressBar);
+    },
+    onpause: function() {
+      app.classList.remove('playing');
+      document.getElementById('playIcon').innerText = 'play_arrow';
+    },
+    onend: function() {
+      if (isRepeat) {
+        sound.seek(0);
+        sound.play();
+      } else {
+        document.getElementById('nextBtn').click();
+      }
+    },
+    onloaderror: function(id, error) {
+      console.error('音频加载失败:', error);
+    }
+  });
+  
+  // 加载封面
+  loadEmbeddedCover(song.src, function(coverDataUrl) {
+    if (coverDataUrl) {
+      mc.src = coverDataUrl;
+      ColorUtils.extractColorFromUrl(coverDataUrl, function(rgb) {
+        var t = ColorUtils.generateTheme(rgb);
+        for (var k in t) document.documentElement.style.setProperty(k, t[k]);
+        updateThemeColor();
+      });
+    } else if (song.cover) {
+      mc.src = song.cover;
+      ColorUtils.extractColorFromUrl(song.cover, function(rgb) {
+        var t = ColorUtils.generateTheme(rgb);
+        for (var k in t) document.documentElement.style.setProperty(k, t[k]);
+        updateThemeColor();
+      });
+    }
+  });
+  
+  // 加载歌词
+  if (song.lrc) {
+    if (song.lrc.startsWith('http') || song.lrc.startsWith('./') || song.lrc.startsWith('/')) {
+      fetch(song.lrc)
+        .then(function(res) { return res.text(); })
+        .then(function(text) {
+          currentLyrics = parseLRC(text);
+          renderLyrics();
+        })
+        .catch(function(e) {
+          console.warn('歌词加载失败:', e);
+          renderLyrics();
+        });
+    } else {
+      currentLyrics = parseLRC(song.lrc);
+      renderLyrics();
+    }
+  } else {
+    renderLyrics();
   }
-  currentSongIndex = Math.floor(Math.random() * songs.length);
-  loadSong(songs[currentSongIndex]);
 }
 
 function loadEmbeddedCover(mp3Url, callback) {
@@ -135,148 +340,142 @@ function loadEmbeddedCover(mp3Url, callback) {
   } catch(e) { callback(null); }
 }
 
-var audio = document.getElementById('audio');
-var app = document.getElementById('app');
-var island = document.getElementById('island');
-var themeColorMeta = document.querySelector('meta[name="theme-color"]');
-
-var weatherCodeMap = {
-  0:{d:"晴朗",i:"wb_sunny",b:"#1a1c18"},1:{d:"多云",i:"partly_cloudy_day",b:"#1e2020"},2:{d:"少云",i:"partly_cloudy_day",b:"#1d1f1e"},3:{d:"阴天",i:"cloud",b:"#1c1d1c"},
-  45:{d:"雾",i:"foggy",b:"#1a1b1a"},48:{d:"冻雾",i:"foggy",b:"#1b1c1e"},51:{d:"毛毛雨",i:"rainy",b:"#1a1e22"},53:{d:"中毛毛雨",i:"rainy",b:"#1b1f23"},55:{d:"大毛毛雨",i:"rainy",b:"#1c2024"},
-  61:{d:"小雨",i:"rainy",b:"#1a1e24"},63:{d:"中雨",i:"rainy",b:"#191d22"},65:{d:"大雨",i:"thunderstorm",b:"#171b20"},66:{d:"冻雨",i:"severe_cold",b:"#1e2126"},67:{d:"冻雨",i:"severe_cold",b:"#1e2126"},
-  71:{d:"小雪",i:"ac_unit",b:"#1e2022"},73:{d:"中雪",i:"ac_unit",b:"#1d1f21"},75:{d:"大雪",i:"severe_cold",b:"#1c1e20"},77:{d:"雪粒",i:"severe_cold",b:"#1c1e20"},
-  80:{d:"阵雨",i:"rainy",b:"#1a1e23"},81:{d:"阵雨",i:"rainy",b:"#1b1f24"},82:{d:"暴雨",i:"thunderstorm",b:"#181c22"},85:{d:"阵雪",i:"ac_unit",b:"#1d1f21"},86:{d:"阵雪",i:"ac_unit",b:"#1c1e20"},
-  95:{d:"雷暴",i:"thunderstorm",b:"#1a1c22"},96:{d:"雷暴",i:"thunderstorm",b:"#1b1d23"},99:{d:"强雷暴",i:"thunderstorm",b:"#191b21"}
-};
-
-function updateThemeColor() { var c=getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim(); if(c) themeColorMeta.setAttribute('content',c); }
-function updateTime() { var n=new Date(); document.getElementById('islandTime').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
-
-async function getLocationByIP() {
-  try { var r=await fetch('https://ipapi.co/json/'); if(!r.ok) throw Error(); var d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city}; } catch(e) {
-    if(location.protocol==='http:'){ try { var r2=await fetch('http://ip-api.com/json/?lang=zh-CN'); if(r2.ok){ var d2=await r2.json(); if(d2.status==='success') return {lat:d2.lat,lon:d2.lon,city:d2.city}; } } catch(e2){} }
-  } return null;
+function formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  var mins = Math.floor(seconds / 60);
+  var secs = Math.floor(seconds % 60);
+  return mins + ':' + String(secs).padStart(2, '0');
 }
 
-async function fetchWeather() {
-  var lat=parseFloat(CookieUtils.get('weather_lat'))||null, lon=parseFloat(CookieUtils.get('weather_lon'))||null, locName=null;
-  if(!lat||!lon) {
-    if('geolocation'in navigator){
-      try {
-        document.getElementById('locationDisplay').textContent='正在请求位置...';
-        var p=await new Promise(function(res,rej){navigator.geolocation.getCurrentPosition(res,rej,{timeout:1e4,enableHighAccuracy:true,maximumAge:3e5});});
-        lat=p.coords.latitude; lon=p.coords.longitude;
-        CookieUtils.set('weather_lat',lat,30); CookieUtils.set('weather_lon',lon,30);
-      } catch(e) {
-        var ip=await getLocationByIP();
-        if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-        else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
-      }
-    } else {
-      var ip=await getLocationByIP();
-      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
-    }
+var isDragging = false;
+var animationId = null;
+
+function updateProgressBar() {
+  if (!sound || isDragging) return;
+  
+  var duration = sound.duration();
+  var currentTime = sound.seek();
+  
+  if (duration > 0) {
+    var progress = (currentTime / duration) * 100;
+    
+    audioSlider.value = progress;
+    activeTrack.style.width = progress + '%';
+    inactiveTrack.style.left = progress + '%';
+    inactiveTrack.style.width = (100 - progress) + '%';
+    sliderThumb.style.left = progress + '%';
+    
+    document.getElementById('currTime').innerText = formatTime(currentTime);
+    document.getElementById('durTime').innerText = formatTime(duration);
+    
+    // 更新歌词
+    updateLyrics(currentTime);
   }
-  try {
-    if(!locName){ try { var l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); var ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
-    if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
-    var wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
-    var d=await wr.json(); var c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
-    document.getElementById('islandWeatherTemp').textContent=t+'\u00b0'; document.getElementById('islandWeatherIcon').textContent=w.i;
-    document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'\u00b0';
-    document.getElementById('detailDesc').textContent=w.d;
-    document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'\u00b0 L:'+Math.round(da.temperature_2m_min[0])+'\u00b0';
-    document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';
-    document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
-    document.documentElement.style.setProperty('--island-expand-bg',w.b);
-  } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
+  
+  if (sound.playing()) {
+    animationId = requestAnimationFrame(updateProgressBar);
+  }
 }
 
-function toggleIsland(){island.classList.toggle('active');}
-function playSong(){if(!audio.src)return;audio.play();app.classList.add('playing');document.getElementById('playIcon').innerText='pause';}
-function pauseSong(){audio.pause();app.classList.remove('playing');document.getElementById('playIcon').innerText='play_arrow';}
-document.getElementById('playBtn').addEventListener('click',function(){audio.paused?playSong():pauseSong();});
-
-function toggleShuffle() {
-  isShuffle = !isShuffle;
-  document.getElementById('shuffleBtn').classList.toggle('active', isShuffle);
-}
-document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
-document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
-
-function getNextIndex() {
-  if (isRepeat) return currentSongIndex;
-  return isShuffle ? getRandomIndex() : (currentSongIndex + 1) % songs.length;
-}
-function getPrevIndex() {
-  if (isRepeat) return currentSongIndex;
-  if (isShuffle) return getRandomIndex();
-  return (currentSongIndex - 1 + songs.length) % songs.length;
+function playSong() {
+  if (!sound) return;
+  sound.play();
 }
 
-document.getElementById('nextBtn').addEventListener('click', function(){
-  if(!songs.length) return;
+function pauseSong() {
+  if (!sound) return;
+  sound.pause();
+}
+
+function updateMediaSession(song) {
+  if ('mediaSession' in navigator && song) {
+    var mc = document.getElementById('mainCover');
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: song.title,
+      artist: song.artist,
+      album: '',
+      artwork: [{ src: mc.src || '', sizes: '512x512', type: 'image/jpeg' }]
+    });
+  }
+}
+
+// ==================== 事件绑定 ====================
+document.getElementById('playBtn').addEventListener('click', function() {
+  if (!sound) return;
+  sound.playing() ? pauseSong() : playSong();
+});
+
+document.getElementById('nextBtn').addEventListener('click', function() {
+  if (!songs.length) return;
   currentSongIndex = getNextIndex();
   loadSong(songs[currentSongIndex]);
   playSong();
 });
-document.getElementById('prevBtn').addEventListener('click', function(){
-  if(!songs.length) return;
+
+document.getElementById('prevBtn').addEventListener('click', function() {
+  if (!songs.length) return;
   currentSongIndex = getPrevIndex();
   loadSong(songs[currentSongIndex]);
   playSong();
 });
 
-function loadSong(song){
-  if (!song || !song.src) return;
-  document.getElementById('mainTitle').innerText = song.title;
-  document.getElementById('mainArtist').innerText = song.artist;
-  var mc = document.getElementById('mainCover');
-  mc.src = '';
+document.getElementById('shuffleBtn').addEventListener('click', function() {
+  isShuffle = !isShuffle;
+  this.classList.toggle('active', isShuffle);
+});
 
-  loadEmbeddedCover(song.src, function(coverDataUrl) {
-    if (coverDataUrl) {
-      mc.src = coverDataUrl;
-      ColorUtils.extractColorFromUrl(coverDataUrl, function(rgb){
-        var t = ColorUtils.generateTheme(rgb);
-        for (var k in t) document.documentElement.style.setProperty(k, t[k]);
-        updateThemeColor();
-      });
-    } else if (song.cover) {
-      mc.src = song.cover;
-      ColorUtils.extractColorFromUrl(song.cover, function(rgb){
-        var t = ColorUtils.generateTheme(rgb);
-        for (var k in t) document.documentElement.style.setProperty(k, t[k]);
-        updateThemeColor();
-      });
-    }
+audioSlider.addEventListener('input', function() {
+  isDragging = true;
+  var progress = parseFloat(this.value);
+  activeTrack.style.width = progress + '%';
+  inactiveTrack.style.left = progress + '%';
+  inactiveTrack.style.width = (100 - progress) + '%';
+  sliderThumb.style.left = progress + '%';
+  
+  if (sound) {
+    var duration = sound.duration();
+    var seekTime = (progress / 100) * duration;
+    document.getElementById('currTime').innerText = formatTime(seekTime);
+  }
+});
+
+audioSlider.addEventListener('change', function() {
+  isDragging = false;
+  if (sound) {
+    var duration = sound.duration();
+    var seekTime = (parseFloat(this.value) / 100) * duration;
+    sound.seek(seekTime);
+  }
+});
+
+// MediaSession 事件
+if ('mediaSession' in navigator) {
+  navigator.mediaSession.setActionHandler('play', playSong);
+  navigator.mediaSession.setActionHandler('pause', pauseSong);
+  navigator.mediaSession.setActionHandler('previoustrack', function() {
+    document.getElementById('prevBtn').click();
   });
-
-  audio.src = song.src;
-  mc.onload = function() {
-    if ('mediaSession' in navigator)
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: song.title, artist: song.artist, album: '',
-        artwork: [{ src: mc.src || '', sizes: '512x512', type: 'image/jpeg' }]
-      });
-  };
-  if ('mediaSession' in navigator)
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: song.title, artist: song.artist, artwork: [{ src: '', sizes: '512x512', type: 'image/jpeg' }]
-    });
+  navigator.mediaSession.setActionHandler('nexttrack', function() {
+    document.getElementById('nextBtn').click();
+  });
 }
 
-var isDragging=false;
-var audioSlider=document.getElementById('audioSlider'),activeTrack=document.getElementById('activeTrack'),inactiveTrack=document.getElementById('inactiveTrack'),sliderThumb=document.getElementById('sliderThumb');
-audio.addEventListener('timeupdate',function(){var d=audio.duration,ct=audio.currentTime;if(isNaN(d))return;var p=ct/d*100;if(!isDragging)updateUI(p);if(ct>=d&&d>0)document.getElementById('nextBtn').click();});
-audioSlider.addEventListener('input',function(){isDragging=true;updateUI(audioSlider.value);});
-audioSlider.addEventListener('change',function(){isDragging=false;audio.currentTime=audioSlider.value/100*audio.duration;});
-function updateUI(p){p=isNaN(p)?0:Math.max(0,Math.min(100,p));audioSlider.value=p;activeTrack.style.width=p+'%';inactiveTrack.style.left=p+'%';inactiveTrack.style.width=(100-p)+'%';sliderThumb.style.left=p+'%';var cur=isDragging?p/100*audio.duration:audio.currentTime;document.getElementById('currTime').innerText=isNaN(cur)?'0:00':Math.floor(cur/60)+':'+String(Math.floor(cur%60)).padStart(2,'0');document.getElementById('durTime').innerText=isNaN(audio.duration)?'0:00':Math.floor(audio.duration/60)+':'+String(Math.floor(audio.duration%60)).padStart(2,'0');}
-if('mediaSession'in navigator){navigator.mediaSession.setActionHandler('play',playSong);navigator.mediaSession.setActionHandler('pause',pauseSong);navigator.mediaSession.setActionHandler('previoustrack',function(){document.getElementById('prevBtn').click();});navigator.mediaSession.setActionHandler('nexttrack',function(){document.getElementById('nextBtn').click();});}
-function toggleDrawer(){document.getElementById('drawer').classList.toggle('open');}
-document.addEventListener('keydown',function(e){if(e.key===' '){e.preventDefault();audio.paused?playSong():pauseSong();}else if(e.key==='ArrowLeft'){e.preventDefault();document.getElementById('prevBtn').click();}else if(e.key==='ArrowRight'){e.preventDefault();document.getElementById('nextBtn').click();}});
-async function loadBingWallpaper(){if(window.innerWidth<768)return;try{var r=await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');var d=await r.json();if(d.images&&d.images.length>0){var u='https://www.bing.com'+d.images[0].url;var img=new Image();img.src=u;img.onload=function(){document.body.style.backgroundImage='url('+u+')';};}}catch(e){}}
+// 键盘控制
+document.addEventListener('keydown', function(e) {
+  if (e.key === ' ') {
+    e.preventDefault();
+    if (sound) sound.playing() ? pauseSong() : playSong();
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    document.getElementById('prevBtn').click();
+  } else if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    document.getElementById('nextBtn').click();
+  }
+});
+
+// ==================== 播放列表 ====================
+document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
 
 function openPlaylist() {
   var overlay = document.getElementById('playlistOverlay');
@@ -294,6 +493,7 @@ function renderPlaylist() {
   var repeatBtn = document.getElementById('playlistRepeatBtn');
   repeatBtn.classList.toggle('active', isRepeat);
   document.getElementById('playlistCount').textContent = songs.length + ' 首';
+  
   var html = '';
   for (var i = 0; i < songs.length; i++) {
     var song = songs[i];
@@ -301,7 +501,7 @@ function renderPlaylist() {
     var thumbSrc = song.cover || '';
     html += '<div class="playlist-item' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
       '<img class="playlist-item-thumb" src="' + thumbSrc + '" alt="" loading="lazy"' +
-      ' onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 44 44%22><rect fill=%22%23e8ebe6%22 width=%2244%22 height=%2244%22/><text x=%2222%22 y=%2228%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22%23868685%22>\u266a</text></svg>\'">' +
+      ' onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 44 44%22><rect fill=%22%23e8ebe6%22 width=%2244%22 height=%2244%22/><text x=%2222%22 y=%2228%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22%23868685%22>&#9834;</text></svg>\'">' +
       '<div class="playlist-item-info">' +
       '<div class="playlist-item-title">' + song.title + '</div>' +
       '<div class="playlist-item-artist">' + song.artist + '</div></div>' +
@@ -309,7 +509,7 @@ function renderPlaylist() {
       '<span class="playlist-item-index">' + (i + 1) + '</span></div>';
   }
   body.innerHTML = html;
-
+  
   var items = body.querySelectorAll('.playlist-item');
   for (var i = 0; i < items.length; i++) {
     items[i].addEventListener('click', function() {
@@ -330,14 +530,138 @@ document.getElementById('playlistRepeatBtn').addEventListener('click', function(
   this.classList.toggle('active', isRepeat);
 });
 
-function init(){
+// ==================== 天气功能 ====================
+var weatherCodeMap = {
+  0:{d:"晴朗",i:"wb_sunny",b:"#1a1c18"},1:{d:"多云",i:"partly_cloudy_day",b:"#1e2020"},2:{d:"少云",i:"partly_cloudy_day",b:"#1d1f1e"},3:{d:"阴天",i:"cloud",b:"#1c1d1c"},
+  45:{d:"雾",i:"foggy",b:"#1a1b1a"},48:{d:"冻雾",i:"foggy",b:"#1b1c1e"},51:{d:"毛毛雨",i:"rainy",b:"#1a1e22"},53:{d:"中毛毛雨",i:"rainy",b:"#1b1f23"},55:{d:"大毛毛雨",i:"rainy",b:"#1c2024"},
+  61:{d:"小雨",i:"rainy",b:"#1a1e24"},63:{d:"中雨",i:"rainy",b:"#191d22"},65:{d:"大雨",i:"thunderstorm",b:"#171b20"},66:{d:"冻雨",i:"severe_cold",b:"#1e2126"},67:{d:"冻雨",i:"severe_cold",b:"#1e2126"},
+  71:{d:"小雪",i:"ac_unit",b:"#1e2022"},73:{d:"中雪",i:"ac_unit",b:"#1d1f21"},75:{d:"大雪",i:"severe_cold",b:"#1c1e20"},77:{d:"雪粒",i:"severe_cold",b:"#1c1e20"},
+  80:{d:"阵雨",i:"rainy",b:"#1a1e23"},81:{d:"阵雨",i:"rainy",b:"#1b1f24"},82:{d:"暴雨",i:"thunderstorm",b:"#181c22"},85:{d:"阵雪",i:"ac_unit",b:"#1d1f21"},86:{d:"阵雪",i:"ac_unit",b:"#1c1e20"},
+  95:{d:"雷暴",i:"thunderstorm",b:"#1a1c22"},96:{d:"雷暴",i:"thunderstorm",b:"#1b1d23"},99:{d:"强雷暴",i:"thunderstorm",b:"#191b21"}
+};
+
+function updateThemeColor() { 
+  var c = getComputedStyle(document.documentElement).getPropertyValue('--phone-screen-bg').trim(); 
+  if (c) themeColorMeta.setAttribute('content', c); 
+}
+
+function updateTime() { 
+  var n = new Date(); 
+  document.getElementById('islandTime').textContent = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0'); 
+}
+
+async function getLocationByIP() {
+  try { 
+    var r = await fetch('https://ipapi.co/json/'); 
+    if (!r.ok) throw Error(); 
+    var d = await r.json(); 
+    if (d.latitude && d.longitude) return {lat: d.latitude, lon: d.longitude, city: d.city}; 
+  } catch(e) {
+    if (location.protocol === 'http:') { 
+      try { 
+        var r2 = await fetch('http://ip-api.com/json/?lang=zh-CN'); 
+        if (r2.ok) { 
+          var d2 = await r2.json(); 
+          if (d2.status === 'success') return {lat: d2.lat, lon: d2.lon, city: d2.city}; 
+        } 
+      } catch(e2){} 
+    }
+  } 
+  return null;
+}
+
+async function fetchWeather() {
+  var lat = parseFloat(CookieUtils.get('weather_lat')) || null, lon = parseFloat(CookieUtils.get('weather_lon')) || null, locName = null;
+  if (!lat || !lon) {
+    if ('geolocation' in navigator) {
+      try {
+        document.getElementById('locationDisplay').textContent = '正在请求位置...';
+        var p = await new Promise(function(res, rej) {
+          navigator.geolocation.getCurrentPosition(res, rej, {timeout: 1e4, enableHighAccuracy: true, maximumAge: 3e5});
+        });
+        lat = p.coords.latitude; lon = p.coords.longitude;
+        CookieUtils.set('weather_lat', lat, 30); CookieUtils.set('weather_lon', lon, 30);
+      } catch(e) {
+        var ip = await getLocationByIP();
+        if (ip) { lat = ip.lat; lon = ip.lon; locName = ip.city; CookieUtils.set('weather_lat', lat, 30); CookieUtils.set('weather_lon', lon, 30); }
+        else { lat = 39.9042; lon = 116.4074; document.getElementById('locationDisplay').textContent = '默认位置 (北京)'; }
+      }
+    } else {
+      var ip = await getLocationByIP();
+      if (ip) { lat = ip.lat; lon = ip.lon; locName = ip.city; CookieUtils.set('weather_lat', lat, 30); CookieUtils.set('weather_lon', lon, 30); }
+      else { lat = 39.9042; lon = 116.4074; document.getElementById('locationDisplay').textContent = '默认位置 (北京)'; }
+    }
+  }
+  try {
+    if (!locName) { 
+      try { 
+        var l = await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=zh'); 
+        var ld = await l.json(); 
+        locName = ld.city || ld.locality || ld.principalSubdivision || ld.countryName || lat.toFixed(2) + ', ' + lon.toFixed(2); 
+      } catch(e) { locName = '未知位置'; } 
+    }
+    if (!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent = locName;
+    var wr = await fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
+    var d = await wr.json(); 
+    var c = d.current_weather || d.current, da = d.daily, t = Math.round(c.temperature_2m), cd = c.weather_code, w = weatherCodeMap[cd] || {d: '未知', i: 'thermostat', b: '#1a1c18'};
+    document.getElementById('islandWeatherTemp').textContent = t + '\u00b0'; 
+    document.getElementById('islandWeatherIcon').textContent = w.i;
+    document.getElementById('detailIcon').textContent = w.i; 
+    document.getElementById('detailTemp').textContent = t + '\u00b0';
+    document.getElementById('detailDesc').textContent = w.d;
+    document.getElementById('detailRange').textContent = 'H:' + Math.round(da.temperature_2m_max[0]) + '\u00b0 L:' + Math.round(da.temperature_2m_min[0]) + '\u00b0';
+    document.getElementById('detailWind').innerHTML = '<span class="material-symbols-rounded">air</span> ' + Math.round(c.wind_speed_10m) + 'km/h';
+    document.getElementById('detailHumidity').innerHTML = '<span class="material-symbols-rounded">water_drop</span> ' + c.relative_humidity_2m + '%';
+    document.documentElement.style.setProperty('--island-expand-bg', w.b);
+  } catch(e) { 
+    console.error(e); 
+    if (!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent = '天气获取失败'; 
+  }
+}
+
+function toggleIsland() { island.classList.toggle('active'); }
+function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
+
+async function loadBingWallpaper() {
+  if (window.innerWidth < 768) return;
+  try {
+    var r = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN');
+    var d = await r.json();
+    if (d.images && d.images.length > 0) {
+      var u = 'https://www.bing.com' + d.images[0].url;
+      var img = new Image();
+      img.src = u;
+      img.onload = function() { document.body.style.backgroundImage = 'url(' + u + ')'; };
+    }
+  } catch(e) {}
+}
+
+// ==================== 初始化 ====================
+async function loadMusicList() {
+  try {
+    var res = await fetch('/src/scripts/music.json?' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    songs = await res.json();
+    console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
+  } catch (e) {
+    console.error('❌ 加载 music.json 失败:', e);
+    songs = [];
+  }
+  if (songs.length === 0) {
+    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src/music 目录', cover: '', src: '' }];
+  }
+  currentSongIndex = Math.floor(Math.random() * songs.length);
+  loadSong(songs[currentSongIndex]);
+}
+
+function init() {
   updateTime();
-  setInterval(updateTime,1e3);
+  setInterval(updateTime, 1e3);
   fetchWeather();
-  setInterval(fetchWeather,6e5);
-  island.addEventListener('click',toggleIsland);
+  setInterval(fetchWeather, 6e5);
+  island.addEventListener('click', toggleIsland);
   loadBingWallpaper();
-  window.addEventListener('resize',function(){if(window.innerWidth>=768)loadBingWallpaper();});
+  window.addEventListener('resize', function() { if (window.innerWidth >= 768) loadBingWallpaper(); });
   updateThemeColor();
 }
 
