@@ -94,7 +94,7 @@ body {
 .detail-meta .material-symbols-rounded { font-size: 0.85rem; vertical-align: middle; color: rgba(255,255,255,0.45); margin-right: 2px; }
 .player-content { padding: calc(env(safe-area-inset-top, 20px) + 100px) 24px 70px; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; z-index: 1; }
 .player-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: var(--player-bg); filter: blur(60px) saturate(1.2); transform: scale(1.3); opacity: 0.3; transition: background-color 0.6s ease; }
-.album-art { width: 280px; height: 280px; object-fit: cover; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,12,0.05); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 75vw; background: var(--wise-canvas); }
+.album-art { width: 280px; height: 280px; object-fit: cover; border-radius: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(14,15,12,0.1), 0 2px 8px rgba(14,15,12,0.05); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1); max-width: 75vw; background: var(--wise-canvas); cursor: pointer; }
 .album-art.change { transform: scale(0.9); opacity: 0.7; }
 .song-info { text-align: center; margin-bottom: 12px; width: 100%; padding: 0 8px; }
 .song-title-main { font-weight: 900; font-size: 1.75rem; color: var(--md-sys-color-on-surface); margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.5px; line-height: 1.15; }
@@ -312,10 +312,86 @@ body {
   opacity: 0;
 }
 
+/* ===== 歌词面板 ===== */
+.lyrics-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 1500;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.lyrics-panel.open {
+  opacity: 1; pointer-events: auto;
+}
+.lyrics-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.35);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.lyrics-panel-sheet {
+  position: absolute; bottom: 0; left: 0; width: 100%;
+  max-height: 65%;
+  background: var(--md-sys-color-surface);
+  border-radius: 24px 24px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.45s cubic-bezier(0.2,0,0,1);
+  display: flex; flex-direction: column;
+  box-shadow: 0 -8px 40px rgba(14,15,12,0.12);
+}
+.lyrics-panel.open .lyrics-panel-sheet {
+  transform: translateY(0);
+}
+.lyrics-panel-handle-area {
+  width: 100%; height: 20px; padding-top: 8px;
+  display: flex; justify-content: center; flex-shrink: 0;
+  cursor: pointer;
+}
+.lyrics-panel-handle {
+  width: 32px; height: 4px;
+  background: var(--md-sys-color-outline);
+  border-radius: 2px; opacity: 0.3;
+}
+.lyrics-panel-header {
+  padding: 4px 24px 12px; flex-shrink: 0;
+}
+.lyrics-panel-title {
+  font-size: 1.25rem; font-weight: 900;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: -0.3px;
+}
+.lyrics-panel-body {
+  flex: 1; overflow-y: auto;
+  padding: 8px 24px 32px;
+  -webkit-overflow-scrolling: touch;
+}
+.lyrics-panel-body::-webkit-scrollbar { display: none; }
+.lyric-line {
+  padding: 10px 0;
+  font-size: 1rem; font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.6;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.lyric-line.active {
+  color: var(--md-sys-color-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.lyrics-empty {
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+  padding: 60px 0;
+  opacity: 0.6;
+}
+
 @media screen and (min-width: 768px) {
   body { background-color: var(--wise-canvas-soft); background-size: cover; background-position: center; background-attachment: fixed; display: flex; justify-content: flex-end; align-items: flex-end; padding: 20px; }
   .phone-screen { width: 375px; height: 812px; border-radius: 40px; box-shadow: 0 0 0 10px var(--wise-ink), 0 0 0 12px rgba(14,15,12,0.2), 0 30px 60px rgba(14,15,12,0.15); position: relative; margin: 0; padding-top: env(safe-area-inset-top); transform: none; align-self: flex-end; }
   .player-content { padding-top: calc(env(safe-area-inset-top, 20px) + 100px); }
   .playlist-sheet { max-height: 65%; }
+  .lyrics-panel-sheet { max-height: 55%; }
 }
 @media screen and (min-width: 1024px) { body { padding: 30px; } .phone-screen { width: 390px; height: 844px; } }
