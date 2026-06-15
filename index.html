@@ -44,9 +44,15 @@
   <div class="player-content">
     <div class="player-background"></div>
     <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
-    <div class="song-info">
+    <div class="song-info" id="songInfo">
       <h1 id="mainTitle" class="song-title-main">Title</h1>
       <p id="mainArtist" class="artist-name">Artist</p>
+    </div>
+    <!-- 歌词视图：封面原地切换，点击歌词跳转，点击空白切回 -->
+    <div class="lyrics-view" id="lyricsView">
+      <div class="lyrics-scroll" id="lyricsContent">
+        <div class="lyrics-empty">暂无歌词</div>
+      </div>
     </div>
     <div class="m3-slider-root">
       <div class="m3-slider-track-inactive" id="inactiveTrack"></div>
@@ -87,7 +93,6 @@
   </div>
 </div>
 
-<!-- 播放列表弹窗 -->
 <div class="playlist-overlay" id="playlistOverlay">
   <div class="playlist-backdrop" id="playlistBackdrop"></div>
   <div class="playlist-sheet">
@@ -104,21 +109,6 @@
       </button>
     </div>
     <div class="playlist-body" id="playlistBody"></div>
-  </div>
-</div>
-
-<!-- 歌词面板 -->
-<div class="lyrics-panel" id="lyricsPanel">
-  <div class="lyrics-panel-sheet">
-    <div class="lyrics-panel-handle-area" id="lyricsPanelHandle">
-      <div class="lyrics-panel-handle"></div>
-    </div>
-    <div class="lyrics-panel-header">
-      <span class="lyrics-panel-title">歌词</span>
-    </div>
-    <div class="lyrics-panel-body" id="lyricsContent">
-      <div class="lyrics-empty">暂无歌词</div>
-    </div>
   </div>
 </div>
 
