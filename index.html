@@ -47,7 +47,7 @@
   </div>
   <div class="player-content">
     <div class="player-background"></div>
-    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover">
+    <img id="mainCover" crossorigin="anonymous" src="" class="album-art" alt="album cover" title="点击查看歌词">
     <div class="song-info">
       <h1 id="mainTitle" class="song-title-main">Title</h1>
       <p id="mainArtist" class="artist-name">Artist</p>
@@ -66,7 +66,7 @@
       <span id="currTime">0:00</span>
       <span id="durTime">0:00</span>
     </div>
-    <!-- 歌词容器 -->
+    <!-- 内嵌歌词容器 -->
     <div class="lyrics-container" id="lyricsContainer">
       <div class="lyrics-scroll" id="lyricsScroll"></div>
     </div>
@@ -112,6 +112,17 @@
     </div>
     <div class="playlist-body" id="playlistBody"></div>
   </div>
+</div>
+
+<!-- 歌词弹窗 -->
+<div class="lyrics-modal" id="lyricsModal">
+  <div class="lyrics-modal-header">
+    <span class="lyrics-modal-title" id="lyricsModalTitle">歌曲名</span>
+    <button class="lyrics-modal-close" id="lyricsModalClose" aria-label="关闭歌词">
+      <span class="material-symbols-rounded">close</span>
+    </button>
+  </div>
+  <div class="lyrics-modal-body" id="lyricsModalBody"></div>
 </div>
 
 <canvas id="colorCanvas" style="display: none;"></canvas>
