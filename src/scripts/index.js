@@ -291,16 +291,14 @@ function updateLyricHighlight() {
   }
 }
 
-// ── backdrop 点击 → 关闭 ──
-document.getElementById('lyricsBackdrop').addEventListener('click', toggleLyrics);
-
-// ── 歌词区域内：点击歌词行 → 跳转；其他区域（空白/间隙）→ 不操作 ──
+// ── lyrics-view 点击：歌词行→跳转；空白（行间/底部/边缘）→返回封面 ──
 document.getElementById('lyricsView').addEventListener('click', function(e) {
   if (e.target.classList.contains('lyric-line')) {
     var idx = parseInt(e.target.dataset.index, 10);
     if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) currentHowl.seek(lyricsData[idx].time);
+  } else {
+    toggleLyrics();
   }
-  // 点击其他区域（.lyrics-scroll 空白、行间）→ 不处理
 });
 
 function loadSong(song){
