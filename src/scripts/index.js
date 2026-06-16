@@ -246,12 +246,27 @@ function loadLyrics(lrcUrl, callback) {
     .catch(function(err) { console.error('❌ 歌词加载失败:', lrcUrl, err.message || err); callback(null); });
 }
 
+// ── 渲染歌词 + 绑定点击（开源方案：文本 span 精准命中）──
 function renderLyrics() {
   var container = document.getElementById('lyricsContent');
   if (!lyricsData || lyricsData.length === 0) { container.innerHTML = '<div class="lyrics-empty">暂无歌词</div>'; return; }
   var html = '';
-  for (var i = 0; i < lyricsData.length; i++) html += '<div class="lyric-line" data-index="' + i + '">' + lyricsData[i].text + '</div>';
+  for (var i = 0; i < lyricsData.length; i++) {
+    html += '<div class="lyric-line" data-index="' + i + '"><span class="lyric-text">' + lyricsData[i].text + '</span></div>';
+  }
   container.innerHTML = html;
+  // 每行歌词：点击文本 → 跳转 + 阻止冒泡（不关闭）；点击 padding → 不阻止 → 冒泡到父级关闭
+  var lines = container.querySelectorAll('.lyric-line');
+  for (var i = 0; i < lines.length; i++) {
+    lines[i].addEventListener('click', function(e) {
+      if (e.target.classList.contains('lyric-text')) {
+        var idx = parseInt(this.dataset.index, 10);
+        if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) currentHowl.seek(lyricsData[idx].time);
+        e.stopPropagation();
+      }
+      // 点击 padding → 不阻止 → 冒泡到 lyricsView → 关闭
+    });
+  }
 }
 
 function toggleLyrics() {
@@ -291,14 +306,9 @@ function updateLyricHighlight() {
   }
 }
 
-// ── lyrics-view 点击：歌词行→跳转；空白（行间/底部/边缘）→返回封面 ──
+// ── 父级 lyrics-view：所有空白/非文本点击 → 返回封面 ──
 document.getElementById('lyricsView').addEventListener('click', function(e) {
-  if (e.target.classList.contains('lyric-line')) {
-    var idx = parseInt(e.target.dataset.index, 10);
-    if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) currentHowl.seek(lyricsData[idx].time);
-  } else {
-    toggleLyrics();
-  }
+  toggleLyrics();
 });
 
 function loadSong(song){
