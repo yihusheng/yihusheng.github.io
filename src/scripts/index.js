@@ -403,7 +403,35 @@ document.addEventListener('keydown', function(e){
 
 async function loadBingWallpaper(){
   if (window.innerWidth < 768) return;
-  try { var r = await fetch('https://bing.biturl.top/?resolution=1920&format=json&index=0&mkt=zh-CN'); var d = await r.json(); if (d.url) { var u = d.url; var img = new Image(); img.src = u; img.onload = function() { document.body.style.backgroundImage = 'url(' + u + ')'; }; } } catch(e) {}
+  try {
+    var r = await fetch('https://bing.biturl.top/?resolution=1920&format=json&index=0&mkt=zh-CN');
+    var d = await r.json();
+    if (d.url) {
+      var u = d.url;
+      var img = new Image();
+      img.onload = function() { document.body.style.backgroundImage = 'url(' + u + ')'; };
+      img.src = u;
+    }
+    if (d.copyright) {
+      showWallpaperInfo(d.copyright, d.copyright_link || 'https://www.bing.com');
+    }
+  } catch(e) {}
+}
+
+function showWallpaperInfo(text, linkUrl) {
+  var el = document.getElementById('wallpaperInfo');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'wallpaperInfo';
+    el.className = 'wallpaper-info';
+    document.body.appendChild(el);
+  }
+  var desc = text.replace(/\s*\(.*?\)\s*$/, '').trim() || text;
+  var credit = text.match(/\(([^)]+)\)/);
+  var creditText = credit ? credit[0] : '';
+  el.innerHTML = '<span class="wallpaper-desc">' + desc + '</span> <span class="wallpaper-credit">' + creditText + '</span>';
+  el.onclick = function() { window.open(linkUrl, '_blank'); };
+  el.style.cursor = 'pointer';
 }
 
 function openPlaylist() { var overlay = document.getElementById('playlistOverlay'); if (!songs || songs.length === 0) return; renderPlaylist(); overlay.classList.add('open'); }
