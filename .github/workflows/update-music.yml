@@ -16,6 +16,7 @@ on:
       - 'src/lyrics/*.lrc'
       - 'src/lyrics/*.txt'
       - 'src/scripts/generate-music.js'
+      - 'src/scripts/index.js'
       - '.github/workflows/update-music.yml'
   workflow_dispatch:
 
