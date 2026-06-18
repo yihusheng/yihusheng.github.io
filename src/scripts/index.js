@@ -403,7 +403,7 @@ document.addEventListener('keydown', function(e){
 
 async function loadBingWallpaper(){
   if (window.innerWidth < 768) return;
-  try { var r = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN'); var d = await r.json(); if (d.images && d.images.length > 0) { var u = 'https://www.bing.com' + d.images[0].url; var img = new Image(); img.src = u; img.onload = function() { document.body.style.backgroundImage = 'url(' + u + ')'; }; } } catch(e) {}
+  try { var r = await fetch('https://bing.biturl.top/?resolution=1920&format=json&index=0&mkt=zh-CN'); var d = await r.json(); if (d.url) { var u = d.url; var img = new Image(); img.src = u; img.onload = function() { document.body.style.backgroundImage = 'url(' + u + ')'; }; } } catch(e) {}
 }
 
 function openPlaylist() { var overlay = document.getElementById('playlistOverlay'); if (!songs || songs.length === 0) return; renderPlaylist(); overlay.classList.add('open'); }
