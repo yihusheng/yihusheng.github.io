@@ -1,1 +1,3 @@
-window.__METACUBEXD_CONFIG__={defaultBackendURL:""}
+window.__METACUBEXD_CONFIG__ = {
+  defaultBackendURL: '',
+}
