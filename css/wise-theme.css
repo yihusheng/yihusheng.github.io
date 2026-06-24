@@ -110,29 +110,44 @@ body { padding: 40px 16px !important; }
   font-family: 'Inter', system-ui;
 }
 
-/* ═══ Radio group → Wise pill toggles ═══ */
+/* ═══ Radio group → Wise list selector ═══ */
 .el-radio-group {
   display: flex !important;
   flex-wrap: wrap;
-  gap: 8px;
   margin: 12px 0 20px !important;
+  border: 1px solid var(--wcs) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  gap: 0 !important;
 }
-/* Hide default radio circle */
 .el-radio__input { display: none !important; }
 .el-radio {
   margin: 0 !important;
-  padding: 8px 20px !important;
-  border: 1.5px solid var(--wmt) !important;
-  border-radius: 999px !important;
+  padding: 10px 18px !important;
+  border: none !important;
+  border-radius: 0 !important;
   background: transparent !important;
   cursor: pointer;
-  transition: all 0.15s ease;
-  flex: 0 1 auto !important;
+  flex: 1 1 auto !important;
+  border-right: 1px solid var(--wcs) !important;
+  text-align: center;
+  transition: background 0.15s ease;
 }
-.el-radio:hover { border-color: var(--wp) !important; }
+.el-radio:last-child { border-right: none !important; }
+.el-radio:hover { background: var(--wpp) !important; }
 .el-radio.is-checked {
+  background: var(--wpp) !important;
+  position: relative;
+}
+.el-radio.is-checked::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 3px !important;
   background: var(--wp) !important;
-  border-color: var(--wp) !important;
+  border-radius: 0 0 2px 2px !important;
 }
 .el-radio__label {
   font-size: 13px !important;
@@ -142,7 +157,7 @@ body { padding: 40px 16px !important; }
   white-space: nowrap;
 }
 .el-radio.is-checked .el-radio__label {
-  color: var(--wop) !important;
+  color: var(--wik) !important;
   font-weight: 600 !important;
 }
 
@@ -422,37 +437,24 @@ a:hover { color: var(--wp); }
     justify-content: flex-start !important;
   }
 
-  /* Radio: list style (no more pills) */
+  /* Radio: vertical list on mobile */
   .el-radio-group {
     flex-direction: column !important;
-    gap: 0 !important;
-    margin: 8px 0 16px !important;
-    border: 1px solid var(--wcs) !important;
-    border-radius: 12px !important;
-    overflow: hidden;
   }
   .el-radio {
-    padding: 10px 14px !important;
-    margin: 0 !important;
-    border: none !important;
-    border-radius: 0 !important;
+    border-right: none !important;
     border-bottom: 1px solid var(--wcs) !important;
+    text-align: left !important;
+    padding: 12px 16px !important;
   }
-  .el-radio:last-child { border-bottom: none !important; }
-  .el-radio.is-checked {
-    background: var(--wpp) !important;
-    border-color: transparent !important;
-    border-bottom-color: var(--wcs) !important;
-    position: relative;
-  }
+  .el-radio:last-child { border-bottom: none !important; border-right: none !important; }
   .el-radio.is-checked::before {
-    content: '' !important;
-    position: absolute !important;
+    top: 6px !important;
+    bottom: 6px !important;
     left: 0 !important;
-    top: 4px !important;
-    bottom: 4px !important;
+    right: auto !important;
     width: 3px !important;
-    background: var(--wp) !important;
+    height: auto !important;
     border-radius: 0 2px 2px 0 !important;
   }
   .el-radio__label { font-size: 13px !important; }
