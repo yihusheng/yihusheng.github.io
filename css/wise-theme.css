@@ -406,6 +406,8 @@ a:hover { color: var(--wp); }
   /* Cover image in table smaller */
   .el-table td:first-child .el-image,
   .el-table td .music-cover img { width: 32px !important; height: 32px !important; }
+  /* Dialog: full width on mobile */
+  .el-dialog {
     width: calc(100vw - 24px) !important;
     max-width: calc(100vw - 24px) !important;
     margin: 12px !important;
