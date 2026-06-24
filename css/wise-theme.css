@@ -68,14 +68,47 @@ body { padding: 40px 16px !important; }
 }
 .el-upload-dragger:hover { background: var(--wpa) !important; }
 .el-upload-dragger .el-upload__text {
-  color: var(--wik) !important;
-  font-size: 20px !important; font-weight: 600 !important; line-height: 1.5 !important;
+  font-size: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
   text-align: center !important;
 }
-.el-upload-dragger .el-upload__text em { color: var(--wp) !important; font-style: normal !important; font-weight: 700 !important; }
-.el-upload-dragger .el-upload__text + div,
-.el-upload-dragger .el-upload__text ~ * { font-size: 13px; color: var(--wmt); margin-top: 8px; }
-.el-upload__tip { color: var(--wmt) !important; font-size: 13px !important; margin-top: 12px; text-align: center; }
+/* Primary CTA: 点击选择 */
+.el-upload-dragger .el-upload__text::before {
+  content: "点击选择" !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: var(--wik) !important;
+  font-family: 'Inter', system-ui;
+  line-height: 1.3 !important;
+}
+/* Secondary: 将文件拖到此处 */
+.el-upload-dragger .el-upload__text::after {
+  content: "将文件拖到此处" !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--wmt) !important;
+  font-family: 'Inter', system-ui;
+}
+.el-upload-dragger .el-upload__text em {
+  display: none !important;
+}
+/* File count (0 / 0) */
+.el-upload-dragger .el-upload__text + div {
+  font-size: 13px !important;
+  color: var(--wmt) !important;
+  font-family: 'Inter', system-ui;
+  margin-top: 16px !important;
+}
+.el-upload__tip {
+  color: var(--wmt) !important;
+  font-size: 13px !important;
+  margin-top: 12px;
+  text-align: center;
+  font-family: 'Inter', system-ui;
+}
 
 /* ═══ Radio group → Wise pill toggles ═══ */
 .el-radio-group {
@@ -357,6 +390,8 @@ a:hover { color: var(--wp); }
   #app { padding: 32px 24px 0 !important; }
   .wise-nav { padding: 12px 16px; }
   .el-upload-dragger { padding: 48px 24px !important; min-height: 160px !important; }
+  .el-upload-dragger .el-upload__text::before { font-size: 20px !important; }
+  .el-upload-dragger .el-upload__text::after { font-size: 13px !important; }
   #app-footer, #app > div:last-child {
     margin-left: -24px !important; margin-right: -24px !important;
     padding: 32px 24px !important;
@@ -368,6 +403,8 @@ a:hover { color: var(--wp); }
   #app { padding: 24px 16px 0 !important; border-radius: 0 !important; max-width: 100% !important; box-shadow: none !important; }
   .wise-nav { padding: 10px 14px; margin-bottom: 0; border-radius: 0; border-bottom: 1px solid var(--wcs); position: sticky; top: 0; z-index: 100; }
   .el-upload-dragger { padding: 36px 16px !important; min-height: 140px !important; }
+  .el-upload-dragger .el-upload__text::before { font-size: 18px !important; }
+  .el-upload-dragger .el-upload__text::after { font-size: 12px !important; }
 
   /* Stack buttons vertically */
   .el-button { width: 100%; display: flex; justify-content: center; padding: 14px 20px !important; }
