@@ -1,0 +1,843 @@
+/* ═══════════════════════════════════════════════════
+   Wise Design Theme — 音乐解锁 (Unlock Music)
+   Inspired by Wise's design language
+   ═══════════════════════════════════════════════════ */
+
+/* ─── Design Tokens ─── */
+:root {
+  --wise-primary: #9fe870;
+  --wise-on-primary: #0e0f0c;
+  --wise-primary-active: #cdffad;
+  --wise-primary-neutral: #c5edab;
+  --wise-primary-pale: #e2f6d5;
+  --wise-ink: #0e0f0c;
+  --wise-ink-deep: #163300;
+  --wise-body: #454745;
+  --wise-mute: #868685;
+  --wise-canvas: #ffffff;
+  --wise-canvas-soft: #e8ebe6;
+  --wise-positive: #2ead4b;
+  --wise-positive-deep: #054d28;
+  --wise-warning: #ffd11a;
+  --wise-negative: #d03238;
+  --wise-negative-bg: #320707;
+  --wise-rounded-sm: 8px;
+  --wise-rounded-md: 12px;
+  --wise-rounded-lg: 16px;
+  --wise-rounded-xl: 24px;
+  --wise-rounded-pill: 9999px;
+  --wise-spacing-sm: 8px;
+  --wise-spacing-md: 12px;
+  --wise-spacing-lg: 16px;
+  --wise-spacing-xl: 24px;
+  --wise-spacing-2xl: 32px;
+  --wise-spacing-3xl: 48px;
+  --wise-font: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ─── Page Background (Sage Canvas) ─── */
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--wise-canvas-soft) !important;
+  font-family: var(--wise-font);
+  color: var(--wise-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── App Container (White Card) ─── */
+#app {
+  background-color: var(--wise-canvas) !important;
+  border-radius: var(--wise-rounded-xl);
+  margin: var(--wise-spacing-xl) auto;
+  padding: var(--wise-spacing-2xl) !important;
+  max-width: 720px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  color: var(--wise-ink) !important;
+}
+
+/* ─── Wise Brand Nav Bar ─── */
+.wise-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--wise-spacing-md) var(--wise-spacing-xl);
+  background-color: var(--wise-canvas);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: var(--wise-rounded-xl) var(--wise-rounded-xl) 0 0;
+}
+
+.wise-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--wise-ink);
+  text-decoration: none;
+}
+
+.wise-nav-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--wise-primary);
+}
+
+.wise-nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--wise-spacing-lg);
+}
+
+.wise-nav-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wise-ink);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color 0.15s ease;
+}
+
+.wise-nav-link:hover {
+  color: var(--wise-primary);
+}
+
+.wise-nav-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--wise-ink);
+  text-decoration: none;
+  padding: var(--wise-spacing-sm) var(--wise-spacing-md);
+  border-radius: var(--wise-rounded-pill);
+  transition: background-color 0.15s ease;
+}
+
+.wise-nav-back:hover {
+  background-color: var(--wise-canvas-soft);
+}
+
+.wise-nav-back .material-symbols-rounded {
+  font-size: 20px;
+}
+
+/* ─── App Header / Title Area ─── */
+#app > h1,
+#app > .app-title {
+  font-family: var(--wise-font);
+  font-weight: 900;
+  font-size: 32px;
+  line-height: 38.4px;
+  letter-spacing: -0.96px;
+  color: var(--wise-ink);
+  margin-bottom: var(--wise-spacing-xl);
+}
+
+/* ─── All Buttons (Element UI overrides) ─── */
+.el-button {
+  border-radius: var(--wise-rounded-xl) !important;
+  font-family: var(--wise-font);
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  padding: var(--wise-spacing-md) var(--wise-spacing-xl) !important;
+  border: none;
+  transition: all 0.15s ease;
+  min-height: 44px;
+}
+
+.el-button:active {
+  transform: translateY(1px);
+}
+
+/* Primary button — lime green CTA */
+.el-button--primary {
+  background-color: var(--wise-primary) !important;
+  color: var(--wise-on-primary) !important;
+  border-color: var(--wise-primary) !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--wise-primary-active) !important;
+  border-color: var(--wise-primary-active) !important;
+}
+
+.el-button--primary:active {
+  background-color: var(--wise-primary-neutral) !important;
+}
+
+/* Success button — use positive green */
+.el-button--success {
+  background-color: var(--wise-positive) !important;
+  border-color: var(--wise-positive) !important;
+  color: #ffffff !important;
+}
+
+.el-button--success:hover {
+  background-color: #3cc45a !important;
+  border-color: #3cc45a !important;
+}
+
+/* Danger button */
+.el-button--danger {
+  background-color: var(--wise-negative) !important;
+  border-color: var(--wise-negative) !important;
+  color: #ffffff !important;
+}
+
+.el-button--danger:hover {
+  background-color: #e04848 !important;
+  border-color: #e04848 !important;
+}
+
+/* Default / plain buttons */
+.el-button--default {
+  background-color: var(--wise-canvas) !important;
+  color: var(--wise-ink) !important;
+  border: 1px solid var(--wise-ink) !important;
+}
+
+.el-button--default:hover {
+  background-color: var(--wise-canvas-soft) !important;
+}
+
+.el-button--default.is-plain {
+  background-color: var(--wise-canvas-soft) !important;
+  border: none !important;
+}
+
+.el-button--default.is-plain:hover {
+  background-color: var(--wise-primary) !important;
+  color: var(--wise-on-primary) !important;
+}
+
+.el-button--default.is-circle {
+  border-radius: var(--wise-rounded-pill) !important;
+  background-color: var(--wise-canvas) !important;
+  border: 1px solid var(--wise-ink) !important;
+}
+
+.el-button--default.is-circle:hover {
+  background-color: var(--wise-primary) !important;
+  border-color: var(--wise-primary) !important;
+  color: var(--wise-on-primary) !important;
+}
+
+/* Small buttons */
+.el-button--small {
+  padding: var(--wise-spacing-sm) var(--wise-spacing-lg) !important;
+  font-size: 13px !important;
+  min-height: 36px;
+}
+
+/* ─── Upload Dragger ─── */
+.el-upload-dragger {
+  background-color: var(--wise-canvas-soft) !important;
+  border: 2px dashed var(--wise-mute) !important;
+  border-radius: var(--wise-rounded-xl) !important;
+  padding: var(--wise-spacing-3xl) !important;
+  transition: all 0.2s ease;
+}
+
+.el-upload-dragger:hover {
+  background-color: var(--wise-primary-pale) !important;
+  border-color: var(--wise-primary) !important;
+}
+
+.el-upload-dragger .el-upload__text {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+.el-upload__tip {
+  color: var(--wise-mute) !important;
+  font-family: var(--wise-font);
+  font-size: 12px !important;
+}
+
+/* ─── Table ─── */
+.el-table {
+  background-color: transparent !important;
+  border-radius: var(--wise-rounded-lg);
+  overflow: hidden;
+}
+
+.el-table::before {
+  display: none !important;
+}
+
+.el-table th.el-table__cell {
+  background-color: var(--wise-canvas-soft) !important;
+  color: var(--wise-body) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: none !important;
+}
+
+.el-table td {
+  border-bottom: 1px solid var(--wise-canvas-soft) !important;
+  color: var(--wise-ink) !important;
+}
+
+.el-table tr {
+  background-color: transparent !important;
+}
+
+.el-table tr:hover td {
+  background-color: var(--wise-primary-pale) !important;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background-color: rgba(0,0,0,0.02);
+}
+
+.el-table__body tr.el-table__row--striped:hover td {
+  background-color: var(--wise-primary-pale) !important;
+}
+
+/* ─── Dialog / Modal ─── */
+.el-dialog {
+  border-radius: var(--wise-rounded-xl) !important;
+  background-color: var(--wise-canvas) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+}
+
+.el-dialog .el-dialog__header {
+  padding: var(--wise-spacing-xl) var(--wise-spacing-xl) 0 !important;
+}
+
+.el-dialog .el-dialog__title {
+  font-family: var(--wise-font);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--wise-ink) !important;
+}
+
+.el-dialog .el-dialog__body {
+  padding: var(--wise-spacing-xl) var(--wise-spacing-xl) var(--wise-spacing-lg) !important;
+  color: var(--wise-body);
+  font-family: var(--wise-font);
+}
+
+.el-dialog .el-dialog__footer {
+  padding: 0 var(--wise-spacing-xl) var(--wise-spacing-xl) !important;
+}
+
+.el-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: var(--wise-mute) !important;
+}
+
+.el-dialog .el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--wise-ink) !important;
+}
+
+/* Dialog form inputs */
+.el-dialog .el-input .el-input__inner {
+  border-color: var(--wise-mute) !important;
+  color: var(--wise-ink) !important;
+  background-color: var(--wise-canvas) !important;
+  border-radius: var(--wise-rounded-md) !important;
+  font-family: var(--wise-font);
+}
+
+.el-input__inner {
+  font-family: var(--wise-font) !important;
+  border-radius: var(--wise-rounded-md) !important;
+  border: 1px solid var(--wise-mute) !important;
+  background-color: var(--wise-canvas) !important;
+  color: var(--wise-ink) !important;
+  padding: var(--wise-spacing-md) var(--wise-spacing-lg) !important;
+  height: 44px !important;
+  line-height: 24px !important;
+  font-size: 16px !important;
+}
+
+.el-input__inner::placeholder {
+  color: var(--wise-mute);
+}
+
+.el-input__inner:focus {
+  border-color: var(--wise-primary) !important;
+}
+
+.el-input-group__prepend {
+  border-radius: var(--wise-rounded-md) 0 0 var(--wise-rounded-md) !important;
+  background-color: var(--wise-canvas-soft) !important;
+  border-color: var(--wise-ink) !important;
+  color: var(--wise-ink);
+}
+
+.el-input-group__append {
+  border-radius: 0 var(--wise-rounded-md) var(--wise-rounded-md) 0 !important;
+  background-color: var(--wise-canvas-soft) !important;
+  border-color: var(--wise-ink) !important;
+  color: var(--wise-ink);
+}
+
+/* ─── Checkbox ─── */
+.el-checkbox.is-bordered {
+  border-radius: var(--wise-rounded-sm) !important;
+  border-color: var(--wise-mute) !important;
+  background-color: var(--wise-canvas) !important;
+  color: var(--wise-ink) !important;
+}
+
+.el-checkbox.is-bordered:hover {
+  border-color: var(--wise-primary) !important;
+}
+
+.el-checkbox.is-bordered:hover .el-checkbox__label {
+  color: var(--wise-primary) !important;
+}
+
+.el-checkbox.is-bordered.is-checked {
+  background-color: var(--wise-primary) !important;
+  border-color: var(--wise-primary) !important;
+}
+
+.el-checkbox.is-bordered.is-checked .el-checkbox__label {
+  color: var(--wise-on-primary) !important;
+  font-weight: 600;
+}
+
+.el-checkbox__label {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+.el-checkbox__inner {
+  border-color: var(--wise-mute) !important;
+  background-color: var(--wise-canvas) !important;
+}
+
+.el-checkbox__input.is-checked .el-checkbox__inner {
+  background-color: var(--wise-primary) !important;
+  border-color: var(--wise-primary) !important;
+}
+
+/* ─── Radio ─── */
+.el-radio__label {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+.el-radio__input .el-radio__inner {
+  border-color: var(--wise-mute) !important;
+  background-color: var(--wise-canvas) !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner {
+  background-color: var(--wise-primary) !important;
+  border-color: var(--wise-primary) !important;
+}
+
+.el-radio__input.is-checked .el-radio__label {
+  font-weight: 600;
+  color: var(--wise-ink) !important;
+}
+
+/* ─── Notification / Message ─── */
+.el-notification {
+  border-radius: var(--wise-rounded-xl) !important;
+  background-color: var(--wise-canvas) !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+  border: none !important;
+}
+
+.el-notification__title {
+  color: var(--wise-ink) !important;
+  font-family: var(--wise-font);
+  font-weight: 600;
+}
+
+.el-notification__content {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+/* ─── Message Box ─── */
+.el-message-box {
+  border-radius: var(--wise-rounded-xl) !important;
+  border: none !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+}
+
+.el-message-box__title {
+  font-family: var(--wise-font);
+  font-weight: 600;
+  color: var(--wise-ink) !important;
+}
+
+.el-message-box__message p {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+.el-message-box__headerbtn .el-message-box__close {
+  color: var(--wise-mute) !important;
+}
+
+.el-message-box__headerbtn:hover .el-message-box__close {
+  color: var(--wise-ink) !important;
+}
+
+/* ─── Tooltips ─── */
+.el-tooltip__popper {
+  border-radius: var(--wise-rounded-sm) !important;
+}
+
+/* ─── Card (if any) ─── */
+.el-card {
+  border-radius: var(--wise-rounded-xl) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+}
+
+/* ─── Links ─── */
+a, a:visited {
+  color: var(--wise-ink);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--wise-primary);
+}
+
+/* ─── Music Cover ─── */
+.music-cover .el-image {
+  border-radius: var(--wise-rounded-lg) !important;
+  border: 1px solid var(--wise-canvas-soft) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.music-cover i {
+  color: var(--wise-ink);
+}
+
+.music-cover i:hover {
+  color: var(--wise-primary) !important;
+}
+
+/* ─── Edit Items ─── */
+.edit-item .label {
+  font-weight: 600;
+  color: var(--wise-body);
+}
+
+.edit-item .input input {
+  border-bottom: 1px solid var(--wise-mute) !important;
+  font-family: var(--wise-font);
+  background-color: transparent !important;
+}
+
+.edit-item .input input:focus {
+  border-bottom-color: var(--wise-primary) !important;
+}
+
+.edit-item i:hover {
+  color: var(--wise-primary) !important;
+}
+
+/* ─── Table Content Area ─── */
+.table-content {
+  background-color: var(--wise-canvas);
+  border-radius: var(--wise-rounded-lg);
+  overflow: hidden;
+}
+
+/* ─── Footer ─── */
+#app-footer {
+  color: var(--wise-mute) !important;
+  font-family: var(--wise-font);
+  font-size: 12px !important;
+  margin-top: var(--wise-spacing-2xl) !important;
+}
+
+#app-footer a {
+  color: var(--wise-mute) !important;
+}
+
+#app-footer a:hover {
+  color: var(--wise-primary) !important;
+}
+
+/* ─── Tip ─── */
+.tip {
+  color: var(--wise-mute) !important;
+  font-family: var(--wise-font);
+}
+
+/* ─── Update Info ─── */
+.update-info {
+  border-radius: var(--wise-rounded-lg) !important;
+  border: 1px solid var(--wise-canvas-soft) !important;
+  overflow: hidden;
+}
+
+.update-info .update-title {
+  background-color: var(--wise-canvas-soft) !important;
+  color: var(--wise-body) !important;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.update-info .update-content {
+  color: var(--wise-body) !important;
+  font-family: var(--wise-font);
+}
+
+/* ─── Audio Player ─── */
+audio {
+  border-radius: var(--wise-rounded-xl) !important;
+  margin-top: var(--wise-spacing-lg);
+}
+
+/* ─── Loader (pre-app) ─── */
+#loader-mask {
+  background-color: rgba(232, 235, 230, 0.95) !important;
+}
+
+#loader {
+  border-color: var(--wise-canvas-soft) !important;
+  border-top-color: var(--wise-primary) !important;
+  border-width: 4px !important;
+  width: 48px !important;
+  height: 48px !important;
+  margin: -24px 0 0 -24px !important;
+}
+
+#loader-source, #loader-tips-timeout, #loader-tips-outdated h2, #loader-tips-outdated h3 {
+  font-family: var(--wise-font);
+  color: var(--wise-body) !important;
+}
+
+#loader-source {
+  font-size: 14px !important;
+  font-weight: 600;
+}
+
+#loader-tips-timeout {
+  font-size: 13px !important;
+}
+
+#loader-tips-timeout a {
+  color: var(--wise-ink) !important;
+  font-weight: 600;
+}
+
+#loader-tips-timeout a:hover {
+  color: var(--wise-primary) !important;
+}
+
+/* ─── Config Dialog ─── */
+[data-v-670c0e2e] .um-config-dialog {
+  max-width: 90%;
+  width: 38em;
+}
+
+form[data-v-670c0e2e] input {
+  font-family: var(--wise-font) !important;
+}
+
+/* ─── Edit Dialog ─── */
+[data-v-701d8fe2] .um-edit-dialog {
+  max-width: 90%;
+  width: 28em;
+}
+
+/* ─── Responsive adjustments ─── */
+@media (max-width: 768px) {
+  #app {
+    margin: var(--wise-spacing-md);
+    padding: var(--wise-spacing-lg) !important;
+    border-radius: var(--wise-rounded-lg);
+  }
+
+  .wise-nav {
+    padding: var(--wise-spacing-sm) var(--wise-spacing-lg);
+    border-radius: var(--wise-rounded-lg) var(--wise-rounded-lg) 0 0;
+  }
+
+  .el-upload-dragger {
+    padding: var(--wise-spacing-xl) !important;
+  }
+}
+
+/* ─── Dark mode: invert surfaces ─── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wise-canvas: #1a1a1a;
+    --wise-canvas-soft: #2a2a2a;
+    --wise-ink: #e6e6e6;
+    --wise-body: #a6a6a6;
+    --wise-mute: #666666;
+    --wise-on-primary: #0e0f0c;
+  }
+
+  body {
+    background-color: #111111 !important;
+  }
+
+  #app {
+    background-color: var(--wise-canvas) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+
+  .wise-nav {
+    background-color: var(--wise-canvas);
+    border-bottom-color: rgba(255,255,255,0.06);
+  }
+
+  .el-button--default {
+    background-color: var(--wise-canvas-soft) !important;
+    border-color: var(--wise-body) !important;
+    color: var(--wise-ink) !important;
+  }
+
+  .el-button--default.is-plain {
+    background-color: #333 !important;
+  }
+
+  .el-button--default.is-plain:hover {
+    background-color: var(--wise-primary) !important;
+    color: var(--wise-on-primary) !important;
+  }
+
+  .el-button--default.is-circle {
+    background-color: var(--wise-canvas-soft) !important;
+    border-color: var(--wise-body) !important;
+  }
+
+  .el-button--default.is-circle:hover {
+    background-color: var(--wise-primary) !important;
+    border-color: var(--wise-primary) !important;
+    color: var(--wise-on-primary) !important;
+  }
+
+  .el-upload-dragger {
+    background-color: #2a2a2a !important;
+    border-color: #404040 !important;
+  }
+
+  .el-upload-dragger:hover {
+    background-color: var(--wise-primary-pale) !important;
+    border-color: var(--wise-primary) !important;
+  }
+
+  .el-upload-dragger .el-upload__text {
+    color: var(--wise-body) !important;
+  }
+
+  .el-table th.el-table__cell {
+    background-color: #333 !important;
+    color: var(--wise-body) !important;
+  }
+
+  .el-table td {
+    border-bottom-color: #333 !important;
+  }
+
+  .el-table tr {
+    color: var(--wise-ink) !important;
+  }
+
+  .el-table tr:hover td {
+    background-color: rgba(159, 232, 112, 0.08) !important;
+  }
+
+  .el-dialog {
+    background-color: #262626 !important;
+  }
+
+  .el-dialog .el-dialog__title {
+    color: var(--wise-ink) !important;
+  }
+
+  .el-dialog .el-dialog__body {
+    color: var(--wise-body) !important;
+  }
+
+  .el-dialog .el-input .el-input__inner {
+    background-color: #333 !important;
+    border-color: #404040 !important;
+    color: var(--wise-ink) !important;
+  }
+
+  .el-dialog .el-dialog__body .el-input .el-input__count .el-input__count-inner {
+    background-color: transparent !important;
+  }
+
+  .el-upload__tip {
+    color: var(--wise-mute) !important;
+  }
+
+  .el-checkbox.is-bordered {
+    background-color: #2a2a2a !important;
+    border-color: #404040 !important;
+  }
+
+  .el-checkbox.is-bordered:hover {
+    border-color: var(--wise-primary) !important;
+  }
+
+  .el-checkbox.is-bordered.is-checked {
+    background-color: var(--wise-primary) !important;
+  }
+
+  .el-checkbox.is-bordered.is-checked .el-checkbox__inner {
+    border-color: var(--wise-on-primary) !important;
+    background-color: var(--wise-on-primary) !important;
+  }
+
+  .el-checkbox__label {
+    color: var(--wise-body) !important;
+  }
+
+  .el-radio__label {
+    color: var(--wise-body) !important;
+  }
+
+  .el-notification {
+    background-color: #2a2a2a !important;
+  }
+
+  .el-message-box {
+    background-color: #262626 !important;
+  }
+
+  .music-cover .el-image {
+    border-color: #333 !important;
+  }
+
+  .update-info {
+    border-color: #333 !important;
+  }
+
+  .update-info .update-title {
+    background-color: #333 !important;
+    color: var(--wise-ink) !important;
+  }
+
+  .update-info .update-content {
+    color: var(--wise-body) !important;
+  }
+
+  #loader-mask {
+    background-color: rgba(17, 17, 17, 0.95) !important;
+  }
+
+  #loader-tips-timeout a {
+    color: var(--wise-ink) !important;
+  }
+}
