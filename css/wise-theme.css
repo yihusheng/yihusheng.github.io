@@ -422,27 +422,62 @@ a:hover { color: var(--wp); }
     justify-content: flex-start !important;
   }
 
-  /* Radio pills: compact, evenly wrapped */
-  .el-radio { padding: 5px 12px !important; }
-  .el-radio__label { font-size: 11px !important; }
-  .el-radio-group { gap: 5px; margin: 8px 0 14px !important; }
+  /* Radio: list style (no more pills) */
+  .el-radio-group {
+    flex-direction: column !important;
+    gap: 0 !important;
+    margin: 8px 0 16px !important;
+    border: 1px solid var(--wcs) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+  }
+  .el-radio {
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid var(--wcs) !important;
+  }
+  .el-radio:last-child { border-bottom: none !important; }
+  .el-radio.is-checked {
+    background: var(--wpp) !important;
+    border-color: transparent !important;
+    border-bottom-color: var(--wcs) !important;
+    position: relative;
+  }
+  .el-radio.is-checked::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 4px !important;
+    bottom: 4px !important;
+    width: 3px !important;
+    background: var(--wp) !important;
+    border-radius: 0 2px 2px 0 !important;
+  }
+  .el-radio__label { font-size: 13px !important; }
 
-  /* Table: compact on mobile */
-  .el-table { font-size: 11px !important; }
+  /* Table: fit without scroll */
+  .el-table {
+    font-size: 11px !important;
+    table-layout: auto !important;
+  }
   .el-table th.el-table__cell {
-    padding: 8px 6px !important;
+    padding: 6px 4px !important;
     font-size: 9px !important;
-    letter-spacing: 0.5px !important;
+    letter-spacing: 0.3px !important;
+    text-align: center !important;
   }
   .el-table td {
-    padding: 8px 6px !important;
+    padding: 6px 4px !important;
     font-size: 11px !important;
-    white-space: nowrap;
+    text-align: center !important;
+    word-break: break-all;
   }
-  .el-table__body-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .el-table__body-wrapper { overflow-x: visible !important; }
   /* Cover image in table smaller */
   .el-table td:first-child .el-image,
-  .el-table td .music-cover img { width: 32px !important; height: 32px !important; }
+  .el-table td .music-cover img { width: 28px !important; height: 28px !important; }
   /* Dialog: full width on mobile */
   .el-dialog {
     width: calc(100vw - 24px) !important;
