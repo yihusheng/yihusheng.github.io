@@ -350,12 +350,11 @@ a { color: var(--wik); font-weight: 500; transition: color 0.12s ease; }
 a:hover { color: var(--wp); }
 
 /* ─── Action row: checkbox + buttons spacing ─── */
-/* Prevent "立即保存" from sticking to action buttons */
-.el-row .el-checkbox {
-  margin-right: 32px !important;
-}
-.el-row .el-checkbox.is-bordered {
-  margin-right: 24px !important;
+/* "立即保存" checkbox directly follows buttons as sibling */
+.el-button + .el-checkbox {
+  margin-left: 32px !important;
+  padding-left: 32px !important;
+  border-left: 1px solid var(--wcs) !important;
 }
 .el-row {
   margin-bottom: 12px !important;
