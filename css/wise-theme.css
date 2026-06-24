@@ -390,8 +390,22 @@ a:hover { color: var(--wp); }
   .el-radio__label { font-size: 11px !important; }
   .el-radio-group { gap: 5px; margin: 8px 0 14px !important; }
 
-  /* Dialog: full width on mobile */
-  .el-dialog {
+  /* Table: compact on mobile */
+  .el-table { font-size: 11px !important; }
+  .el-table th.el-table__cell {
+    padding: 8px 6px !important;
+    font-size: 9px !important;
+    letter-spacing: 0.5px !important;
+  }
+  .el-table td {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+    white-space: nowrap;
+  }
+  .el-table__body-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Cover image in table smaller */
+  .el-table td:first-child .el-image,
+  .el-table td .music-cover img { width: 32px !important; height: 32px !important; }
     width: calc(100vw - 24px) !important;
     max-width: calc(100vw - 24px) !important;
     margin: 12px !important;
