@@ -484,15 +484,141 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
   color: var(--wp) !important;
 }
 
-/* ─── Responsive ─── */
+/* ─── Responsive: Tablet & Below ─── */
 @media (max-width: 768px) {
-  body { padding: 16px 12px !important; }
-  #app { padding: 28px 20px !important; border-radius: 20px !important; }
-  .wise-nav { padding: 12px 16px; margin-bottom: 12px; }
-  .wise-nav-brand .label { font-size: 13px; }
+  body { padding: 20px 12px !important; }
+  #app { padding: 32px 24px !important; border-radius: 20px !important; }
+  .wise-nav { padding: 12px 16px; margin-bottom: 12px; border-radius: 20px 20px 0 0; }
+  .wise-nav-brand .label { font-size: 14px; }
   #app .wise-hero,
-  #app h1:first-child { font-size: 32px !important; letter-spacing: -0.8px !important; }
-  .el-upload-dragger { padding: 32px 24px !important; }
+  #app h1:first-child { font-size: 36px !important; letter-spacing: -1px !important; }
+  
+  .el-button { padding: 12px 24px !important; font-size: 14px !important; min-height: 46px !important; }
+  .el-upload-dragger { padding: 36px 28px !important; }
+  .el-dialog__header { padding: 24px 24px 0 !important; }
+  .el-dialog__body { padding: 20px 24px 12px !important; }
+  .el-dialog__footer { padding: 0 24px 24px !important; }
+  .el-table { font-size: 13px; }
+  .el-table th.el-table__cell,
+  .el-table td { padding: 12px 10px !important; }
+  .el-input__inner { height: 44px !important; font-size: 15px !important; padding: 10px 14px !important; }
+}
+
+/* ─── Responsive: Phone ─── */
+@media (max-width: 480px) {
+  body { padding: 0 !important; background: var(--wca) !important; }
+  
+  /* Edge-to-edge white canvas */
+  #app {
+    padding: 24px 16px !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+  }
+  
+  /* Sage only appears as thin strips top/bottom */
+  .wise-nav {
+    padding: 10px 14px;
+    margin-bottom: 0;
+    border-radius: 0;
+    max-width: 100%;
+    box-shadow: none;
+    border-bottom: 1px solid var(--wcs);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--wca);
+  }
+  
+  .wise-nav-brand .dot { width: 10px; height: 10px; }
+  .wise-nav-brand .label { font-size: 13px; }
+  .wise-nav-back {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 999px;
+  }
+  
+  #app .wise-hero,
+  #app h1:first-child { font-size: 28px !important; letter-spacing: -0.6px !important; }
+  
+  /* Full-width tap-friendly buttons */
+  .el-button {
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    min-height: 48px !important;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Keep small/inline buttons from going full-width */
+  .el-button--small,
+  .el-button--mini { width: auto; display: inline-flex; }
+  
+  /* Upload area */
+  .el-upload-dragger {
+    padding: 28px 16px !important;
+    border-radius: 16px !important;
+  }
+  .el-upload-dragger .el-upload__text { font-size: 14px; }
+  .el-upload__tip { font-size: 12px !important; }
+  
+  /* Table: horizontal scroll on small screens */
+  .el-table { font-size: 12px; }
+  .el-table__body-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .el-table th.el-table__cell,
+  .el-table td { padding: 10px 8px !important; white-space: nowrap; }
+  
+  /* Dialog: edge-to-edge on phone */
+  .el-dialog {
+    width: auto !important;
+    margin: 12px !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+  .el-dialog__header { padding: 20px 20px 0 !important; }
+  .el-dialog__body { padding: 16px 20px 12px !important; }
+  .el-dialog__footer { padding: 0 20px 20px !important; }
+  .el-dialog__title { font-size: 18px; }
+  
+  /* Inputs full-width */
+  .el-input { width: 100%; }
+  .el-input__inner { 
+    height: 46px !important; 
+    font-size: 16px !important; 
+    padding: 10px 14px !important; 
+  }
+  
+  /* Checkbox / Radio */
+  .el-checkbox.is-bordered { padding: 8px 12px !important; }
+  
+  /* Footer */
+  #app-footer { margin-top: 28px !important; }
+  
+  /* Config/Edit dialogs */
+  [data-v-670c0e2e] .um-config-dialog,
+  [data-v-701d8fe2] .um-edit-dialog { width: 100% !important; }
+  
+  /* Audio player */
+  audio { width: 100%; border-radius: 16px !important; }
+  
+  /* Music cover smaller */
+  .music-cover .el-image { width: 120px !important; height: 120px !important; }
+  
+  /* Hide "返回主页" text, show just "←" on very small nav */
+  .wise-nav-back span { display: none; }
+}
+
+/* ─── Responsive: Tiny phones ─── */
+@media (max-width: 360px) {
+  #app { padding: 20px 12px !important; }
+  #app .wise-hero,
+  #app h1:first-child { font-size: 24px !important; }
+  .wise-nav { padding: 8px 10px; }
+  .wise-nav-brand .label { font-size: 12px; }
+  .wise-nav-brand .dot { width: 8px; height: 8px; gap: 6px; }
+  .el-button { padding: 12px 16px !important; font-size: 14px !important; min-height: 44px !important; }
+  .el-upload-dragger { padding: 24px 12px !important; }
 }
 
 /* ─── Dark mode ─── */
