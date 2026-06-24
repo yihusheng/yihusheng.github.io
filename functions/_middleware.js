@@ -1,16 +1,11 @@
 /**
- * Cloudflare Pages Middleware — 在边缘层实时注入导航栏
+ * Cloudflare Pages Middleware — 边缘层实时注入
  *
- * 拦截 Metacubexd / zashboard 的 HTML 响应，使用 HTMLRewriter
- * 注入导航栏 HTML/CSS/JS，同时注销 Service Worker 打破 PWA 缓存。
- *
- * 【为什么不用静态注入？】
- * Metacubexd 的 SW 会 precache index.html 并通过 NavigationRoute
- * 劫持所有导航请求，导致无论怎么改源文件，刷新时都返回旧缓存。
- * 边缘注入确保每次响应都是最新的。
+ * - Metacubexd / zashboard → 注入导航栏 + 注销 SW
+ * - Music (音乐解锁)       → 注入 Wise 主题 CSS（更新不丢失）
  */
 
-// ── 导航栏静态 HTML（不含抽屉链接，由 navbar.js 动态填充）──
+// ── 导航栏静态 HTML ──
 const NAV_HTML = [
   '<a class="wise-nav-btn wise-nav-btn-home" href="/" aria-label="回到首页">',
   '<span class="material-symbols-rounded">home</span></a>',
@@ -26,13 +21,13 @@ const NAV_HTML = [
   '</svg></button></div></div></div>',
 ].join('');
 
-// ── 注入到 <head> 的内容 ──
+// ── 注入到 <head>（导航栏相关）──
 const HEAD_INJECT = [
   '<!-- wise-navbar -->',
   '<link rel="stylesheet" href="/Tools/navbar.css">',
   '<script src="/Tools/navbar.js"><\/script>',
   '<script>',
-  '/* 注销 Metacubexd 的 Service Worker，打破 PWA 缓存 */',
+  '/* 注销 Metacubexd SW */',
   'if("serviceWorker" in navigator){',
   'navigator.serviceWorker.getRegistrations().then(function(regs){',
   'regs.forEach(function(reg){',
@@ -46,6 +41,13 @@ const HEAD_INJECT = [
   '<\/script>',
 ].join('\n');
 
+// ── 注入到 <head>（Wise 主题相关）──
+const WISE_HEAD_INJECT = [
+  '<!-- wise-theme -->',
+  '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">',
+  '<link href="/css/wise-theme.css" rel="stylesheet">',
+].join('\n');
+
 // ── 非 HTML 资源扩展名 ──
 const SKIP_EXTS = new Set([
   'js','mjs','css','png','jpg','jpeg','gif','svg','ico','webp',
@@ -53,17 +55,18 @@ const SKIP_EXTS = new Set([
   'map','gz','tgz','zip','pdf','mp4','webm',
 ]);
 
-// ── 需要注入的路径前缀 ──
-const TARGET_PATHS = ['/Tools/Metacubexd', '/Tools/zashboard'];
+// ── 路径配置 ──
+const NAVBAR_PATHS = ['/Tools/Metacubexd', '/Tools/zashboard'];
+const MUSIC_PATHS = ['/Music'];
 
-function shouldTransform(pathname) {
-  // 只处理 dashboard 路径
-  if (!TARGET_PATHS.some(p => pathname.startsWith(p))) return false;
-  // 跳过静态资源
+function shouldTransform(pathname, targets) {
+  if (!targets.some(p => pathname.startsWith(p))) return false;
   const ext = pathname.split('.').pop()?.toLowerCase();
   if (ext && SKIP_EXTS.has(ext)) return false;
   return true;
 }
+
+/* ─── Handlers ─── */
 
 class NavbarHeadHandler {
   element(el) {
@@ -73,38 +76,57 @@ class NavbarHeadHandler {
 
 class NavbarBodyHandler {
   element(el) {
-    // 添加 navbar-overlay 类
     const cls = (el.getAttribute('class') || '').trim();
     const newCls = cls.includes('navbar-overlay') ? cls : ('navbar-overlay ' + cls).trim();
     el.setAttribute('class', newCls);
-    // 注入导航栏 HTML
     el.prepend(NAV_HTML, { html: true });
   }
 }
 
+class WiseHeadHandler {
+  element(el) {
+    el.append(WISE_HEAD_INJECT, { html: true });
+  }
+}
+
+/* ─── Middleware ─── */
+
 export async function onRequest(context) {
   const { request, next } = context;
   const url = new URL(request.url);
+  const path = url.pathname;
 
-  if (!shouldTransform(url.pathname)) {
+  // 判断需要哪种注入
+  const needsNavbar = shouldTransform(path, NAVBAR_PATHS);
+  const needsWise = shouldTransform(path, MUSIC_PATHS);
+
+  if (!needsNavbar && !needsWise) {
     return next();
   }
 
   const response = await next();
-
-  // 仅处理 HTML 响应
   const ct = (response.headers.get('content-type') || '').toLowerCase();
   if (!ct.includes('text/html') && !ct.includes('text/plain')) {
     return response;
   }
 
   try {
-    return new HTMLRewriter()
-      .on('head', new NavbarHeadHandler())
-      .on('body', new NavbarBodyHandler())
-      .transform(response);
+    let rewriter = new HTMLRewriter();
+
+    if (needsNavbar) {
+      rewriter = rewriter
+        .on('head', new NavbarHeadHandler())
+        .on('body', new NavbarBodyHandler());
+    }
+
+    if (needsWise) {
+      rewriter = rewriter
+        .on('head', new WiseHeadHandler());
+    }
+
+    return rewriter.transform(response);
   } catch (e) {
-    console.error('[navbar] transform error:', e);
+    console.error('[middleware] transform error:', e);
     return response;
   }
 }
