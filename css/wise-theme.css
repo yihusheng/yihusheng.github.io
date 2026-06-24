@@ -82,7 +82,7 @@ body { padding: 40px 16px !important; }
   display: flex !important;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 20px 0 !important;
+  margin: 12px 0 20px !important;
 }
 /* Hide default radio circle */
 .el-radio__input { display: none !important; }
@@ -94,6 +94,7 @@ body { padding: 40px 16px !important; }
   background: transparent !important;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex: 0 1 auto !important;
 }
 .el-radio:hover { border-color: var(--wp) !important; }
 .el-radio.is-checked {
@@ -101,10 +102,11 @@ body { padding: 40px 16px !important; }
   border-color: var(--wp) !important;
 }
 .el-radio__label {
-  font-size: 14px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   color: var(--wbd) !important;
   padding: 0 !important;
+  white-space: nowrap;
 }
 .el-radio.is-checked .el-radio__label {
   color: var(--wop) !important;
@@ -371,7 +373,7 @@ a:hover { color: var(--wp); }
   .el-button { width: 100%; display: flex; justify-content: center; padding: 14px 20px !important; }
   .el-button + .el-button { margin-left: 0 !important; margin-top: 8px !important; }
 
-  /* "立即保存" toggle — inline row, no space-between */
+  /* "立即保存" toggle — inline row */
   .el-button + .el-checkbox {
     margin-left: 0 !important;
     padding-left: 0 !important;
@@ -383,10 +385,10 @@ a:hover { color: var(--wp); }
     justify-content: flex-start !important;
   }
 
-  /* Compact radio pills */
-  .el-radio { padding: 6px 14px !important; }
-  .el-radio__label { font-size: 12px !important; }
-  .el-radio-group { gap: 6px; }
+  /* Radio pills: compact, evenly wrapped */
+  .el-radio { padding: 5px 12px !important; }
+  .el-radio__label { font-size: 11px !important; }
+  .el-radio-group { gap: 5px; margin: 8px 0 14px !important; }
 
   /* Dialog: full width on mobile */
   .el-dialog {
