@@ -137,16 +137,63 @@ body { padding: 40px 16px !important; }
 .el-button--default.is-plain:hover { background: var(--wp) !important; color: var(--wop) !important; }
 .el-button--danger { background: var(--wneg) !important; color: #fff !important; }
 
-/* "立即保存" checkbox → separated by divider */
+/* "立即保存" checkbox → Wise toggle switch */
 .el-button + .el-checkbox {
   margin-left: 32px !important;
   padding-left: 32px !important;
   border-left: 1px solid var(--wcs) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 .el-checkbox { font-family: 'Inter', system-ui; }
-.el-checkbox__label { color: var(--wbd) !important; font-size: 14px !important; }
-.el-checkbox__input .el-checkbox__inner { border-color: var(--wmt) !important; border-radius: 4px !important; }
-.el-checkbox__input.is-checked .el-checkbox__inner { background: var(--wp) !important; border-color: var(--wp) !important; }
+/* Hide original checkbox square */
+.el-checkbox__input .el-checkbox__inner {
+  display: none !important;
+}
+.el-checkbox__input {
+  position: relative !important;
+  width: 44px !important;
+  height: 26px !important;
+  flex-shrink: 0;
+}
+/* Toggle track */
+.el-checkbox__input::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: var(--wmt) !important;
+  border-radius: 999px !important;
+  transition: background 0.2s ease !important;
+}
+/* Toggle thumb */
+.el-checkbox__input::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 3px !important;
+  left: 3px !important;
+  width: 20px !important;
+  height: 20px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+  transition: transform 0.2s ease !important;
+}
+/* Checked state: track green */
+.el-checkbox__input.is-checked::before {
+  background: var(--wp) !important;
+}
+/* Checked state: thumb moves right */
+.el-checkbox__input.is-checked::after {
+  transform: translateX(18px) !important;
+}
+/* Label */
+.el-checkbox__label {
+  color: var(--wbd) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  padding: 0 !important;
+}
 
 /* ═══ Table ═══ */
 .el-table {
@@ -270,16 +317,21 @@ a:hover { color: var(--wp); }
   /* Stack buttons vertically */
   .el-button { width: 100%; display: flex; justify-content: center; padding: 14px 20px !important; }
   .el-button + .el-button { margin-left: 0 !important; margin-top: 8px !important; }
-  /* "立即保存" goes to its own line below buttons */
+  /* "立即保存" → full width row on mobile */
   .el-button + .el-checkbox {
     margin-left: 0 !important;
     padding-left: 0 !important;
     border-left: none !important;
     margin-top: 12px !important;
     width: 100%;
-    display: flex;
+    display: flex !important;
     align-items: center;
+    justify-content: space-between;
   }
+  /* Toggle on mobile same size */
+  .el-checkbox__input { width: 40px !important; height: 24px !important; }
+  .el-checkbox__input::after { width: 18px !important; height: 18px !important; }
+  .el-checkbox__input.is-checked::after { transform: translateX(16px) !important; }
 
   /* Compact radio pills */
   .el-radio { padding: 6px 14px !important; }
