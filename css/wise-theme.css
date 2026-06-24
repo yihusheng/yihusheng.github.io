@@ -146,9 +146,20 @@ body { padding: 40px 16px !important; }
   align-items: center !important;
   gap: 10px !important;
 }
-.el-checkbox { font-family: 'Inter', system-ui; }
-/* Hide original checkbox square */
-.el-checkbox__input .el-checkbox__inner {
+/* Wipe ALL borders/padding on checkbox wrapper */
+.el-checkbox {
+  font-family: 'Inter', system-ui;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+.el-checkbox.is-bordered {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+/* Hide the original checkbox square completely */
+.el-checkbox__inner {
   display: none !important;
 }
 .el-checkbox__input {
@@ -156,8 +167,10 @@ body { padding: 40px 16px !important; }
   width: 44px !important;
   height: 26px !important;
   flex-shrink: 0;
+  background: transparent !important;
+  border: none !important;
 }
-/* Toggle track */
+/* Toggle track (gray) */
 .el-checkbox__input::before {
   content: '' !important;
   position: absolute !important;
@@ -166,7 +179,7 @@ body { padding: 40px 16px !important; }
   border-radius: 999px !important;
   transition: background 0.2s ease !important;
 }
-/* Toggle thumb */
+/* Toggle thumb (white circle) */
 .el-checkbox__input::after {
   content: '' !important;
   position: absolute !important;
@@ -179,15 +192,14 @@ body { padding: 40px 16px !important; }
   box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
   transition: transform 0.2s ease !important;
 }
-/* Checked state: track green */
+/* Checked: track green */
 .el-checkbox__input.is-checked::before {
   background: var(--wp) !important;
 }
-/* Checked state: thumb moves right */
+/* Checked: thumb right */
 .el-checkbox__input.is-checked::after {
   transform: translateX(18px) !important;
 }
-/* Label */
 .el-checkbox__label {
   color: var(--wbd) !important;
   font-size: 14px !important;
@@ -328,7 +340,7 @@ a:hover { color: var(--wp); }
     align-items: center;
     justify-content: space-between;
   }
-  /* Toggle on mobile same size */
+  /* Toggle on mobile */
   .el-checkbox__input { width: 40px !important; height: 24px !important; }
   .el-checkbox__input::after { width: 18px !important; height: 18px !important; }
   .el-checkbox__input.is-checked::after { transform: translateX(16px) !important; }
