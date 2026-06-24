@@ -253,13 +253,21 @@ body { padding: 40px 16px !important; }
 }
 .el-checkbox__label { color: var(--wbd) !important; }
 
-/* ─── Table ─── */
+/* ─── Table (clean, no cell borders) ─── */
 .el-table {
   background: transparent !important;
   border-radius: var(--rm);
   margin-top: 16px;
+  border: none !important;
 }
 .el-table::before, .el-table::after { display: none !important; }
+/* Wipe all cell borders */
+.el-table th.el-table__cell,
+.el-table td.el-table__cell {
+  border: none !important;
+  border-right: none !important;
+  border-left: none !important;
+}
 .el-table th.el-table__cell {
   background: var(--wcs) !important;
   color: var(--wbd) !important;
@@ -270,13 +278,28 @@ body { padding: 40px 16px !important; }
   border-bottom: none !important;
   padding: 14px 12px !important;
 }
+.el-table--border th.el-table__cell,
+.el-table--border td.el-table__cell {
+  border-right: none !important;
+}
+.el-table th.el-table__cell:last-child,
+.el-table td.el-table__cell:last-child {
+  border-right: none !important;
+}
 .el-table td {
   border-bottom: 1px solid var(--wcs) !important;
   color: var(--wik) !important;
   padding: 14px 12px !important;
+  border-top: none !important;
 }
 .el-table tr { background: transparent !important; }
 .el-table tr:hover td { background: var(--wpp) !important; }
+.el-table__body { border-collapse: collapse !important; }
+.el-table__header { border-collapse: collapse !important; }
+.el-table--border::after,
+.el-table--border::before,
+.el-table__fixed-right::before,
+.el-table__fixed::before { display: none !important; }
 
 /* ─── Dialog ─── */
 .el-dialog {
@@ -325,6 +348,43 @@ body { padding: 40px 16px !important; }
 /* ─── Links ─── */
 a { color: var(--wik); font-weight: 500; transition: color 0.12s ease; }
 a:hover { color: var(--wp); }
+
+/* ─── Action row: checkbox + buttons spacing ─── */
+/* Prevent "立即保存" from sticking to action buttons */
+.el-row .el-checkbox {
+  margin-right: 32px !important;
+}
+.el-row .el-checkbox.is-bordered {
+  margin-right: 24px !important;
+}
+.el-row {
+  margin-bottom: 12px !important;
+}
+.el-row .el-col {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── Radio group: Wise form layout ─── */
+.el-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin: 12px 0 16px;
+}
+/* Style surrounding label text like "歌曲命名格式：" */
+.el-form-item__label,
+label:not(.el-checkbox):not(.el-radio) {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  color: var(--wbd) !important;
+  letter-spacing: 0.2px;
+  display: block;
+  margin-bottom: 4px;
+}
 
 /* ─── Music ─── */
 .music-cover .el-image {
