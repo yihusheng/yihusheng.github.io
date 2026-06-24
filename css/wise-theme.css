@@ -143,7 +143,6 @@ body { padding: 40px 16px !important; }
   padding-left: 32px !important;
   border-left: 1px solid var(--wcs) !important;
 }
-/* Reset the checkbox label to a clean flex row */
 .el-checkbox {
   display: inline-flex !important;
   align-items: center !important;
@@ -153,17 +152,33 @@ body { padding: 40px 16px !important; }
   padding: 0 !important;
   font-family: 'Inter', system-ui;
 }
+/* Nuke ALL possible checked/active/focus backgrounds on the label */
 .el-checkbox.is-bordered,
-.el-checkbox.is-checked {
+.el-checkbox.is-checked,
+.el-checkbox.is-focus,
+.el-checkbox:active,
+.el-checkbox:focus,
+.el-checkbox:hover,
+.el-checkbox.is-bordered.is-checked,
+.el-checkbox.is-bordered.is-focus,
+.el-checkbox.is-bordered:active,
+.el-checkbox.is-bordered:focus,
+.el-checkbox.is-bordered:hover {
   border: none !important;
   background: none !important;
   padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
-/* Nuke every internal element of the old checkbox */
+/* Hide all inner elements of the old checkbox system */
 .el-checkbox__inner,
 .el-checkbox__input span,
-.el-checkbox__input input {
+.el-checkbox__input input,
+.el-checkbox__input:active,
+.el-checkbox__input:focus {
   display: none !important;
+  background: none !important;
+  box-shadow: none !important;
 }
 /* The input wrapper becomes the toggle track */
 .el-checkbox__input {
@@ -180,6 +195,8 @@ body { padding: 40px 16px !important; }
   background: var(--wmt) !important;
   transition: background 0.2s ease !important;
   cursor: pointer;
+  box-shadow: none !important;
+  outline: none !important;
 }
 /* Track lit */
 .el-checkbox__input.is-checked {
@@ -203,7 +220,6 @@ body { padding: 40px 16px !important; }
 .el-checkbox__input.is-checked::after {
   transform: translateX(18px) !important;
 }
-/* Label */
 .el-checkbox__label {
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -211,6 +227,26 @@ body { padding: 40px 16px !important; }
   padding: 0 !important;
   line-height: 1 !important;
 }
+
+/* ═══ Dialog ═══ */
+.el-dialog {
+  border-radius: 24px !important;
+  background: var(--wca) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
+}
+.el-dialog__header { padding: 32px 32px 0 !important; }
+.el-dialog__title { font-family: 'Inter', system-ui; font-weight: 600; font-size: 20px; color: var(--wik) !important; }
+.el-dialog__body {
+  padding: 24px 32px 16px !important;
+  color: var(--wbd);
+  font-family: 'Inter', system-ui;
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+}
+.el-dialog__footer { padding: 0 32px 28px !important; }
+.el-dialog__headerbtn .el-dialog__close { color: var(--wmt) !important; }
+.el-dialog__headerbtn:hover .el-dialog__close { color: var(--wik) !important; }
+.el-dialog__wrapper { overflow: auto !important; }
 
 /* ═══ Table ═══ */
 .el-table {
