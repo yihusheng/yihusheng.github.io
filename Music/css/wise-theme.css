@@ -1,9 +1,7 @@
 /* ═══════════════════════════════════════════════════
    WISE DESIGN — 音乐解锁
-   Inspired by Wise's Scandinavian fintech aesthetic
    ═══════════════════════════════════════════════════ */
 
-/* ─── Design Tokens ─── */
 :root {
   --wp: #9fe870;
   --wop: #0e0f0c;
@@ -18,42 +16,36 @@
   --wcs: #e8ebe6;
   --wpos: #2ead4b;
   --wneg: #d03238;
-  --wnbg: #320707;
   --rx: 24px;
   --rm: 12px;
   --fn: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ─── Sage Canvas ─── */
+/* sage canvas */
 html, body {
   margin: 0; padding: 0;
-  background-color: var(--wcs) !important;
+  background: var(--wcs) !important;
   font-family: var(--fn);
   color: var(--wik);
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
 }
+body { padding: 40px 16px !important; }
 
-body {
-  padding: 40px 16px !important;
-}
-
-/* ─── App Shell: white card on sage ─── */
+/* white card */
 #app {
   background: var(--wca) !important;
   border-radius: var(--rx) !important;
-  max-width: 740px !important;
+  max-width: 760px !important;
   margin: 0 auto !important;
-  padding: 48px 40px !important;
+  padding: 48px 48px 40px !important;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
   color: var(--wik) !important;
-  position: relative;
 }
 
-/* ─── Wise Top Navigation ─── */
+/* ─── Nav ─── */
 .wise-nav {
-  max-width: 740px;
+  max-width: 760px;
   margin: 0 auto 16px;
   display: flex;
   align-items: center;
@@ -63,7 +55,6 @@ body {
   border-radius: var(--rx) var(--rx) 0 0;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
-
 .wise-nav-brand {
   display: flex;
   align-items: center;
@@ -71,7 +62,6 @@ body {
   text-decoration: none;
   color: var(--wik);
 }
-
 .wise-nav-brand .dot {
   width: 12px;
   height: 12px;
@@ -79,13 +69,7 @@ body {
   background: var(--wp);
   flex-shrink: 0;
 }
-
-.wise-nav-brand .label {
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-}
-
+.wise-nav-brand .label { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
 .wise-nav-back {
   font-size: 14px;
   font-weight: 600;
@@ -96,25 +80,88 @@ body {
   border: 1px solid var(--wik);
   transition: all 0.15s ease;
 }
+.wise-nav-back:hover { background: var(--wp); border-color: var(--wp); color: var(--wop); }
+.wise-nav-back span { display: inline; }
 
-.wise-nav-back:hover {
-  background: var(--wp);
-  border-color: var(--wp);
-  color: var(--wop);
+/* ─── Upload Hero Card ─── */
+.el-upload-dragger {
+  background: var(--wpp) !important;
+  border: 2px dashed var(--wpn) !important;
+  border-radius: var(--rx) !important;
+  padding: 64px 40px !important;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 200px !important;
+  width: auto !important;
 }
 
-/* ─── Hero Heading (weight 900 = Wise signature) ─── */
-#app .wise-hero,
-#app h1:first-child {
-  font-weight: 900 !important;
-  font-size: 42px !important;
-  line-height: 1.05 !important;
-  letter-spacing: -1.2px !important;
+.el-upload-dragger:hover {
+  background: var(--wpa) !important;
+  border-color: var(--wp) !important;
+}
+
+/* Upload icon area */
+.el-upload-dragger .el-icon--upload {
+  font-size: 48px !important;
+  color: var(--wp) !important;
+  margin-bottom: 16px;
+}
+
+/* Primary CTA text */
+.el-upload-dragger .el-upload__text {
   color: var(--wik) !important;
-  margin: 0 0 8px !important; padding: 0 !important;
+  font-family: var(--fn);
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
 }
 
-/* ─── All Buttons → 24px pill ─── */
+.el-upload-dragger .el-upload__text em {
+  color: var(--wp) !important;
+  font-style: normal !important;
+  font-weight: 700 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* File count badge */
+.el-upload-dragger .el-upload__text .file-count,
+.el-upload-dragger .el-upload__text + div,
+.el-upload-dragger .el-upload__text ~ * {
+  display: block;
+  font-size: 13px;
+  color: var(--wmt);
+  margin-top: 8px;
+}
+
+/* Tip below upload */
+.el-upload__tip {
+  color: var(--wmt) !important;
+  font-family: var(--fn);
+  font-size: 13px !important;
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* ─── Buttons Container ─── */
+/* Target the button group / row that holds action buttons.
+   Element UI renders .el-button + .el-button inline; add left margin. */
+.el-button + .el-button {
+  margin-left: 12px !important;
+}
+
+/* For button groups rendered inside a flex container */
+.el-row .el-button,
+[class*="el-col"] .el-button {
+  margin-bottom: 0;
+}
+
+/* General button styles */
 .el-button {
   border-radius: var(--rx) !important;
   font-family: var(--fn) !important;
@@ -126,53 +173,34 @@ body {
   transition: all 0.12s ease;
   min-height: 50px !important;
 }
+.el-button:active { transform: translateY(1px); }
 
-.el-button:active {
-  transform: translateY(1px);
-}
-
-/* Primary CTA — lime green, ink text */
 .el-button--primary {
   background: var(--wp) !important;
   color: var(--wop) !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-.el-button--primary:hover {
-  background: var(--wpa) !important;
-}
-.el-button--primary:active {
-  background: var(--wpn) !important;
-}
+.el-button--primary:hover { background: var(--wpa) !important; }
+.el-button--primary:active { background: var(--wpn) !important; }
 
-/* Success — positive green */
 .el-button--success {
   background: var(--wpos) !important;
   color: #fff !important;
 }
-.el-button--success:hover {
-  background: #3cc45a !important;
-}
+.el-button--success:hover { background: #3cc45a !important; }
 
-/* Danger — red */
 .el-button--danger {
   background: var(--wneg) !important;
   color: #fff !important;
 }
-.el-button--danger:hover {
-  background: #e04848 !important;
-}
+.el-button--danger:hover { background: #e04848 !important; }
 
-/* Default — ink bordered outline */
 .el-button--default {
   background: var(--wca) !important;
   color: var(--wik) !important;
   border: 1.5px solid var(--wik) !important;
 }
-.el-button--default:hover {
-  background: var(--wcs) !important;
-}
+.el-button--default:hover { background: var(--wcs) !important; }
 
-/* Plain — sage fill */
 .el-button--default.is-plain {
   background: var(--wcs) !important;
   border: none !important;
@@ -182,58 +210,56 @@ body {
   color: var(--wop) !important;
 }
 
-/* Small */
-.el-button--small {
-  padding: 10px 20px !important;
-  font-size: 13px !important;
-  min-height: 40px !important;
+.el-button--small { padding: 10px 20px !important; font-size: 13px !important; min-height: 40px !important; }
+.el-button--mini { padding: 8px 16px !important; font-size: 12px !important; min-height: 34px !important; }
+
+/* ─── Radio / Checkbox Row Spacing ─── */
+.el-radio,
+.el-checkbox {
+  font-family: var(--fn);
+  margin-right: 24px !important;
+  margin-bottom: 8px !important;
+}
+.el-radio:last-child,
+.el-checkbox:last-child {
+  margin-right: 0 !important;
 }
 
-/* Mini */
-.el-button--mini {
-  padding: 8px 16px !important;
-  font-size: 12px !important;
-  min-height: 34px !important;
-}
-
-/* ─── Upload Dragger → sage feature card ─── */
-.el-upload-dragger {
-  background: var(--wcs) !important;
-  border: 2px dashed var(--wmt) !important;
-  border-radius: var(--rx) !important;
-  padding: 48px 40px !important;
-  transition: all 0.2s ease;
-}
-
-.el-upload-dragger:hover {
-  background: var(--wpp) !important;
+.el-radio__label { color: var(--wbd) !important; font-size: 14px; }
+.el-radio__input .el-radio__inner { border-color: var(--wmt) !important; }
+.el-radio__input.is-checked .el-radio__inner {
+  background: var(--wp) !important;
   border-color: var(--wp) !important;
 }
-
-.el-upload-dragger .el-upload__text {
-  color: var(--wbd) !important;
-  font-family: var(--fn);
-  font-size: 16px;
+.el-radio__input.is-checked .el-radio__label {
+  font-weight: 600;
+  color: var(--wik) !important;
 }
 
-.el-upload__tip {
-  color: var(--wmt) !important;
-  font-family: var(--fn);
-  font-size: 13px !important;
-  margin-top: 12px;
+.el-checkbox.is-bordered {
+  border-radius: 8px !important;
+  border-color: var(--wmt) !important;
+  background: var(--wca) !important;
+  color: var(--wik) !important;
 }
+.el-checkbox.is-bordered:hover { border-color: var(--wp) !important; }
+.el-checkbox.is-bordered.is-checked {
+  background: var(--wp) !important;
+  border-color: var(--wp) !important;
+}
+.el-checkbox.is-bordered.is-checked .el-checkbox__label {
+  color: var(--wop) !important;
+  font-weight: 600;
+}
+.el-checkbox__label { color: var(--wbd) !important; }
 
-/* ─── Table → clean, uppercase headers ─── */
+/* ─── Table ─── */
 .el-table {
   background: transparent !important;
   border-radius: var(--rm);
-  overflow: hidden;
+  margin-top: 16px;
 }
-.el-table::before,
-.el-table::after {
-  display: none !important;
-}
-
+.el-table::before, .el-table::after { display: none !important; }
 .el-table th.el-table__cell {
   background: var(--wcs) !important;
   color: var(--wbd) !important;
@@ -244,51 +270,28 @@ body {
   border-bottom: none !important;
   padding: 14px 12px !important;
 }
-
 .el-table td {
   border-bottom: 1px solid var(--wcs) !important;
   color: var(--wik) !important;
   padding: 14px 12px !important;
 }
+.el-table tr { background: transparent !important; }
+.el-table tr:hover td { background: var(--wpp) !important; }
 
-.el-table tr {
-  background: transparent !important;
-}
-.el-table tr:hover td {
-  background: var(--wpp) !important;
-}
-
-/* ─── Dialog → white card, 24px radius ─── */
+/* ─── Dialog ─── */
 .el-dialog {
   border-radius: var(--rx) !important;
   background: var(--wca) !important;
   box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
 }
-.el-dialog__header {
-  padding: 32px 32px 0 !important;
-}
-.el-dialog__title {
-  font-family: var(--fn);
-  font-weight: 600;
-  font-size: 20px;
-  color: var(--wik) !important;
-}
-.el-dialog__body {
-  padding: 24px 32px 16px !important;
-  color: var(--wbd);
-  font-family: var(--fn);
-}
-.el-dialog__footer {
-  padding: 0 32px 28px !important;
-}
-.el-dialog__headerbtn .el-dialog__close {
-  color: var(--wmt) !important;
-}
-.el-dialog__headerbtn:hover .el-dialog__close {
-  color: var(--wik) !important;
-}
+.el-dialog__header { padding: 32px 32px 0 !important; }
+.el-dialog__title { font-family: var(--fn); font-weight: 600; font-size: 20px; color: var(--wik) !important; }
+.el-dialog__body { padding: 24px 32px 16px !important; color: var(--wbd); font-family: var(--fn); }
+.el-dialog__footer { padding: 0 32px 28px !important; }
+.el-dialog__headerbtn .el-dialog__close { color: var(--wmt) !important; }
+.el-dialog__headerbtn:hover .el-dialog__close { color: var(--wik) !important; }
 
-/* ─── Inputs → 12px radius, ink border ─── */
+/* ─── Inputs ─── */
 .el-input__inner {
   font-family: var(--fn) !important;
   border-radius: var(--rm) !important;
@@ -300,56 +303,8 @@ body {
   line-height: 24px !important;
   font-size: 16px !important;
 }
-.el-input__inner:focus {
-  border-color: var(--wik) !important;
-}
-.el-input__inner::placeholder {
-  color: var(--wmt);
-}
-
-/* ─── Checkbox → 8px radius ─── */
-.el-checkbox {
-  font-family: var(--fn);
-}
-.el-checkbox.is-bordered {
-  border-radius: 8px !important;
-  border-color: var(--wmt) !important;
-  background: var(--wca) !important;
-  color: var(--wik) !important;
-}
-.el-checkbox.is-bordered:hover {
-  border-color: var(--wp) !important;
-}
-.el-checkbox.is-bordered.is-checked {
-  background: var(--wp) !important;
-  border-color: var(--wp) !important;
-}
-.el-checkbox.is-bordered.is-checked .el-checkbox__label {
-  color: var(--wop) !important;
-  font-weight: 600;
-}
-.el-checkbox__label {
-  color: var(--wbd) !important;
-}
-
-/* ─── Radio ─── */
-.el-radio {
-  font-family: var(--fn);
-}
-.el-radio__label {
-  color: var(--wbd) !important;
-}
-.el-radio__input .el-radio__inner {
-  border-color: var(--wmt) !important;
-}
-.el-radio__input.is-checked .el-radio__inner {
-  background: var(--wp) !important;
-  border-color: var(--wp) !important;
-}
-.el-radio__input.is-checked .el-radio__label {
-  font-weight: 600;
-  color: var(--wik) !important;
-}
+.el-input__inner:focus { border-color: var(--wik) !important; }
+.el-input__inner::placeholder { color: var(--wmt); }
 
 /* ─── Notification / Message ─── */
 .el-notification {
@@ -358,32 +313,20 @@ body {
   box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
   border: none !important;
 }
-.el-notification__title {
-  color: var(--wik) !important;
-  font-weight: 600;
-  font-family: var(--fn);
-}
-.el-notification__content {
-  color: var(--wbd) !important;
-  font-family: var(--fn);
-}
-
+.el-notification__title { color: var(--wik) !important; font-weight: 600; font-family: var(--fn); }
+.el-notification__content { color: var(--wbd) !important; font-family: var(--fn); }
 .el-message-box {
   border-radius: var(--rx) !important;
   border: none !important;
   box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
 }
-.el-message-box__title {
-  font-weight: 600;
-  color: var(--wik) !important;
-  font-family: var(--fn);
-}
+.el-message-box__title { font-weight: 600; color: var(--wik) !important; font-family: var(--fn); }
 
 /* ─── Links ─── */
 a { color: var(--wik); font-weight: 500; transition: color 0.12s ease; }
 a:hover { color: var(--wp); }
 
-/* ─── Music Cover ─── */
+/* ─── Music ─── */
 .music-cover .el-image {
   border-radius: var(--rm) !important;
   border: 1px solid var(--wcs) !important;
@@ -392,24 +335,16 @@ a:hover { color: var(--wp); }
 .music-cover i { color: var(--wik); }
 .music-cover i:hover { color: var(--wp) !important; }
 
-/* ─── Edit Items ─── */
-.edit-item .label {
-  font-weight: 600;
-  color: var(--wbd);
-  font-size: 14px;
-}
+.edit-item .label { font-weight: 600; color: var(--wbd); font-size: 14px; }
 .edit-item .input input {
   border-bottom: 1.5px solid var(--wmt) !important;
   font-family: var(--fn);
   background: transparent !important;
   font-size: 15px;
 }
-.edit-item .input input:focus {
-  border-bottom-color: var(--wik) !important;
-}
+.edit-item .input input:focus { border-bottom-color: var(--wik) !important; }
 .edit-item i:hover { color: var(--wp) !important; }
 
-/* ─── Footer ─── */
 #app-footer {
   color: var(--wmt) !important;
   font-family: var(--fn);
@@ -419,11 +354,6 @@ a:hover { color: var(--wp); }
 #app-footer a { color: var(--wmt) !important; }
 #app-footer a:hover { color: var(--wp) !important; }
 
-/* ─── Tip & Update Info ─── */
-.tip {
-  color: var(--wmt) !important;
-  font-family: var(--fn);
-}
 .update-info {
   border-radius: var(--rm) !important;
   border: 1px solid var(--wcs) !important;
@@ -436,27 +366,16 @@ a:hover { color: var(--wp); }
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-.update-info .update-content {
-  color: var(--wbd) !important;
-  font-family: var(--fn);
-}
+.update-info .update-content { color: var(--wbd) !important; font-family: var(--fn); }
 
-/* ─── Audio ─── */
-audio {
-  border-radius: var(--rx) !important;
-  margin-top: 16px;
-}
+audio { border-radius: var(--rx) !important; margin-top: 16px; }
 
-/* ─── Config / Edit dialogs ─── */
 [data-v-670c0e2e] .um-config-dialog { max-width: 90%; width: 38em; }
 [data-v-701d8fe2] .um-edit-dialog { max-width: 90%; width: 28em; }
 form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
 
 /* ─── Loader ─── */
-#loader-mask {
-  background: rgba(232,235,230,0.97) !important;
-  backdrop-filter: blur(4px);
-}
+#loader-mask { background: rgba(232,235,230,0.97) !important; backdrop-filter: blur(4px); }
 #loader {
   border-color: var(--wcs) !important;
   border-top-color: var(--wp) !important;
@@ -465,58 +384,35 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
   height: 36px !important;
   margin: -18px 0 0 -18px !important;
 }
-#loader-source {
-  font-size: 15px !important;
-  font-weight: 600;
-  color: var(--wbd) !important;
-  font-family: var(--fn);
-}
-#loader-tips-timeout {
-  font-size: 13px !important;
-  color: var(--wbd) !important;
-  font-family: var(--fn);
-}
-#loader-tips-timeout a {
-  color: var(--wik) !important;
-  font-weight: 600;
-}
-#loader-tips-timeout a:hover {
-  color: var(--wp) !important;
-}
+#loader-source { font-size: 15px !important; font-weight: 600; color: var(--wbd) !important; font-family: var(--fn); }
+#loader-tips-timeout { font-size: 13px !important; color: var(--wbd) !important; font-family: var(--fn); }
+#loader-tips-timeout a { color: var(--wik) !important; font-weight: 600; }
+#loader-tips-timeout a:hover { color: var(--wp) !important; }
 
-/* ─── Responsive: Tablet & Below ─── */
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
   body { padding: 20px 12px !important; }
   #app { padding: 32px 24px !important; border-radius: 20px !important; }
   .wise-nav { padding: 12px 16px; margin-bottom: 12px; border-radius: 20px 20px 0 0; }
-  .wise-nav-brand .label { font-size: 14px; }
-  #app .wise-hero,
-  #app h1:first-child { font-size: 36px !important; letter-spacing: -1px !important; }
-  
-  .el-button { padding: 12px 24px !important; font-size: 14px !important; min-height: 46px !important; }
-  .el-upload-dragger { padding: 36px 28px !important; }
+  .el-upload-dragger { padding: 48px 24px !important; min-height: 160px !important; }
+  .el-upload-dragger .el-upload__text { font-size: 18px !important; }
+  .el-button + .el-button { margin-left: 10px !important; }
   .el-dialog__header { padding: 24px 24px 0 !important; }
   .el-dialog__body { padding: 20px 24px 12px !important; }
   .el-dialog__footer { padding: 0 24px 24px !important; }
-  .el-table { font-size: 13px; }
   .el-table th.el-table__cell,
   .el-table td { padding: 12px 10px !important; }
   .el-input__inner { height: 44px !important; font-size: 15px !important; padding: 10px 14px !important; }
 }
 
-/* ─── Responsive: Phone ─── */
 @media (max-width: 480px) {
   body { padding: 0 !important; background: var(--wca) !important; }
-  
-  /* Edge-to-edge white canvas */
   #app {
-    padding: 24px 16px !important;
+    padding: 24px 16px 32px !important;
     border-radius: 0 !important;
     max-width: 100% !important;
     box-shadow: none !important;
   }
-  
-  /* Sage only appears as thin strips top/bottom */
   .wise-nav {
     padding: 10px 14px;
     margin-bottom: 0;
@@ -529,19 +425,17 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
     z-index: 100;
     background: var(--wca);
   }
-  
   .wise-nav-brand .dot { width: 10px; height: 10px; }
   .wise-nav-brand .label { font-size: 13px; }
-  .wise-nav-back {
-    font-size: 13px;
-    padding: 6px 14px;
-    border-radius: 999px;
+  .wise-nav-back { font-size: 13px; padding: 6px 14px; }
+
+  .el-upload-dragger {
+    padding: 40px 16px !important;
+    min-height: 140px !important;
+    border-radius: 16px !important;
   }
-  
-  #app .wise-hero,
-  #app h1:first-child { font-size: 28px !important; letter-spacing: -0.6px !important; }
-  
-  /* Full-width tap-friendly buttons */
+  .el-upload-dragger .el-upload__text { font-size: 16px !important; }
+
   .el-button {
     padding: 14px 20px !important;
     font-size: 15px !important;
@@ -551,77 +445,42 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
     align-items: center;
     justify-content: center;
   }
-  
-  /* Keep small/inline buttons from going full-width */
-  .el-button--small,
-  .el-button--mini { width: auto; display: inline-flex; }
-  
-  /* Upload area */
-  .el-upload-dragger {
-    padding: 28px 16px !important;
-    border-radius: 16px !important;
-  }
-  .el-upload-dragger .el-upload__text { font-size: 14px; }
-  .el-upload__tip { font-size: 12px !important; }
-  
-  /* Table: horizontal scroll on small screens */
+  .el-button + .el-button { margin-left: 0 !important; margin-top: 10px !important; }
+  .el-button--small, .el-button--mini { width: auto; display: inline-flex; }
+
   .el-table { font-size: 12px; }
   .el-table__body-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .el-table th.el-table__cell,
   .el-table td { padding: 10px 8px !important; white-space: nowrap; }
-  
-  /* Dialog: edge-to-edge on phone */
-  .el-dialog {
-    width: auto !important;
-    margin: 12px !important;
-    max-width: calc(100vw - 24px) !important;
-  }
+
+  .el-dialog { width: auto !important; margin: 12px !important; max-width: calc(100vw - 24px) !important; }
   .el-dialog__header { padding: 20px 20px 0 !important; }
   .el-dialog__body { padding: 16px 20px 12px !important; }
   .el-dialog__footer { padding: 0 20px 20px !important; }
   .el-dialog__title { font-size: 18px; }
-  
-  /* Inputs full-width */
+
   .el-input { width: 100%; }
-  .el-input__inner { 
-    height: 46px !important; 
-    font-size: 16px !important; 
-    padding: 10px 14px !important; 
-  }
-  
-  /* Checkbox / Radio */
-  .el-checkbox.is-bordered { padding: 8px 12px !important; }
-  
-  /* Footer */
+  .el-input__inner { height: 46px !important; font-size: 16px !important; padding: 10px 14px !important; }
+
+  audio { width: 100%; border-radius: 16px !important; }
+  .music-cover .el-image { width: 120px !important; height: 120px !important; }
+
   #app-footer { margin-top: 28px !important; }
-  
-  /* Config/Edit dialogs */
   [data-v-670c0e2e] .um-config-dialog,
   [data-v-701d8fe2] .um-edit-dialog { width: 100% !important; }
-  
-  /* Audio player */
-  audio { width: 100%; border-radius: 16px !important; }
-  
-  /* Music cover smaller */
-  .music-cover .el-image { width: 120px !important; height: 120px !important; }
-  
-  /* Hide "返回主页" text, show just "←" on very small nav */
+}
+
+@media (max-width: 360px) {
+  #app { padding: 20px 12px 28px !important; }
+  #app .wise-hero, #app h1:first-child { font-size: 24px !important; }
+  .wise-nav { padding: 8px 10px; }
+  .wise-nav-brand .label { font-size: 12px; }
+  .wise-nav-brand .dot { width: 8px; height: 8px; }
+  .el-upload-dragger { padding: 28px 12px !important; min-height: 120px !important; }
   .wise-nav-back span { display: none; }
 }
 
-/* ─── Responsive: Tiny phones ─── */
-@media (max-width: 360px) {
-  #app { padding: 20px 12px !important; }
-  #app .wise-hero,
-  #app h1:first-child { font-size: 24px !important; }
-  .wise-nav { padding: 8px 10px; }
-  .wise-nav-brand .label { font-size: 12px; }
-  .wise-nav-brand .dot { width: 8px; height: 8px; gap: 6px; }
-  .el-button { padding: 12px 16px !important; font-size: 14px !important; min-height: 44px !important; }
-  .el-upload-dragger { padding: 24px 12px !important; }
-}
-
-/* ─── Dark mode ─── */
+/* ─── Dark ─── */
 @media (prefers-color-scheme: dark) {
   :root {
     --wca: #181818;
@@ -633,11 +492,11 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
   }
   html, body { background-color: #101010 !important; }
   #app, .wise-nav { background: var(--wca) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .el-upload-dragger { background: rgba(159,232,112,0.06) !important; border-color: #3a5a2a !important; }
+  .el-upload-dragger:hover { background: rgba(159,232,112,0.10) !important; border-color: var(--wp) !important; }
   .el-button--default { background: var(--wcs) !important; border-color: var(--wbd) !important; color: var(--wik) !important; }
   .el-button--default.is-plain { background: #2a2a2a !important; }
   .el-button--default.is-plain:hover { background: var(--wp) !important; color: var(--wop) !important; }
-  .el-upload-dragger { background: #252525 !important; border-color: #404040 !important; }
-  .el-upload-dragger:hover { background: rgba(159,232,112,0.06) !important; border-color: var(--wp) !important; }
   .el-table th.el-table__cell { background: #2a2a2a !important; color: var(--wbd) !important; }
   .el-table td { border-bottom-color: #2a2a2a !important; color: var(--wik) !important; }
   .el-table tr:hover td { background: rgba(159,232,112,0.06) !important; }
