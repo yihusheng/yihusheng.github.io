@@ -459,27 +459,32 @@ a:hover { color: var(--wp); }
   }
   .el-radio__label { font-size: 13px !important; }
 
-  /* Table: fit without scroll */
+  /* Table: ultra compact, no scroll */
   .el-table {
-    font-size: 10px !important;
-    table-layout: auto !important;
+    font-size: 9px !important;
+    table-layout: fixed !important;
+  }
+  .el-table .el-table__header-wrapper colgroup col,
+  .el-table .el-table__body-wrapper colgroup col {
+    width: auto !important;
   }
   .el-table th.el-table__cell {
-    padding: 4px 2px !important;
-    font-size: 8px !important;
+    padding: 2px !important;
+    font-size: 7px !important;
     letter-spacing: 0 !important;
     text-align: center !important;
+    width: auto !important;
   }
   .el-table td {
-    padding: 4px 2px !important;
-    font-size: 10px !important;
+    padding: 2px !important;
+    font-size: 9px !important;
     text-align: center !important;
     word-break: break-all;
   }
-  .el-table__body-wrapper { overflow-x: visible !important; }
+  .el-table__body-wrapper { overflow-x: hidden !important; }
   /* Cover image in table smaller */
   .el-table td:first-child .el-image,
-  .el-table td .music-cover img { width: 24px !important; height: 24px !important; }
+  .el-table td .music-cover img { width: 20px !important; height: 20px !important; }
   /* Dialog: full width on mobile */
   .el-dialog {
     width: calc(100vw - 24px) !important;
