@@ -1,843 +1,530 @@
 /* ═══════════════════════════════════════════════════
-   Wise Design Theme — 音乐解锁 (Unlock Music)
-   Inspired by Wise's design language
+   WISE DESIGN — 音乐解锁
+   Inspired by Wise's Scandinavian fintech aesthetic
    ═══════════════════════════════════════════════════ */
 
 /* ─── Design Tokens ─── */
 :root {
-  --wise-primary: #9fe870;
-  --wise-on-primary: #0e0f0c;
-  --wise-primary-active: #cdffad;
-  --wise-primary-neutral: #c5edab;
-  --wise-primary-pale: #e2f6d5;
-  --wise-ink: #0e0f0c;
-  --wise-ink-deep: #163300;
-  --wise-body: #454745;
-  --wise-mute: #868685;
-  --wise-canvas: #ffffff;
-  --wise-canvas-soft: #e8ebe6;
-  --wise-positive: #2ead4b;
-  --wise-positive-deep: #054d28;
-  --wise-warning: #ffd11a;
-  --wise-negative: #d03238;
-  --wise-negative-bg: #320707;
-  --wise-rounded-sm: 8px;
-  --wise-rounded-md: 12px;
-  --wise-rounded-lg: 16px;
-  --wise-rounded-xl: 24px;
-  --wise-rounded-pill: 9999px;
-  --wise-spacing-sm: 8px;
-  --wise-spacing-md: 12px;
-  --wise-spacing-lg: 16px;
-  --wise-spacing-xl: 24px;
-  --wise-spacing-2xl: 32px;
-  --wise-spacing-3xl: 48px;
-  --wise-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --wp: #9fe870;
+  --wop: #0e0f0c;
+  --wpa: #cdffad;
+  --wpn: #c5edab;
+  --wpp: #e2f6d5;
+  --wik: #0e0f0c;
+  --wid: #163300;
+  --wbd: #454745;
+  --wmt: #868685;
+  --wca: #ffffff;
+  --wcs: #e8ebe6;
+  --wpos: #2ead4b;
+  --wneg: #d03238;
+  --wnbg: #320707;
+  --rx: 24px;
+  --rm: 12px;
+  --fn: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ─── Page Background (Sage Canvas) ─── */
+/* ─── Sage Canvas ─── */
 html, body {
-  margin: 0;
-  padding: 0;
-  background-color: var(--wise-canvas-soft) !important;
-  font-family: var(--wise-font);
-  color: var(--wise-ink);
+  margin: 0; padding: 0;
+  background-color: var(--wcs) !important;
+  font-family: var(--fn);
+  color: var(--wik);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
-/* ─── App Container (White Card) ─── */
+body {
+  padding: 40px 16px !important;
+}
+
+/* ─── App Shell: white card on sage ─── */
 #app {
-  background-color: var(--wise-canvas) !important;
-  border-radius: var(--wise-rounded-xl);
-  margin: var(--wise-spacing-xl) auto;
-  padding: var(--wise-spacing-2xl) !important;
-  max-width: 720px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  color: var(--wise-ink) !important;
+  background: var(--wca) !important;
+  border-radius: var(--rx) !important;
+  max-width: 740px !important;
+  margin: 0 auto !important;
+  padding: 48px 40px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
+  color: var(--wik) !important;
+  position: relative;
 }
 
-/* ─── Wise Brand Nav Bar ─── */
+/* ─── Wise Top Navigation ─── */
 .wise-nav {
+  max-width: 740px;
+  margin: 0 auto 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--wise-spacing-md) var(--wise-spacing-xl);
-  background-color: var(--wise-canvas);
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-  max-width: 720px;
-  margin: 0 auto;
-  border-radius: var(--wise-rounded-xl) var(--wise-rounded-xl) 0 0;
+  padding: 14px 24px;
+  background: var(--wca);
+  border-radius: var(--rx) var(--rx) 0 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .wise-nav-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--wise-ink);
+  gap: 10px;
   text-decoration: none;
+  color: var(--wik);
 }
 
-.wise-nav-brand-dot {
-  width: 10px;
-  height: 10px;
+.wise-nav-brand .dot {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: var(--wise-primary);
+  background: var(--wp);
+  flex-shrink: 0;
 }
 
-.wise-nav-links {
-  display: flex;
-  align-items: center;
-  gap: var(--wise-spacing-lg);
-}
-
-.wise-nav-link {
-  font-size: 14px;
+.wise-nav-brand .label {
+  font-size: 15px;
   font-weight: 600;
-  color: var(--wise-ink);
-  text-decoration: none;
-  padding: 4px 0;
-  transition: color 0.15s ease;
-}
-
-.wise-nav-link:hover {
-  color: var(--wise-primary);
+  letter-spacing: -0.2px;
 }
 
 .wise-nav-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--wise-ink);
+  color: var(--wik);
   text-decoration: none;
-  padding: var(--wise-spacing-sm) var(--wise-spacing-md);
-  border-radius: var(--wise-rounded-pill);
-  transition: background-color 0.15s ease;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--wik);
+  transition: all 0.15s ease;
 }
 
 .wise-nav-back:hover {
-  background-color: var(--wise-canvas-soft);
+  background: var(--wp);
+  border-color: var(--wp);
+  color: var(--wop);
 }
 
-.wise-nav-back .material-symbols-rounded {
-  font-size: 20px;
+/* ─── Hero Heading (weight 900 = Wise signature) ─── */
+#app .wise-hero,
+#app h1:first-child {
+  font-weight: 900 !important;
+  font-size: 42px !important;
+  line-height: 1.05 !important;
+  letter-spacing: -1.2px !important;
+  color: var(--wik) !important;
+  margin: 0 0 8px !important; padding: 0 !important;
 }
 
-/* ─── App Header / Title Area ─── */
-#app > h1,
-#app > .app-title {
-  font-family: var(--wise-font);
-  font-weight: 900;
-  font-size: 32px;
-  line-height: 38.4px;
-  letter-spacing: -0.96px;
-  color: var(--wise-ink);
-  margin-bottom: var(--wise-spacing-xl);
-}
-
-/* ─── All Buttons (Element UI overrides) ─── */
+/* ─── All Buttons → 24px pill ─── */
 .el-button {
-  border-radius: var(--wise-rounded-xl) !important;
-  font-family: var(--wise-font);
+  border-radius: var(--rx) !important;
+  font-family: var(--fn) !important;
   font-weight: 600 !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-  padding: var(--wise-spacing-md) var(--wise-spacing-xl) !important;
+  font-size: 15px !important;
+  line-height: 22px !important;
+  padding: 14px 28px !important;
   border: none;
-  transition: all 0.15s ease;
-  min-height: 44px;
+  transition: all 0.12s ease;
+  min-height: 50px !important;
 }
 
 .el-button:active {
   transform: translateY(1px);
 }
 
-/* Primary button — lime green CTA */
+/* Primary CTA — lime green, ink text */
 .el-button--primary {
-  background-color: var(--wise-primary) !important;
-  color: var(--wise-on-primary) !important;
-  border-color: var(--wise-primary) !important;
+  background: var(--wp) !important;
+  color: var(--wop) !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-
 .el-button--primary:hover {
-  background-color: var(--wise-primary-active) !important;
-  border-color: var(--wise-primary-active) !important;
+  background: var(--wpa) !important;
 }
-
 .el-button--primary:active {
-  background-color: var(--wise-primary-neutral) !important;
+  background: var(--wpn) !important;
 }
 
-/* Success button — use positive green */
+/* Success — positive green */
 .el-button--success {
-  background-color: var(--wise-positive) !important;
-  border-color: var(--wise-positive) !important;
-  color: #ffffff !important;
+  background: var(--wpos) !important;
+  color: #fff !important;
 }
-
 .el-button--success:hover {
-  background-color: #3cc45a !important;
-  border-color: #3cc45a !important;
+  background: #3cc45a !important;
 }
 
-/* Danger button */
+/* Danger — red */
 .el-button--danger {
-  background-color: var(--wise-negative) !important;
-  border-color: var(--wise-negative) !important;
-  color: #ffffff !important;
+  background: var(--wneg) !important;
+  color: #fff !important;
 }
-
 .el-button--danger:hover {
-  background-color: #e04848 !important;
-  border-color: #e04848 !important;
+  background: #e04848 !important;
 }
 
-/* Default / plain buttons */
+/* Default — ink bordered outline */
 .el-button--default {
-  background-color: var(--wise-canvas) !important;
-  color: var(--wise-ink) !important;
-  border: 1px solid var(--wise-ink) !important;
+  background: var(--wca) !important;
+  color: var(--wik) !important;
+  border: 1.5px solid var(--wik) !important;
 }
-
 .el-button--default:hover {
-  background-color: var(--wise-canvas-soft) !important;
+  background: var(--wcs) !important;
 }
 
+/* Plain — sage fill */
 .el-button--default.is-plain {
-  background-color: var(--wise-canvas-soft) !important;
+  background: var(--wcs) !important;
   border: none !important;
 }
-
 .el-button--default.is-plain:hover {
-  background-color: var(--wise-primary) !important;
-  color: var(--wise-on-primary) !important;
+  background: var(--wp) !important;
+  color: var(--wop) !important;
 }
 
-.el-button--default.is-circle {
-  border-radius: var(--wise-rounded-pill) !important;
-  background-color: var(--wise-canvas) !important;
-  border: 1px solid var(--wise-ink) !important;
-}
-
-.el-button--default.is-circle:hover {
-  background-color: var(--wise-primary) !important;
-  border-color: var(--wise-primary) !important;
-  color: var(--wise-on-primary) !important;
-}
-
-/* Small buttons */
+/* Small */
 .el-button--small {
-  padding: var(--wise-spacing-sm) var(--wise-spacing-lg) !important;
+  padding: 10px 20px !important;
   font-size: 13px !important;
-  min-height: 36px;
+  min-height: 40px !important;
 }
 
-/* ─── Upload Dragger ─── */
+/* Mini */
+.el-button--mini {
+  padding: 8px 16px !important;
+  font-size: 12px !important;
+  min-height: 34px !important;
+}
+
+/* ─── Upload Dragger → sage feature card ─── */
 .el-upload-dragger {
-  background-color: var(--wise-canvas-soft) !important;
-  border: 2px dashed var(--wise-mute) !important;
-  border-radius: var(--wise-rounded-xl) !important;
-  padding: var(--wise-spacing-3xl) !important;
+  background: var(--wcs) !important;
+  border: 2px dashed var(--wmt) !important;
+  border-radius: var(--rx) !important;
+  padding: 48px 40px !important;
   transition: all 0.2s ease;
 }
 
 .el-upload-dragger:hover {
-  background-color: var(--wise-primary-pale) !important;
-  border-color: var(--wise-primary) !important;
+  background: var(--wpp) !important;
+  border-color: var(--wp) !important;
 }
 
 .el-upload-dragger .el-upload__text {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
+  color: var(--wbd) !important;
+  font-family: var(--fn);
+  font-size: 16px;
 }
 
 .el-upload__tip {
-  color: var(--wise-mute) !important;
-  font-family: var(--wise-font);
-  font-size: 12px !important;
+  color: var(--wmt) !important;
+  font-family: var(--fn);
+  font-size: 13px !important;
+  margin-top: 12px;
 }
 
-/* ─── Table ─── */
+/* ─── Table → clean, uppercase headers ─── */
 .el-table {
-  background-color: transparent !important;
-  border-radius: var(--wise-rounded-lg);
+  background: transparent !important;
+  border-radius: var(--rm);
   overflow: hidden;
 }
-
-.el-table::before {
+.el-table::before,
+.el-table::after {
   display: none !important;
 }
 
 .el-table th.el-table__cell {
-  background-color: var(--wise-canvas-soft) !important;
-  color: var(--wise-body) !important;
+  background: var(--wcs) !important;
+  color: var(--wbd) !important;
   font-weight: 600 !important;
-  font-size: 12px !important;
+  font-size: 11px !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   border-bottom: none !important;
+  padding: 14px 12px !important;
 }
 
 .el-table td {
-  border-bottom: 1px solid var(--wise-canvas-soft) !important;
-  color: var(--wise-ink) !important;
+  border-bottom: 1px solid var(--wcs) !important;
+  color: var(--wik) !important;
+  padding: 14px 12px !important;
 }
 
 .el-table tr {
-  background-color: transparent !important;
+  background: transparent !important;
 }
-
 .el-table tr:hover td {
-  background-color: var(--wise-primary-pale) !important;
+  background: var(--wpp) !important;
 }
 
-.el-table--striped .el-table__body tr.el-table__row--striped td {
-  background-color: rgba(0,0,0,0.02);
-}
-
-.el-table__body tr.el-table__row--striped:hover td {
-  background-color: var(--wise-primary-pale) !important;
-}
-
-/* ─── Dialog / Modal ─── */
+/* ─── Dialog → white card, 24px radius ─── */
 .el-dialog {
-  border-radius: var(--wise-rounded-xl) !important;
-  background-color: var(--wise-canvas) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+  border-radius: var(--rx) !important;
+  background: var(--wca) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
 }
-
-.el-dialog .el-dialog__header {
-  padding: var(--wise-spacing-xl) var(--wise-spacing-xl) 0 !important;
+.el-dialog__header {
+  padding: 32px 32px 0 !important;
 }
-
-.el-dialog .el-dialog__title {
-  font-family: var(--wise-font);
+.el-dialog__title {
+  font-family: var(--fn);
   font-weight: 600;
   font-size: 20px;
-  color: var(--wise-ink) !important;
+  color: var(--wik) !important;
+}
+.el-dialog__body {
+  padding: 24px 32px 16px !important;
+  color: var(--wbd);
+  font-family: var(--fn);
+}
+.el-dialog__footer {
+  padding: 0 32px 28px !important;
+}
+.el-dialog__headerbtn .el-dialog__close {
+  color: var(--wmt) !important;
+}
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: var(--wik) !important;
 }
 
-.el-dialog .el-dialog__body {
-  padding: var(--wise-spacing-xl) var(--wise-spacing-xl) var(--wise-spacing-lg) !important;
-  color: var(--wise-body);
-  font-family: var(--wise-font);
-}
-
-.el-dialog .el-dialog__footer {
-  padding: 0 var(--wise-spacing-xl) var(--wise-spacing-xl) !important;
-}
-
-.el-dialog .el-dialog__headerbtn .el-dialog__close {
-  color: var(--wise-mute) !important;
-}
-
-.el-dialog .el-dialog__headerbtn:hover .el-dialog__close {
-  color: var(--wise-ink) !important;
-}
-
-/* Dialog form inputs */
-.el-dialog .el-input .el-input__inner {
-  border-color: var(--wise-mute) !important;
-  color: var(--wise-ink) !important;
-  background-color: var(--wise-canvas) !important;
-  border-radius: var(--wise-rounded-md) !important;
-  font-family: var(--wise-font);
-}
-
+/* ─── Inputs → 12px radius, ink border ─── */
 .el-input__inner {
-  font-family: var(--wise-font) !important;
-  border-radius: var(--wise-rounded-md) !important;
-  border: 1px solid var(--wise-mute) !important;
-  background-color: var(--wise-canvas) !important;
-  color: var(--wise-ink) !important;
-  padding: var(--wise-spacing-md) var(--wise-spacing-lg) !important;
-  height: 44px !important;
+  font-family: var(--fn) !important;
+  border-radius: var(--rm) !important;
+  border: 1.5px solid var(--wmt) !important;
+  background: var(--wca) !important;
+  color: var(--wik) !important;
+  padding: 12px 16px !important;
+  height: 48px !important;
   line-height: 24px !important;
   font-size: 16px !important;
 }
-
-.el-input__inner::placeholder {
-  color: var(--wise-mute);
-}
-
 .el-input__inner:focus {
-  border-color: var(--wise-primary) !important;
+  border-color: var(--wik) !important;
+}
+.el-input__inner::placeholder {
+  color: var(--wmt);
 }
 
-.el-input-group__prepend {
-  border-radius: var(--wise-rounded-md) 0 0 var(--wise-rounded-md) !important;
-  background-color: var(--wise-canvas-soft) !important;
-  border-color: var(--wise-ink) !important;
-  color: var(--wise-ink);
+/* ─── Checkbox → 8px radius ─── */
+.el-checkbox {
+  font-family: var(--fn);
 }
-
-.el-input-group__append {
-  border-radius: 0 var(--wise-rounded-md) var(--wise-rounded-md) 0 !important;
-  background-color: var(--wise-canvas-soft) !important;
-  border-color: var(--wise-ink) !important;
-  color: var(--wise-ink);
-}
-
-/* ─── Checkbox ─── */
 .el-checkbox.is-bordered {
-  border-radius: var(--wise-rounded-sm) !important;
-  border-color: var(--wise-mute) !important;
-  background-color: var(--wise-canvas) !important;
-  color: var(--wise-ink) !important;
+  border-radius: 8px !important;
+  border-color: var(--wmt) !important;
+  background: var(--wca) !important;
+  color: var(--wik) !important;
 }
-
 .el-checkbox.is-bordered:hover {
-  border-color: var(--wise-primary) !important;
+  border-color: var(--wp) !important;
 }
-
-.el-checkbox.is-bordered:hover .el-checkbox__label {
-  color: var(--wise-primary) !important;
-}
-
 .el-checkbox.is-bordered.is-checked {
-  background-color: var(--wise-primary) !important;
-  border-color: var(--wise-primary) !important;
+  background: var(--wp) !important;
+  border-color: var(--wp) !important;
 }
-
 .el-checkbox.is-bordered.is-checked .el-checkbox__label {
-  color: var(--wise-on-primary) !important;
+  color: var(--wop) !important;
   font-weight: 600;
 }
-
 .el-checkbox__label {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
-}
-
-.el-checkbox__inner {
-  border-color: var(--wise-mute) !important;
-  background-color: var(--wise-canvas) !important;
-}
-
-.el-checkbox__input.is-checked .el-checkbox__inner {
-  background-color: var(--wise-primary) !important;
-  border-color: var(--wise-primary) !important;
+  color: var(--wbd) !important;
 }
 
 /* ─── Radio ─── */
+.el-radio {
+  font-family: var(--fn);
+}
 .el-radio__label {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
+  color: var(--wbd) !important;
 }
-
 .el-radio__input .el-radio__inner {
-  border-color: var(--wise-mute) !important;
-  background-color: var(--wise-canvas) !important;
+  border-color: var(--wmt) !important;
 }
-
 .el-radio__input.is-checked .el-radio__inner {
-  background-color: var(--wise-primary) !important;
-  border-color: var(--wise-primary) !important;
+  background: var(--wp) !important;
+  border-color: var(--wp) !important;
 }
-
 .el-radio__input.is-checked .el-radio__label {
   font-weight: 600;
-  color: var(--wise-ink) !important;
+  color: var(--wik) !important;
 }
 
 /* ─── Notification / Message ─── */
 .el-notification {
-  border-radius: var(--wise-rounded-xl) !important;
-  background-color: var(--wise-canvas) !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+  border-radius: var(--rx) !important;
+  background: var(--wca) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
   border: none !important;
 }
-
 .el-notification__title {
-  color: var(--wise-ink) !important;
-  font-family: var(--wise-font);
+  color: var(--wik) !important;
   font-weight: 600;
+  font-family: var(--fn);
 }
-
 .el-notification__content {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
+  color: var(--wbd) !important;
+  font-family: var(--fn);
 }
 
-/* ─── Message Box ─── */
 .el-message-box {
-  border-radius: var(--wise-rounded-xl) !important;
+  border-radius: var(--rx) !important;
   border: none !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08) !important;
 }
-
 .el-message-box__title {
-  font-family: var(--wise-font);
   font-weight: 600;
-  color: var(--wise-ink) !important;
-}
-
-.el-message-box__message p {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
-}
-
-.el-message-box__headerbtn .el-message-box__close {
-  color: var(--wise-mute) !important;
-}
-
-.el-message-box__headerbtn:hover .el-message-box__close {
-  color: var(--wise-ink) !important;
-}
-
-/* ─── Tooltips ─── */
-.el-tooltip__popper {
-  border-radius: var(--wise-rounded-sm) !important;
-}
-
-/* ─── Card (if any) ─── */
-.el-card {
-  border-radius: var(--wise-rounded-xl) !important;
-  border: none !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+  color: var(--wik) !important;
+  font-family: var(--fn);
 }
 
 /* ─── Links ─── */
-a, a:visited {
-  color: var(--wise-ink);
-  font-weight: 500;
-  transition: color 0.15s ease;
-}
-
-a:hover {
-  color: var(--wise-primary);
-}
+a { color: var(--wik); font-weight: 500; transition: color 0.12s ease; }
+a:hover { color: var(--wp); }
 
 /* ─── Music Cover ─── */
 .music-cover .el-image {
-  border-radius: var(--wise-rounded-lg) !important;
-  border: 1px solid var(--wise-canvas-soft) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border-radius: var(--rm) !important;
+  border: 1px solid var(--wcs) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-
-.music-cover i {
-  color: var(--wise-ink);
-}
-
-.music-cover i:hover {
-  color: var(--wise-primary) !important;
-}
+.music-cover i { color: var(--wik); }
+.music-cover i:hover { color: var(--wp) !important; }
 
 /* ─── Edit Items ─── */
 .edit-item .label {
   font-weight: 600;
-  color: var(--wise-body);
+  color: var(--wbd);
+  font-size: 14px;
 }
-
 .edit-item .input input {
-  border-bottom: 1px solid var(--wise-mute) !important;
-  font-family: var(--wise-font);
-  background-color: transparent !important;
+  border-bottom: 1.5px solid var(--wmt) !important;
+  font-family: var(--fn);
+  background: transparent !important;
+  font-size: 15px;
 }
-
 .edit-item .input input:focus {
-  border-bottom-color: var(--wise-primary) !important;
+  border-bottom-color: var(--wik) !important;
 }
-
-.edit-item i:hover {
-  color: var(--wise-primary) !important;
-}
-
-/* ─── Table Content Area ─── */
-.table-content {
-  background-color: var(--wise-canvas);
-  border-radius: var(--wise-rounded-lg);
-  overflow: hidden;
-}
+.edit-item i:hover { color: var(--wp) !important; }
 
 /* ─── Footer ─── */
 #app-footer {
-  color: var(--wise-mute) !important;
-  font-family: var(--wise-font);
+  color: var(--wmt) !important;
+  font-family: var(--fn);
   font-size: 12px !important;
-  margin-top: var(--wise-spacing-2xl) !important;
+  margin-top: 40px !important;
 }
+#app-footer a { color: var(--wmt) !important; }
+#app-footer a:hover { color: var(--wp) !important; }
 
-#app-footer a {
-  color: var(--wise-mute) !important;
-}
-
-#app-footer a:hover {
-  color: var(--wise-primary) !important;
-}
-
-/* ─── Tip ─── */
+/* ─── Tip & Update Info ─── */
 .tip {
-  color: var(--wise-mute) !important;
-  font-family: var(--wise-font);
+  color: var(--wmt) !important;
+  font-family: var(--fn);
 }
-
-/* ─── Update Info ─── */
 .update-info {
-  border-radius: var(--wise-rounded-lg) !important;
-  border: 1px solid var(--wise-canvas-soft) !important;
-  overflow: hidden;
+  border-radius: var(--rm) !important;
+  border: 1px solid var(--wcs) !important;
 }
-
 .update-info .update-title {
-  background-color: var(--wise-canvas-soft) !important;
-  color: var(--wise-body) !important;
+  background: var(--wcs) !important;
+  color: var(--wbd) !important;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
-
 .update-info .update-content {
-  color: var(--wise-body) !important;
-  font-family: var(--wise-font);
+  color: var(--wbd) !important;
+  font-family: var(--fn);
 }
 
-/* ─── Audio Player ─── */
+/* ─── Audio ─── */
 audio {
-  border-radius: var(--wise-rounded-xl) !important;
-  margin-top: var(--wise-spacing-lg);
+  border-radius: var(--rx) !important;
+  margin-top: 16px;
 }
 
-/* ─── Loader (pre-app) ─── */
+/* ─── Config / Edit dialogs ─── */
+[data-v-670c0e2e] .um-config-dialog { max-width: 90%; width: 38em; }
+[data-v-701d8fe2] .um-edit-dialog { max-width: 90%; width: 28em; }
+form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
+
+/* ─── Loader ─── */
 #loader-mask {
-  background-color: rgba(232, 235, 230, 0.95) !important;
+  background: rgba(232,235,230,0.97) !important;
+  backdrop-filter: blur(4px);
 }
-
 #loader {
-  border-color: var(--wise-canvas-soft) !important;
-  border-top-color: var(--wise-primary) !important;
-  border-width: 4px !important;
-  width: 48px !important;
-  height: 48px !important;
-  margin: -24px 0 0 -24px !important;
+  border-color: var(--wcs) !important;
+  border-top-color: var(--wp) !important;
+  border-width: 3px !important;
+  width: 36px !important;
+  height: 36px !important;
+  margin: -18px 0 0 -18px !important;
 }
-
-#loader-source, #loader-tips-timeout, #loader-tips-outdated h2, #loader-tips-outdated h3 {
-  font-family: var(--wise-font);
-  color: var(--wise-body) !important;
-}
-
 #loader-source {
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-weight: 600;
+  color: var(--wbd) !important;
+  font-family: var(--fn);
 }
-
 #loader-tips-timeout {
   font-size: 13px !important;
+  color: var(--wbd) !important;
+  font-family: var(--fn);
 }
-
 #loader-tips-timeout a {
-  color: var(--wise-ink) !important;
+  color: var(--wik) !important;
   font-weight: 600;
 }
-
 #loader-tips-timeout a:hover {
-  color: var(--wise-primary) !important;
+  color: var(--wp) !important;
 }
 
-/* ─── Config Dialog ─── */
-[data-v-670c0e2e] .um-config-dialog {
-  max-width: 90%;
-  width: 38em;
-}
-
-form[data-v-670c0e2e] input {
-  font-family: var(--wise-font) !important;
-}
-
-/* ─── Edit Dialog ─── */
-[data-v-701d8fe2] .um-edit-dialog {
-  max-width: 90%;
-  width: 28em;
-}
-
-/* ─── Responsive adjustments ─── */
+/* ─── Responsive ─── */
 @media (max-width: 768px) {
-  #app {
-    margin: var(--wise-spacing-md);
-    padding: var(--wise-spacing-lg) !important;
-    border-radius: var(--wise-rounded-lg);
-  }
-
-  .wise-nav {
-    padding: var(--wise-spacing-sm) var(--wise-spacing-lg);
-    border-radius: var(--wise-rounded-lg) var(--wise-rounded-lg) 0 0;
-  }
-
-  .el-upload-dragger {
-    padding: var(--wise-spacing-xl) !important;
-  }
+  body { padding: 16px 12px !important; }
+  #app { padding: 28px 20px !important; border-radius: 20px !important; }
+  .wise-nav { padding: 12px 16px; margin-bottom: 12px; }
+  .wise-nav-brand .label { font-size: 13px; }
+  #app .wise-hero,
+  #app h1:first-child { font-size: 32px !important; letter-spacing: -0.8px !important; }
+  .el-upload-dragger { padding: 32px 24px !important; }
 }
 
-/* ─── Dark mode: invert surfaces ─── */
+/* ─── Dark mode ─── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --wise-canvas: #1a1a1a;
-    --wise-canvas-soft: #2a2a2a;
-    --wise-ink: #e6e6e6;
-    --wise-body: #a6a6a6;
-    --wise-mute: #666666;
-    --wise-on-primary: #0e0f0c;
+    --wca: #181818;
+    --wcs: #252525;
+    --wik: #e0e0e0;
+    --wbd: #a0a0a0;
+    --wmt: #606060;
+    --wop: #0e0f0c;
   }
-
-  body {
-    background-color: #111111 !important;
-  }
-
-  #app {
-    background-color: var(--wise-canvas) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
-
-  .wise-nav {
-    background-color: var(--wise-canvas);
-    border-bottom-color: rgba(255,255,255,0.06);
-  }
-
-  .el-button--default {
-    background-color: var(--wise-canvas-soft) !important;
-    border-color: var(--wise-body) !important;
-    color: var(--wise-ink) !important;
-  }
-
-  .el-button--default.is-plain {
-    background-color: #333 !important;
-  }
-
-  .el-button--default.is-plain:hover {
-    background-color: var(--wise-primary) !important;
-    color: var(--wise-on-primary) !important;
-  }
-
-  .el-button--default.is-circle {
-    background-color: var(--wise-canvas-soft) !important;
-    border-color: var(--wise-body) !important;
-  }
-
-  .el-button--default.is-circle:hover {
-    background-color: var(--wise-primary) !important;
-    border-color: var(--wise-primary) !important;
-    color: var(--wise-on-primary) !important;
-  }
-
-  .el-upload-dragger {
-    background-color: #2a2a2a !important;
-    border-color: #404040 !important;
-  }
-
-  .el-upload-dragger:hover {
-    background-color: var(--wise-primary-pale) !important;
-    border-color: var(--wise-primary) !important;
-  }
-
-  .el-upload-dragger .el-upload__text {
-    color: var(--wise-body) !important;
-  }
-
-  .el-table th.el-table__cell {
-    background-color: #333 !important;
-    color: var(--wise-body) !important;
-  }
-
-  .el-table td {
-    border-bottom-color: #333 !important;
-  }
-
-  .el-table tr {
-    color: var(--wise-ink) !important;
-  }
-
-  .el-table tr:hover td {
-    background-color: rgba(159, 232, 112, 0.08) !important;
-  }
-
-  .el-dialog {
-    background-color: #262626 !important;
-  }
-
-  .el-dialog .el-dialog__title {
-    color: var(--wise-ink) !important;
-  }
-
-  .el-dialog .el-dialog__body {
-    color: var(--wise-body) !important;
-  }
-
-  .el-dialog .el-input .el-input__inner {
-    background-color: #333 !important;
-    border-color: #404040 !important;
-    color: var(--wise-ink) !important;
-  }
-
-  .el-dialog .el-dialog__body .el-input .el-input__count .el-input__count-inner {
-    background-color: transparent !important;
-  }
-
-  .el-upload__tip {
-    color: var(--wise-mute) !important;
-  }
-
-  .el-checkbox.is-bordered {
-    background-color: #2a2a2a !important;
-    border-color: #404040 !important;
-  }
-
-  .el-checkbox.is-bordered:hover {
-    border-color: var(--wise-primary) !important;
-  }
-
-  .el-checkbox.is-bordered.is-checked {
-    background-color: var(--wise-primary) !important;
-  }
-
-  .el-checkbox.is-bordered.is-checked .el-checkbox__inner {
-    border-color: var(--wise-on-primary) !important;
-    background-color: var(--wise-on-primary) !important;
-  }
-
-  .el-checkbox__label {
-    color: var(--wise-body) !important;
-  }
-
-  .el-radio__label {
-    color: var(--wise-body) !important;
-  }
-
-  .el-notification {
-    background-color: #2a2a2a !important;
-  }
-
-  .el-message-box {
-    background-color: #262626 !important;
-  }
-
-  .music-cover .el-image {
-    border-color: #333 !important;
-  }
-
-  .update-info {
-    border-color: #333 !important;
-  }
-
-  .update-info .update-title {
-    background-color: #333 !important;
-    color: var(--wise-ink) !important;
-  }
-
-  .update-info .update-content {
-    color: var(--wise-body) !important;
-  }
-
-  #loader-mask {
-    background-color: rgba(17, 17, 17, 0.95) !important;
-  }
-
-  #loader-tips-timeout a {
-    color: var(--wise-ink) !important;
-  }
+  html, body { background-color: #101010 !important; }
+  #app, .wise-nav { background: var(--wca) !important; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+  .el-button--default { background: var(--wcs) !important; border-color: var(--wbd) !important; color: var(--wik) !important; }
+  .el-button--default.is-plain { background: #2a2a2a !important; }
+  .el-button--default.is-plain:hover { background: var(--wp) !important; color: var(--wop) !important; }
+  .el-upload-dragger { background: #252525 !important; border-color: #404040 !important; }
+  .el-upload-dragger:hover { background: rgba(159,232,112,0.06) !important; border-color: var(--wp) !important; }
+  .el-table th.el-table__cell { background: #2a2a2a !important; color: var(--wbd) !important; }
+  .el-table td { border-bottom-color: #2a2a2a !important; color: var(--wik) !important; }
+  .el-table tr:hover td { background: rgba(159,232,112,0.06) !important; }
+  .el-dialog { background: #1e1e1e !important; }
+  .el-dialog__title { color: var(--wik) !important; }
+  .el-dialog .el-input__inner { background: #2a2a2a !important; border-color: #404040 !important; color: var(--wik) !important; }
+  .el-checkbox.is-bordered { background: #252525 !important; border-color: #404040 !important; }
+  .el-checkbox.is-bordered.is-checked { background: var(--wp) !important; }
+  .el-checkbox.is-bordered.is-checked .el-checkbox__inner { border-color: var(--wop) !important; background: var(--wop) !important; }
+  .el-notification { background: #252525 !important; }
+  .el-message-box { background: #1e1e1e !important; }
+  .music-cover .el-image { border-color: #2a2a2a !important; }
+  .update-info { border-color: #2a2a2a !important; }
+  .update-info .update-title { background: #2a2a2a !important; color: var(--wik) !important; }
+  #loader-mask { background: rgba(16,16,16,0.97) !important; }
 }
