@@ -22,6 +22,46 @@
   `).join('');
 })();
 
+// ── Web Worker 并行处理 ──
+var maxWorker = new Worker('/src/scripts/worker.js');
+var _wqid = 0;
+var _wcb = {};
+maxWorker.addEventListener('message', function(e) {
+  var m = e.data;
+  var cb = _wcb[m.id];
+  if (cb) { delete _wcb[m.id]; cb(m); }
+});
+function wPost(type, payload, cb) {
+  var id = ++_wqid;
+  _wcb[id] = cb;
+  payload.type = type;
+  payload.id = id;
+  maxWorker.postMessage(payload);
+}
+// ── 性能基准 ──
+var benchLog = [];
+function bench(name, t) { benchLog.push({ name: name, t: t }); }
+function logBench() {
+  if (benchLog.length === 0) return;
+  var byName = {};
+  benchLog.forEach(function(b) {
+    if (!byName[b.name]) byName[b.name] = [];
+    byName[b.name].push(b.t);
+  });
+  console.log('%c╔══════════════════════════════════╗', 'font-weight:bold');
+  console.log('%c║  Web Worker 性能基准 (ms)        ║', 'font-weight:bold');
+  var totalAvg = 0, totalCount = 0;
+  Object.keys(byName).forEach(function(name) {
+    var times = byName[name];
+    var avg = (times.reduce(function(a,b){return a+b;}, 0) / times.length).toFixed(2);
+    totalAvg += parseFloat(avg);
+    totalCount += times.length;
+    console.log('%c║  ' + name.padEnd(19) + ' ×' + String(times.length).padStart(3) + '  avg:' + avg + 'ms  ║', 'color:#9fe870');
+  });
+  console.log('%c╚══════════════════════════════════╝', 'font-weight:bold');
+}
+setTimeout(logBench, 15000);
+
 const ColorUtils = {
   hexToRgb: function(hex) {
     var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -39,6 +79,7 @@ const ColorUtils = {
     var c=document.getElementById('colorCanvas'), x=c.getContext('2d'), i=new Image();
     i.crossOrigin='Anonymous'; i.src=url;
     i.onload=function(){
+      var t0=performance.now();
       c.width=50;c.height=50;x.drawImage(i,0,0,50,50);
       try{
         var d=x.getImageData(0,0,50,50).data;
@@ -48,6 +89,7 @@ const ColorUtils = {
           var w=br<50?2:1; r+=d[j]*w; g+=d[j+1]*w; b+=d[j+2]*w; t+=w;
         }
         if(t>0){r=Math.floor(r/t);g=Math.floor(g/t);b=Math.floor(b/t);}
+        console.log('  [main-thread] extractColor: '+(performance.now()-t0).toFixed(1)+'ms');
         cb({r:r,g:g,b:b});
       }catch(e){cb({r:100,g:145,b:65});}
     };
@@ -242,7 +284,14 @@ function loadLyrics(lrcUrl, callback) {
   console.log('📝 加载歌词:', lrcUrl);
   fetch(lrcUrl, { cache: 'no-cache' })
     .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(function(text) { console.log('✅ 歌词加载成功 (' + text.length + ' 字符)'); callback(parseLRC(text)); })
+    .then(function(text) {
+      console.log('✅ 歌词加载成功 (' + text.length + ' 字符)');
+      var t0 = performance.now();
+      wPost('parseLRC', { text: text }, function(m) {
+        bench('worker-lrc', performance.now() - t0);
+        if (m.data) callback(m.data); else callback(null);
+      });
+    })
     .catch(function(err) { console.error('❌ 歌词加载失败:', lrcUrl, err.message || err); callback(null); });
 }
 
@@ -331,13 +380,17 @@ function loadSong(song){
   loadEmbeddedCover(song.src, function(coverDataUrl) {
     if (coverDataUrl) {
       mc.src = coverDataUrl;
-      ColorUtils.extractColorFromUrl(coverDataUrl, function(rgb){
-        var t = ColorUtils.generateTheme(rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor();
+      var t0 = performance.now();
+      wPost('extractColor', { url: coverDataUrl }, function(m) {
+        bench('worker-color', performance.now() - t0);
+        if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
       });
     } else if (song.cover) {
       mc.src = song.cover;
-      ColorUtils.extractColorFromUrl(song.cover, function(rgb){
-        var t = ColorUtils.generateTheme(rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor();
+      var t0 = performance.now();
+      wPost('extractColor', { url: song.cover }, function(m) {
+        bench('worker-color', performance.now() - t0);
+        if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
       });
     }
   });
