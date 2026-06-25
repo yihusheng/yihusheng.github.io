@@ -99,7 +99,44 @@ var CoverDB = {
 };
 CoverDB.open();
 
-// ── 预热相邻歌曲，并行拉封面 ──
+// ── IndexedDB 歌词缓存（避免重复下载整个音频读内嵌歌词）──
+var LyricsDB = {
+  db: null,
+  open: function() {
+    return new Promise(function(resolve) {
+      if (LyricsDB.db) { resolve(); return; }
+      var req = indexedDB.open('maxcloud-lyrics-cache', 1);
+      req.onupgradeneeded = function(e) {
+        try { e.target.result.createObjectStore('lyrics', { keyPath: 'src' }); } catch(ex) {}
+      };
+      req.onsuccess = function(e) {
+        LyricsDB.db = e.target.result;
+        resolve();
+      };
+      req.onerror = function() { resolve(); };
+    });
+  },
+  get: function(src) {
+    if (!LyricsDB.db) return Promise.resolve(null);
+    return new Promise(function(resolve) {
+      try {
+        var tx = LyricsDB.db.transaction('lyrics', 'readonly');
+        var r = tx.objectStore('lyrics').get(src);
+        r.onsuccess = function() { resolve(r.result ? r.result.data : null); };
+        r.onerror = function() { resolve(null); };
+      } catch(e) { resolve(null); }
+    });
+  },
+  set: function(src, data) {
+    if (!LyricsDB.db) return;
+    try {
+      LyricsDB.db.transaction('lyrics', 'readwrite').objectStore('lyrics').put({ src: src, data: data });
+    } catch(e) {}
+  }
+};
+LyricsDB.open();
+
+// ── 预热相邻歌曲，并行拉封面 + 歌词 ──
 function preloadAdjacent(idx) {
   idx = idx || currentSongIndex;
   var prevIdx = (idx - 1 + songs.length) % songs.length;
@@ -109,9 +146,15 @@ function preloadAdjacent(idx) {
     var s = songs[i];
     if (!s || !s.src) return;
     CoverDB.get(s.src).then(function(cached) {
-      if (cached) return; // 已有缓存
-      if (s.cover) { new Image().src = s.cover; } // 预热 <img> 缓存
+      if (cached) return;
+      if (s.cover) { new Image().src = s.cover; }
     });
+    // 预热相邻歌词（只走缓存，不触发下载）
+    if (!s.lrc) {
+      LyricsDB.get(s.src).then(function(cached) {
+        if (cached) return;
+      });
+    }
   });
 }
 
@@ -218,6 +261,16 @@ async function loadMusicList() {
 
 function loadEmbeddedCover(mp3Url, callback) {
   if (typeof jsmediatags === 'undefined') { callback(null); return; }
+  CoverDB.get(mp3Url).then(function(cached) {
+    if (cached) { callback(cached); return; }
+    fetch(mp3Url, { method: 'HEAD' }).then(function(r) {
+      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
+      if (size > 3 * 1024 * 1024) { callback(null); return; }
+      readEmbeddedCover(mp3Url, callback);
+    }).catch(function() { readEmbeddedCover(mp3Url, callback); });
+  });
+}
+function readEmbeddedCover(mp3Url, callback) {
   try {
     jsmediatags.read(mp3Url, {
       onSuccess: function(tag) {
@@ -227,7 +280,9 @@ function loadEmbeddedCover(mp3Url, callback) {
           var bytes = new Uint8Array(data);
           var binary = '';
           for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-          callback('data:' + (pic.format || 'image/jpeg') + ';base64,' + btoa(binary));
+          var url = 'data:' + (pic.format || 'image/jpeg') + ';base64,' + btoa(binary);
+          CoverDB.set(mp3Url, url);
+          callback(url);
         } else {
           callback(null);
         }
@@ -237,25 +292,35 @@ function loadEmbeddedCover(mp3Url, callback) {
   } catch(e) { callback(null); }
 }
 
-// ── 前端兜底：jsmediatags 读取内嵌歌词（当 workflow 未提取时）──
+// ── 前端兜底：jsmediatags 读取内嵌歌词（缓存 + 跳过大文件）──
 function loadEmbeddedLyrics(audioUrl, callback) {
   if (typeof jsmediatags === 'undefined') { callback(null); return; }
+  LyricsDB.get(audioUrl).then(function(cached) {
+    if (cached) { callback(cached); return; }
+    // 大文件跳过 jsmediatags 读取（需下载整个文件才能解析）
+    fetch(audioUrl, { method: 'HEAD' }).then(function(r) {
+      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
+      if (size > 3 * 1024 * 1024) { callback(null); return; }
+      readEmbeddedLyrics(audioUrl, callback);
+    }).catch(function() { readEmbeddedLyrics(audioUrl, callback); });
+  });
+}
+function readEmbeddedLyrics(audioUrl, callback) {
   try {
     jsmediatags.read(audioUrl, {
       onSuccess: function(tag) {
         var tags = tag.tags || {};
-        // USLT（同步歌词） / 普通 lyrics 字段
         var lrcText = tags.lyrics || tags.USLT || null;
         if (lrcText && typeof lrcText === 'string' && lrcText.trim()) {
+          LyricsDB.set(audioUrl, lrcText);
           callback(lrcText);
         } else if (tags.lyrics) {
-          // 某些库返回对象数组
           var joined = '';
           for (var i = 0; i < tags.lyrics.length; i++) {
             var l = tags.lyrics[i];
             joined += (typeof l === 'string' ? l : l.text || '') + '\n';
           }
-          if (joined.trim()) callback(joined);
+          if (joined.trim()) { LyricsDB.set(audioUrl, joined); callback(joined); }
           else callback(null);
         } else {
           callback(null);
