@@ -49,12 +49,11 @@
         <h1 id="mainTitle" class="song-title-main">Title</h1>
         <p id="mainArtist" class="artist-name">Artist</p>
       </div>
-      <!-- 歌词视图：backdrop(关闭) + scroll(歌词行跳转) + 空白区(无操作) -->
-      <div class="lyrics-view" id="lyricsView">
-        <div class="lyrics-backdrop" id="lyricsBackdrop"></div>
-        <div class="lyrics-scroll" id="lyricsContent">
-          <div class="lyrics-empty">暂无歌词</div>
-        </div>
+    </div>
+    <!-- 歌词视图：脱离封面容器，覆盖整个 player-content 消除卡片感 -->
+    <div class="lyrics-view" id="lyricsView">
+      <div class="lyrics-scroll" id="lyricsContent">
+        <div class="lyrics-empty">暂无歌词</div>
       </div>
     </div>
     <div class="m3-slider-root">
