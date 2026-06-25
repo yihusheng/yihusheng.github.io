@@ -45,7 +45,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install node-id3
+        run: npm install music-metadata
 
       - name: Generate music.json & extract covers & lyrics
         run: node src/scripts/generate-music.js
