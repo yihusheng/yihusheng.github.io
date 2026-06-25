@@ -237,6 +237,35 @@ function loadEmbeddedCover(mp3Url, callback) {
   } catch(e) { callback(null); }
 }
 
+// ── 前端兜底：jsmediatags 读取内嵌歌词（当 workflow 未提取时）──
+function loadEmbeddedLyrics(audioUrl, callback) {
+  if (typeof jsmediatags === 'undefined') { callback(null); return; }
+  try {
+    jsmediatags.read(audioUrl, {
+      onSuccess: function(tag) {
+        var tags = tag.tags || {};
+        // USLT（同步歌词） / 普通 lyrics 字段
+        var lrcText = tags.lyrics || tags.USLT || null;
+        if (lrcText && typeof lrcText === 'string' && lrcText.trim()) {
+          callback(lrcText);
+        } else if (tags.lyrics) {
+          // 某些库返回对象数组
+          var joined = '';
+          for (var i = 0; i < tags.lyrics.length; i++) {
+            var l = tags.lyrics[i];
+            joined += (typeof l === 'string' ? l : l.text || '') + '\n';
+          }
+          if (joined.trim()) callback(joined);
+          else callback(null);
+        } else {
+          callback(null);
+        }
+      },
+      onError: function() { callback(null); }
+    });
+  } catch(e) { callback(null); }
+}
+
 var app = document.getElementById('app');
 var island = document.getElementById('island');
 var themeColorMeta = document.querySelector('meta[name="theme-color"]');
@@ -392,7 +421,26 @@ function toggleLyrics() {
         else { document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>'; }
       });
     } else {
-      renderLyrics();
+      // 无外部歌词 → 尝试从音频文件读内嵌歌词兜底
+      document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">歌词加载中...</div>';
+      var lid3 = ++lrcLoadId;
+      loadEmbeddedLyrics(songs[currentSongIndex] && songs[currentSongIndex].src, function(lrcText) {
+        if (lid3 !== lrcLoadId) return;
+        if (lrcText) {
+          wPost('parseLRC', { text: lrcText }, function(m) {
+            if (lid3 !== lrcLoadId) return;
+            if (m.data && m.data.length > 0) {
+              lyricsData = m.data;
+              renderLyrics();
+              updateLyricHighlight();
+            } else {
+              document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+            }
+          });
+        } else {
+          document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>';
+        }
+      });
     }
   } else {
     lv.classList.remove('open');
@@ -484,6 +532,23 @@ function loadSong(song){
     loadLyrics(song.lrc, function(data) {
       if (lid !== lrcLoadId) return;
       if (data && data.length > 0) { lyricsData = data; if (lyricsVisible) { renderLyrics(); updateLyricHighlight(); } }
+    });
+  }
+
+  // 前端兜底：无外部歌词时尝试从音频文件读取内嵌歌词
+  if (!song.lrc) {
+    var lid2 = ++lrcLoadId;
+    loadEmbeddedLyrics(song.src, function(lrcText) {
+      if (lid2 !== lrcLoadId) return;
+      if (lrcText) {
+        wPost('parseLRC', { text: lrcText }, function(m) {
+          if (lid2 !== lrcLoadId) return;
+          if (m.data && m.data.length > 0) {
+            lyricsData = m.data;
+            if (lyricsVisible) { renderLyrics(); updateLyricHighlight(); }
+          }
+        });
+      }
     });
   }
 
