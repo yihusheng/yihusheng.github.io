@@ -116,7 +116,7 @@ body {
   position: absolute;
   top: 0; left: 0;
   width: 100%;
-  height: calc(100% - 160px);
+  height: calc(100% - 210px);
   z-index: 10;
   display: none;
   background: var(--phone-screen-bg);
@@ -160,13 +160,13 @@ body {
   opacity: 0.6;
 }
 
-.m3-slider-root { width: 100%; height: 60px; position: relative; display: flex; align-items: center; margin-bottom: 0; flex-shrink: 0; }
-.m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(14,15,12,0.1); border-radius: 2px; z-index: 1; top: 28px; left: 0; width: 100%; }
-.m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 20px; }
+.m3-slider-root { width: 100%; height: 40px; position: relative; display: flex; align-items: center; margin-bottom: 0; flex-shrink: 0; }
+.m3-slider-track-inactive { position: absolute; height: 4px; background-color: rgba(14,15,12,0.1); border-radius: 2px; z-index: 1; top: 18px; left: 0; width: 100%; }
+.m3-slider-track-active-container { position: absolute; left: 0; height: 20px; overflow: hidden; z-index: 2; width: 0%; top: 10px; }
 .m3-slider-wavy-path { fill: none; stroke: var(--md-sys-color-primary); stroke-width: 4; stroke-linecap: round; }
 @keyframes wavy-move { from { transform: translateX(0); } to { transform: translateX(-40px); } }
 .playing .m3-slider-wavy-path { animation: wavy-move 1.5s linear infinite; }
-.m3-slider-thumb-vertical { position: absolute; top: 30px; left: 0%; width: 4px; height: 20px; background-color: var(--md-sys-color-primary); border-radius: 2px; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; box-shadow: 0 2px 8px rgba(14,15,12,0.15); }
+.m3-slider-thumb-vertical { position: absolute; top: 20px; left: 0%; width: 4px; height: 20px; background-color: var(--md-sys-color-primary); border-radius: 2px; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; box-shadow: 0 2px 8px rgba(14,15,12,0.15); }
 .m3-slider-input { position: absolute; width: 100%; height: 100%; -webkit-appearance: none; appearance: none; background: transparent; z-index: 20 !important; cursor: pointer; outline: none; margin: 0; }
 .m3-slider-input::-webkit-slider-thumb { -webkit-appearance: none; height: 0; width: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
 .m3-slider-input::-moz-range-thumb { width: 0; height: 0; border: none; background: transparent; cursor: pointer; box-shadow: none; }
