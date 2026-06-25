@@ -86,7 +86,18 @@ function getCoverExt(mime) {
       // 提取内嵌歌词
       if (common.lyrics && common.lyrics.length > 0) {
         const lyricsText = common.lyrics
-          .map(l => (typeof l === 'string' ? l : l.text || ''))
+          .map(l => {
+            if (typeof l === 'string') return l;
+            // 同步歌词：time（秒）+ text 分开存，组装成 LRC 格式
+            if (l.time != null) {
+              const t = l.time;
+              const mins = Math.floor(t / 60);
+              const secs = Math.floor(t % 60);
+              const cs = Math.floor((t % 1) * 100);
+              return `[${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}.${String(cs).padStart(2, '0')}]${l.text || ''}`;
+            }
+            return l.text || '';
+          })
           .filter(Boolean)
           .join('\n');
         if (lyricsText.trim()) {

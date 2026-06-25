@@ -408,12 +408,6 @@ function updateLyricHighlight() {
   }
 }
 
-// ── 歌词区域：空白处点击返回封面（stopPropagation 避免双击冲突）──
-document.getElementById('lyricsView').addEventListener('click', function(e) {
-  e.stopPropagation();
-  toggleLyrics();
-});
-
 function loadSong(song){
   if (!song || !song.src) return;
   if (currentHowl) { currentHowl.unload(); currentHowl = null; }
@@ -626,7 +620,7 @@ document.getElementById('playlistBackdrop').addEventListener('click', closePlayl
 document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
 document.getElementById('playlistRepeatBtn').addEventListener('click', function() { isRepeat = !isRepeat; this.classList.toggle('active', isRepeat); });
 document.querySelector('.cover-lyrics-wrapper').addEventListener('click', function(e) {
-  if (!lyricsVisible) toggleLyrics();
+  toggleLyrics();
 });
 
 function init(){
