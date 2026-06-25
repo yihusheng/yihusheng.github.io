@@ -61,7 +61,7 @@ function getCoverExt(mime) {
     try {
       const metadata = await mm.parseFile(filePath, {
         duration: false,
-        skipPostHeaders: true,
+        skipPostHeaders: false,
       });
       const common = metadata.common;
 
