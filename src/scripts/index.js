@@ -62,6 +62,59 @@ function logBench() {
 }
 setTimeout(logBench, 15000);
 
+// ── IndexedDB 封面缓存 ──
+var CoverDB = {
+  db: null,
+  open: function() {
+    return new Promise(function(resolve) {
+      if (CoverDB.db) { resolve(); return; }
+      var req = indexedDB.open('maxcloud-cover-cache', 1);
+      req.onupgradeneeded = function(e) {
+        try { e.target.result.createObjectStore('covers', { keyPath: 'src' }); } catch(ex) {}
+      };
+      req.onsuccess = function(e) {
+        CoverDB.db = e.target.result;
+        resolve();
+      };
+      req.onerror = function() { resolve(); };
+    });
+  },
+  get: function(src) {
+    if (!CoverDB.db) return Promise.resolve(null);
+    return new Promise(function(resolve) {
+      try {
+        var tx = CoverDB.db.transaction('covers', 'readonly');
+        var r = tx.objectStore('covers').get(src);
+        r.onsuccess = function() { resolve(r.result ? r.result.data : null); };
+        r.onerror = function() { resolve(null); };
+      } catch(e) { resolve(null); }
+    });
+  },
+  set: function(src, data) {
+    if (!CoverDB.db) return;
+    try {
+      CoverDB.db.transaction('covers', 'readwrite').objectStore('covers').put({ src: src, data: data });
+    } catch(e) {}
+  }
+};
+CoverDB.open();
+
+// ── 预热相邻歌曲，并行拉封面 ──
+function preloadAdjacent(idx) {
+  idx = idx || currentSongIndex;
+  var prevIdx = (idx - 1 + songs.length) % songs.length;
+  var nextIdx = (idx + 1) % songs.length;
+  [prevIdx, nextIdx].forEach(function(i) {
+    if (i === idx) return;
+    var s = songs[i];
+    if (!s || !s.src) return;
+    CoverDB.get(s.src).then(function(cached) {
+      if (cached) return; // 已有缓存
+      if (s.cover) { new Image().src = s.cover; } // 预热 <img> 缓存
+    });
+  });
+}
+
 const ColorUtils = {
   hexToRgb: function(hex) {
     var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -367,7 +420,7 @@ function loadSong(song){
   var songId = Date.now(); currentSongId = songId;
   document.getElementById('mainTitle').innerText = song.title;
   document.getElementById('mainArtist').innerText = song.artist;
-  var mc = document.getElementById('mainCover'); mc.src = '';
+  var mc = document.getElementById('mainCover');
 
   if (lyricsVisible) toggleLyrics();
 
@@ -377,21 +430,39 @@ function loadSong(song){
   lyricsData = []; currentLyricIndex = -1;
   currentSongLrcUrl = song.lrc || null; lrcLoadId = 0;
 
+  // 立即显示封面（song.cover 或占位图），不等嵌入式
+  var fallback = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280"><rect fill="#e8ebe6" width="280" height="280"/><text x="140" y="155" font-size="64" text-anchor="middle" fill="#868685">\u266a</text></svg>');
+  mc.src = song.cover || fallback;
+  updateMediaSession(song.title, song.artist, mc.src);
+
+  // 并行 1: IndexedDB 缓存 → 立即升级封面
+  CoverDB.get(song.src).then(function(cached) {
+    if (songId !== currentSongId || !cached) return;
+    if (mc.src !== cached) { mc.src = cached; updateMediaSession(song.title, song.artist, mc.src); }
+    var t0 = performance.now();
+    wPost('extractColor', { url: mc.src }, function(m) {
+      bench('worker-color', performance.now() - t0);
+      if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
+    });
+  });
+
+  // 并行 2: 后台提取嵌入式封面（不阻塞播放）
   loadEmbeddedCover(song.src, function(coverDataUrl) {
+    if (songId !== currentSongId) return;
     if (coverDataUrl) {
-      mc.src = coverDataUrl;
-      var t0 = performance.now();
-      wPost('extractColor', { url: coverDataUrl }, function(m) {
-        bench('worker-color', performance.now() - t0);
-        if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
-      });
-    } else if (song.cover) {
+      CoverDB.set(song.src, coverDataUrl);
+      if (mc.src !== coverDataUrl) {
+        mc.src = coverDataUrl;
+        updateMediaSession(song.title, song.artist, mc.src);
+        var t0 = performance.now();
+        wPost('extractColor', { url: coverDataUrl }, function(m) {
+          bench('worker-color', performance.now() - t0);
+          if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
+        });
+      }
+    } else if (song.cover && mc.src !== song.cover) {
       mc.src = song.cover;
-      var t0 = performance.now();
-      wPost('extractColor', { url: song.cover }, function(m) {
-        bench('worker-color', performance.now() - t0);
-        if (m.rgb) { var t = ColorUtils.generateTheme(m.rgb); for (var k in t) document.documentElement.style.setProperty(k, t[k]); updateThemeColor(); }
-      });
+      updateMediaSession(song.title, song.artist, mc.src);
     }
   });
 
@@ -412,10 +483,11 @@ function loadSong(song){
     });
   }
 
-  mc.onload = function() {
-    if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, album: '', artwork: [{ src: mc.src || '', sizes: '512x512', type: 'image/jpeg' }] });
-  };
-  if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist, artwork: [{ src: '', sizes: '512x512', type: 'image/jpeg' }] });
+  mc.onload = function() { updateMediaSession(song.title, song.artist, mc.src); };
+  updateMediaSession(song.title, song.artist, mc.src);
+
+  // 预热相邻歌曲
+  preloadAdjacent(currentSongIndex);
 }
 
 var isDragging = false;
@@ -440,6 +512,17 @@ requestAnimationFrame(progressLoop);
 audioSlider.addEventListener('input', function() { isDragging = true; updateUI(audioSlider.value); });
 audioSlider.addEventListener('change', function() { isDragging = false; if (currentHowl) currentHowl.seek(audioSlider.value / 100 * currentHowl.duration()); });
 
+// 系统媒体控件 — 封面变化时自动更新
+function updateMediaSession(title, artist, coverUrl) {
+  if (!('mediaSession' in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title || '',
+      artist: artist || '',
+      artwork: [{ src: coverUrl || '', sizes: '512x512', type: 'image/jpeg' }]
+    });
+  } catch(e) {}
+}
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', playSong);
   navigator.mediaSession.setActionHandler('pause', pauseSong);
@@ -509,7 +592,7 @@ function renderPlaylist() {
 document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
 document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
 document.getElementById('playlistRepeatBtn').addEventListener('click', function() { isRepeat = !isRepeat; this.classList.toggle('active', isRepeat); });
-document.getElementById('mainCover').addEventListener('click', toggleLyrics);
+document.querySelector('.cover-lyrics-wrapper').addEventListener('click', toggleLyrics);
 
 function init(){
   updateTime(); setInterval(updateTime, 1e3);
