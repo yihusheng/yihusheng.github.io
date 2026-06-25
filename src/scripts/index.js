@@ -433,12 +433,12 @@ function loadSong(song){
   // 立即显示封面（song.cover 或占位图），不等嵌入式
   var fallback = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280"><rect fill="#e8ebe6" width="280" height="280"/><text x="140" y="155" font-size="64" text-anchor="middle" fill="#868685">\u266a</text></svg>');
   mc.src = song.cover || fallback;
-  updateMediaSession(song.title, song.artist, mc.src);
+  updateMediaSession(song.title, song.artist, mc.src, song.cover);
 
   // 并行 1: IndexedDB 缓存 → 立即升级封面
   CoverDB.get(song.src).then(function(cached) {
     if (songId !== currentSongId || !cached) return;
-    if (mc.src !== cached) { mc.src = cached; updateMediaSession(song.title, song.artist, mc.src); }
+    if (mc.src !== cached) { mc.src = cached; updateMediaSession(song.title, song.artist, mc.src, song.cover); }
     var t0 = performance.now();
     wPost('extractColor', { url: mc.src }, function(m) {
       bench('worker-color', performance.now() - t0);
@@ -453,7 +453,7 @@ function loadSong(song){
       CoverDB.set(song.src, coverDataUrl);
       if (mc.src !== coverDataUrl) {
         mc.src = coverDataUrl;
-        updateMediaSession(song.title, song.artist, mc.src);
+        updateMediaSession(song.title, song.artist, mc.src, song.cover);
         var t0 = performance.now();
         wPost('extractColor', { url: coverDataUrl }, function(m) {
           bench('worker-color', performance.now() - t0);
@@ -462,7 +462,7 @@ function loadSong(song){
       }
     } else if (song.cover && mc.src !== song.cover) {
       mc.src = song.cover;
-      updateMediaSession(song.title, song.artist, mc.src);
+      updateMediaSession(song.title, song.artist, mc.src, song.cover);
     }
   });
 
@@ -483,8 +483,8 @@ function loadSong(song){
     });
   }
 
-  mc.onload = function() { updateMediaSession(song.title, song.artist, mc.src); };
-  updateMediaSession(song.title, song.artist, mc.src);
+  mc.onload = function() { updateMediaSession(song.title, song.artist, mc.src, song.cover); };
+  updateMediaSession(song.title, song.artist, mc.src, song.cover);
 
   // 预热相邻歌曲
   preloadAdjacent(currentSongIndex);
@@ -513,13 +513,24 @@ audioSlider.addEventListener('input', function() { isDragging = true; updateUI(a
 audioSlider.addEventListener('change', function() { isDragging = false; if (currentHowl) currentHowl.seek(audioSlider.value / 100 * currentHowl.duration()); });
 
 // 系统媒体控件 — 封面变化时自动更新
-function updateMediaSession(title, artist, coverUrl) {
+function updateMediaSession(title, artist, coverUrl, songCover) {
   if (!('mediaSession' in navigator)) return;
   try {
+    // Android 锁屏/通知无法渲染 data: URL, 优先用真实图片 URL
+    var artSrc = '';
+    if (songCover && songCover.indexOf('data:') !== 0) {
+      artSrc = songCover;
+    } else if (coverUrl && coverUrl.indexOf('data:') !== 0) {
+      artSrc = coverUrl;
+    }
     navigator.mediaSession.metadata = new MediaMetadata({
       title: title || '',
       artist: artist || '',
-      artwork: [{ src: coverUrl || '', sizes: '512x512', type: 'image/jpeg' }]
+      album: '',
+      artwork: artSrc ? [
+        { src: artSrc, sizes: '256x256', type: 'image/jpeg' },
+        { src: artSrc, sizes: '512x512', type: 'image/jpeg' }
+      ] : []
     });
   } catch(e) {}
 }
@@ -528,6 +539,16 @@ if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('pause', pauseSong);
   navigator.mediaSession.setActionHandler('previoustrack', function(){ document.getElementById('prevBtn').click(); });
   navigator.mediaSession.setActionHandler('nexttrack', function(){ document.getElementById('nextBtn').click(); });
+  // Android: 锁屏进度条拖拽
+  navigator.mediaSession.setActionHandler('seekto', function(details) {
+    if (currentHowl && details.seekTime != null) currentHowl.seek(details.seekTime);
+  });
+  navigator.mediaSession.setActionHandler('seekbackward', function() {
+    if (currentHowl) currentHowl.seek(Math.max(0, (currentHowl.seek() || 0) - 10));
+  });
+  navigator.mediaSession.setActionHandler('seekforward', function() {
+    if (currentHowl) currentHowl.seek(Math.min(currentHowl.duration() || 0, (currentHowl.seek() || 0) + 10));
+  });
 }
 
 function toggleDrawer(){ document.getElementById('drawer').classList.toggle('open'); }
