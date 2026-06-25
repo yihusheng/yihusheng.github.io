@@ -121,15 +121,12 @@ body {
   z-index: 10;
   display: none;
   cursor: pointer;
+  background: var(--phone-screen-bg);
 }
 .lyrics-view.open { display: block; }
 
 .lyrics-backdrop {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: var(--phone-screen-bg);
+  display: none;
 }
 
 .lyrics-scroll {

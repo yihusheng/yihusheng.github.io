@@ -374,8 +374,10 @@ function renderLyrics() {
 function toggleLyrics() {
   lyricsVisible = !lyricsVisible;
   var lv = document.getElementById('lyricsView');
+  var pb = document.querySelector('.player-background');
   if (lyricsVisible) {
     lv.classList.add('open');
+    pb.style.opacity = '0';
     if (lyricsData.length > 0) {
       renderLyrics();
       updateLyricHighlight();
@@ -392,6 +394,7 @@ function toggleLyrics() {
     }
   } else {
     lv.classList.remove('open');
+    pb.style.opacity = '';
   }
 }
 
@@ -619,7 +622,9 @@ function renderPlaylist() {
 document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
 document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
 document.getElementById('playlistRepeatBtn').addEventListener('click', function() { isRepeat = !isRepeat; this.classList.toggle('active', isRepeat); });
-document.querySelector('.cover-lyrics-wrapper').addEventListener('click', function(e) {
+document.querySelector('.player-content').addEventListener('click', function(e) {
+  // 仅当点击在进度条以下区域（播放控件）时不触发切换
+  if (e.target.closest('.m3-slider-root, .time-labels, .controls')) return;
   toggleLyrics();
 });
 
