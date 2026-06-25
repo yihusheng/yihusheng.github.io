@@ -53,6 +53,7 @@ function parseLRC(lrcText) {
   var lines = lrcText.split('\n');
   var result = [];
   var timeRegex = /\[(\d{2}):(\d{2})(?:\.(\d{2,3}))?\]/g;
+  var anyTimed = false;
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i];
@@ -60,6 +61,7 @@ function parseLRC(lrcText) {
     timeRegex.lastIndex = 0;
     var times = [];
     while ((match = timeRegex.exec(line)) !== null) {
+      anyTimed = true;
       var mins = parseInt(match[1], 10);
       var secs = parseInt(match[2], 10);
       var ms = match[3] ? parseInt(match[3].padEnd(3, '0'), 10) : 0;
@@ -67,11 +69,22 @@ function parseLRC(lrcText) {
     }
     var text = line.replace(/\[.*?\]/g, '').trim();
     if (text) {
-      for (var j = 0; j < times.length; j++) {
-        result.push({ time: times[j], text: text });
+      if (times.length > 0) {
+        for (var j = 0; j < times.length; j++) {
+          result.push({ time: times[j], text: text });
+        }
       }
     }
   }
+
+  // 纯文本歌词（无时间标签）：每行作为独立条目
+  if (!anyTimed && result.length === 0) {
+    for (var k = 0; k < lines.length; k++) {
+      var t = lines[k].trim();
+      if (t) result.push({ time: -1, text: t });
+    }
+  }
+
   result.sort(function (a, b) { return a.time - b.time; });
   return result;
 }

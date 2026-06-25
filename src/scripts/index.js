@@ -375,9 +375,11 @@ function toggleLyrics() {
   lyricsVisible = !lyricsVisible;
   var lv = document.getElementById('lyricsView');
   var pb = document.querySelector('.player-background');
+  var pc = document.querySelector('.player-content');
   if (lyricsVisible) {
     lv.classList.add('open');
     pb.style.opacity = '0';
+    pc.style.background = 'var(--phone-screen-bg)';
     if (lyricsData.length > 0) {
       renderLyrics();
       updateLyricHighlight();
@@ -395,6 +397,7 @@ function toggleLyrics() {
   } else {
     lv.classList.remove('open');
     pb.style.opacity = '';
+    pc.style.background = '';
   }
 }
 
@@ -402,7 +405,10 @@ function updateLyricHighlight() {
   if (!currentHowl || !lyricsVisible || !lyricsData || lyricsData.length === 0) return;
   var seek = currentHowl.seek() || 0;
   var newIndex = -1;
-  for (var i = 0; i < lyricsData.length; i++) { if (lyricsData[i].time <= seek) newIndex = i; else break; }
+  for (var i = 0; i < lyricsData.length; i++) {
+    if (lyricsData[i].time < 0) continue; // 纯文本歌词跳过高亮
+    if (lyricsData[i].time <= seek) newIndex = i; else break;
+  }
   if (newIndex !== currentLyricIndex) {
     var items = document.querySelectorAll('.lyric-line');
     for (var i = 0; i < items.length; i++) items[i].classList.remove('active');
