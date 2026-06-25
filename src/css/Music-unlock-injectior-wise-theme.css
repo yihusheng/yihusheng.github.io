@@ -213,15 +213,13 @@ body { padding: 40px 16px !important; }
 .el-button--small { padding: 10px 20px !important; font-size: 13px !important; min-height: 40px !important; }
 .el-button--mini { padding: 8px 16px !important; font-size: 12px !important; min-height: 34px !important; }
 
-/* ─── Radio / Checkbox Row Spacing ─── */
-.el-radio,
-.el-checkbox {
+/* ─── Radio Row Spacing ─── */
+.el-radio {
   font-family: var(--fn);
   margin-right: 24px !important;
   margin-bottom: 8px !important;
 }
-.el-radio:last-child,
-.el-checkbox:last-child {
+.el-radio:last-child {
   margin-right: 0 !important;
 }
 
@@ -236,22 +234,96 @@ body { padding: 40px 16px !important; }
   color: var(--wik) !important;
 }
 
-.el-checkbox.is-bordered {
-  border-radius: 8px !important;
-  border-color: var(--wmt) !important;
-  background: var(--wca) !important;
-  color: var(--wik) !important;
+/* "立即保存" → Wise toggle switch (from scratch) */
+.el-button + .el-checkbox {
+  margin-left: 32px !important;
+  padding-left: 32px !important;
+  border-left: 1px solid var(--wcs) !important;
 }
-.el-checkbox.is-bordered:hover { border-color: var(--wp) !important; }
-.el-checkbox.is-bordered.is-checked {
+.el-checkbox {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  font-family: var(--fn);
+}
+/* Nuke ALL possible checked/active/focus backgrounds on the label */
+.el-checkbox.is-bordered,
+.el-checkbox.is-checked,
+.el-checkbox.is-focus,
+.el-checkbox:active,
+.el-checkbox:focus,
+.el-checkbox:hover,
+.el-checkbox.is-bordered.is-checked,
+.el-checkbox.is-bordered.is-focus,
+.el-checkbox.is-bordered:active,
+.el-checkbox.is-bordered:focus,
+.el-checkbox.is-bordered:hover {
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+/* Hide all inner elements of the old checkbox system */
+.el-checkbox__inner,
+.el-checkbox__input span,
+.el-checkbox__input input,
+.el-checkbox__input:active,
+.el-checkbox__input:focus {
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+/* The input wrapper becomes the toggle track */
+.el-checkbox__input {
+  display: block !important;
+  position: relative !important;
+  width: 44px !important;
+  height: 26px !important;
+  min-width: 44px !important;
+  flex-shrink: 0 !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  background: var(--wmt) !important;
+  transition: background 0.2s ease !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  outline: none !important;
+}
+/* Track lit */
+.el-checkbox__input.is-checked {
   background: var(--wp) !important;
-  border-color: var(--wp) !important;
 }
-.el-checkbox.is-bordered.is-checked .el-checkbox__label {
-  color: var(--wop) !important;
-  font-weight: 600;
+/* Thumb */
+.el-checkbox__input::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  top: 3px !important;
+  left: 3px !important;
+  width: 20px !important;
+  height: 20px !important;
+  background: #fff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12) !important;
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
-.el-checkbox__label { color: var(--wbd) !important; }
+/* Thumb moved right when checked */
+.el-checkbox__input.is-checked::after {
+  transform: translateX(18px) !important;
+}
+.el-checkbox__label {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--wbd) !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
 
 /* ─── Table (clean, no cell borders) ─── */
 .el-table {
@@ -349,14 +421,7 @@ body { padding: 40px 16px !important; }
 a { color: var(--wik); font-weight: 500; transition: color 0.12s ease; }
 a:hover { color: var(--wp); }
 
-/* ─── Action row: checkbox + buttons spacing ─── */
-/* Prevent "立即保存" from sticking to action buttons */
-.el-row .el-checkbox {
-  margin-right: 32px !important;
-}
-.el-row .el-checkbox.is-bordered {
-  margin-right: 24px !important;
-}
+/* ─── Action row ─── */
 .el-row {
   margin-bottom: 12px !important;
 }
@@ -508,6 +573,18 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
   .el-button + .el-button { margin-left: 0 !important; margin-top: 10px !important; }
   .el-button--small, .el-button--mini { width: auto; display: inline-flex; }
 
+  /* "立即保存" toggle — inline row */
+  .el-button + .el-checkbox {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    border-left: none !important;
+    margin-top: 12px !important;
+    display: inline-flex !important;
+    gap: 10px !important;
+    width: auto !important;
+    justify-content: flex-start !important;
+  }
+
   .el-table { font-size: 12px; }
   .el-table__body-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .el-table th.el-table__cell,
@@ -563,9 +640,7 @@ form[data-v-670c0e2e] input { font-family: var(--fn) !important; }
   .el-dialog { background: #1e1e1e !important; }
   .el-dialog__title { color: var(--wik) !important; }
   .el-dialog .el-input__inner { background: #2a2a2a !important; border-color: #404040 !important; color: var(--wik) !important; }
-  .el-checkbox.is-bordered { background: #252525 !important; border-color: #404040 !important; }
-  .el-checkbox.is-bordered.is-checked { background: var(--wp) !important; }
-  .el-checkbox.is-bordered.is-checked .el-checkbox__inner { border-color: var(--wop) !important; background: var(--wop) !important; }
+
   .el-notification { background: #252525 !important; }
   .el-message-box { background: #1e1e1e !important; }
   .music-cover .el-image { border-color: #2a2a2a !important; }
