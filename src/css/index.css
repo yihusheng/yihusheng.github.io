@@ -189,7 +189,7 @@ body {
 .btn-play .material-symbols-rounded { font-size: 2rem; }
 @keyframes pulse-play { 0%, 100% { box-shadow: 0 4px 16px rgba(159,232,112,0.35); transform: scale(1); } 50% { box-shadow: 0 6px 24px rgba(159,232,112,0.5); transform: scale(1.03); } }
 .playing .btn-play { animation: pulse-play 2s ease-in-out infinite; }
-.bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--md-sys-color-surface); border-radius: 24px 24px 0 0; transform: translateY(calc(100% - 16px)); transition: transform 0.5s cubic-bezier(0.2,0,0,1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(14,15,12,0.08); }
+.bottom-drawer { position: absolute; bottom: 0; left: 0; width: 100%; height: 92%; background: var(--phone-screen-bg); border-radius: 24px 24px 0 0; transform: translateY(calc(100% - 16px)); transition: transform 0.5s cubic-bezier(0.2,0,0,1); z-index: 1000; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(14,15,12,0.08); }
 .bottom-drawer.open { transform: translateY(0); }
 .nav-handle-area { width: 100%; height: 20px; padding-top: 8px; display: flex; justify-content: center; flex-shrink: 0; cursor: pointer; background: transparent; }
 .md3-nav-bar { width: 32px; height: 4px; background: var(--md-sys-color-outline); border-radius: 2px; opacity: 0.3; }
