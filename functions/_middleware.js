@@ -45,7 +45,7 @@ const HEAD_INJECT = [
 const WISE_HEAD_INJECT = [
   '<!-- wise-theme -->',
   '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">',
-  '<link href="/css/wise-theme.css" rel="stylesheet">',
+  '<link href="/src/css/Music-unlock-injectior-wise-theme.css" rel="stylesheet">',
   '<script>',
   '/* 注销 Music 工具 SW，打破 PWA 缓存，确保边缘注入生效 */',
   'if("serviceWorker" in navigator){',

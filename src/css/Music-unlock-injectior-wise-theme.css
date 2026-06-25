@@ -459,88 +459,32 @@ a:hover { color: var(--wp); }
   }
   .el-radio__label { font-size: 13px !important; }
 
-  /* Table → Card list (two-line) */
-  .el-table__header { display: none !important; }
-
-  .el-table__body table,
-  .el-table__body tbody,
-  .el-table__body tr {
-    display: block !important;
-    width: 100% !important;
+  /* Table: ultra compact, no scroll */
+  .el-table {
+    font-size: 9px !important;
+    table-layout: fixed !important;
   }
-  .el-table__body tbody tr {
-    display: flex !important;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 10px 0 !important;
-    border-bottom: 1px solid var(--wcs) !important;
-    gap: 2px 10px;
-    min-height: 44px;
-    position: relative;
+  .el-table .el-table__header-wrapper colgroup col,
+  .el-table .el-table__body-wrapper colgroup col {
+    width: auto !important;
   }
-  .el-table__body td {
-    display: block !important;
-    border: none !important;
-    padding: 0 !important;
-    line-height: 1.4 !important;
+  .el-table th.el-table__cell {
+    padding: 2px !important;
+    font-size: 7px !important;
+    letter-spacing: 0 !important;
+    text-align: center !important;
+    width: auto !important;
   }
-  /* Column 1: cover image (fixed size) */
-  .el-table__body td:nth-child(1) {
-    width: 32px !important;
-    height: 32px !important;
-    flex: 0 0 32px !important;
-    order: 0;
-    margin-right: 2px;
+  .el-table td {
+    padding: 2px !important;
+    font-size: 9px !important;
+    text-align: center !important;
+    word-break: break-all;
   }
-  .el-table__body td:nth-child(1) img,
-  .el-table__body td:nth-child(1) .el-image {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 6px !important;
-  }
-  /* Column 2: song name — main text */
-  .el-table__body td:nth-child(2) {
-    flex: 1 1 auto !important;
-    order: 1;
-    font-weight: 600 !important;
-    font-size: 13px !important;
-    color: var(--wik) !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 60px !important; /* space for actions */
-  }
-  /* Column 3: artist + Column 4: album — inline together */
-  .el-table__body td:nth-child(3),
-  .el-table__body td:nth-child(4) {
-    order: 3;
-    font-size: 11px !important;
-    color: var(--wmt) !important;
-    display: inline-block !important;
-    margin-left: 42px !important;
-  }
-  .el-table__body td:nth-child(3)::after {
-    content: "·" !important;
-    margin: 0 4px;
-    color: var(--wmt);
-  }
-  /* Column 5: actions — absolute right */
-  .el-table__body td:nth-child(5) {
-    position: absolute !important;
-    right: 0 !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    order: 10;
-    display: flex !important;
-    gap: 2px;
-  }
-  .el-table__body td:nth-child(5) .el-button {
-    padding: 6px 10px !important;
-    min-height: 30px !important;
-    font-size: 11px !important;
-    border-radius: 8px !important;
-  }
-  .el-table__body-wrapper { overflow-x: visible !important; }
+  .el-table__body-wrapper { overflow-x: hidden !important; }
+  /* Cover image in table smaller */
+  .el-table td:first-child .el-image,
+  .el-table td .music-cover img { width: 20px !important; height: 20px !important; }
   /* Dialog: full width on mobile */
   .el-dialog {
     width: calc(100vw - 24px) !important;

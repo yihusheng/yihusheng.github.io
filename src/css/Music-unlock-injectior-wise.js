@@ -1,5 +1,5 @@
 // Wise Theme Injector — Cloudflare Worker
-// Automatically injects wise-theme.css into Music tool pages
+// Automatically injects Music-unlock-injectior-wise-theme.css into Music tool pages
 // so it survives upstream updates.
 
 export default {
@@ -23,7 +23,7 @@ export default {
       .on('head', {
         element(el) {
           el.append(
-            '<link href="/css/wise-theme.css" rel="stylesheet">',
+            '<link href="/src/css/Music-unlock-injectior-wise-theme.css" rel="stylesheet">',
             { html: true }
           );
         },
