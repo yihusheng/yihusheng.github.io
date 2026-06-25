@@ -469,8 +469,8 @@ function loadSong(song){
   currentHowl = new Howl({
     src: [song.src], html5: true, preload: 'metadata',
     onload: function() { if (songId !== currentSongId) return; var dur = currentHowl.duration(); document.getElementById('durTime').innerText = isNaN(dur) ? '0:00' : Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0'); },
-    onplay: function() { if (songId !== currentSongId) return; app.classList.add('playing'); document.getElementById('playIcon').innerText = 'pause'; },
-    onpause: function() { if (songId !== currentSongId) return; app.classList.remove('playing'); document.getElementById('playIcon').innerText = 'play_arrow'; },
+    onplay: function() { if (songId !== currentSongId) return; app.classList.add('playing'); document.getElementById('playIcon').innerText = 'pause'; setPlaybackState('playing'); },
+    onpause: function() { if (songId !== currentSongId) return; app.classList.remove('playing'); document.getElementById('playIcon').innerText = 'play_arrow'; setPlaybackState('paused'); },
     onend: function() { if (songId !== currentSongId) return; document.getElementById('nextBtn').click(); },
     onloaderror: function(id, err) { console.error('加载失败:', song.src, err); }
   });
@@ -503,20 +503,23 @@ function updateUI(p) {
 }
 
 function progressLoop() {
-  if (currentHowl && currentHowl.playing() && !isDragging) { var seek = currentHowl.seek() || 0; var dur = currentHowl.duration() || 0; if (dur > 0) updateUI(seek / dur * 100); }
+  if (currentHowl && currentHowl.playing() && !isDragging) {
+    var seek = currentHowl.seek() || 0; var dur = currentHowl.duration() || 0;
+    if (dur > 0) updateUI(seek / dur * 100);
+    if (Math.floor(seek) !== progressLoop._lastSeek) { progressLoop._lastSeek = Math.floor(seek); setPositionState(dur, seek); }
+  }
   if (lyricsVisible) updateLyricHighlight();
   requestAnimationFrame(progressLoop);
 }
 requestAnimationFrame(progressLoop);
 
 audioSlider.addEventListener('input', function() { isDragging = true; updateUI(audioSlider.value); });
-audioSlider.addEventListener('change', function() { isDragging = false; if (currentHowl) currentHowl.seek(audioSlider.value / 100 * currentHowl.duration()); });
+audioSlider.addEventListener('change', function() { isDragging = false; if (currentHowl) { var d = currentHowl.duration() || 0; currentHowl.seek(audioSlider.value / 100 * d); setPositionState(d, currentHowl.seek() || 0); } });
 
 // 系统媒体控件 — 封面变化时自动更新
 function updateMediaSession(title, artist, coverUrl, songCover) {
   if (!('mediaSession' in navigator)) return;
   try {
-    // Android 锁屏/通知无法渲染 data: URL, 优先用真实图片 URL
     var artSrc = '';
     if (songCover && songCover.indexOf('data:') !== 0) {
       artSrc = songCover;
@@ -533,6 +536,14 @@ function updateMediaSession(title, artist, coverUrl, songCover) {
       ] : []
     });
   } catch(e) {}
+}
+function setPlaybackState(state) {
+  if ('mediaSession' in navigator) try { navigator.mediaSession.playbackState = state; } catch(e) {}
+}
+function setPositionState(dur, pos) {
+  if ('mediaSession' in navigator && navigator.mediaSession.setPositionState) {
+    try { navigator.mediaSession.setPositionState({ duration: dur || 0, playbackRate: 1, position: pos || 0 }); } catch(e) {}
+  }
 }
 if ('mediaSession' in navigator) {
   navigator.mediaSession.setActionHandler('play', playSong);

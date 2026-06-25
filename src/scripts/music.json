@@ -156,5 +156,10 @@
     "artist": "黛青塔娜 HAYA乐团",
     "cover": "./src/music/%E9%BB%9B%E9%9D%92%E5%A1%94%E5%A8%9C%20HAYA%E4%B9%90%E5%9B%A2%20-%20%E5%AF%82%E9%9D%99%E7%9A%84%E5%A4%A9%E7%A9%BA.jpg",
     "src": "./src/music/%E9%BB%9B%E9%9D%92%E5%A1%94%E5%A8%9C%20HAYA%E4%B9%90%E5%9B%A2%20-%20%E5%AF%82%E9%9D%99%E7%9A%84%E5%A4%A9%E7%A9%BA.mp3"
+  },
+  {
+    "title": "忧伤湖泊",
+    "artist": "傀儡乐队PUPPET 老狼",
+    "src": "./src/music/%E5%82%80%E5%84%A1%E4%B9%90%E9%98%9FPUPPET%20%E8%80%81%E7%8B%BC%20-%20%E5%BF%A7%E4%BC%A4%E6%B9%96%E6%B3%8A.mp3"
   }
 ]
