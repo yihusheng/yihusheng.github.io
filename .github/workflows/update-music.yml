@@ -51,13 +51,16 @@ jobs:
         run: node src/scripts/generate-music.js
 
       - name: Commit and push changes
+        shell: bash -e {0}
         run: |
-          git config --local user.name \"github-actions[bot]\"
-          git config --local user.email \"github-actions[bot]@users.noreply.github.com\"
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add src/scripts/music.json
           git add src/music/ -- '*.jpg' '*.png' '*.lrc'
-          git diff --staged --quiet || git commit -m \"chore: auto-update music.json, covers & lyrics [skip ci]\"
-          git stash push -m \"auto-stash\" || true
+          if ! git diff --staged --quiet; then
+            git commit -m 'chore: auto-update music.json, covers and lyrics [skip ci]'
+          fi
+          git stash push -m "auto-stash" || true
           git pull --rebase
           git stash pop || true
           git push
