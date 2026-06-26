@@ -38,6 +38,42 @@ function wPost(type, payload, cb) {
   payload.id = id;
   maxWorker.postMessage(payload);
 }
+// ── 预加载队列：相邻歌曲后台预热（浏览器级 prefetch，轻量无副作用）──
+var _prefetched = {};
+function preloadAudio(idx) {
+  if (!songs || songs.length < 2) return;
+  var seen = {};
+  for (var d = -1; d <= 1; d += 2) {
+    for (var offset = 1; offset <= 2; offset++) {
+      var index = d === -1
+        ? (idx - offset + songs.length) % songs.length
+        : (idx + offset) % songs.length;
+      if (index === idx || seen[index]) continue;
+      seen[index] = true;
+      var s = songs[index];
+      if (!s || !s.src || _prefetched[s.src]) continue;
+      _prefetched[s.src] = true;
+      // <link rel=prefetch> 让浏览器在空闲时下载缓存，切换时秒开
+      if (document.head) {
+        var lnk = document.createElement('link');
+        lnk.rel = 'prefetch';
+        lnk.href = s.src;
+        lnk.as = 'audio';
+        document.head.appendChild(lnk);
+      }
+      // 封面也预取
+      if (s.cover && !_prefetched[s.cover]) {
+        _prefetched[s.cover] = true;
+        var lnk2 = document.createElement('link');
+        lnk2.rel = 'prefetch';
+        lnk2.href = s.cover;
+        lnk2.as = 'image';
+        document.head.appendChild(lnk2);
+      }
+    }
+  }
+}
+
 // ── 性能基准 ──
 var benchLog = [];
 function bench(name, t) { benchLog.push({ name: name, t: t }); }
@@ -597,13 +633,45 @@ function loadSong(song){
     }
   });
 
+  // 加载状态：播放按钮显示缓冲图标
+  document.getElementById('playIcon').innerText = 'hourglass_empty';
+  document.getElementById('playBtn').style.opacity = '0.6';
+
   currentHowl = new Howl({
     src: [song.src], html5: true, preload: 'metadata',
-    onload: function() { if (songId !== currentSongId) return; var dur = currentHowl.duration(); document.getElementById('durTime').innerText = isNaN(dur) ? '0:00' : Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0'); },
-    onplay: function() { if (songId !== currentSongId) return; app.classList.add('playing'); document.getElementById('playIcon').innerText = 'pause'; setPlaybackState('playing'); },
-    onpause: function() { if (songId !== currentSongId) return; app.classList.remove('playing'); document.getElementById('playIcon').innerText = 'play_arrow'; setPlaybackState('paused'); },
-    onend: function() { if (songId !== currentSongId) return; document.getElementById('nextBtn').click(); },
-    onloaderror: function(id, err) { console.error('加载失败:', song.src, err); }
+    onload: function() {
+      if (songId !== currentSongId) return;
+      var dur = currentHowl.duration();
+      document.getElementById('durTime').innerText = isNaN(dur) ? '0:00' : Math.floor(dur/60)+':'+String(Math.floor(dur%60)).padStart(2,'0');
+      // 恢复播放按钮
+      document.getElementById('playIcon').innerText = 'play_arrow';
+      document.getElementById('playBtn').style.opacity = '';
+      // 当前曲已就绪 → 预热相邻歌曲
+      preloadAudio(currentSongIndex);
+    },
+    onplay: function() {
+      if (songId !== currentSongId) return;
+      app.classList.add('playing');
+      document.getElementById('playIcon').innerText = 'pause';
+      document.getElementById('playBtn').style.opacity = '';
+      setPlaybackState('playing');
+    },
+    onpause: function() {
+      if (songId !== currentSongId) return;
+      app.classList.remove('playing');
+      document.getElementById('playIcon').innerText = 'play_arrow';
+      setPlaybackState('paused');
+    },
+    onend: function() {
+      if (songId !== currentSongId) return;
+      document.getElementById('nextBtn').click();
+    },
+    onloaderror: function(id, err) {
+      console.error('加载失败:', song.src, err);
+      if (songId !== currentSongId) return;
+      document.getElementById('playIcon').innerText = 'play_arrow';
+      document.getElementById('playBtn').style.opacity = '';
+    }
   });
 
   if (song.lrc) {
