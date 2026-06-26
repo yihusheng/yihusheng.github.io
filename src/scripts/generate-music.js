@@ -1,6 +1,6 @@
 /**
  * generate-music.js
- * 扫描 src/music 目录，提取 MP3 / FLAC / M4A / OGG 等格式的内置封面和歌词，
+ * 扫描 public/music 目录，提取 MP3 / FLAC / M4A / OGG 等格式的内置封面和歌词，
  * 生成 src/scripts/music.json
  *
  * 用法: node src/scripts/generate-music.js
@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const mm = require('music-metadata');
 
-const musicDir = path.join(__dirname, '..', 'music');
+const musicDir = path.join(__dirname, '..', '..', 'public', 'music');
 const outputFile = path.join(__dirname, 'music.json');
 
 const AUDIO_EXTS = new Set(['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac', '.mp4', '.wma']);
@@ -75,7 +75,7 @@ function extractUSLT(filePath) {
   try {
     files = fs.readdirSync(musicDir);
   } catch (e) {
-    console.error('❌ 无法读取 src/music 目录:', e.message);
+    console.error('❌ 无法读取 public/music 目录:', e.message);
     process.exit(1);
   }
 
@@ -204,14 +204,14 @@ function extractUSLT(filePath) {
     const song = {
       title,
       artist,
-      src: `./src/music/${encodeURIComponent(audioFile)}`,
+      src: `./public/music/${encodeURIComponent(audioFile)}`,
     };
 
     if (coverFile) {
-      song.cover = `./src/music/${encodeURIComponent(coverFile)}`;
+      song.cover = `./public/music/${encodeURIComponent(coverFile)}`;
     }
     if (lrcFile) {
-      song.lrc = `./src/music/${encodeURIComponent(lrcFile)}`;
+      song.lrc = `./public/music/${encodeURIComponent(lrcFile)}`;
     }
 
     songs.push(song);

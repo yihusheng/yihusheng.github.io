@@ -3,17 +3,17 @@ name: Update Music & Deploy
 on:
   push:
     paths:
-      - 'src/music/*.mp3'
-      - 'src/music/*.wav'
-      - 'src/music/*.flac'
-      - 'src/music/*.ogg'
-      - 'src/music/*.m4a'
-      - 'src/music/*.aac'
-      - 'src/music/*.jpg'
-      - 'src/music/*.jpeg'
-      - 'src/music/*.png'
-      - 'src/music/*.webp'
-      - 'src/music/*.lrc'
+      - 'public/music/*.mp3'
+      - 'public/music/*.wav'
+      - 'public/music/*.flac'
+      - 'public/music/*.ogg'
+      - 'public/music/*.m4a'
+      - 'public/music/*.aac'
+      - 'public/music/*.jpg'
+      - 'public/music/*.jpeg'
+      - 'public/music/*.png'
+      - 'public/music/*.webp'
+      - 'public/music/*.lrc'
       - 'src/scripts/generate-music.js'
       - 'src/scripts/index.js'
       - '.github/workflows/update-music.yml'
@@ -56,7 +56,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add src/scripts/music.json
-          git add src/music/ -- '*.jpg' '*.png' '*.lrc'
+          git add public/music/ -- '*.jpg' '*.png' '*.lrc'
           if ! git diff --staged --quiet; then
             git commit -m 'chore: auto-update music.json, covers and lyrics [skip ci]'
           fi
@@ -83,7 +83,7 @@ jobs:
             exit 0
           fi
           npx wrangler r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
-          for f in src/music/*.mp3 src/music/*.flac src/music/*.m4a src/music/*.ogg src/music/*.wav src/music/*.jpg src/music/*.jpeg src/music/*.png src/music/*.lrc src/music/*.txt; do
+          for f in public/music/*.mp3 public/music/*.flac public/music/*.m4a public/music/*.ogg public/music/*.wav public/music/*.jpg public/music/*.jpeg public/music/*.png public/music/*.lrc public/music/*.txt; do
             [ -f "$f" ] && npx wrangler r2 object put "maxcloud/$f" --file="$f"
           done
           echo "✅ R2 上传完成"

@@ -253,7 +253,7 @@ async function loadMusicList() {
     songs = [];
   }
   if (songs.length === 0) {
-    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 /src/music 目录', cover: '', src: '' }];
+    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
   }
   currentSongIndex = Math.floor(Math.random() * songs.length);
   loadSong(songs[currentSongIndex]);
