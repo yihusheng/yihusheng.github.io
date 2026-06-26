@@ -65,7 +65,7 @@ jobs:
           git stash pop || true
           git push
 
-      - name: Upload music files to R2
+      - name: Upload music files to R2 (with MD5 dedup)
         continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -75,11 +75,76 @@ jobs:
             echo "⏭️ CLOUDFLARE_API_TOKEN 未设置，跳过 R2 上传"
             exit 0
           fi
-          npx --yes wrangler r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
-          for f in public/music/*.mp3 public/music/*.flac public/music/*.m4a public/music/*.ogg public/music/*.wav public/music/*.jpg public/music/*.jpeg public/music/*.png public/music/*.lrc public/music/*.txt; do
-            [ -f "$f" ] && npx --yes wrangler r2 object put "maxcloud/$f" --file="$f"
+
+          BUCKET="maxcloud"
+          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${BUCKET}/objects"
+          UPLOADED=0
+          SKIPPED=0
+
+          # ── Python 辅助：查询 R2 对象 ETag ──
+          # Cloudflare API: GET .../objects/{key} 返回 headers 含 ETag（即 MD5 带引号）
+          fetch_etag() {
+            local key="$1"
+            local token="$CLOUDFLARE_API_TOKEN"
+            local base="$API_BASE"
+            python3 -c "
+import urllib.request, sys
+token = '$token'
+url = '$base' + '/' + __import__('urllib.parse').quote('$key', safe='/')
+req = urllib.request.Request(url)
+req.add_header('Authorization', 'Bearer ' + token)
+try:
+    with urllib.request.urlopen(req) as resp:
+        etag = (resp.headers.get('ETag') or '').strip('\"').strip()
+        if etag:
+            print(etag)
+        else:
+            sys.exit(1)
+except urllib.error.HTTPError as e:
+    if e.code == 404:
+        sys.exit(2)  # 对象不存在
+    sys.exit(3)      # 其他错误
+" 2>/dev/null
+            return $?
+          }
+
+          # ── 上传单个文件（带 MD5 比对）──
+          upload_if_changed() {
+            local file="$1"
+            local key="$2"
+            local md5
+            md5=$(md5sum "$file" | cut -d' ' -f1)
+
+            local remote_etag
+            remote_etag=$(fetch_etag "$key" 2>/dev/null) || true
+
+            if [ -n "$remote_etag" ] && [ "$md5" = "$remote_etag" ]; then
+              echo "  ⏭️ 跳过 $key (MD5 匹配)"
+              SKIPPED=$((SKIPPED + 1))
+            else
+              echo "  📤 上传 $key (本地 md5:$md5 → 远程 etag:${remote_etag:-无})"
+              npx --yes wrangler r2 object put "${BUCKET}/$key" --file="$file"
+              UPLOADED=$((UPLOADED + 1))
+            fi
+          }
+
+          # ── 上传 music.json ──
+          echo "▸ music.json"
+          if [ -f src/scripts/music.json ]; then
+            upload_if_changed "src/scripts/music.json" "src/scripts/music.json"
+          fi
+
+          # ── 上传音乐资源文件 ──
+          for pattern in "*.mp3" "*.flac" "*.m4a" "*.ogg" "*.wav" "*.jpg" "*.jpeg" "*.png" "*.lrc" "*.txt"; do
+            for f in public/music/$pattern; do
+              [ -f "$f" ] || continue
+              echo "▸ $f"
+              upload_if_changed "$f" "$f"
+            done
           done
-          echo "✅ R2 上传完成"
+
+          echo ""
+          echo "✅ R2 同步完成: 上传 ${UPLOADED} 个, 跳过 ${SKIPPED} 个（MD5 未变更）"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
