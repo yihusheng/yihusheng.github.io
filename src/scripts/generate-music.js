@@ -30,6 +30,46 @@ function getCoverExt(mime) {
   return map[mime] || '.jpg';
 }
 
+// 兜底解析 ID3v2 USLT 歌词帧（music-metadata 可能遗漏）
+function extractUSLT(filePath) {
+  try {
+    const buf = fs.readFileSync(filePath);
+    if (buf[0] !== 0x49 || buf[1] !== 0x44 || buf[2] !== 0x33) return null; // not ID3
+    const size = ((buf[6] & 0x7f) << 21) | ((buf[7] & 0x7f) << 14) | ((buf[8] & 0x7f) << 7) | (buf[9] & 0x7f);
+    const tagEnd = 10 + size;
+    let pos = 10;
+    while (pos + 10 <= tagEnd) {
+      const frameId = buf.toString('ascii', pos, pos + 4);
+      const frameSize = (buf[pos+4] << 24) | (buf[pos+5] << 16) | (buf[pos+6] << 8) | buf[pos+7];
+      if (frameId === 'USLT') {
+        // encoding(1) + language(3) + content descriptor(null-term) + lyrics data
+        const enc = buf[pos + 10];
+        let lyricsStart = pos + 14; // skip encoding + language
+        // skip null-terminated descriptor
+        while (lyricsStart < tagEnd && buf[lyricsStart] !== 0) lyricsStart++;
+        lyricsStart++; // skip null
+        const lyricsEnd = pos + 10 + frameSize;
+        if (lyricsStart < lyricsEnd) {
+          let lyrics;
+          if (enc === 1 || enc === 2) { // UTF-16
+            lyrics = buf.toString('utf16le', lyricsStart, lyricsEnd);
+          } else { // ISO-8859-1 / UTF-8
+            lyrics = buf.toString(enc === 3 ? 'utf8' : 'latin1', lyricsStart, lyricsEnd);
+          }
+          lyrics = lyrics.replace(/^\uFEFF/, '').trim(); // strip BOM
+          if (lyrics) return lyrics;
+        }
+      }
+      pos += 10 + frameSize;
+      // skip padding
+      while (pos < tagEnd && buf[pos] === 0) pos++;
+    }
+  } catch (e) {
+    console.warn(`    USLT 解析失败: ${e.message}`);
+  }
+  return null;
+}
+
 (async () => {
   let files;
   try {
@@ -88,7 +128,6 @@ function getCoverExt(mime) {
         const lyricsText = common.lyrics
           .map(l => {
             if (typeof l === 'string') return l;
-            // 同步歌词：time（秒）+ text 分开存，组装成 LRC 格式
             if (l.time != null) {
               const t = l.time;
               const mins = Math.floor(t / 60);
@@ -106,6 +145,20 @@ function getCoverExt(mime) {
           if (!fs.existsSync(lrcPath)) {
             fs.writeFileSync(lrcPath, lyricsText, 'utf-8');
             console.log(`  📝 提取歌词: ${lrcFile}  (${audioFile})`);
+          }
+          extractedLyrics = lrcFile;
+        }
+      }
+
+      // 兜底：music-metadata 未提取到歌词时，手动解析 MP3 ID3v2 USLT
+      if (!extractedLyrics && ext === '.mp3') {
+        const usltText = extractUSLT(filePath);
+        if (usltText) {
+          const lrcFile = baseName + '.lrc';
+          const lrcPath = path.join(musicDir, lrcFile);
+          if (!fs.existsSync(lrcPath)) {
+            fs.writeFileSync(lrcPath, usltText, 'utf-8');
+            console.log(`  📝 提取歌词(USLT兜底): ${lrcFile}  (${audioFile})`);
           }
           extractedLyrics = lrcFile;
         }
