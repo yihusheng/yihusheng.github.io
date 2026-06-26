@@ -66,15 +66,16 @@ jobs:
           git push
 
       - name: Upload to Cloudflare R2
-        env:
-          CLOUDFLARE_ACCOUNT_ID: 5d7d0fcdc929a2bd1491c8924d0a587a
-          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          if [ -n "$CLOUDFLARE_PAGES_API_TOKEN" ]; then
-            node scripts/upload-r2.js
-          else
-            echo "⏭️ 跳过 R2 上传 (CLOUDFLARE_API_TOKEN 未设置，在 GitHub Secrets 中添加后生效)"
-          fi
+        continue-on-error: true
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '5d7d0fcdc929a2bd1491c8924d0a587a' }}
+          command: |
+            r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
+            for f in src/music/*.mp3 src/music/*.flac src/music/*.m4a src/music/*.ogg src/music/*.wav src/music/*.jpg src/music/*.jpeg src/music/*.png src/music/*.lrc src/music/*.txt; do
+              [ -f "$f" ] && r2 object put "maxcloud/$f" --file="$f"
+            done
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
