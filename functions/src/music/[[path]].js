@@ -12,13 +12,13 @@ export async function onRequest(context) {
     return new Response('Not Found', { status: 404 });
   }
 
-  // R2 key 直接用文件名原文（中文不变）
-  const r2Key = decodedPath;
-
-  // Try R2 first
+  // Try R2 first — 兼容编码 key（已有文件）和解码 key（后续上传）
   if (env.MUSIC_BUCKET) {
     try {
-      const object = await env.MUSIC_BUCKET.get(r2Key);
+      // path = 原始编码路径（匹配当前 R2 中已有的文件）
+      // decodedPath = 解码后（匹配未来 workflow 上传的文件）
+      let object = await env.MUSIC_BUCKET.get(path);
+      if (!object) object = await env.MUSIC_BUCKET.get(decodedPath);
       if (object) {
         const headers = new Headers();
         headers.set('Accept-Ranges', 'bytes');
