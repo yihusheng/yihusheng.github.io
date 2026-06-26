@@ -12,16 +12,18 @@ export async function onRequest(context) {
     return new Response('Not Found', { status: 404 });
   }
 
+  // wrangler r2 object put 对中文文件名会 URL 编码，查 R2 时 key 需匹配
+  const r2Key = path; // params.path 是 Cloudflare 解码前的原始编码路径
+
   // Try R2 first
   if (env.MUSIC_BUCKET) {
     try {
-      const object = await env.MUSIC_BUCKET.get(decodedPath);
+      const object = await env.MUSIC_BUCKET.get(r2Key);
       if (object) {
         const headers = new Headers();
         headers.set('Accept-Ranges', 'bytes');
         headers.set('Cache-Control', 'public, max-age=31536000, immutable');
 
-        // Set content type based on extension
         const ext = decodedPath.split('.').pop()?.toLowerCase();
         const mimeMap = {
           mp3: 'audio/mpeg', flac: 'audio/flac', m4a: 'audio/mp4',
@@ -33,7 +35,6 @@ export async function onRequest(context) {
         };
         if (mimeMap[ext]) headers.set('Content-Type', mimeMap[ext]);
 
-        // Support range requests for audio streaming
         const range = request.headers.get('Range');
         if (range) {
           const [startStr, endStr] = range.replace('bytes=', '').split('-');
@@ -46,7 +47,6 @@ export async function onRequest(context) {
           return new Response(chunkData, { status: 206, headers });
         }
 
-        // Full file
         const data = await object.arrayBuffer();
         headers.set('Content-Length', String(object.size));
         return new Response(data, { status: 200, headers });
