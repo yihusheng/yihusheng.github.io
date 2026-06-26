@@ -388,7 +388,7 @@ async function fetchWeather() {
   } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
 }
 
-function toggleIsland(){island.classList.toggle('active');}
+function toggleIsland(){if(island.classList.contains('music-mode')){toggleLyrics();return;}island.classList.toggle('active');}
 
 function playSong(){ if (!currentHowl) return; currentHowl.play(); }
 function pauseSong(){ if (!currentHowl) return; currentHowl.pause(); }
@@ -465,15 +465,28 @@ function renderLyrics() {
   }
 }
 
+function updateIslandMusic() {
+  var song = songs[currentSongIndex];
+  if (!song) return;
+  document.getElementById('islandMusicTitle').innerText = song.title || '';
+  document.getElementById('islandMusicArtist').innerText = song.artist || '';
+  var cover = document.getElementById('mainCover');
+  document.getElementById('islandMusicCover').src = cover && cover.src ? cover.src : '';
+}
+
 function toggleLyrics() {
   lyricsVisible = !lyricsVisible;
   var lv = document.getElementById('lyricsView');
   var pb = document.querySelector('.player-background');
   var pc = document.querySelector('.player-content');
+  var island = document.getElementById('island');
   if (lyricsVisible) {
     lv.classList.add('open');
     pb.style.opacity = '0';
     pc.style.background = 'var(--phone-screen-bg)';
+    island.classList.add('music-mode');
+    island.classList.remove('active');
+    updateIslandMusic();
     if (lyricsData.length > 0) {
       renderLyrics();
       updateLyricHighlight();
@@ -511,6 +524,7 @@ function toggleLyrics() {
     lv.classList.remove('open');
     pb.style.opacity = '';
     pc.style.background = '';
+    island.classList.remove('music-mode');
   }
 }
 

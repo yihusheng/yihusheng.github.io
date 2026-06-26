@@ -64,6 +64,7 @@ body {
   top: calc(env(safe-area-inset-top, 12px) + 10px);
 }
 .dynamic-island.active { width: 320px; height: 150px; border-radius: 36px; background-color: var(--island-expand-bg); }
+.dynamic-island.music-mode { width: 200px; height: 38px; border-radius: 20px; }
 .island-default {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 0 14px; gap: 8px;
@@ -75,6 +76,34 @@ body {
 .island-weather { display: flex; align-items: center; gap: 5px; }
 .island-weather-icon { font-size: 1.15rem; color: var(--md-sys-color-primary); line-height: 1; }
 .island-weather-temp { font-size: 0.75rem; font-weight: 600; color: var(--md-sys-color-primary); font-variant-numeric: tabular-nums; }
+.island-music {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 0 12px;
+  position: absolute; height: 100%; z-index: 5;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.dynamic-island.music-mode .island-music { opacity: 1; pointer-events: auto; }
+.dynamic-island.music-mode .island-default { opacity: 0; pointer-events: none; }
+.island-music-cover img {
+  width: 26px; height: 26px; border-radius: 6px; object-fit: cover;
+  flex-shrink: 0; background: rgba(255,255,255,0.1);
+}
+.island-music-text {
+  flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+}
+.island-music-title {
+  font-size: 0.72rem; font-weight: 700; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+.island-music-artist {
+  font-size: 0.6rem; color: rgba(255,255,255,0.45); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+}
+.island-music-icon {
+  font-size: 1rem; color: var(--md-sys-color-primary); flex-shrink: 0;
+  line-height: 1;
+}
+
 .island-weather-detail {
   display: flex; align-items: center; justify-content: space-between;
   width: 100%; padding: 20px 24px;
