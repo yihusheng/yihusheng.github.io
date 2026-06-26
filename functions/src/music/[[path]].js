@@ -12,8 +12,8 @@ export async function onRequest(context) {
     return new Response('Not Found', { status: 404 });
   }
 
-  // wrangler r2 object put 对中文文件名会 URL 编码，查 R2 时 key 需匹配
-  const r2Key = path; // params.path 是 Cloudflare 解码前的原始编码路径
+  // R2 key 直接用文件名原文（中文不变）
+  const r2Key = decodedPath;
 
   // Try R2 first
   if (env.MUSIC_BUCKET) {
