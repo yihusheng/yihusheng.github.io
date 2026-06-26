@@ -65,7 +65,7 @@ jobs:
           git stash pop || true
           git push
 
-      - name: Upload music files to R2 (with MD5 dedup)
+      - name: Upload music files to R2 (parallel, MD5 dedup)
         continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -76,75 +76,136 @@ jobs:
             exit 0
           fi
 
-          BUCKET="maxcloud"
-          API_BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${BUCKET}/objects"
-          UPLOADED=0
-          SKIPPED=0
+          set -o pipefail
 
-          # ── Python 辅助：查询 R2 对象 ETag ──
-          # Cloudflare API: GET .../objects/{key} 返回 headers 含 ETag（即 MD5 带引号）
+          BUCKET="maxcloud"
+          ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"
+          TOKEN="$CLOUDFLARE_API_TOKEN"
+
+          # ── 预装 wrangler（全局，避免 npx 每次冷启动）──
+          echo "⚙️ 预装 wrangler..."
+          npm install -g wrangler --silent 2>&1 | tail -1
+
+          # ── 工具函数：查询 R2 对象 ETag ──
           fetch_etag() {
             local key="$1"
-            local token="$CLOUDFLARE_API_TOKEN"
-            local base="$API_BASE"
             python3 -c "
 import urllib.request, sys
-token = '$token'
-url = '$base' + '/' + __import__('urllib.parse').quote('$key', safe='/')
+acct = '$ACCOUNT_ID'
+token = '$TOKEN'
+url = 'https://api.cloudflare.com/client/v4/accounts/' + acct + \
+      '/r2/buckets/$BUCKET/objects/' + __import__('urllib.parse').quote('$key', safe='/')
 req = urllib.request.Request(url)
 req.add_header('Authorization', 'Bearer ' + token)
 try:
-    with urllib.request.urlopen(req) as resp:
-        etag = (resp.headers.get('ETag') or '').strip('\"').strip()
-        if etag:
-            print(etag)
-        else:
-            sys.exit(1)
+    resp = urllib.request.urlopen(req)
+    etag = (resp.headers.get('ETag') or '').strip('\"').strip()
+    if etag: print(etag)
 except urllib.error.HTTPError as e:
-    if e.code == 404:
-        sys.exit(2)  # 对象不存在
-    sys.exit(3)      # 其他错误
+    if e.code != 404: print('ERR:' + str(e.code), file=sys.stderr)
 " 2>/dev/null
-            return $?
           }
 
-          # ── 上传单个文件（带 MD5 比对）──
-          upload_if_changed() {
+          # ── 阶段 1：扫描文件，比对 MD5，生成待上传列表 ──
+          echo ""
+          echo "🔍 扫描文件 MD5 并与 R2 比对..."
+          TODO=$(mktemp)
+          SKIP_COUNT=0
+
+          check_file() {
             local file="$1"
-            local key="$2"
-            local md5
+            local md5 remote_etag
             md5=$(md5sum "$file" | cut -d' ' -f1)
-
-            local remote_etag
-            remote_etag=$(fetch_etag "$key" 2>/dev/null) || true
-
+            remote_etag=$(fetch_etag "$file")
             if [ -n "$remote_etag" ] && [ "$md5" = "$remote_etag" ]; then
-              echo "  ⏭️ 跳过 $key (MD5 匹配)"
-              SKIPPED=$((SKIPPED + 1))
+              echo "  ⏭️ 跳过 $file (MD5 匹配)"
+              SKIP_COUNT=$((SKIP_COUNT + 1))
             else
-              echo "  📤 上传 $key (本地 md5:$md5 → 远程 etag:${remote_etag:-无})"
-              npx --yes wrangler r2 object put "${BUCKET}/$key" --file="$file"
-              UPLOADED=$((UPLOADED + 1))
+              echo "$file|$md5|${remote_etag:-无}"
             fi
           }
 
-          # ── 上传 music.json ──
-          echo "▸ music.json"
-          if [ -f src/scripts/music.json ]; then
-            upload_if_changed "src/scripts/music.json" "src/scripts/music.json"
-          fi
-
-          # ── 上传音乐资源文件 ──
+          # music.json
+          [ -f src/scripts/music.json ] && { check_file "src/scripts/music.json" >> "$TODO"; }
+          # 音乐资源文件
           for pattern in "*.mp3" "*.flac" "*.m4a" "*.ogg" "*.wav" "*.jpg" "*.jpeg" "*.png" "*.lrc" "*.txt"; do
             for f in public/music/$pattern; do
               [ -f "$f" ] || continue
-              echo "▸ $f"
-              upload_if_changed "$f" "$f"
+              check_file "$f" >> "$TODO"
             done
           done
 
+          # 统计：TODO 中有效行（含 | 分隔符）
+          TODO_COUNT=$(grep -c '|' "$TODO" 2>/dev/null || echo 0)
+          if [ "$TODO_COUNT" -eq 0 ]; then
+            echo ""
+            echo "✅ 所有文件 MD5 匹配 R2，无需上传 (跳过 ${SKIP_COUNT} 个)"
+            rm -f "$TODO"
+            exit 0
+          fi
+          echo "📋 待上传: $TODO_COUNT 个 | 跳过: $SKIP_COUNT 个（MD5 未变更）"
+
+          # ── 阶段 2：并行上传（直接 curl → Cloudflare API）──
           echo ""
-          echo "✅ R2 同步完成: 上传 ${UPLOADED} 个, 跳过 ${SKIPPED} 个（MD5 未变更）"
+          echo "⚡ 开始并行上传 (4 路并发)..."
+
+          upload_one() {
+            local entry="$1"
+            local file md5 old_etag
+            file="${entry%%|*}"
+            rest="${entry#*|}"
+            md5="${rest%%|*}"
+            old_etag="${rest#*|}"
+
+            local ext="${file##*.}"
+            local ct
+            case "${ext,,}" in
+              mp3)  ct="audio/mpeg" ;;
+              flac) ct="audio/flac" ;;
+              m4a)  ct="audio/mp4"  ;;
+              ogg)  ct="audio/ogg"  ;;
+              wav)  ct="audio/wav"  ;;
+              aac)  ct="audio/aac"  ;;
+              jpg|jpeg) ct="image/jpeg" ;;
+              png)  ct="image/png"  ;;
+              webp) ct="image/webp" ;;
+              lrc|txt) ct="text/plain; charset=utf-8" ;;
+              json) ct="application/json" ;;
+              *)    ct="application/octet-stream" ;;
+            esac
+
+            local size
+            size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
+            local size_hr
+            size_hr=$(numfmt --to=iec "$size" 2>/dev/null || echo "${size}B")
+
+            echo "  📤 [$file] ($size_hr)"
+            local encoded_key
+            encoded_key=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$file', safe='/'))")
+            local url="https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded_key}"
+
+            http_code=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
+              -H "Authorization: Bearer ${TOKEN}" \
+              -H "Content-Type: ${ct}" \
+              --data-binary @"${file}" \
+              "${url}")
+
+            if [ "$http_code" = "200" ]; then
+              echo "    ✅ 完成 (${size_hr})"
+            else
+              echo "    ⚠️  API 返回 ${http_code}，回退 wrangler CLI..."
+              wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
+              echo "    ✅ wrangler 上传完成"
+            fi
+          }
+          export -f upload_one
+          export TOKEN ACCOUNT_ID BUCKET
+
+          grep '|' "$TODO" | xargs -P 4 -I {} bash -c 'upload_one "{}"'
+
+          echo ""
+          echo "✅ R2 同步完成: 上传 ${TODO_COUNT} 个, 跳过 ${SKIP_COUNT} 个"
+          rm -f "$TODO"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
