@@ -65,13 +65,6 @@ jobs:
           git stash pop || true
           git push
 
-      - name: Authenticate Wrangler for R2
-        continue-on-error: true
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '5d7d0fcdc929a2bd1491c8924d0a587a' }}
-
       - name: Upload music files to R2
         continue-on-error: true
         env:
@@ -82,9 +75,9 @@ jobs:
             echo "⏭️ CLOUDFLARE_API_TOKEN 未设置，跳过 R2 上传"
             exit 0
           fi
-          npx wrangler r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
+          npx --yes wrangler r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
           for f in public/music/*.mp3 public/music/*.flac public/music/*.m4a public/music/*.ogg public/music/*.wav public/music/*.jpg public/music/*.jpeg public/music/*.png public/music/*.lrc public/music/*.txt; do
-            [ -f "$f" ] && npx wrangler r2 object put "maxcloud/$f" --file="$f"
+            [ -f "$f" ] && npx --yes wrangler r2 object put "maxcloud/$f" --file="$f"
           done
           echo "✅ R2 上传完成"
 
