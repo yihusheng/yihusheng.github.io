@@ -31,6 +31,7 @@ function getCoverExt(mime) {
 }
 
 // 兜底解析 ID3v2 USLT 歌词帧（music-metadata 可能遗漏）
+// 按照 encoding 字节正确解码歌词文本，返回 UTF-8 编码的 Buffer
 function extractUSLT(filePath) {
   try {
     const buf = fs.readFileSync(filePath);
@@ -45,19 +46,35 @@ function extractUSLT(filePath) {
         // encoding(1) + language(3) + content descriptor(null-term) + lyrics data
         const enc = buf[pos + 10];
         let lyricsStart = pos + 14; // skip encoding + language
-        // skip null-terminated descriptor
-        while (lyricsStart < tagEnd && buf[lyricsStart] !== 0) lyricsStart++;
-        lyricsStart++; // skip null
+        // 跳过 null-terminated 的内容描述符
+        // UTF-16（enc=1/2）下 null 终止符为 00 00（双字节）
+        if (enc === 1 || enc === 2) {
+          while (lyricsStart + 1 < tagEnd && (buf[lyricsStart] !== 0 || buf[lyricsStart + 1] !== 0)) lyricsStart += 2;
+          lyricsStart += 2; // skip null terminator (2 bytes)
+        } else {
+          while (lyricsStart < tagEnd && buf[lyricsStart] !== 0) lyricsStart++;
+          lyricsStart++; // skip null (1 byte)
+        }
         const lyricsEnd = pos + 10 + frameSize;
         if (lyricsStart < lyricsEnd) {
           let lyrics;
-          if (enc === 1 || enc === 2) { // UTF-16
+          if (enc === 1 || enc === 2) { // UTF-16 with/without BOM
             lyrics = buf.toString('utf16le', lyricsStart, lyricsEnd);
-          } else { // ISO-8859-1 / UTF-8
-            lyrics = buf.toString(enc === 3 ? 'utf8' : 'latin1', lyricsStart, lyricsEnd);
+          } else if (enc === 3) { // UTF-8
+            lyrics = buf.toString('utf8', lyricsStart, lyricsEnd);
+          } else { // 0 = ISO-8859-1 (Latin-1) — 很多旧标签实际存的是 UTF-8，先试 UTF-8
+            const raw8 = buf.toString('utf8', lyricsStart, lyricsEnd);
+            // 检查是否有效的 UTF-8（包含中文等多字节字符时不包含 \uFFFD）
+            if (!raw8.includes('\uFFFD')) {
+              lyrics = raw8;
+            } else {
+              lyrics = buf.toString('latin1', lyricsStart, lyricsEnd);
+            }
           }
-          lyrics = lyrics.replace(/^\uFEFF/, '').trim(); // strip BOM
-          if (lyrics) return lyrics;
+          if (lyrics) {
+            lyrics = lyrics.replace(/^\uFEFF/, '').trim(); // strip BOM
+            if (lyrics) return Buffer.from(lyrics, 'utf8');
+          }
         }
       }
       pos += 10 + frameSize;
@@ -152,12 +169,12 @@ function extractUSLT(filePath) {
 
       // 兜底：music-metadata 未提取到歌词时，手动解析 MP3 ID3v2 USLT
       if (!extractedLyrics && ext === '.mp3') {
-        const usltText = extractUSLT(filePath);
-        if (usltText) {
+        const usltBuf = extractUSLT(filePath);
+        if (usltBuf) {
           const lrcFile = baseName + '.lrc';
           const lrcPath = path.join(musicDir, lrcFile);
           if (!fs.existsSync(lrcPath)) {
-            fs.writeFileSync(lrcPath, usltText, 'utf-8');
+            fs.writeFileSync(lrcPath, usltBuf); // 写出原始编码，不转换
             console.log(`  📝 提取歌词(USLT兜底): ${lrcFile}  (${audioFile})`);
           }
           extractedLyrics = lrcFile;
