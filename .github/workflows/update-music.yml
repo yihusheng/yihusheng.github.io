@@ -66,14 +66,14 @@ jobs:
           git push
 
       - name: Upload to Cloudflare R2
-        if: github.event_name == 'workflow_dispatch'
         env:
           CLOUDFLARE_ACCOUNT_ID: 5d7d0fcdc929a2bd1491c8924d0a587a
+          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          if [ -n "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
-            CLOUDFLARE_API_TOKEN=${{ secrets.CLOUDFLARE_API_TOKEN }} node scripts/upload-r2.js
+          if [ -n "$CLOUDFLARE_PAGES_API_TOKEN" ]; then
+            node scripts/upload-r2.js
           else
-            echo "⏭️ 跳过 R2 上传 (CLOUDFLARE_API_TOKEN 未设置)"
+            echo "⏭️ 跳过 R2 上传 (CLOUDFLARE_API_TOKEN 未设置，在 GitHub Secrets 中添加后生效)"
           fi
 
       - name: Setup Pages

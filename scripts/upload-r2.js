@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '5d7d0fcdc929a2bd1491c8924d0a587a';
-const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
+const API_TOKEN = process.env.CLOUDFLARE_PAGES_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN;
 const BUCKET = 'maxcloud';
 const MUSIC_DIR = path.join(__dirname, '..', 'src', 'music');
 const BASE_URL = `https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects`;
