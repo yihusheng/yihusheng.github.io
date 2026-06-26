@@ -89,21 +89,13 @@ jobs:
           # ── 工具函数：查询 R2 对象 ETag ──
           fetch_etag() {
             local key="$1"
-            python3 -c "
-import urllib.request, sys
-acct = '$ACCOUNT_ID'
-token = '$TOKEN'
-url = 'https://api.cloudflare.com/client/v4/accounts/' + acct + \
-      '/r2/buckets/$BUCKET/objects/' + __import__('urllib.parse').quote('$key', safe='/')
-req = urllib.request.Request(url)
-req.add_header('Authorization', 'Bearer ' + token)
-try:
-    resp = urllib.request.urlopen(req)
-    etag = (resp.headers.get('ETag') or '').strip('\"').strip()
-    if etag: print(etag)
-except urllib.error.HTTPError as e:
-    if e.code != 404: print('ERR:' + str(e.code), file=sys.stderr)
-" 2>/dev/null
+            local encoded
+            encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$key', safe='/'))" 2>/dev/null) || return 1
+            # 用 curl -D 输出响应头，提取 ETag
+            curl -s -D - -o /dev/null \
+              -H "Authorization: Bearer ${TOKEN}" \
+              "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded}" 2>/dev/null \
+              | grep -i "^etag:" | sed 's/.*: *//; s/"//g; s/\r//g'
           }
 
           # ── 阶段 1：扫描文件，比对 MD5，生成待上传列表 ──
