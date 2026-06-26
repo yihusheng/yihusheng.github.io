@@ -65,17 +65,28 @@ jobs:
           git stash pop || true
           git push
 
-      - name: Upload to Cloudflare R2
+      - name: Authenticate Wrangler for R2
         continue-on-error: true
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '5d7d0fcdc929a2bd1491c8924d0a587a' }}
-          command: |
-            r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
-            for f in src/music/*.mp3 src/music/*.flac src/music/*.m4a src/music/*.ogg src/music/*.wav src/music/*.jpg src/music/*.jpeg src/music/*.png src/music/*.lrc src/music/*.txt; do
-              [ -f "$f" ] && r2 object put "maxcloud/$f" --file="$f"
-            done
+
+      - name: Upload music files to R2
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 5d7d0fcdc929a2bd1491c8924d0a587a
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "⏭️ CLOUDFLARE_API_TOKEN 未设置，跳过 R2 上传"
+            exit 0
+          fi
+          npx wrangler r2 object put maxcloud/src/scripts/music.json --file=src/scripts/music.json
+          for f in src/music/*.mp3 src/music/*.flac src/music/*.m4a src/music/*.ogg src/music/*.wav src/music/*.jpg src/music/*.jpeg src/music/*.png src/music/*.lrc src/music/*.txt; do
+            [ -f "$f" ] && npx wrangler r2 object put "maxcloud/$f" --file="$f"
+          done
+          echo "✅ R2 上传完成"
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
