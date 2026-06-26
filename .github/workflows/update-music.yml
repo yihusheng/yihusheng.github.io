@@ -65,6 +65,13 @@ jobs:
           git stash pop || true
           git push
 
+      - name: Upload to Cloudflare R2
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '5d7d0fcdc929a2bd1491c8924d0a587a' }}
+        run: node scripts/upload-r2.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
