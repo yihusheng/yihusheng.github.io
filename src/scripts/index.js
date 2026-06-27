@@ -901,8 +901,10 @@ function init(){
   });
 
   // ── 天气详情展开/收起 ──
-  var weatherBtn = document.getElementById('weatherMoreBtn');
-  if (weatherBtn) weatherBtn.addEventListener('click', toggleWeatherDetail);
+  document.getElementById('weatherMoreBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleWeatherDetail();
+  });
 
   // ── 点击非灵动岛区域收回灵动岛（含天气详情）──
   // 注意：.player-content 已有自己的 click → toggleLyrics()，不要重复触发
@@ -912,7 +914,7 @@ function init(){
     if (island.classList.contains('music-mode')) {
       if (lyricsVisible) toggleLyrics();
     } else if (island.classList.contains('weather-detailed') || island.classList.contains('active')) {
-      island.classList.remove('weather-detailed');
+      island.classList.remove('weather-detailed'); var wi=document.getElementById('weatherMoreIcon'); if(wi) wi.textContent='expand_more';
       island.classList.remove('active');
     }
   });
