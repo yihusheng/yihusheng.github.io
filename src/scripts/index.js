@@ -862,8 +862,10 @@ function init(){
   });
 
   // ── 点击非灵动岛区域收回灵动岛 ──
+  // 注意：.player-content 已有自己的 click → toggleLyrics()，不要重复触发
   document.getElementById('app').addEventListener('click', function(e) {
     if (island.contains(e.target)) return;
+    if (e.target.closest('.player-content')) return; // 由 .player-content handler 控制
     if (island.classList.contains('music-mode')) {
       if (lyricsVisible) toggleLyrics();
     } else if (island.classList.contains('active')) {
