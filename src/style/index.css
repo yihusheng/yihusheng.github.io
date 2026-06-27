@@ -61,7 +61,8 @@ body {
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; box-shadow: 0 4px 16px rgba(14,15,12,0.3);
   cursor: pointer;
-  top: calc(env(safe-area-inset-top, 12px) + 10px);
+  /* phone-screen 已有 padding-top: env(safe-area-inset-top)，这里不再重复加 */
+  top: 22px;
 }
 .dynamic-island.active { width: 320px; height: 150px; border-radius: 36px; background-color: var(--island-expand-bg); }
 .dynamic-island.music-mode { width: 200px; height: 38px; border-radius: 20px; }
