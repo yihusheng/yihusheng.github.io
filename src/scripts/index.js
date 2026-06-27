@@ -282,10 +282,13 @@ async function loadMusicList() {
   try {
     var res = await fetch('/src/scripts/music_list.js?' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    songs = await res.json();
+    var text = await res.text();
+    var start = text.indexOf('[');
+    var end = text.lastIndexOf(']');
+    songs = (start !== -1 && end !== -1 && end > start) ? JSON.parse(text.substring(start, end + 1)) : [];
     console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ 加载 music_list.js 失败:', e);
+    console.error('❌ 加载音乐列表失败:', e);
     songs = [];
   }
   if (songs.length === 0) {
