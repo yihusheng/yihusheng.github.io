@@ -47,11 +47,11 @@
         </div>
         <div class="detail-right">
           <div class="location-display" id="locationDisplay">获取中...</div>
-          <div class="detail-desc" id="detailDesc">晴朗</div>
           <div class="detail-meta">
             <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
             <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
           </div>
+          <div class="detail-desc" id="detailDesc">晴朗</div>
         </div>
       </div>
       <button class="weather-more-btn" id="weatherMoreBtn" aria-label="更多天气信息">
@@ -59,22 +59,17 @@
       </button>
       <div class="weather-drawer" id="weatherDrawer">
         <div class="weather-drawer-row">
-          <span class="material-symbols-rounded">wb_twilight</span>
-          <span class="weather-drawer-label">日出</span>
+          <canvas class="sun-arc-canvas" id="sunArcCanvas" width="44" height="18"></canvas>
           <span class="weather-drawer-value" id="weatherSunrise">--:--</span>
-        </div>
-        <div class="weather-drawer-row">
-          <span class="material-symbols-rounded">clear_day</span>
-          <span class="weather-drawer-label">日落</span>
+          <span class="weather-drawer-sep">|</span>
           <span class="weather-drawer-value" id="weatherSunset">--:--</span>
         </div>
         <div class="weather-drawer-row">
-          <span class="material-symbols-rounded">bedtime</span>
+          <canvas class="moon-canvas" id="moonCanvas" width="26" height="26"></canvas>
           <span class="weather-drawer-label">月相</span>
           <span class="weather-drawer-value" id="weatherMoonPhase">--</span>
         </div>
       </div>
-    </div>
   </div>
   <div class="player-content">
     <div class="player-background"></div>
