@@ -280,12 +280,12 @@ function getRandomIndex() {
 
 async function loadMusicList() {
   try {
-    var res = await fetch('/src/scripts/music.json?' + Date.now());
+    var res = await fetch('/src/scripts/music_list.js?' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     songs = await res.json();
     console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ 加载 music.json 失败:', e);
+    console.error('❌ 加载 music_list.js 失败:', e);
     songs = [];
   }
   if (songs.length === 0) {

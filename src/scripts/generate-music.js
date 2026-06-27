@@ -11,7 +11,7 @@ const path = require('path');
 const mm = require('music-metadata');
 
 const musicDir = path.join(__dirname, '..', '..', 'public', 'music');
-const outputFile = path.join(__dirname, 'music.json');
+const outputFile = path.join(__dirname, 'music_list.js');
 
 const AUDIO_EXTS = new Set(['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac', '.mp4', '.wma']);
 const COVER_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
@@ -99,7 +99,7 @@ function extractUSLT(filePath) {
   const audioFiles = files.filter(f => AUDIO_EXTS.has(path.extname(f).toLowerCase()));
   if (audioFiles.length === 0) {
     console.log('⚠️  没有找到音频文件');
-    fs.writeFileSync(outputFile, JSON.stringify([], null, 2));
+    fs.writeFileSync(outputFile, 'var musicList = ' + JSON.stringify([], null, 2) + ';\n');
     process.exit(0);
   }
 
@@ -237,8 +237,8 @@ function extractUSLT(filePath) {
   // 按文件名排序
   songs.sort((a, b) => a.src.localeCompare(b.src));
 
-  fs.writeFileSync(outputFile, JSON.stringify(songs, null, 2), 'utf-8');
-  console.log(`\n✅ 已生成 music.json，共 ${songs.length} 首`);
+  fs.writeFileSync(outputFile, 'var musicList = ' + JSON.stringify(songs, null, 2) + ';\n', 'utf-8');
+  console.log(`\n✅ 已生成 music_list.js，共 ${songs.length} 首`);
   songs.forEach((s, i) => {
     const hasCover = s.cover ? ' 🖼️' : '';
     const hasLrc = s.lrc ? ' 📝' : '';
