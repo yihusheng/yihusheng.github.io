@@ -1,5 +1,4 @@
-// Auto-generated music list
-var musicList = [
+[
   {
     "title": "香花",
     "artist": "丘沛宸",
@@ -224,4 +223,4 @@ var musicList = [
     "cover": "./public/music/Tacke%E7%AB%B9%E6%A1%91%20-%20%E6%BA%AF%E6%A2%A6.%E6%BA%AF%E6%A2%A6%E5%8D%83%E5%B9%B4.jpg",
     "lrc": "./public/music/Tacke%E7%AB%B9%E6%A1%91%20-%20%E6%BA%AF%E6%A2%A6.%E6%BA%AF%E6%A2%A6%E5%8D%83%E5%B9%B4.lrc"
   }
-];
+]

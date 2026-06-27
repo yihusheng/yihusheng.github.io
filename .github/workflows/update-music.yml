@@ -47,7 +47,7 @@ jobs:
       - name: Install dependencies
         run: npm install music-metadata
 
-      - name: Generate music_list.json & extract covers & lyrics
+      - name: Generate music.json & extract covers & lyrics
         run: node src/scripts/generate-music.js
 
       - name: Commit and push changes
@@ -55,10 +55,10 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/scripts/music_list.json
+          git add src/scripts/music.json
           git add public/music/ -- '*.jpg' '*.png' '*.lrc'
           if ! git diff --staged --quiet; then
-            git commit -m 'chore: auto-update music_list.json, covers and lyrics [skip ci]'
+            git commit -m 'chore: auto-update music.json, covers and lyrics [skip ci]'
           fi
           git stash push -m "auto-stash" || true
           git pull --rebase
@@ -117,8 +117,8 @@ jobs:
             fi
           }
 
-          # music_list.json
-          [ -f src/scripts/music_list.json ] && { check_file "src/scripts/music_list.json" >> "$TODO"; }
+          # music.json
+          [ -f src/scripts/music.json ] && { check_file "src/scripts/music.json" >> "$TODO"; }
           # 音乐资源文件
           for pattern in "*.mp3" "*.flac" "*.m4a" "*.ogg" "*.wav" "*.jpg" "*.jpeg" "*.png" "*.lrc" "*.txt"; do
             for f in public/music/$pattern; do
