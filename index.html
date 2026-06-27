@@ -37,19 +37,41 @@
       <span class="material-symbols-rounded island-music-icon">music_note</span>
     </div>
     <div class="island-weather-detail">
-      <div class="detail-left">
-        <span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
-        <div class="detail-temp-wrap">
-          <span class="detail-temp-now" id="detailTemp">25°</span>
-          <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
+      <div class="detail-main">
+        <div class="detail-left">
+          <span class="detail-icon-lg material-symbols-rounded" id="detailIcon">wb_sunny</span>
+          <div class="detail-temp-wrap">
+            <span class="detail-temp-now" id="detailTemp">25°</span>
+            <span class="detail-temp-range" id="detailRange">H:28° L:20°</span>
+          </div>
+        </div>
+        <div class="detail-right">
+          <div class="location-display" id="locationDisplay">获取中...</div>
+          <div class="detail-desc" id="detailDesc">晴朗</div>
+          <div class="detail-meta">
+            <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
+            <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
+          </div>
         </div>
       </div>
-      <div class="detail-right">
-        <div class="location-display" id="locationDisplay">获取中...</div>
-        <div class="detail-desc" id="detailDesc">晴朗</div>
-        <div class="detail-meta">
-          <span id="detailWind"><span class="material-symbols-rounded">air</span> 12km/h</span>
-          <span id="detailHumidity"><span class="material-symbols-rounded">water_drop</span> 45%</span>
+      <button class="weather-more-btn" id="weatherMoreBtn" aria-label="更多天气信息">
+        <span class="material-symbols-rounded" id="weatherMoreIcon">expand_more</span>
+      </button>
+      <div class="weather-drawer" id="weatherDrawer">
+        <div class="weather-drawer-row">
+          <span class="material-symbols-rounded">wb_twilight</span>
+          <span class="weather-drawer-label">日出</span>
+          <span class="weather-drawer-value" id="weatherSunrise">--:--</span>
+        </div>
+        <div class="weather-drawer-row">
+          <span class="material-symbols-rounded">clear_day</span>
+          <span class="weather-drawer-label">日落</span>
+          <span class="weather-drawer-value" id="weatherSunset">--:--</span>
+        </div>
+        <div class="weather-drawer-row">
+          <span class="material-symbols-rounded">bedtime</span>
+          <span class="weather-drawer-label">月相</span>
+          <span class="weather-drawer-value" id="weatherMoonPhase">--</span>
         </div>
       </div>
     </div>

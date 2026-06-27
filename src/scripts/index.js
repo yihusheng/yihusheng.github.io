@@ -412,19 +412,58 @@ async function fetchWeather() {
   try {
     if(!locName){ try { var l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh'); var ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
     if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
-    var wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto');
-    var d=await wr.json(); var c=d.current_weather||d.current, da=d.daily, t=Math.round(c.temperature_2m), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
+    // 请求更多天气数据：日出日落、体感温度、云量、紫外线、降水概率
+    var wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,cloud_cover,precipitation&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=auto&forecast_days=1');
+    var d=await wr.json(); var c=d.current||d.current_weather, da=d.daily, tz=d.timezone||'';
+    var t=Math.round(c.temperature_2m), fl=Math.round(c.apparent_temperature||t), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
     document.getElementById('islandWeatherTemp').textContent=t+'\u00b0'; document.getElementById('islandWeatherIcon').textContent=w.i;
     document.getElementById('detailIcon').textContent=w.i; document.getElementById('detailTemp').textContent=t+'\u00b0';
-    document.getElementById('detailDesc').textContent=w.d;
+    document.getElementById('detailDesc').textContent=w.d+(isNaN(fl)||fl===t?'':' (体感 '+fl+'\u00b0)');
     document.getElementById('detailRange').textContent='H:'+Math.round(da.temperature_2m_max[0])+'\u00b0 L:'+Math.round(da.temperature_2m_min[0])+'\u00b0';
     document.getElementById('detailWind').innerHTML='<span class="material-symbols-rounded">air</span> '+Math.round(c.wind_speed_10m)+'km/h';
     document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
     document.documentElement.style.setProperty('--island-expand-bg',w.b);
+    // 日出日落 & 月相
+    if(da.sunrise&&da.sunrise[0]){ var sr=new Date(da.sunrise[0]); document.getElementById('weatherSunrise').textContent=String(sr.getHours()).padStart(2,'0')+':'+String(sr.getMinutes()).padStart(2,'0'); }
+    if(da.sunset&&da.sunset[0]){ var ss=new Date(da.sunset[0]); document.getElementById('weatherSunset').textContent=String(ss.getHours()).padStart(2,'0')+':'+String(ss.getMinutes()).padStart(2,'0'); }
+    document.getElementById('weatherMoonPhase').textContent=getMoonPhase(new Date());
   } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
 }
 
-function toggleIsland(){if(island.classList.contains('music-mode')){toggleLyrics();return;}island.classList.toggle('active');}
+// ── 月相计算（精确到 0.1 天）──
+function getMoonPhase(date) {
+  // 已知新月基准: 2000年1月6日 18:14 UTC（JDE 2451550.1）
+  var knownNewMoon = Date.UTC(2000, 0, 6, 18, 14, 0);
+  var lunarMonth = 29.53058867; // 平均朔望月（天）
+  var diffDays = (date.getTime() - knownNewMoon) / 86400000;
+  var age = ((diffDays % lunarMonth) + lunarMonth) % lunarMonth; // 月龄（天）
+  var phase = age / lunarMonth; // 0~1
+  if (phase < 0.025 || phase > 0.975) return '🌑 新月';
+  if (phase < 0.175) return '🌒 蛾眉月';
+  if (phase < 0.325) return '🌓 上弦月';
+  if (phase < 0.475) return '🌔 盈凸月';
+  if (phase < 0.525) return '🌕 满月';
+  if (phase < 0.675) return '🌖 亏凸月';
+  if (phase < 0.825) return '🌗 下弦月';
+  return '🌘 残月';
+}
+
+// ── 切换天气详情抽屉 ──
+function toggleWeatherDetail() {
+  var island = document.getElementById('island');
+  island.classList.toggle('weather-detailed');
+  var icon = document.getElementById('weatherMoreIcon');
+  if (icon) icon.textContent = island.classList.contains('weather-detailed') ? 'expand_less' : 'expand_more';
+}
+
+function toggleIsland(){
+  if(island.classList.contains('music-mode')){toggleLyrics();return;}
+  island.classList.toggle('active');
+  if(!island.classList.contains('active')) island.classList.remove('weather-detailed');
+  // 收起时重置箭头
+  var icon=document.getElementById('weatherMoreIcon');
+  if(icon) icon.textContent='expand_more';
+}
 
 function playSong(){ if (!currentHowl) return; currentHowl.play(); }
 function pauseSong(){ if (!currentHowl) return; currentHowl.pause(); }
@@ -861,14 +900,19 @@ function init(){
     }
   });
 
-  // ── 点击非灵动岛区域收回灵动岛 ──
+  // ── 天气详情展开/收起 ──
+  var weatherBtn = document.getElementById('weatherMoreBtn');
+  if (weatherBtn) weatherBtn.addEventListener('click', toggleWeatherDetail);
+
+  // ── 点击非灵动岛区域收回灵动岛（含天气详情）──
   // 注意：.player-content 已有自己的 click → toggleLyrics()，不要重复触发
   document.getElementById('app').addEventListener('click', function(e) {
     if (island.contains(e.target)) return;
-    if (e.target.closest('.player-content')) return; // 由 .player-content handler 控制
+    if (e.target.closest('.player-content')) return;
     if (island.classList.contains('music-mode')) {
       if (lyricsVisible) toggleLyrics();
-    } else if (island.classList.contains('active')) {
+    } else if (island.classList.contains('weather-detailed') || island.classList.contains('active')) {
+      island.classList.remove('weather-detailed');
       island.classList.remove('active');
     }
   });
