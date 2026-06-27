@@ -852,6 +852,24 @@ function init(){
   island.addEventListener('click', toggleIsland);
   loadBingWallpaper(); window.addEventListener('resize', function(){ if (window.innerWidth >= 768) loadBingWallpaper(); });
   updateThemeColor();
+
+  // ── 点击非抽屉区域关闭抽屉 ──
+  document.getElementById('app').addEventListener('click', function(e) {
+    var drawer = document.getElementById('drawer');
+    if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
+      drawer.classList.remove('open');
+    }
+  });
+
+  // ── 点击非灵动岛区域收回灵动岛 ──
+  document.getElementById('app').addEventListener('click', function(e) {
+    if (island.contains(e.target)) return;
+    if (island.classList.contains('music-mode')) {
+      if (lyricsVisible) toggleLyrics();
+    } else if (island.classList.contains('active')) {
+      island.classList.remove('active');
+    }
+  });
 }
 
 loadMusicList().then(init);
