@@ -168,6 +168,10 @@ body {
   color: rgba(255,255,255,0.6);
   font-size: 0.78rem; font-weight: 500;
 }
+.weather-drawer-row.sun-arc-row { justify-content: center; padding: 2px 0; }
+.weather-drawer-row.sun-arc-row canvas { display: block; }
+.weather-drawer-row.moon-row { display: flex; align-items: center; gap: 8px; padding: 4px 2px; }
+.weather-drawer-row.moon-row canvas { flex-shrink: 0; }
 .weather-drawer-row .material-symbols-rounded {
   font-size: 1rem;
   color: rgba(255,255,255,0.35);
