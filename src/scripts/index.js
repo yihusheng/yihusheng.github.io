@@ -574,6 +574,7 @@ function toggleLyrics() {
     pc.style.background = 'var(--phone-screen-bg)';
     island.classList.add('music-mode');
     island.classList.remove('active');
+    island.classList.remove('weather-detailed');
     updateIslandMusic();
     if (lyricsData.length > 0) {
       renderLyrics();

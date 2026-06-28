@@ -61,12 +61,16 @@
       </button>
       <div class="weather-drawer" id="weatherDrawer">
         <div class="weather-drawer-row sun-times">
-          <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">wb_twilight</span>
-          <span class="weather-drawer-label">日出</span>
-          <span class="weather-drawer-value" id="weatherSunrise">--:--</span>
-          <span class="weather-drawer-label" style="margin-left:auto">日落</span>
-          <span class="weather-drawer-value" id="weatherSunset">--:--</span>
-          <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">clear_day</span>
+          <span class="sun-group">
+            <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">wb_twilight</span>
+            <span class="weather-drawer-label">日出</span>
+            <span class="weather-drawer-value" id="weatherSunrise">--:--</span>
+          </span>
+          <span class="sun-group" style="margin-left:auto">
+            <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">clear_day</span>
+            <span class="weather-drawer-label">日落</span>
+            <span class="weather-drawer-value" id="weatherSunset">--:--</span>
+          </span>
         </div>
         <div class="weather-drawer-row sun-arc-wrap">
           <svg id="sunSvg" viewBox="0 0 240 44" width="100%" height="44">
@@ -102,11 +106,16 @@
           </div>
         </div>
         <div class="weather-drawer-row moon-times" id="moonTimesRow" style="display:none">
-          <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">bedtime</span>
-          <span class="weather-drawer-label">月升</span>
-          <span class="weather-drawer-value" id="weatherMoonrise">--:--</span>
-          <span class="weather-drawer-label" style="margin-left:auto">月落</span>
-          <span class="weather-drawer-value" id="weatherMoonset">--:--</span>
+          <span class="sun-group">
+            <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">bedtime</span>
+            <span class="weather-drawer-label">月升</span>
+            <span class="weather-drawer-value" id="weatherMoonrise">--:--</span>
+          </span>
+          <span class="sun-group" style="margin-left:auto">
+            <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">bedtime</span>
+            <span class="weather-drawer-label">月落</span>
+            <span class="weather-drawer-value" id="weatherMoonset">--:--</span>
+          </span>
         </div>
       </div>
     </div>

@@ -563,3 +563,18 @@ body {
   font-size: 0.78rem;
   font-weight: 500;
 }
+.weather-drawer-row .sun-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.weather-drawer-row .sun-group .weather-drawer-label {
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
+  font-size: 0.72rem;
+}
+.weather-drawer-row .sun-group .weather-drawer-value {
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
