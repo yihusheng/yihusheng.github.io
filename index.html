@@ -60,19 +60,46 @@
         <span class="material-symbols-rounded" id="weatherMoreIcon">expand_more</span>
       </button>
       <div class="weather-drawer" id="weatherDrawer">
-        <div class="weather-drawer-row">
-          <canvas class="sun-arc-canvas" id="sunArcCanvas" width="240" height="50"></canvas>
+        <div class="weather-drawer-row sun-times">
+          <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">wb_twilight</span>
           <span class="weather-drawer-label">日出</span>
           <span class="weather-drawer-value" id="weatherSunrise">--:--</span>
-          <span class="weather-drawer-sep">|</span>
-          <span class="weather-drawer-label">日落</span>
+          <span class="weather-drawer-label" style="margin-left:auto">日落</span>
           <span class="weather-drawer-value" id="weatherSunset">--:--</span>
+          <span class="material-symbols-rounded" style="font-size:14px;color:rgba(255,255,255,0.6)">clear_day</span>
         </div>
-        <div class="weather-drawer-row">
-          <canvas class="moon-canvas" id="moonCanvas" width="52" height="52"></canvas>
-          <span class="material-symbols-rounded" style="font-size:1rem;color:rgba(255,255,255,0.35);width:18px;text-align:center;flex-shrink:0;">bedtime</span>
-          <span class="weather-drawer-label">月相</span>
-          <span class="weather-drawer-value" id="weatherMoonPhase">--</span>
+        <div class="weather-drawer-row sun-arc-wrap">
+          <svg id="sunSvg" viewBox="0 0 240 44" width="100%" height="44">
+            <defs>
+              <radialGradient id="sg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="rgba(255,200,50,0.35)"/>
+                <stop offset="100%" stop-color="rgba(255,200,50,0)"/>
+              </radialGradient>
+            </defs>
+            <path d="M 12,38 Q 120,6 228,38" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+            <circle cx="12" cy="38" r="2.5" fill="rgba(255,200,100,0.4)"/>
+            <circle cx="228" cy="38" r="2.5" fill="rgba(255,200,100,0.4)"/>
+            <circle id="sgd" cx="120" cy="22" r="12" fill="url(#sg)" opacity="0"/>
+            <circle id="sd" cx="120" cy="22" r="4" fill="#FFD700" opacity="0"/>
+          </svg>
+        </div>
+        <div class="weather-drawer-row moon-row">
+          <svg id="moonSvg" viewBox="0 0 44 44" width="36" height="36">
+            <circle cx="22" cy="22" r="18" fill="rgba(80,80,90,0.6)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <clipPath id="mcr"><rect x="22" y="0" width="22" height="44"/></clipPath>
+            <clipPath id="mcl"><rect x="0" y="0" width="22" height="44"/></clipPath>
+            <g clip-path="url(#mcr)">
+              <ellipse id="me" cx="22" cy="22" rx="0" ry="18" fill="rgba(230,220,190,0.85)"/>
+            </g>
+            <g clip-path="url(#mcl)" opacity="0">
+              <circle cx="22" cy="22" r="18" fill="rgba(230,220,190,0.85)"/>
+              <ellipse id="me2" cx="22" cy="22" rx="18" ry="18" fill="rgba(80,80,90,0.6)"/>
+            </g>
+          </svg>
+          <div class="moon-info">
+            <span class="weather-drawer-label">月相</span>
+            <span class="weather-drawer-value" id="weatherMoonPhase">--</span>
+          </div>
         </div>
       </div>
     </div>

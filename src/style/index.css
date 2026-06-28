@@ -512,3 +512,45 @@ body {
 @media screen and (max-width: 767px) {
   .wallpaper-info { display: none; }
 }
+/* Weather drawer redesign */
+.weather-drawer-row.sun-times {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.weather-drawer-row.sun-arc-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 2px;
+}
+.weather-drawer-row.sun-arc-wrap svg {
+  display: block;
+}
+.weather-drawer-row.moon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
+}
+.weather-drawer-row.moon-row svg {
+  flex-shrink: 0;
+}
+.moon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.moon-info .weather-drawer-label {
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
+  font-size: 0.72rem;
+}
+.moon-info .weather-drawer-value {
+  color: rgba(255,255,255,0.85);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
