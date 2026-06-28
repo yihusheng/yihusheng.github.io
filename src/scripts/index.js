@@ -433,6 +433,7 @@ async function fetchWeather() {
     var mp=getMoonPhase(new Date()); document.getElementById('weatherMoonPhase').textContent=mp;
     updateSunArc(sunriseStr||'--:--',sunsetStr||'--:--');
     updateMoonPhase(mp);
+    calcMoonTimes(sunriseStr,sunsetStr);
   } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
 }
 
@@ -463,10 +464,16 @@ function toggleWeatherDetail() {
 }
 
 function toggleIsland(){
-  if(island.classList.contains('music-mode')){toggleLyrics();return;}
+  if(island.classList.contains('music-mode')){
+    toggleLyrics();
+    island.classList.remove('weather-detailed');
+    island.classList.remove('active');
+    var wi=document.getElementById('weatherMoreIcon');
+    if(wi) wi.textContent='expand_more';
+    return;
+  }
   island.classList.toggle('active');
   if(!island.classList.contains('active')) island.classList.remove('weather-detailed');
-  // 收起时重置箭头
   var icon=document.getElementById('weatherMoreIcon');
   if(icon) icon.textContent='expand_more';
 }
@@ -951,7 +958,6 @@ function updateSunArc(sr,ss){
 // ── SVG 月相更新 ──
 function updateMoonPhase(txt){
   var me=document.getElementById('me'),me2=document.getElementById('me2');
-  var mcl=document.querySelector('#mcl').parentNode;
   if(!me||!me2)return;
   var phase=0.5;
   if(txt){
@@ -967,6 +973,29 @@ function updateMoonPhase(txt){
     me2.parentNode.setAttribute('opacity','1');
     me2.setAttribute('rx',18*(1-phase)/0.5);
   }
+}
+
+// ── 月升月落计算（近似值，基于月相推算）──
+function calcMoonTimes(sr,ss){
+  var mr=document.getElementById('weatherMoonrise'),ms=document.getElementById('weatherMoonset');
+  var row=document.getElementById('moonTimesRow');
+  if(!mr||!ms||!row)return;
+  // 月相数值
+  var n=new Date(),lm=29.53058867;
+  var kn=Date.UTC(2000,0,6,18,14,0);
+  var dd=(n.getTime()-kn)/86400000;
+  var age=((dd%lm)+lm)%lm;
+  var phase=age/lm; // 0~1
+  // 月升≈ 日出 + phase*12h（近似），月落≈ 月升 + 12h
+  var sh=+sr.split(':')[0]||6,eh=+ss.split(':')[0]||18;
+  var mriseH=Math.floor((sh+phase*12)%24);
+  var mriseM=Math.floor((phase*12%1)*60);
+  var msetH=Math.floor((mriseH+12)%24);
+  var msetM=mriseM;
+  mr.textContent=String(mriseH).padStart(2,'0')+':'+String(mriseM).padStart(2,'0');
+  ms.textContent=String(msetH).padStart(2,'0')+':'+String(msetM).padStart(2,'0');
+  row.style.display='flex';
+}
 }
 
 loadMusicList().then(init);
