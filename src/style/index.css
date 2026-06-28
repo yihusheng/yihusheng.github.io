@@ -578,3 +578,20 @@ body {
   font-weight: 600;
   font-size: 0.82rem;
 }
+.weather-drawer-row.moon-phase-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.weather-drawer-row.moon-arc-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0 2px;
+}
+.weather-drawer-row.moon-arc-wrap svg {
+  display: block;
+}

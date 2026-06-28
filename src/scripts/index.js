@@ -432,7 +432,6 @@ async function fetchWeather() {
     if(da.sunset&&da.sunset[0]){ var ss=new Date(da.sunset[0]); sunsetStr=String(ss.getHours()).padStart(2,'0')+':'+String(ss.getMinutes()).padStart(2,'0'); document.getElementById('weatherSunset').textContent=sunsetStr; }
     var mp=getMoonPhase(new Date()); document.getElementById('weatherMoonPhase').textContent=mp;
     updateSunArc(sunriseStr||'--:--',sunsetStr||'--:--');
-    updateMoonPhase(mp);
     calcMoonTimes(sunriseStr,sunsetStr);
   } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
 }
@@ -957,23 +956,25 @@ function updateSunArc(sr,ss){
 }
 
 // ── SVG 月相更新 ──
-function updateMoonPhase(txt){
-  var me=document.getElementById('me'),me2=document.getElementById('me2');
-  if(!me||!me2)return;
-  var phase=0.5;
-  if(txt){
-    var phases=[0,0.12,0.25,0.37,0.5,0.62,0.75,0.87];
-    var emojis=['\uD83C\uDF11','\uD83C\uDF12','\uD83C\uDF13','\uD83C\uDF14','\uD83C\uDF15','\uD83C\uDF16','\uD83C\uDF17','\uD83C\uDF18'];
-    for(var i=0;i<emojis.length;i++){if(txt.indexOf(emojis[i])>=0){phase=phases[i];break;}}
+function updateMoonArc(mr,ms){
+  var mgd=document.getElementById('mgd'),md=document.getElementById('md');
+  if(!mgd||!md)return;
+  if(mr!=='--:--'&&ms!='--:--'){
+    var n=new Date();
+    var mrh=+mr.split(':')[0],mrm=+mr.split(':')[1];
+    var msh=+ms.split(':')[0],msm=+ms.split(':')[1];
+    var mrt=new Date(n.getFullYear(),n.getMonth(),n.getDate(),mrh,mrm);
+    var mst=new Date(n.getFullYear(),n.getMonth(),n.getDate(),msh,msm);
+    var tot=mst-mrt,elp=n-mrt;
+    if(tot>0){
+      var p=Math.min(1,Math.max(0,elp/tot));
+      var x=12+p*216,y=38-32*Math.sin(p*Math.PI);
+      mgd.setAttribute('cx',x);mgd.setAttribute('cy',y);mgd.setAttribute('opacity','1');
+      md.setAttribute('cx',x);md.setAttribute('cy',y);md.setAttribute('opacity','1');
+      return;
+    }
   }
-  if(phase<=0.5){
-    me.setAttribute('rx',18*phase/0.5);
-    me2.parentNode.setAttribute('opacity','0');
-  }else{
-    me.setAttribute('rx',18);
-    me2.parentNode.setAttribute('opacity','1');
-    me2.setAttribute('rx',18*(1-phase)/0.5);
-  }
+  mgd.setAttribute('opacity','0');md.setAttribute('opacity','0');
 }
 
 // ── 月升月落计算（近似值，基于月相推算）──
@@ -993,9 +994,11 @@ function calcMoonTimes(sr,ss){
   var mriseM=Math.floor((phase*12%1)*60);
   var msetH=Math.floor((mriseH+12)%24);
   var msetM=mriseM;
-  mr.textContent=String(mriseH).padStart(2,'0')+':'+String(mriseM).padStart(2,'0');
-  ms.textContent=String(msetH).padStart(2,'0')+':'+String(msetM).padStart(2,'0');
+  var mrStr=String(mriseH).padStart(2,'0')+':'+String(mriseM).padStart(2,'0');
+  var msStr=String(msetH).padStart(2,'0')+':'+String(msetM).padStart(2,'0');
+  mr.textContent=mrStr; ms.textContent=msStr;
   row.style.display='flex';
+  updateMoonArc(mrStr,msStr);
 }
 
 loadMusicList().then(init);
