@@ -148,7 +148,7 @@ body {
 
 /* ── 天气详情抽屉 ── */
 .dynamic-island.weather-detailed {
-  height: 270px !important;
+  height: 330px !important;
 }
 .weather-drawer {
   display: flex; flex-direction: column; gap: 6px;
