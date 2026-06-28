@@ -148,7 +148,7 @@ body {
 
 /* ── 天气详情抽屉 ── */
 .dynamic-island.weather-detailed {
-  height: 330px !important;
+  height: 380px !important;
 }
 .weather-drawer {
   display: flex; flex-direction: column; gap: 6px;
@@ -595,3 +595,5 @@ body {
 .weather-drawer-row.moon-arc-wrap svg {
   display: block;
 }
+.weather-drawer-row .sun-group { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0; }
+.weather-drawer-row.sun-times { display: flex; align-items: center; gap: 8px; padding: 4px 2px; flex-wrap: nowrap; }
