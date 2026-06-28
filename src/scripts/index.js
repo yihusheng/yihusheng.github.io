@@ -996,6 +996,5 @@ function calcMoonTimes(sr,ss){
   ms.textContent=String(msetH).padStart(2,'0')+':'+String(msetM).padStart(2,'0');
   row.style.display='flex';
 }
-}
 
 loadMusicList().then(init);
