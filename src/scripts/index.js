@@ -544,7 +544,10 @@ function renderLyrics() {
     lines[i].addEventListener('click', function(e) {
       if (e.target.classList.contains('lyric-text')) {
         var idx = parseInt(this.dataset.index, 10);
-        if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) currentHowl.seek(lyricsData[idx].time);
+        if (currentHowl && lyricsData[idx] && !isNaN(lyricsData[idx].time)) {
+          currentHowl.seek(lyricsData[idx].time);
+          if (!currentHowl.playing()) currentHowl.play();
+        }
         e.stopPropagation();
       }
       // 点击 padding → 不阻止 → 冒泡到 lyricsView → 关闭
@@ -946,7 +949,7 @@ function updateSunArc(sr,ss){
     if(tot>0){
       var p=Math.min(1,Math.max(0,elp/tot));
       var x=12+p*216; // arcLeft=12, arcWidth=216
-      var y=38-32*Math.sin(p*Math.PI); // arcHeight=32
+      var y=46-34*Math.sin(p*Math.PI); // arcHeight=34
       sgd.setAttribute('cx',x);sgd.setAttribute('cy',y);sgd.setAttribute('opacity','1');
       sd.setAttribute('cx',x);sd.setAttribute('cy',y);sd.setAttribute('opacity','1');
       return;
@@ -968,13 +971,13 @@ function updateMoonArc(mr,ms){
     var tot=mst-mrt,elp=n-mrt;
     if(tot>0){
       var p=Math.min(1,Math.max(0,elp/tot));
-      var x=12+p*216,y=38-32*Math.sin(p*Math.PI);
+      var x=12+p*216,y=46-34*Math.sin(p*Math.PI);
       mgd.setAttribute('cx',x);mgd.setAttribute('cy',y);mgd.setAttribute('opacity','1');
       md.setAttribute('cx',x);md.setAttribute('cy',y);md.setAttribute('opacity','1');
       return;
     }
   }
-  mgd.setAttribute('opacity','0');md.setAttribute('opacity','0');
+  mgd.setAttribute("opacity","0");md.setAttribute("opacity","0");
 }
 
 // ── 月升月落计算（近似值，基于月相推算）──
