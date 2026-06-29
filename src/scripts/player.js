@@ -508,8 +508,8 @@ function showWallpaperInfo(text, linkUrl) {
     el.className = 'wallpaper-info';
     document.body.appendChild(el);
   }
-  var desc = text.replace(/\\s*\\(.*?\\)\\s*$/, '').trim() || text;
-  var credit = text.match(/\\(([^)]+)\\)/);
+  var desc = text.replace(/\s*\(.*?\)\s*$/, '').trim() || text;
+  var credit = text.match(/\(([^)]+)\)/);
   var creditText = credit ? credit[0] : '';
   el.innerHTML = '<span class="wallpaper-desc">' + desc + '</span> <span class="wallpaper-credit">' + creditText + '</span>';
   el.onclick = function() { window.open(linkUrl, '_blank'); };
