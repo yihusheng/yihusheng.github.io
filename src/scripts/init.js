@@ -4,17 +4,17 @@ fetchWeather(); setInterval(fetchWeather, 6e5);
 loadBingWallpaper(); window.addEventListener('resize', function(){ if (window.innerWidth >= 768) loadBingWallpaper(); });
 updateThemeColor();
 
-// ── 灵动岛点击（防 touchstart+click 双击）──
+// ── 灵动岛点击（防 touchstart+click 双击；展开后不拦截内部点击）──
 var _islandFromTouch = false;
 island.addEventListener('touchstart', function(e) {
-  if (e.touches.length === 1) {
+  if (e.touches.length === 1 && !island.classList.contains('active') && !island.classList.contains('music-mode')) {
     _islandFromTouch = true;
     toggleIsland();
   }
 });
 island.addEventListener('click', function() {
   if (_islandFromTouch) { _islandFromTouch = false; return; }
-  toggleIsland();
+  if (!island.classList.contains('active') && !island.classList.contains('music-mode')) toggleIsland();
 });
 
 // ── 点击非抽屉区域关闭抽屉 ──
@@ -29,6 +29,9 @@ document.getElementById('app').addEventListener('click', function(e) {
 document.getElementById('weatherMoreBtn').addEventListener('click', function(e) {
   e.stopPropagation();
   toggleWeatherDetail();
+});
+document.getElementById('weatherMoreBtn').addEventListener('touchstart', function(e) {
+  e.stopPropagation();
 });
 
 // ── 点击非灵动岛区域收回灵动岛（含天气详情）──
