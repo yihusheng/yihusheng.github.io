@@ -1,2 +1,5 @@
 node_modules/
 package-lock.json
+
+# 音乐文件：仅用作上传通道，解析后存 R2，不入库
+/public/music/*
