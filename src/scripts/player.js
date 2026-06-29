@@ -196,6 +196,13 @@ function updateIslandMusic() {
   var cover = document.getElementById('mainCover');
   document.getElementById('islandMusicCover').src = cover && cover.src ? cover.src : '';
 }
+// ── 主封面变更时同步到灵动岛 ──
+function syncIslandCover() {
+  var island = document.getElementById('island');
+  if (!island.classList.contains('music-mode')) return;
+  var mc = document.getElementById('mainCover');
+  document.getElementById('islandMusicCover').src = mc && mc.src ? mc.src : '';
+}
 
 function toggleLyrics() {
   lyricsVisible = !lyricsVisible;
@@ -293,7 +300,7 @@ function loadSong(song){
   // 并行 1: IndexedDB 缓存 → 立即升级封面
   CoverDB.get(song.src).then(function(cached) {
     if (songId !== currentSongId || !cached) return;
-    if (mc.src !== cached) { mc.src = cached; updateMediaSession(song.title, song.artist, mc.src, song.cover); }
+    if (mc.src !== cached) { mc.src = cached; updateMediaSession(song.title, song.artist, mc.src, song.cover); syncIslandCover(); }
     var t0 = performance.now();
     wPost('extractColor', { url: mc.src }, function(m) {
       bench('worker-color', performance.now() - t0);
@@ -309,6 +316,7 @@ function loadSong(song){
       if (mc.src !== coverDataUrl) {
         mc.src = coverDataUrl;
         updateMediaSession(song.title, song.artist, mc.src, song.cover);
+        syncIslandCover();
         var t0 = performance.now();
         wPost('extractColor', { url: coverDataUrl }, function(m) {
           bench('worker-color', performance.now() - t0);
@@ -318,6 +326,7 @@ function loadSong(song){
     } else if (song.cover && mc.src !== song.cover) {
       var _cv2=song.cover;if(_cv2&&_cv2.indexOf('./')===0)_cv2='/'+_cv2.slice(2);mc.src=_cv2;
       updateMediaSession(song.title, song.artist, mc.src, song.cover);
+      syncIslandCover();
     }
   });
 
@@ -387,7 +396,8 @@ function loadSong(song){
     });
   }
 
-  mc.onload = function() { updateMediaSession(song.title, song.artist, mc.src, song.cover); };
+  mc.onload = function() { updateMediaSession(song.title, song.artist, mc.src, song.cover); syncIslandCover(); };
+  if (mc.complete) mc.onload();
   updateMediaSession(song.title, song.artist, mc.src, song.cover);
 
   // 预热相邻歌曲
@@ -498,11 +508,62 @@ function showWallpaperInfo(text, linkUrl) {
     el.className = 'wallpaper-info';
     document.body.appendChild(el);
   }
-  var desc = text.replace(/\s*\(.*?\)\s*$/, '').trim() || text;
-  var credit = text.match(/\(([^)]+)\)/);
+  var desc = text.replace(/\\s*\\(.*?\\)\\s*$/, '').trim() || text;
+  var credit = text.match(/\\(([^)]+)\\)/);
   var creditText = credit ? credit[0] : '';
   el.innerHTML = '<span class="wallpaper-desc">' + desc + '</span> <span class="wallpaper-credit">' + creditText + '</span>';
   el.onclick = function() { window.open(linkUrl, '_blank'); };
   el.style.cursor = 'pointer';
 }
+
+// ── 点击封面区域切换歌词 / 灵动岛 ──
+document.querySelector('.player-content').addEventListener('click', function(e) {
+  if (e.target.closest('.m3-slider-root, .time-labels, .controls')) return;
+  toggleLyrics();
+});
+
+// ── 播放列表 ──
+function openPlaylist() {
+  var overlay = document.getElementById('playlistOverlay');
+  if (!songs || songs.length === 0) return;
+  renderPlaylist();
+  overlay.classList.add('open');
+}
+function closePlaylist() {
+  document.getElementById('playlistOverlay').classList.remove('open');
+}
+function renderPlaylist() {
+  var body = document.getElementById('playlistBody');
+  var repeatBtn = document.getElementById('playlistRepeatBtn');
+  repeatBtn.classList.toggle('active', isRepeat);
+  document.getElementById('playlistCount').textContent = songs.length + ' 首';
+  var html = '';
+  for (var i = 0; i < songs.length; i++) {
+    var song = songs[i];
+    var isActive = i === currentSongIndex;
+    var thumbSrc = song.cover || '';
+    html += '<div class="playlist-item' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
+      '<img class="playlist-item-thumb" src="' + (thumbSrc || 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44"><rect fill="#e8ebe6" width="44" height="44"/><text x="22" y="28" font-size="20" text-anchor="middle" fill="#868685">\u266a</text></svg>')) + '" alt="" loading="lazy">' +
+      '<div class="playlist-item-info"><div class="playlist-item-title">' + song.title + '</div><div class="playlist-item-artist">' + song.artist + '</div></div>' +
+      '<div class="playlist-item-indicator"></div><span class="playlist-item-index">' + (i + 1) + '</span></div>';
+  }
+  body.innerHTML = html;
+  var items = body.querySelectorAll('.playlist-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].addEventListener('click', function() {
+      var idx = parseInt(this.dataset.index, 10);
+      if (idx === currentSongIndex) { closePlaylist(); return; }
+      currentSongIndex = idx;
+      loadSong(songs[idx]);
+      playSong();
+      renderPlaylist();
+    });
+  }
+}
+document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
+document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
+document.getElementById('playlistRepeatBtn').addEventListener('click', function() {
+  isRepeat = !isRepeat;
+  this.classList.toggle('active', isRepeat);
+});
 
