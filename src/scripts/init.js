@@ -1,4 +1,5 @@
 // ── 应用入口 ──
+import './drawer.js'; // 侧效加载：渲染抽屉 + 事件绑定
 import { updateTime, fetchWeather, updateThemeColor } from './weather.js';
 import { loadMusicList, loadBingWallpaper } from './player.js';
 import { initIsland } from './island.js';
