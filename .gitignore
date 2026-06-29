@@ -1,13 +1,2 @@
 node_modules/
 package-lock.json
-
-public/music/*.mp3
-public/music/*.flac
-public/music/*.m4a
-public/music/*.ogg
-public/music/*.wav
-public/music/*.aac
-public/music/*.webp
-
-public/music/*.MP3
-public/music/*.FLAC

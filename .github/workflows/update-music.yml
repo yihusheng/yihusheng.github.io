@@ -1,19 +1,17 @@
-name: Generate Music List & Deploy
+name: Music Pipeline — Extract → Upload R2 → Clean
 
 on:
   push:
     paths:
+      - 'public/music/*.mp3'
+      - 'public/music/*.flac'
+      - 'public/music/*.m4a'
+      - 'public/music/*.ogg'
+      - 'public/music/*.wav'
+      - 'public/music/*.aac'
       - 'src/scripts/generate-music.js'
-      - 'src/scripts/music_list.js'
-      - 'src/scripts/upload-music.js'
       - '.github/workflows/update-music.yml'
-      - '.gitignore'
   workflow_dispatch:
-    inputs:
-      upload_r2:
-        description: 'Also upload music files to R2 (requires files in public/music/)'
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -21,148 +19,81 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "music-pipeline"
   cancel-in-progress: false
 
 jobs:
-  generate-and-deploy:
+  process:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      has_new: ${{ steps.check.outputs.has_new }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
+      - name: Check for new music files
+        id: check
+        run: |
+          count=$(ls public/music/*.mp3 public/music/*.flac public/m/*dev/null | wc -l)
+          echo "has_new=$([ "$count" -gt 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
+          echo "🎵 Found $count audio files"
+
       - name: Install dependencies
+        if: steps.check.outputs.has_new == 'true'
         run: npm install music-metadata
 
-      - name: Generate music_list.js (if music files exist)
-        continue-on-error: true
-        run: |
-          if ls public/music/*.mp3 public/music/*.flac public/music/*.m4a 2>/dev/null | head -1 > /dev/null; then
-            node src/scripts/generate-music.js
-            echo "✅ music_list.js generated"
-          else
-            echo "⏭️ No music files found, skipping generation"
-          fi
+lyrics
+        if: steps.check.outputs.has_new == 'true'
+        run: node src/scripts/generate-music.js
 
-      - name: Upload files to R2 (manual dispatch only)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_r2 }}
-        continue-on-error: true
+      - name: Upload all files to R2 (MP3/FLAC/JPG/LRC/music_list)
+        if: steps.check.outputs.has_new == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
-            echo "⏭️ CLOUDFLARE_API_TOKEN 未设置，跳过 R2 上传"
-            exit 0
-          fi
-
           set -o pipefail
-          BUCKET="maxcloud"
-          ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"
-          TOKEN="$CLOUDFLARE_API_TOKEN"
+          BUCK_TOKENCOUNTsilent 2>&1 | tail -1
 
-          npm install -g wrangler --silent 2>&1 | tail -1
-
-          echo "🔍 扫描文件 MD5 并与 R2 比对..."
-          TODO=$(mktemp)
-          SKIP_COUNT=0
-
-          fetch_etag() {
-            local key="$1"
-            local encoded
-            encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$key', safe='/'))" 2>/dev/null) || return 1
-            curl -s -D - -o /dev/null \
-              -H "Authorization: Bearer ${TOKEN}" \
-              "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded}" 2>/dev/null \
-              | grep -i "^etag:" | sed 's/.*: *//; s/"//g; s/\r//g'
-          }
-
-          check_file() {
-            local file="$1"
-            local md5 remote_etag
-            md5=$(md5sum "$file" | cut -d' ' -f1)
-            remote_etag=$(fetch_etag "$file")
-            if [ -n "$remote_etag" ] && [ "$md5" = "$remote_etag" ]; then
-              echo "  ⏭️ 跳过 $file (MD5 匹配)"
-              SKIP_COUNT=$((SKIP_COUNT + 1))
-            else
-              echo "$file|$md5|${remote_etag:-无}"
-            fi
-          }
-
-          [ -f src/scripts/music_list.js ] && check_file "src/scripts/music_list.js" >> "$TODO"
-          for pattern in "*.mp3" "*.flac" "*.m4a" "*.ogg" "*.wav" "*.jpg" "*.jpeg" "*.png" "*.lrc" "*.txt"; do
-            for f in public/music/$pattern; do
-              [ -f "$f" ] || continue
-              check_file "$f" >> "$TODO"
-            done
-          done
-
-          TODO_COUNT=$(grep -c '|' "$TODO" 2>/dev/null || echo 0)
-          if [ "$TODO_COUNT" -eq 0 ]; then
-            echo "✅ 所有文件 MD5 匹配 R2，无需上传 (跳过 ${SKIP_COUNT} 个)"
-            rm -f "$TODO"
-            exit 0
-          fi
-          echo "📋 待上传: $TODO_COUNT 个 | 跳过: $SKIP_COUNT 个"
-
-          upload_one() {
-            local entry="$1"
-            local file md5
-            file="${entry%%|*}"
-            rest="${entry#*|}"
-            md5="${rest%%|*}"
-            local ext="${file##*.}"
-            local ct
-            case "${ext,,}" in
-              mp3)  ct="audio/mpeg" ;;
-              flac) ct="audio/flac" ;;
-              m4a)  ct="audio/mp4"  ;;
-              ogg)  ct="audio/ogg"  ;;
-              wav)  ct="audio/wav"  ;;
-              aac)  ct="audio/aac"  ;;
-              jpg|jpeg) ct="image/jpeg" ;;
-              png)  ct="image/png"  ;;
-              webp) ct="image/webp" ;;
-              lrc|txt) ct="text/plain; charset=utf-8" ;;
-              json) ct="application/json" ;;
-              js)   ct="application/javascript" ;;
-              *)    ct="application/octet-stream" ;;
-            esac
-            local size
-            size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
-            local size_hr
-            size_hr=$(numfmt --to=iec "$size" 2>/dev/null || echo "${size}B")
-            echo "  📤 [$file] ($size_hr)"
+          # Upload function: Cloudflare API → fallback wrangler
+          upload() {
+            local file="$1" ct="$2"
             local encoded_key
             encoded_key=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$file', safe='/'))")
             local url="https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded_key}"
             http_code=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
-              -H "Authorization: Bearer ${TOKEN}" \
-              -H "Content-Type: ${ct}" \
-              --data-binary @"${file}" \
-              "${url}")
-            if [ "$http_code" = "200" ]; then
-              echo "    ✅ 完成"
-            else
-              echo "    ⚠️  API ${http_code}，回退 wrangler..."
-              wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
-              echo "    ✅ wrangler 完成"
+              -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: if              wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
             fi
+            echo "  ✅ $file"
           }
-          export -f upload_one
-          export TOKEN ACCOUNT_ID BUCKET
-          grep '|' "$TODO" | xargs -P 4 -I {} bash -c 'upload_one "{}"'
-          echo "✅ R2 同步完成: 上传 ${TODO_COUNT} 个, 跳过 ${SKIP_COUNT} 个"
-          rm -f "$TODO"
+          export -f upload
+
+          for f in public/music/*.mp3; do [ -f "$f" ] && upload "$f" "audio/mpeg"; done
+          for f in public/music/*.flac; do [ -f "$f" ] && upload "$f" "audio/flac"; done
+          for f in public/music/*.m4a; do [ -f "$f" ] && upload "$f" "audio/mp4"; done
+          for f in public/music/*.ogg; do [ -f "$f" ] && upload "$f" "audio/ogg"; done
+          for f in public/music/*.wav; do [ -f "$faudio/m"/music" public ] && "$usic/*. do [ -f "$f" ] && upload "$f" "text/plain; charset=utf-8"; done
+          upload "src/scripts/music_list.js" "application/javascript"
+
+      - name: Remove music files & extracted files from repo
+        if: steps.check.outputs.has_new == 'true'
+        run: |
+          rm -f public/music/*.mp3 public/music/*.flac public/music/*.m4a
+          rm -f public/music/*.oggavusicusic.     
+        if: steps.check.outputs.has_new == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "bot@users.noreply.github.com"
+          git add src/scripts/music_list.js
+          git add public/music/ -- '*.gitkeep'
+          # Remove deleted files from git
+          git diff --diff-filter=D -- --cached 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "update music_list + upload R2 [skip ci]"
+          git push
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -173,5 +104,4 @@ jobs:
           path: '.'
 
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4
