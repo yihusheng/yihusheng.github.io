@@ -1,7 +1,7 @@
 function init(){
   updateTime(); setInterval(updateTime, 1e3);
   fetchWeather(); setInterval(fetchWeather, 6e5);
-  island.addEventListener('click', toggleIsland);
+  island.addEventListener('click', toggleIsland); island.addEventListener('touchstart', function(e){if(e.touches.length===1){e.preventDefault();toggleIsland();}});
   loadBingWallpaper(); window.addEventListener('resize', function(){ if (window.innerWidth >= 768) loadBingWallpaper(); });
   updateThemeColor();
 

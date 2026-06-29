@@ -1,113 +1,24 @@
-var songs = [];
-var currentSongIndex = 0;
-var isShuffle = true;
-var isRepeat = false;
-var currentHowl = null;
-var currentSongId = null;
-var lyricsData = [];
-var lyricsVisible = false;
-var currentLyricIndex = -1;
-var currentSongLrcUrl = null;
-var lrcLoadId = 0;
-
-function getRandomIndex() {
-  if (songs.length <= 1) return 0;
-  var idx;
-  do { idx = Math.floor(Math.random() * songs.length); }
-  while (idx === currentSongIndex);
-  return idx;
+// ── 切换天气详情抽屉 ──
+function toggleWeatherDetail() {
+  var island = document.getElementById('island');
+  island.classList.toggle('weather-detailed');
+  var icon = document.getElementById('weatherMoreIcon');
+  if (icon) icon.textContent = island.classList.contains('weather-detailed') ? 'expand_less' : 'expand_more';
 }
 
-async function loadMusicList() {
-  try {
-    var res = await fetch('/src/scripts/music_list.js?' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var text = await res.text();
-    var start = text.indexOf('[');
-    var end = text.lastIndexOf(']');
-    songs = (start !== -1 && end !== -1 && end > start) ? JSON.parse(text.substring(start, end + 1)) : [];
-    console.log('🎵 已加载 ' + songs.length + ' 首歌曲');
-  } catch (e) {
-    console.error('❌ 加载音乐列表失败:', e);
-    songs = [];
+function toggleIsland(){
+  if(island.classList.contains('music-mode')){
+    toggleLyrics();
+    island.classList.remove('weather-detailed');
+    island.classList.remove('active');
+    var wi=document.getElementById('weatherMoreIcon');
+    if(wi) wi.textContent='expand_more';
+    return;
   }
-  if (songs.length === 0) {
-    songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
-  }
-  currentSongIndex = Math.floor(Math.random() * songs.length);
-  loadSong(songs[currentSongIndex]);
-}
-
-function loadEmbeddedCover(mp3Url, callback) {
-  if (typeof jsmediatags === 'undefined') { callback(null); return; }
-  CoverDB.get(mp3Url).then(function(cached) {
-    if (cached) { callback(cached); return; }
-    fetch(mp3Url, { method: 'HEAD' }).then(function(r) {
-      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
-      if (size > 3 * 1024 * 1024) { callback(null); return; }
-      readEmbeddedCover(mp3Url, callback);
-    }).catch(function() { readEmbeddedCover(mp3Url, callback); });
-  });
-}
-function readEmbeddedCover(mp3Url, callback) {
-  try {
-    jsmediatags.read(mp3Url, {
-      onSuccess: function(tag) {
-        var pic = tag.tags && tag.tags.picture;
-        if (pic && pic.data) {
-          var data = pic.data;
-          var bytes = new Uint8Array(data);
-          var binary = '';
-          for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-          var url = 'data:' + (pic.format || 'image/jpeg') + ';base64,' + btoa(binary);
-          CoverDB.set(mp3Url, url);
-          callback(url);
-        } else {
-          callback(null);
-        }
-      },
-      onError: function() { callback(null); }
-    });
-  } catch(e) { callback(null); }
-}
-
-// ── 前端兜底：jsmediatags 读取内嵌歌词（缓存 + 跳过大文件）──
-function loadEmbeddedLyrics(audioUrl, callback) {
-  if (typeof jsmediatags === 'undefined') { callback(null); return; }
-  LyricsDB.get(audioUrl).then(function(cached) {
-    if (cached) { callback(cached); return; }
-    // 大文件跳过 jsmediatags 读取（需下载整个文件才能解析）
-    fetch(audioUrl, { method: 'HEAD' }).then(function(r) {
-      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
-      if (size > 3 * 1024 * 1024) { callback(null); return; }
-      readEmbeddedLyrics(audioUrl, callback);
-    }).catch(function() { readEmbeddedLyrics(audioUrl, callback); });
-  });
-}
-function readEmbeddedLyrics(audioUrl, callback) {
-  try {
-    jsmediatags.read(audioUrl, {
-      onSuccess: function(tag) {
-        var tags = tag.tags || {};
-        var lrcText = tags.lyrics || tags.USLT || null;
-        if (lrcText && typeof lrcText === 'string' && lrcText.trim()) {
-          LyricsDB.set(audioUrl, lrcText);
-          callback(lrcText);
-        } else if (tags.lyrics) {
-          var joined = '';
-          for (var i = 0; i < tags.lyrics.length; i++) {
-            var l = tags.lyrics[i];
-            joined += (typeof l === 'string' ? l : l.text || '') + '\n';
-          }
-          if (joined.trim()) { LyricsDB.set(audioUrl, joined); callback(joined); }
-          else callback(null);
-        } else {
-          callback(null);
-        }
-      },
-      onError: function() { callback(null); }
-    });
-  } catch(e) { callback(null); }
+  island.classList.toggle('active');
+  if(!island.classList.contains('active')) island.classList.remove('weather-detailed');
+  var icon=document.getElementById('weatherMoreIcon');
+  if(icon) icon.textContent='expand_more';
 }
 
 function playSong(){ if (!currentHowl) return; currentHowl.play(); }
@@ -287,7 +198,7 @@ function loadSong(song){
 
   // 立即显示封面（song.cover 或占位图），不等嵌入式
   var fallback = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280"><rect fill="#e8ebe6" width="280" height="280"/><text x="140" y="155" font-size="64" text-anchor="middle" fill="#868685">\u266a</text></svg>');
-  var _cv=song.cover;if(_cv&&_cv.indexOf('./')===0)_cv='/'+_cv.slice(2);mc.src=_cv||fallback;
+  mc.src = song.cover || fallback;
   updateMediaSession(song.title, song.artist, mc.src, song.cover);
 
   // 并行 1: IndexedDB 缓存 → 立即升级封面
@@ -316,7 +227,7 @@ function loadSong(song){
         });
       }
     } else if (song.cover && mc.src !== song.cover) {
-      var _cv2=song.cover;if(_cv2&&_cv2.indexOf('./')===0)_cv2='/'+_cv2.slice(2);mc.src=_cv2;
+      mc.src = song.cover;
       updateMediaSession(song.title, song.artist, mc.src, song.cover);
     }
   });
@@ -506,3 +417,32 @@ function showWallpaperInfo(text, linkUrl) {
   el.style.cursor = 'pointer';
 }
 
+function openPlaylist() { var overlay = document.getElementById('playlistOverlay'); if (!songs || songs.length === 0) return; renderPlaylist(); overlay.classList.add('open'); }
+function closePlaylist() { document.getElementById('playlistOverlay').classList.remove('open'); }
+
+function renderPlaylist() {
+  var body = document.getElementById('playlistBody'); var repeatBtn = document.getElementById('playlistRepeatBtn');
+  repeatBtn.classList.toggle('active', isRepeat); document.getElementById('playlistCount').textContent = songs.length + ' 首';
+  var html = '';
+  for (var i = 0; i < songs.length; i++) {
+    var song = songs[i]; var isActive = i === currentSongIndex; var thumbSrc = song.cover || '';
+    html += '<div class="playlist-item' + (isActive ? ' active' : '') + '" data-index="' + i + '">' +
+      '<img class="playlist-item-thumb" src="' + thumbSrc + '" alt="" loading="lazy" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 44 44%22><rect fill=%22%23e8ebe6%22 width=%2244%22 height=%2244%22/><text x=%2222%22 y=%2228%22 font-size=%2220%22 text-anchor=%22middle%22 fill=%22%23868685%22>\u266a</text></svg>\'">' +
+      '<div class="playlist-item-info"><div class="playlist-item-title">' + song.title + '</div><div class="playlist-item-artist">' + song.artist + '</div></div>' +
+      '<div class="playlist-item-indicator"></div><span class="playlist-item-index">' + (i + 1) + '</span></div>';
+  }
+  body.innerHTML = html;
+  var items = body.querySelectorAll('.playlist-item');
+  for (var i = 0; i < items.length; i++) items[i].addEventListener('click', function() { var idx = parseInt(this.dataset.index, 10); if (idx === currentSongIndex) { closePlaylist(); return; } currentSongIndex = idx; loadSong(songs[idx]); playSong(); renderPlaylist(); });
+}
+
+document.getElementById('playlistBackdrop').addEventListener('click', closePlaylist);
+document.getElementById('playlistHandle').addEventListener('click', closePlaylist);
+document.getElementById('playlistRepeatBtn').addEventListener('click', function() { isRepeat = !isRepeat; this.classList.toggle('active', isRepeat); });
+document.querySelector('.player-content').addEventListener('click', function(e) {
+  // 仅当点击在进度条以下区域（播放控件）时不触发切换
+  if (e.target.closest('.m3-slider-root, .time-labels, .controls')) return;
+  toggleLyrics();
+});
+
+function init(){
