@@ -1,24 +1,19 @@
-name: Update Music & Deploy
+name: Generate Music List & Deploy
 
 on:
   push:
     paths:
-      - 'public/music/*.mp3'
-      - 'public/music/*.wav'
-      - 'public/music/*.flac'
-      - 'public/music/*.ogg'
-      - 'public/music/*.m4a'
-      - 'public/music/*.aac'
-      - 'public/music/*.jpg'
-      - 'public/music/*.jpeg'
-      - 'public/music/*.png'
-      - 'public/music/*.webp'
-      - 'public/music/*.lrc'
       - 'src/scripts/generate-music.js'
-      - 'src/scripts/index.js'
+      - 'src/scripts/music_list.js'
+      - 'src/scripts/upload-music.js'
       - '.github/workflows/update-music.yml'
       - '.gitignore'
   workflow_dispatch:
+    inputs:
+      upload_r2:
+        description: 'Also upload music files to R2 (requires files in public/music/)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -30,7 +25,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  update-and-deploy:
+  generate-and-deploy:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -47,25 +42,18 @@ jobs:
       - name: Install dependencies
         run: npm install music-metadata
 
-      - name: Generate music_list.js & extract covers & lyrics
-        run: node src/scripts/generate-music.js
-
-      - name: Commit and push changes
-        shell: bash -e {0}
+      - name: Generate music_list.js (if music files exist)
+        continue-on-error: true
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/scripts/music_list.js
-          git add public/music/ -- '*.jpg' '*.png' '*.lrc'
-          if ! git diff --staged --quiet; then
-            git commit -m 'chore: auto-update music_list.js, covers and lyrics [skip ci]'
+          if ls public/music/*.mp3 public/music/*.flac public/music/*.m4a 2>/dev/null | head -1 > /dev/null; then
+            node src/scripts/generate-music.js
+            echo "✅ music_list.js generated"
+          else
+            echo "⏭️ No music files found, skipping generation"
           fi
-          git stash push -m "auto-stash" || true
-          git pull --rebase
-          git stash pop || true
-          git push
 
-      - name: Upload music files to R2 (parallel, MD5 dedup)
+      - name: Upload files to R2 (manual dispatch only)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_r2 }}
         continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -77,32 +65,25 @@ jobs:
           fi
 
           set -o pipefail
-
           BUCKET="maxcloud"
           ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"
           TOKEN="$CLOUDFLARE_API_TOKEN"
 
-          # ── 预装 wrangler（全局，避免 npx 每次冷启动）──
-          echo "⚙️ 预装 wrangler..."
           npm install -g wrangler --silent 2>&1 | tail -1
 
-          # ── 工具函数：查询 R2 对象 ETag ──
+          echo "🔍 扫描文件 MD5 并与 R2 比对..."
+          TODO=$(mktemp)
+          SKIP_COUNT=0
+
           fetch_etag() {
             local key="$1"
             local encoded
             encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$key', safe='/'))" 2>/dev/null) || return 1
-            # 用 curl -D 输出响应头，提取 ETag
             curl -s -D - -o /dev/null \
               -H "Authorization: Bearer ${TOKEN}" \
               "https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded}" 2>/dev/null \
               | grep -i "^etag:" | sed 's/.*: *//; s/"//g; s/\r//g'
           }
-
-          # ── 阶段 1：扫描文件，比对 MD5，生成待上传列表 ──
-          echo ""
-          echo "🔍 扫描文件 MD5 并与 R2 比对..."
-          TODO=$(mktemp)
-          SKIP_COUNT=0
 
           check_file() {
             local file="$1"
@@ -117,9 +98,7 @@ jobs:
             fi
           }
 
-          # music_list.js
-          [ -f src/scripts/music_list.js ] && { check_file "src/scripts/music_list.js" >> "$TODO"; }
-          # 音乐资源文件
+          [ -f src/scripts/music_list.js ] && check_file "src/scripts/music_list.js" >> "$TODO"
           for pattern in "*.mp3" "*.flac" "*.m4a" "*.ogg" "*.wav" "*.jpg" "*.jpeg" "*.png" "*.lrc" "*.txt"; do
             for f in public/music/$pattern; do
               [ -f "$f" ] || continue
@@ -127,28 +106,20 @@ jobs:
             done
           done
 
-          # 统计：TODO 中有效行（含 | 分隔符）
           TODO_COUNT=$(grep -c '|' "$TODO" 2>/dev/null || echo 0)
           if [ "$TODO_COUNT" -eq 0 ]; then
-            echo ""
             echo "✅ 所有文件 MD5 匹配 R2，无需上传 (跳过 ${SKIP_COUNT} 个)"
             rm -f "$TODO"
             exit 0
           fi
-          echo "📋 待上传: $TODO_COUNT 个 | 跳过: $SKIP_COUNT 个（MD5 未变更）"
-
-          # ── 阶段 2：并行上传（直接 curl → Cloudflare API）──
-          echo ""
-          echo "⚡ 开始并行上传 (4 路并发)..."
+          echo "📋 待上传: $TODO_COUNT 个 | 跳过: $SKIP_COUNT 个"
 
           upload_one() {
             local entry="$1"
-            local file md5 old_etag
+            local file md5
             file="${entry%%|*}"
             rest="${entry#*|}"
             md5="${rest%%|*}"
-            old_etag="${rest#*|}"
-
             local ext="${file##*.}"
             local ct
             case "${ext,,}" in
@@ -163,39 +134,33 @@ jobs:
               webp) ct="image/webp" ;;
               lrc|txt) ct="text/plain; charset=utf-8" ;;
               json) ct="application/json" ;;
+              js)   ct="application/javascript" ;;
               *)    ct="application/octet-stream" ;;
             esac
-
             local size
             size=$(stat -c%s "$file" 2>/dev/null || stat -f%z "$file" 2>/dev/null)
             local size_hr
             size_hr=$(numfmt --to=iec "$size" 2>/dev/null || echo "${size}B")
-
             echo "  📤 [$file] ($size_hr)"
             local encoded_key
             encoded_key=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$file', safe='/'))")
             local url="https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded_key}"
-
             http_code=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
               -H "Authorization: Bearer ${TOKEN}" \
               -H "Content-Type: ${ct}" \
               --data-binary @"${file}" \
               "${url}")
-
             if [ "$http_code" = "200" ]; then
-              echo "    ✅ 完成 (${size_hr})"
+              echo "    ✅ 完成"
             else
-              echo "    ⚠️  API 返回 ${http_code}，回退 wrangler CLI..."
+              echo "    ⚠️  API ${http_code}，回退 wrangler..."
               wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
-              echo "    ✅ wrangler 上传完成"
+              echo "    ✅ wrangler 完成"
             fi
           }
           export -f upload_one
           export TOKEN ACCOUNT_ID BUCKET
-
           grep '|' "$TODO" | xargs -P 4 -I {} bash -c 'upload_one "{}"'
-
-          echo ""
           echo "✅ R2 同步完成: 上传 ${TODO_COUNT} 个, 跳过 ${SKIP_COUNT} 个"
           rm -f "$TODO"
 
