@@ -20,6 +20,14 @@
   <link rel="preconnect" href="/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- ES Module 预加载：浏览器并行下载所有模块 -->
+  <link rel="modulepreload" href="/src/scripts/state.js">
+  <link rel="modulepreload" href="/src/scripts/drawer.js">
+  <link rel="modulepreload" href="/src/scripts/utils.js">
+  <link rel="modulepreload" href="/src/scripts/weather.js">
+  <link rel="modulepreload" href="/src/scripts/player.js">
+  <link rel="modulepreload" href="/src/scripts/island.js">
+  <link rel="modulepreload" href="/src/scripts/init.js">
 </head>
 <body>
 <div class="phone-screen" id="app">
@@ -158,7 +166,7 @@
     </div>
   </div>
   <div class="bottom-drawer" id="drawer">
-    <div class="nav-handle-area" onclick="toggleDrawer()"><div class="md3-nav-bar"></div></div>
+    <div class="nav-handle-area"><div class="md3-nav-bar"></div></div>
     <div class="drawer-scroll-view">
       <div class="drawer-header">
         <div class="drawer-title">快捷工具</div>
@@ -195,14 +203,12 @@
 
 <canvas id="colorCanvas" style="display: none;"></canvas>
 
+<!-- Toast 提示 -->
+<div id="toast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.85rem;z-index:9999;opacity:0;transition:opacity 0.3s ease;pointer-events:none;max-width:80vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.2);"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/howler@2.2.4/dist/howler.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
 <script src="/Tools/navbar.js"></script>
-<script src="/src/scripts/drawer.js"></script>
-<script src="/src/scripts/utils.js"></script>
-<script src="/src/scripts/weather.js"></script>
-<script src="/src/scripts/player.js"></script>
-<script src="/src/scripts/island.js"></script>
-<script src="/src/scripts/init.js"></script>
+<script type="module" src="/src/scripts/init.js"></script>
 </body>
 </html>

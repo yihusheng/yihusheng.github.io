@@ -1,29 +1,7 @@
-(function renderDrawer() {
-  const container = document.getElementById('drawerSections');
-  if (!container) return;
-  const items = window.WiseNavbarData || [];
-  const seen = new Set();
-  const filtered = items.filter(item => {
-    if (item.href === '/' || item.href === '/index.html') return false;
-    const key = item.href;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  container.innerHTML = filtered.map((item, i) => `
-    <a class="drawer-row" href="${item.href}">
-      <div class="drawer-row-icon"><span class="material-symbols-rounded">${item.icon}</span></div>
-      <div class="drawer-row-info">
-        <div class="drawer-row-label">${item.label}</div>
-        <div class="drawer-row-hint">${item.href}</div>
-      </div>
-      <div class="drawer-row-arrow"><span class="material-symbols-rounded">chevron_right</span></div>
-    </a>
-  `).join('');
-})();
+import { state } from './state.js';
 
 // ── Web Worker 并行处理 ──
-var maxWorker = new Worker('/src/scripts/worker.js');
+export var maxWorker = new Worker('/src/scripts/worker.js');
 var _wqid = 0;
 var _wcb = {};
 maxWorker.addEventListener('message', function(e) {
@@ -31,43 +9,38 @@ maxWorker.addEventListener('message', function(e) {
   var cb = _wcb[m.id];
   if (cb) { delete _wcb[m.id]; cb(m); }
 });
-function wPost(type, payload, cb) {
+export function wPost(type, payload, cb) {
   var id = ++_wqid;
   _wcb[id] = cb;
   payload.type = type;
   payload.id = id;
   maxWorker.postMessage(payload);
 }
-// ── 预加载队列：相邻歌曲后台预热（浏览器级 prefetch，轻量无副作用）──
+
+// ── 预加载队列 ──
 var _prefetched = {};
-function preloadAudio(idx) {
-  if (!songs || songs.length < 2) return;
+export function preloadAudio(idx) {
+  if (!state.songs || state.songs.length < 2) return;
   var seen = {};
   for (var d = -1; d <= 1; d += 2) {
     for (var offset = 1; offset <= 2; offset++) {
       var index = d === -1
-        ? (idx - offset + songs.length) % songs.length
-        : (idx + offset) % songs.length;
+        ? (idx - offset + state.songs.length) % state.songs.length
+        : (idx + offset) % state.songs.length;
       if (index === idx || seen[index]) continue;
       seen[index] = true;
-      var s = songs[index];
+      var s = state.songs[index];
       if (!s || !s.src || _prefetched[s.src]) continue;
       _prefetched[s.src] = true;
-      // <link rel=prefetch> 让浏览器在空闲时下载缓存，切换时秒开
       if (document.head) {
         var lnk = document.createElement('link');
-        lnk.rel = 'prefetch';
-        lnk.href = s.src;
-        lnk.as = 'audio';
+        lnk.rel = 'prefetch'; lnk.href = s.src; lnk.as = 'audio';
         document.head.appendChild(lnk);
       }
-      // 封面也预取
       if (s.cover && !_prefetched[s.cover]) {
         _prefetched[s.cover] = true;
         var lnk2 = document.createElement('link');
-        lnk2.rel = 'prefetch';
-        lnk2.href = s.cover;
-        lnk2.as = 'image';
+        lnk2.rel = 'prefetch'; lnk2.href = s.cover; lnk2.as = 'image';
         document.head.appendChild(lnk2);
       }
     }
@@ -76,8 +49,8 @@ function preloadAudio(idx) {
 
 // ── 性能基准 ──
 var benchLog = [];
-function bench(name, t) { benchLog.push({ name: name, t: t }); }
-function logBench() {
+export function bench(name, t) { benchLog.push({ name: name, t: t }); }
+export function logBench() {
   if (benchLog.length === 0) return;
   var byName = {};
   benchLog.forEach(function(b) {
@@ -90,8 +63,7 @@ function logBench() {
   Object.keys(byName).forEach(function(name) {
     var times = byName[name];
     var avg = (times.reduce(function(a,b){return a+b;}, 0) / times.length).toFixed(2);
-    totalAvg += parseFloat(avg);
-    totalCount += times.length;
+    totalAvg += parseFloat(avg); totalCount += times.length;
     console.log('%c║  ' + name.padEnd(19) + ' ×' + String(times.length).padStart(3) + '  avg:' + avg + 'ms  ║', 'color:#9fe870');
   });
   console.log('%c╚══════════════════════════════════╝', 'font-weight:bold');
@@ -99,7 +71,7 @@ function logBench() {
 setTimeout(logBench, 15000);
 
 // ── IndexedDB 封面缓存 ──
-var CoverDB = {
+export var CoverDB = {
   db: null,
   open: function() {
     return new Promise(function(resolve) {
@@ -108,10 +80,7 @@ var CoverDB = {
       req.onupgradeneeded = function(e) {
         try { e.target.result.createObjectStore('covers', { keyPath: 'src' }); } catch(ex) {}
       };
-      req.onsuccess = function(e) {
-        CoverDB.db = e.target.result;
-        resolve();
-      };
+      req.onsuccess = function(e) { CoverDB.db = e.target.result; resolve(); };
       req.onerror = function() { resolve(); };
     });
   },
@@ -128,15 +97,13 @@ var CoverDB = {
   },
   set: function(src, data) {
     if (!CoverDB.db) return;
-    try {
-      CoverDB.db.transaction('covers', 'readwrite').objectStore('covers').put({ src: src, data: data });
-    } catch(e) {}
+    try { CoverDB.db.transaction('covers', 'readwrite').objectStore('covers').put({ src: src, data: data }); } catch(e) {}
   }
 };
 CoverDB.open();
 
-// ── IndexedDB 歌词缓存（避免重复下载整个音频读内嵌歌词）──
-var LyricsDB = {
+// ── IndexedDB 歌词缓存 ──
+export var LyricsDB = {
   db: null,
   open: function() {
     return new Promise(function(resolve) {
@@ -145,10 +112,7 @@ var LyricsDB = {
       req.onupgradeneeded = function(e) {
         try { e.target.result.createObjectStore('lyrics', { keyPath: 'src' }); } catch(ex) {}
       };
-      req.onsuccess = function(e) {
-        LyricsDB.db = e.target.result;
-        resolve();
-      };
+      req.onsuccess = function(e) { LyricsDB.db = e.target.result; resolve(); };
       req.onerror = function() { resolve(); };
     });
   },
@@ -165,36 +129,28 @@ var LyricsDB = {
   },
   set: function(src, data) {
     if (!LyricsDB.db) return;
-    try {
-      LyricsDB.db.transaction('lyrics', 'readwrite').objectStore('lyrics').put({ src: src, data: data });
-    } catch(e) {}
+    try { LyricsDB.db.transaction('lyrics', 'readwrite').objectStore('lyrics').put({ src: src, data: data }); } catch(e) {}
   }
 };
 LyricsDB.open();
 
-// ── 预热相邻歌曲，并行拉封面 + 歌词 ──
-function preloadAdjacent(idx) {
-  idx = idx || currentSongIndex;
-  var prevIdx = (idx - 1 + songs.length) % songs.length;
-  var nextIdx = (idx + 1) % songs.length;
+// ── 预热相邻歌曲 ──
+export function preloadAdjacent(idx) {
+  idx = idx || 0;
+  if (!state.songs || state.songs.length === 0) return;
+  var prevIdx = (idx - 1 + state.songs.length) % state.songs.length;
+  var nextIdx = (idx + 1) % state.songs.length;
   [prevIdx, nextIdx].forEach(function(i) {
     if (i === idx) return;
-    var s = songs[i];
+    var s = state.songs[i];
     if (!s || !s.src) return;
-    CoverDB.get(s.src).then(function(cached) {
-      if (cached) return;
-      if (s.cover) { new Image().src = s.cover; }
-    });
-    // 预热相邻歌词（只走缓存，不触发下载）
-    if (!s.lrc) {
-      LyricsDB.get(s.src).then(function(cached) {
-        if (cached) return;
-      });
-    }
+    CoverDB.get(s.src).then(function(cached) { if (!cached && s.cover) { new Image().src = s.cover; } });
+    if (!s.lrc) { LyricsDB.get(s.src).then(function() {}); }
   });
 }
 
-const ColorUtils = {
+// ── 色彩工具 ──
+export const ColorUtils = {
   hexToRgb: function(hex) {
     var r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return r ? { r: parseInt(r[1],16), g: parseInt(r[2],16), b: parseInt(r[3],16) } : null;
@@ -252,9 +208,9 @@ const ColorUtils = {
   }
 };
 
-const CookieUtils = {
+// ── Cookie 工具 ──
+export const CookieUtils = {
   set: function(n,v,d){var e=new Date();e.setTime(e.getTime()+(d||30)*864e5);document.cookie=n+'='+v+';expires='+e.toUTCString()+';path=/';},
   get: function(n){var v=document.cookie.match('(^|;)\\s*'+n+'=([^;]*)');return v?v[2]:null;},
   remove: function(n){document.cookie=n+'=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';}
 };
-

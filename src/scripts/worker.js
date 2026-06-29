@@ -4,10 +4,15 @@
  */
 self.addEventListener('message', async function (e) {
   var msg = e.data;
+  if (!msg || typeof msg !== 'object') return;
   var type = msg.type;
   var id = msg.id;
 
+  // 输入校验
+  if (typeof type !== 'string' || typeof id !== 'number') return;
+
   if (type === 'extractColor') {
+    if (typeof msg.url !== 'string' || msg.url.length > 2048) return;
     try {
       var rgb = await extractColorFromUrl(msg.url);
       self.postMessage({ type: 'extractColor', id: id, rgb: rgb, t: performance.now() });
@@ -15,6 +20,7 @@ self.addEventListener('message', async function (e) {
       self.postMessage({ type: 'extractColor', id: id, rgb: { r: 100, g: 145, b: 65 }, error: true, t: performance.now() });
     }
   } else if (type === 'parseLRC') {
+    if (typeof msg.text !== 'string' || msg.text.length > 1048576) return; // 最大 1MB
     try {
       var result = parseLRC(msg.text);
       self.postMessage({ type: 'parseLRC', id: id, data: result, t: performance.now() });
