@@ -445,4 +445,3 @@ document.querySelector('.player-content').addEventListener('click', function(e) 
   toggleLyrics();
 });
 
-function init(){

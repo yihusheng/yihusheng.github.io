@@ -1,3 +1,4 @@
+function init(){
   updateTime(); setInterval(updateTime, 1e3);
   fetchWeather(); setInterval(fetchWeather, 6e5);
   island.addEventListener('click', toggleIsland);
@@ -100,3 +101,4 @@ function calcMoonTimes(sr,ss){
   updateMoonArc(mrStr,msStr);
 }
 
+loadMusicList().then(init);
