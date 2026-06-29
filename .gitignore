@@ -1,5 +1,16 @@
 node_modules/
 package-lock.json
 
-# 音乐文件：仅用作上传通道，解析后存 R2，不入库
-/public/music/*
+public/music/*.mp3
+public/music/*.flac
+public/music/*.m4a
+public/music/*.ogg
+public/music/*.wav
+public/music/*.aac
+public/music/*.jpg
+public/music/*.jpeg
+public/music/*.png
+public/music/*.webp
+
+public/music/*.MP3
+public/music/*.FLAC

@@ -17,10 +17,13 @@ export async function onRequest(context) {
     try {
       // path = 原始编码路径（匹配当前 R2 中已有的文件）
       // decodedPath = 解码后（匹配未来 workflow 上传的文件）
-      let object = await env.MUSIC_BUCKET.get(path);
-      if (!object) object = await env.MUSIC_BUCKET.get(decodedPath);
+      var prefix = "public/music/";
+      var r2Key = prefix + path;
+      let object = await env.MUSIC_BUCKET.get(r2Key);
+      if (!object) object = await env.MUSIC_BUCKET.get(prefix + decodedPath);
       if (object) {
         const headers = new Headers();
+        headers.set('Access-Control-Allow-Origin', '*');
         headers.set('Accept-Ranges', 'bytes');
         headers.set('Cache-Control', 'public, max-age=31536000, immutable');
 
