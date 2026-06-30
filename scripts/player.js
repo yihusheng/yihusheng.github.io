@@ -7,23 +7,18 @@ const app = document.getElementById('app');
 
 // ── Cookie 持久化播放状态 ──
 function savePlayerState() {
-  try {
-    if (state.currentSongIndex == null || isNaN(state.currentSongIndex)) return;
-    CookieUtils.set('player_song', String(state.currentSongIndex), 365);
-    CookieUtils.set('player_shuffle', state.isShuffle ? '1' : '0', 365);
-    CookieUtils.set('player_repeat', state.isRepeat ? '1' : '0', 365);
-    if (state.currentHowl) {
-      var seek = state.currentHowl.seek() || 0;
-      CookieUtils.set('player_position', String(Math.floor(seek)), 365);
-      var playing = state.currentHowl.playing() ? '1' : '0';
-      CookieUtils.set('player_playing', playing, 365);
-    }
-  } catch(e) {}
+  // 只在用户交互后保存状态
+  if (state.currentSongIndex == null || isNaN(state.currentSongIndex)) return;
+  var val = JSON.stringify({
+    i: state.currentSongIndex,
+    s: state.isShuffle ? 1 : 0,
+    r: state.isRepeat ? 1 : 0
+  });
+  CookieUtils.set('player', val, 365);
+  console.log('[Save]', val);
 }
 
-// ── 保存播放状态的触发点 ──
-// 每隔 10 秒保存一次（seek 位置持久化）
-setInterval(savePlayerState, 10000);
+// ── Cookie 持久化播放状态 ──
 
 // ── 播放器内部函数 ──
 
@@ -36,14 +31,15 @@ function getRandomIndex() {
 }
 
 export async function loadMusicList() {
-  // ⚡ 立即读取 Cookies，赶在任何异步操作之前覆盖默认 state
-  var cookieSong = parseInt(CookieUtils.get('player_song'), 10);
-  var cookieShuffle = CookieUtils.get('player_shuffle');
-  var cookieRepeat = CookieUtils.get('player_repeat');
-  var cookiePos = parseInt(CookieUtils.get('player_position'), 10) || 0;
-  var cookiePlaying = CookieUtils.get('player_playing') === '1';
-  if (cookieShuffle !== null) state.isShuffle = cookieShuffle === '1';
-  if (cookieRepeat !== null) state.isRepeat = cookieRepeat === '1';
+  // 读取单 Cookie 恢复状态
+  try {
+    var saved = JSON.parse(CookieUtils.get('player') || '{}');
+    if (typeof saved.i === 'number' && !isNaN(saved.i)) {
+      state.currentSongIndex = saved.i;
+      state.isShuffle = saved.s === 1;
+      state.isRepeat = saved.r === 1;
+    }
+  } catch(e) {}
 
   var loadFromR2 = function() {
     return fetch('/public/music/music_list.json?' + Date.now(), { signal: AbortSignal.timeout(5000) })
@@ -80,20 +76,11 @@ export async function loadMusicList() {
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
   }
-  // 同步 UI 按钮（Cookies 已在入口处读取，这里只同步视觉）
+  // 同步 UI 按钮
   document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
-  // 恢复歌曲和进度
-  if (!isNaN(cookieSong) && cookieSong >= 0 && cookieSong < state.songs.length) {
-    state.currentSongIndex = cookieSong;
-    loadSong(state.songs[cookieSong]);
-    var waitLoad = setInterval(function() {
-      if (state.currentHowl && state.currentHowl.state() === 'loaded') {
-        clearInterval(waitLoad);
-        try { state.currentHowl.seek(Math.min(cookiePos, state.currentHowl.duration() || 0)); } catch(e){}
-        if (cookiePlaying) setTimeout(function() { try { state.currentHowl.play(); } catch(e){} }, 100);
-      }
-    }, 50);
-    setTimeout(function() { clearInterval(waitLoad); }, 5000);
+  // 恢复歌曲
+  if (state.songs[state.currentSongIndex]) {
+    loadSong(state.songs[state.currentSongIndex]);
   } else {
     state.currentSongIndex = Math.floor(Math.random() * state.songs.length);
     loadSong(state.songs[state.currentSongIndex]);
@@ -169,7 +156,11 @@ export function playSong(){ if (!state.currentHowl) return; state.currentHowl.pl
 export function pauseSong(){ if (!state.currentHowl) return; state.currentHowl.pause(); savePlayerState(); }
 document.getElementById('playBtn').addEventListener('click',function(){ if (!state.currentHowl) return; state.currentHowl.playing() ? pauseSong() : playSong(); });
 
-export function toggleShuffle() { state.isShuffle = !state.isShuffle; document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle); savePlayerState(); }
+export function toggleShuffle() {
+  state.isShuffle = !state.isShuffle;
+  document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
+  savePlayerState();
+}
 document.getElementById('shuffleBtn').addEventListener('click', toggleShuffle);
 document.getElementById('playlistBtn').addEventListener('click', openPlaylist);
 
