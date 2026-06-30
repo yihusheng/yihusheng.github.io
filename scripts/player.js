@@ -65,16 +65,13 @@ export async function loadMusicList() {
   };
 
   try {
-    // Try R2 first (fast, no deploy needed)
     var ok = await loadFromR2();
-    if (!ok) await loadFromPages();
-    console.log('🎵 已加载 ' + state.songs.length + ' 首歌曲' + (ok ? ' (R2)' : ' (Pages)'));
+    if (!ok) throw new Error('R2 returned empty');
+    console.log('🎵 已从 R2 加载 ' + state.songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ 加载音乐列表失败:', e);
-    try { await loadFromPages(); } catch(e2) {
-      state.songs = [];
-      showToast('音乐列表加载失败，请刷新重试');
-    }
+    console.error('❌ R2 加载音乐列表失败:', e);
+    state.songs = [];
+    showToast('音乐列表加载失败，请检查网络');
   }
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
@@ -123,11 +120,8 @@ function loadEmbeddedLyrics(audioUrl, callback) {
   if (typeof jsmediatags === 'undefined') { callback(null); return; }
   LyricsDB.get(audioUrl).then(function(cached) {
     if (cached) { callback(cached); return; }
-    fetch(audioUrl, { method: 'HEAD' }).then(function(r) {
-      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
-      if (size > 10 * 1024 * 1024) { callback(null, true); return; }
-      readEmbeddedLyrics(audioUrl, callback);
-    }).catch(function() { readEmbeddedLyrics(audioUrl, callback); });
+    // 直接用 jsmediatags 读取（R2 代理支持 Range 请求，只下载 ID3 标签部分）
+    readEmbeddedLyrics(audioUrl, callback);
   });
 }
 function readEmbeddedLyrics(audioUrl, callback) {
@@ -277,7 +271,7 @@ export function toggleLyrics() {
     } else {
       document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">歌词加载中...</div>';
       var lid3 = ++state.lrcLoadId;
-      loadEmbeddedLyrics(state.songs[state.currentSongIndex] && state.songs[state.currentSongIndex].src, function(lrcText, skipped) {
+      loadEmbeddedLyrics(state.songs[state.currentSongIndex] && state.songs[state.currentSongIndex].src, function(lrcText) {
         if (lid3 !== state.lrcLoadId) return;
         if (lrcText) {
           wPost('parseLRC', { text: lrcText }, function(m) {
@@ -288,8 +282,6 @@ export function toggleLyrics() {
               updateLyricHighlight();
             } else { document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>'; }
           });
-        } else if (skipped) {
-          document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">音频文件较大，未读取内嵌歌词</div>';
         } else { document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">暂无歌词</div>'; }
       });
     }
