@@ -36,6 +36,15 @@ function getRandomIndex() {
 }
 
 export async function loadMusicList() {
+  // ⚡ 立即读取 Cookies，赶在任何异步操作之前覆盖默认 state
+  var cookieSong = parseInt(CookieUtils.get('player_song'), 10);
+  var cookieShuffle = CookieUtils.get('player_shuffle');
+  var cookieRepeat = CookieUtils.get('player_repeat');
+  var cookiePos = parseInt(CookieUtils.get('player_position'), 10) || 0;
+  var cookiePlaying = CookieUtils.get('player_playing') === '1';
+  if (cookieShuffle !== null) state.isShuffle = cookieShuffle === '1';
+  if (cookieRepeat !== null) state.isRepeat = cookieRepeat === '1';
+
   var loadFromR2 = function() {
     return fetch('/public/music/music_list.json?' + Date.now(), { signal: AbortSignal.timeout(5000) })
       .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -71,23 +80,17 @@ export async function loadMusicList() {
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
   }
-  // 尝试恢复历史播放状态
-  var savedIdx = parseInt(CookieUtils.get('player_song'), 10);
-  if (!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < state.songs.length) {
-    state.currentSongIndex = savedIdx;
-    state.isShuffle = CookieUtils.get('player_shuffle') === '1';
-    state.isRepeat = CookieUtils.get('player_repeat') === '1';
-    // 同步 UI 按钮状态
-    document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
-    var savedPos = parseInt(CookieUtils.get('player_position'), 10) || 0;
-    var savedPlaying = CookieUtils.get('player_playing') === '1';
-    loadSong(state.songs[savedIdx]);
-    // 等歌曲加载完后 seek + 续播
+  // 同步 UI 按钮（Cookies 已在入口处读取，这里只同步视觉）
+  document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
+  // 恢复歌曲和进度
+  if (!isNaN(cookieSong) && cookieSong >= 0 && cookieSong < state.songs.length) {
+    state.currentSongIndex = cookieSong;
+    loadSong(state.songs[cookieSong]);
     var waitLoad = setInterval(function() {
       if (state.currentHowl && state.currentHowl.state() === 'loaded') {
         clearInterval(waitLoad);
-        try { state.currentHowl.seek(Math.min(savedPos, state.currentHowl.duration() || 0)); } catch(e){}
-        if (savedPlaying) setTimeout(function() { try { state.currentHowl.play(); } catch(e){} }, 100);
+        try { state.currentHowl.seek(Math.min(cookiePos, state.currentHowl.duration() || 0)); } catch(e){}
+        if (cookiePlaying) setTimeout(function() { try { state.currentHowl.play(); } catch(e){} }, 100);
       }
     }, 50);
     setTimeout(function() { clearInterval(waitLoad); }, 5000);
