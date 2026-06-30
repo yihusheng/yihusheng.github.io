@@ -77,6 +77,8 @@ export async function loadMusicList() {
     state.currentSongIndex = savedIdx;
     state.isShuffle = CookieUtils.get('player_shuffle') === '1';
     state.isRepeat = CookieUtils.get('player_repeat') === '1';
+    // 同步 UI 按钮状态
+    document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
     var savedPos = parseInt(CookieUtils.get('player_position'), 10) || 0;
     var savedPlaying = CookieUtils.get('player_playing') === '1';
     loadSong(state.songs[savedIdx]);
