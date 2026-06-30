@@ -42,11 +42,6 @@ var musicList = [
     "lrc": "./public/music/%E6%A2%81%E5%8D%9A%20-%20%E6%97%A5%E8%90%BD%E5%A4%A7%E9%81%93%20(Live).lrc"
   },
   {
-    "title": "阳光男孩阳光女孩2023",
-    "artist": "法老; 小精灵; 万妮达Vinida Weng; 喉结蜥蜴",
-    "src": "./public/music/%E6%B3%95%E8%80%81%3B%20%E5%B0%8F%E7%B2%BE%E7%81%B5%3B%20%E4%B8%87%E5%A6%AE%E8%BE%BEVinida%20Weng%3B%20%E5%96%89%E7%BB%93%E8%9C%A5%E8%9C%B4%20-%20%E9%98%B3%E5%85%89%E7%94%B7%E5%AD%A9%E9%98%B3%E5%85%89%E5%A5%B3%E5%AD%A92023.mp3"
-  },
-  {
     "title": "靠近",
     "artist": "罗震环",
     "src": "./public/music/%E7%BD%97%E9%9C%87%E7%8E%AF%20-%20%E9%9D%A0%E8%BF%91.mp3",
