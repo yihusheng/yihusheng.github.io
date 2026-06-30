@@ -44,39 +44,17 @@ export async function loadMusicList() {
   // 立即同步按钮状态，不等歌单加载
   document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
 
-  var loadFromR2 = function() {
-    return fetch('/public/music/music_list.json?' + Date.now(), { signal: AbortSignal.timeout(5000) })
-      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(data) {
-        if (data && data.length > 0) { state.songs = data; return true; }
-        return false;
-      });
-  };
-
-  var loadFromPages = function() {
-    return fetch('/scripts/music_list.js?' + Date.now())
-      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-      .then(function(text) {
-        var start = text.indexOf('[');
-        var end = text.lastIndexOf(']');
-        state.songs = (start !== -1 && end !== -1 && end > start) ? JSON.parse(text.substring(start, end + 1)) : [];
-        return state.songs.length > 0;
-      });
-  };
-
   try {
-    var ok = await loadFromR2();
-    if (!ok) throw new Error('R2 returned empty');
-    console.log('🎵 已从 R2 加载 ' + state.songs.length + ' 首歌曲');
+    var r = await fetch('/public/music/music_list.json?' + Date.now(), {
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    state.songs = await r.json();
+    if (!state.songs || !state.songs.length) throw new Error('empty list');
+    console.log('🎵 已加载 ' + state.songs.length + ' 首歌曲');
   } catch (e) {
-    console.warn('R2 加载失败，尝试 Pages:', e.message || e);
-    try {
-      await loadFromPages();
-      console.log('🎵 已从 Pages 加载 ' + state.songs.length + ' 首歌曲');
-    } catch(e2) {
-      console.error('❌ 全部加载失败:', e2);
-      state.songs = [];
-    }
+    console.warn('加载音乐列表失败:', e.message || e);
+    state.songs = [];
   }
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
