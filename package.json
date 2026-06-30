@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "music-metadata": "7.14.0"
+    "music-metadata": "^7.14.0"
   },
   "name": "maxcloud",
   "description": "",

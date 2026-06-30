@@ -1,5 +1,4 @@
-name: Music Pipeline — Extract → Upload R2 → Clean
-
+name: Music Pipeline
 on:
   push:
     paths:
@@ -19,89 +18,114 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "music-pipeline"
+  group: music-pipeline
   cancel-in-progress: false
+
+env:
+  BUCKET: maxcloud
 
 jobs:
   process:
     runs-on: ubuntu-latest
-    outputs:
-      has_new: ${{ steps.check.outputs.has_new }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Check for new music files
+      - name: Check for audio files
         id: check
         run: |
-          count=$(ls public/music/*.mp3 public/music/*.flac public/m/*dev/null | wc -l)
-          echo "has_new=$([ "$count" -gt 0 ] && echo 'true' || echo 'false')" >> $GITHUB_OUTPUT
-          echo "🎵 Found $count audio files"
+          count=$(ls public/music/*.mp3 2>/dev/null | wc -l)
+          has_new=false
+          [ "$count" -gt 0 ] && has_new=true
+          echo "has_new=$has_new" >> "$GITHUB_OUTPUT"
+          echo "Found $count audio files"
 
-      - name: Install dependencies
+      - name: Install deps
         if: steps.check.outputs.has_new == 'true'
         run: npm install music-metadata
 
-lyrics
+      - name: Generate music_list.js + extract covers + lyrics
         if: steps.check.outputs.has_new == 'true'
         run: node src/scripts/generate-music.js
 
-      - name: Upload all files to R2 (MP3/FLAC/JPG/LRC/music_list)
+      - name: Upload all files to R2
         if: steps.check.outputs.has_new == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
-          set -o pipefail
-          BUCK_TOKENCOUNTsilent 2>&1 | tail -1
+          set -euo pipefail
+          TOKEN="$CLOUDFLARE_API_TOKEN"
+          ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID"
 
-          # Upload function: Cloudflare API → fallback wrangler
+          npm install -g wrangler --silent 2>&1 | tail -1
+
           upload() {
             local file="$1" ct="$2"
-            local encoded_key
-            encoded_key=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$file', safe='/'))")
-            local url="https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded_key}"
+            local encoded
+            encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$file', safe='/'))")
+            local url="https://api.cloudflare.com/client/v4/accounts/${ACCOUNT_ID}/r2/buckets/${BUCKET}/objects/${encoded}"
             http_code=$(curl -s -o /dev/null -w "%{http_code}" -X PUT \
-              -H "Authorization: Bearer ${TOKEN}" -H "Content-Type: if              wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
+              -H "Authorization: Bearer ${TOKEN}" \
+              -H "Content-Type: ${ct}" \
+              --data-binary @"${file}" \
+              "${url}")
+            if [ "$http_code" != "200" ]; then
+              wrangler r2 object put "${BUCKET}/${file}" --file="${file}" >/dev/null 2>&1
             fi
-            echo "  ✅ $file"
+            echo "  uploaded $file"
           }
           export -f upload
+          export TOKEN ACCOUNT_ID BUCKET
 
           for f in public/music/*.mp3; do [ -f "$f" ] && upload "$f" "audio/mpeg"; done
           for f in public/music/*.flac; do [ -f "$f" ] && upload "$f" "audio/flac"; done
           for f in public/music/*.m4a; do [ -f "$f" ] && upload "$f" "audio/mp4"; done
           for f in public/music/*.ogg; do [ -f "$f" ] && upload "$f" "audio/ogg"; done
-          for f in public/music/*.wav; do [ -f "$faudio/m"/music" public ] && "$usic/*. do [ -f "$f" ] && upload "$f" "text/plain; charset=utf-8"; done
-          upload "src/scripts/music_list.js" "application/javascript"
+          for f in public/music/*.wav; do [ -f "$f" ] && upload "$f" "audio/wav"; done
+          for f in public/music/*.aac; do [ -f "$f" ] && upload "$f" "audio/aac"; done
+          for f in public/music/*.lrc; do [ -f "$f" ] && upload "$f" "text/plain; charset=utf-8"; done
+          for f in public/music/*.jpg; do [ -f "$f" ] && upload "$f" "image/jpeg"; done
+          for f in public/music/*.jpeg; do [ -f "$f" ] && upload "$f" "image/jpeg"; done
+          for f in public/music/*.png; do [ -f "$f" ] && upload "$f" "image/png"; done
+          [ -f src/scripts/music_list.js ] && upload "src/scripts/music_list.js" "application/javascript"
 
-      - name: Remove music files & extracted files from repo
+      - name: Remove audio files and extracted files
         if: steps.check.outputs.has_new == 'true'
         run: |
-          rm -f public/music/*.mp3 public/music/*.flac public/music/*.m4a
-          rm -f public/music/*.oggavusicusic.     
+          rm -f public/music/*.mp3 public/music/*.MP3
+          rm -f public/music/*.flac public/music/*.FLAC
+          rm -f public/music/*.m4a
+          rm -f public/music/*.ogg
+          rm -f public/music/*.wav
+          rm -f public/music/*.aac
+          rm -f public/music/*.jpg public/music/*.jpeg
+          rm -f public/music/*.png
+          rm -f public/music/*.lrc
+
+      - name: Commit music_list.js only
         if: steps.check.outputs.has_new == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
           git add src/scripts/music_list.js
-          git add public/music/ -- '*.gitkeep'
-          # Remove deleted files from git
-          git diff --diff-filter=D -- --cached 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "update music_list + upload R2 [skip ci]"
+          # Keep .gitkeep to preserve folder structure
+          touch public/music/.gitkeep
+          git add public/music/.gitkeep
+          # Stage deletions
+          git add -A
+          git diff --cached --quiet || git commit -m "update music_list [skip ci]"
           git push
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: actions/deploy-pages@v4
