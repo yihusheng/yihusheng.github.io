@@ -16,18 +16,37 @@ function getRandomIndex() {
 }
 
 export async function loadMusicList() {
+  var loadFromR2 = function() {
+    return fetch('/public/music/music_list.json?' + Date.now(), { signal: AbortSignal.timeout(5000) })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function(data) {
+        if (data && data.length > 0) { state.songs = data; return true; }
+        return false;
+      });
+  };
+
+  var loadFromPages = function() {
+    return fetch('/src/scripts/music_list.js?' + Date.now())
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function(text) {
+        var start = text.indexOf('[');
+        var end = text.lastIndexOf(']');
+        state.songs = (start !== -1 && end !== -1 && end > start) ? JSON.parse(text.substring(start, end + 1)) : [];
+        return state.songs.length > 0;
+      });
+  };
+
   try {
-    var res = await fetch('/src/scripts/music_list.js?' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    var text = await res.text();
-    var start = text.indexOf('[');
-    var end = text.lastIndexOf(']');
-    state.songs = (start !== -1 && end !== -1 && end > start) ? JSON.parse(text.substring(start, end + 1)) : [];
-    console.log('🎵 已加载 ' + state.songs.length + ' 首歌曲');
+    // Try R2 first (fast, no deploy needed)
+    var ok = await loadFromR2();
+    if (!ok) await loadFromPages();
+    console.log('🎵 已加载 ' + state.songs.length + ' 首歌曲' + (ok ? ' (R2)' : ' (Pages)'));
   } catch (e) {
     console.error('❌ 加载音乐列表失败:', e);
-    state.songs = [];
-    showToast('音乐列表加载失败，请刷新重试');
+    try { await loadFromPages(); } catch(e2) {
+      state.songs = [];
+      showToast('音乐列表加载失败，请刷新重试');
+    }
   }
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];

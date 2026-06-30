@@ -51,6 +51,21 @@ jobs:
         if: steps.check.outputs.has_new == 'true'
         run: node src/scripts/generate-music.js
 
+      - name: Copy music_list.json to public/music/ for R2 serving
+        if: steps.check.outputs.has_new == 'true'
+        run: |
+          node -e "
+            var fs = require('fs');
+            var js = fs.readFileSync('src/scripts/music_list.js', 'utf8');
+            var start = js.indexOf('[');
+            var end = js.lastIndexOf(']');
+            if (start !== -1 && end > start) {
+              var json = js.substring(start, end + 1);
+              fs.writeFileSync('public/music/music_list.json', json, 'utf8');
+              console.log('music_list.json created');
+            }
+          "
+
       - name: Upload all files to R2
         if: steps.check.outputs.has_new == 'true'
         env:
@@ -91,6 +106,7 @@ jobs:
           for f in public/music/*.jpg; do [ -f "$f" ] && upload "$f" "image/jpeg"; done
           for f in public/music/*.jpeg; do [ -f "$f" ] && upload "$f" "image/jpeg"; done
           for f in public/music/*.png; do [ -f "$f" ] && upload "$f" "image/png"; done
+          for f in public/music/*.json; do [ -f "$f" ] && upload "$f" "application/json"; done
           [ -f src/scripts/music_list.js ] && upload "src/scripts/music_list.js" "application/javascript"
 
       - name: Remove audio files and extracted files
@@ -105,6 +121,7 @@ jobs:
           rm -f public/music/*.jpg public/music/*.jpeg
           rm -f public/music/*.png
           rm -f public/music/*.lrc
+          rm -f public/music/*.json
 
       - name: Commit music_list.js only
         if: steps.check.outputs.has_new == 'true'
