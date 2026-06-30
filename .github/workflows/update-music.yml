@@ -11,6 +11,8 @@ on:
       - 'scripts/generate-music.js'
       - '.github/workflows/update-music.yml'
   workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
 
 permissions:
   contents: write
@@ -43,16 +45,89 @@ jobs:
           echo "has_new=$has_new" >> "$GITHUB_OUTPUT"
           echo "Found $count audio files"
 
+      - name: Sync new files from R2
+        id: sync
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+        env:
+          CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          echo "Checking R2 for new files..."
+          # List all MP3s in R2
+          python3 << 'R2EOF'
+          import urllib.request, json, os
+          TOKEN = os.environ.get('CLOUDFLARE_API_TOKEN','')
+          ACCOUNT_ID = os.environ.get('CLOUDFLARE_ACCOUNT_ID','')
+          BUCKET = 'maxcloud'
+          items = []
+          cursor = None
+          while True:
+              url = 'https://api.cloudflare.com/client/v4/accounts/' + ACCOUNT_ID + '/r2/buckets/' + BUCKET + '/objects?limit=100'
+              if cursor:
+                  from urllib.parse import quote
+                  url += '&cursor=' + quote(cursor)
+              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + TOKEN})
+              resp = urllib.request.urlopen(req)
+              data = json.load(resp)
+              for obj in data.get('result', []):
+                  items.append(obj['key'])
+              info = data.get('result_info', {})
+              cursor = info.get('cursor')
+              if not info.get('is_truncated'):
+                  break
+          mp3s = [k for k in items if k.endswith('.mp3') and k.startswith('public/music/')]
+          with open('/tmp/r2_mp3s.txt', 'w') as f:
+              f.write('
+          '.join(mp3s))
+          print('Found ' + str(len(mp3s)) + ' MP3s in R2')
+          R2EOF
+          # Read currently known songs from music_list.js
+          if [ -f scripts/music_list.js ]; then
+            python3 << 'KNOWNEOF'
+          import json
+          with open('scripts/music_list.js') as f:
+              text = f.read()
+          songs = json.loads(text[text.index('['):text.rindex(']')+1])
+          with open('/tmp/known_srcs.txt', 'w') as f:
+              for s in songs:
+                  f.write(s['src'] + '
+          ')
+          print('Known songs: ' + str(len(songs)))
+          KNOWNEOF
+          else
+            touch /tmp/known_srcs.txt
+          fi
+          # Download new MP3s from R2
+          DOWNLOADED=0
+          while IFS= read -r r2key; do
+            fname="${.parse.quote('$fname', safe=''))")"
+            grep -qF "$src" /tmp/known_srcs.txt 2>/dev/null && continue
+            echo "Downloading: $fname"
+            encoded=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$r2key', safe=''))")
+            curl -s -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN"               "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/r2/buckets/maxcloud/objects/$encoded"               -o "public/music/$fname"
+            if [ -f "public/music/$fname" ]; then
+              echo "  saved ($(stat -c%s "public/music/$fname") bytes)"
+              DOWNLOADED=$((DOWNLOADED + 1))
+            fi
+          done < /tmp/r2_mp3s.txt
+          echo "Downloaded $DOWNLOADED new files"
+          if [ "$DOWNLOADED" -gt 0 ]; then
+            echo "synced=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "synced=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install deps
-        if: steps.check.outputs.has_new == 'true'
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         run: npm install music-metadata
 
       - name: Generate music_list.js + extract covers + lyrics
-        if: steps.check.outputs.has_new == 'true'
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         run: node scripts/generate-music.js
 
       - name: Copy music_list.json to public/music/ for R2 serving
-        if: steps.check.outputs.has_new == 'true'
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         run: |
           node -e "
             var fs = require('fs');
@@ -67,7 +142,7 @@ jobs:
           "
 
       - name: Upload all files to R2
-        if: steps.check.outputs.has_new == 'true'
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -110,7 +185,7 @@ jobs:
           [ -f scripts/music_list.js ] && upload "scripts/music_list.js" "application/javascript"
 
       - name: Remove audio files and extracted files
-        if: steps.check.outputs.has_new == 'true'
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         run: |
           rm -f public/music/*.mp3 public/music/*.MP3
           rm -f public/music/*.flac public/music/*.FLAC
@@ -123,8 +198,8 @@ jobs:
           rm -f public/music/*.lrc
           # Keep music_list.json for Pages static fallback
 
-      - name: Commit music_list.js only
-        if: steps.check.outputs.has_new == 'true'
+      - name: Commit music_list.js and music_list.json
+        if: steps.check.outputs.has_new == 'true' || steps.sync.outputs.synced == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
