@@ -103,6 +103,27 @@ function extractUSLT(filePath) {
     process.exit(0);
   }
 
+  // ── 读取旧歌单（保留已有记录，避免覆盖 R2 中已存在的歌）──
+  var oldMap = {};
+  if (fs.existsSync(outputFile)) {
+    try {
+      var oldText = fs.readFileSync(outputFile, 'utf-8');
+      var oldStart = oldText.indexOf('[');
+      var oldEnd = oldText.lastIndexOf(']');
+      if (oldStart !== -1 && oldEnd > oldStart) {
+        var oldList = JSON.parse(oldText.substring(oldStart, oldEnd + 1));
+        for (var i = 0; i < oldList.length; i++) {
+          // 用 src 中的文件名作为 key（去重依据）
+          var key = oldList[i].src;
+          if (key) oldMap[key] = oldList[i];
+        }
+        console.log('📂 保留 ' + Object.keys(oldMap).length + ' 首已有歌曲');
+      }
+    } catch (e) {
+      console.warn('⚠️  读取旧歌单失败:', e.message);
+    }
+  }
+
   const songs = [];
 
   for (const audioFile of audioFiles) {
@@ -232,6 +253,16 @@ function extractUSLT(filePath) {
     }
 
     songs.push(song);
+  }
+
+  // ── 合并旧歌（本地没扫到但之前已存在 R2 中的歌）──
+  var newKeys = {};
+  for (var i = 0; i < songs.length; i++) newKeys[songs[i].src] = true;
+  for (var key in oldMap) {
+    if (!newKeys[key]) {
+      songs.push(oldMap[key]);
+      console.log(`  🔄 保留: ${oldMap[key].artist} - ${oldMap[key].title}`);
+    }
   }
 
   // 按文件名排序
