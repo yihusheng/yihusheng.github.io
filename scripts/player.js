@@ -8,10 +8,10 @@ const app = document.getElementById('app');
 // ── Cookie 持久化播放状态 ──
 function savePlayerState() {
   try {
+    if (state.currentSongIndex == null || isNaN(state.currentSongIndex)) return;
     CookieUtils.set('player_song', String(state.currentSongIndex), 365);
     CookieUtils.set('player_shuffle', state.isShuffle ? '1' : '0', 365);
     CookieUtils.set('player_repeat', state.isRepeat ? '1' : '0', 365);
-    // 定期保存进度（每次调用时记录最新 seek）
     if (state.currentHowl) {
       var seek = state.currentHowl.seek() || 0;
       CookieUtils.set('player_position', String(Math.floor(seek)), 365);
@@ -19,35 +19,6 @@ function savePlayerState() {
       CookieUtils.set('player_playing', playing, 365);
     }
   } catch(e) {}
-}
-
-function restorePlayerState(callback) {
-  var idx = parseInt(CookieUtils.get('player_song'), 10);
-  if (isNaN(idx) || idx < 0 || idx >= state.songs.length) {
-    if (callback) callback();
-    return;
-  }
-  state.currentSongIndex = idx;
-  state.isShuffle = CookieUtils.get('player_shuffle') === '1';
-  state.isRepeat = CookieUtils.get('player_repeat') === '1';
-
-  var savedPlaying = CookieUtils.get('player_playing') === '1';
-  var savedPosition = parseInt(CookieUtils.get('player_position'), 10) || 0;
-
-  // 加载历史歌曲
-  loadSong(state.songs[idx]);
-
-  // 歌曲加载完成后 seek + 续播
-  var checkLoaded = setInterval(function() {
-    if (state.currentHowl && state.currentHowl.state() === 'loaded') {
-      clearInterval(checkLoaded);
-      state.currentHowl.seek(Math.min(savedPosition, state.currentHowl.duration() || 0));
-      if (savedPlaying) playSong();
-      if (callback) callback();
-    }
-  }, 50);
-  // 超时：3秒后放弃等待
-  setTimeout(function() { clearInterval(checkLoaded); if (callback) callback(); }, 3000);
 }
 
 // ── 保存播放状态的触发点 ──
@@ -100,13 +71,28 @@ export async function loadMusicList() {
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
   }
-  // 尝试恢复历史播放状态，失败则随机
-  restorePlayerState(function() {
-    if (state.currentSongIndex == null) {
-      state.currentSongIndex = Math.floor(Math.random() * state.songs.length);
-      loadSong(state.songs[state.currentSongIndex]);
-    }
-  });
+  // 尝试恢复历史播放状态
+  var savedIdx = parseInt(CookieUtils.get('player_song'), 10);
+  if (!isNaN(savedIdx) && savedIdx >= 0 && savedIdx < state.songs.length) {
+    state.currentSongIndex = savedIdx;
+    state.isShuffle = CookieUtils.get('player_shuffle') === '1';
+    state.isRepeat = CookieUtils.get('player_repeat') === '1';
+    var savedPos = parseInt(CookieUtils.get('player_position'), 10) || 0;
+    var savedPlaying = CookieUtils.get('player_playing') === '1';
+    loadSong(state.songs[savedIdx]);
+    // 等歌曲加载完后 seek + 续播
+    var waitLoad = setInterval(function() {
+      if (state.currentHowl && state.currentHowl.state() === 'loaded') {
+        clearInterval(waitLoad);
+        try { state.currentHowl.seek(Math.min(savedPos, state.currentHowl.duration() || 0)); } catch(e){}
+        if (savedPlaying) setTimeout(function() { try { state.currentHowl.play(); } catch(e){} }, 100);
+      }
+    }, 50);
+    setTimeout(function() { clearInterval(waitLoad); }, 5000);
+  } else {
+    state.currentSongIndex = Math.floor(Math.random() * state.songs.length);
+    loadSong(state.songs[state.currentSongIndex]);
+  }
 }
 
 function loadEmbeddedCover(mp3Url, callback) {
