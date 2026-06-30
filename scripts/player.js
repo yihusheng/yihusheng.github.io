@@ -41,6 +41,9 @@ export async function loadMusicList() {
     }
   } catch(e) {}
 
+  // 立即同步按钮状态，不等歌单加载
+  document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
+
   var loadFromR2 = function() {
     return fetch('/public/music/music_list.json?' + Date.now(), { signal: AbortSignal.timeout(5000) })
       .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -76,8 +79,6 @@ export async function loadMusicList() {
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
   }
-  // 同步 UI 按钮
-  document.getElementById('shuffleBtn').classList.toggle('active', state.isShuffle);
   // 恢复歌曲
   if (state.songs[state.currentSongIndex]) {
     loadSong(state.songs[state.currentSongIndex]);
