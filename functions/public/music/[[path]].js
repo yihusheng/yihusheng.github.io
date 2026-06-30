@@ -1,6 +1,6 @@
 /**
- * Proxy /src/music/* to R2 bucket
- * - Music/cover/lyric files hosted in R2 for faster streaming
+ * Proxy /public/music/* to R2 bucket
+ * - 流式响应（不缓冲整个文件），大幅减少首字节时间
  * - Falls back to Pages static assets if not found in R2
  */
 export async function onRequest(context) {
@@ -12,11 +12,9 @@ export async function onRequest(context) {
     return new Response('Not Found', { status: 404 });
   }
 
-  // Try R2 first — 兼容编码 key（已有文件）和解码 key（后续上传）
+  // Try R2 first
   if (env.MUSIC_BUCKET) {
     try {
-      // path = 原始编码路径（匹配当前 R2 中已有的文件）
-      // decodedPath = 解码后（匹配未来 workflow 上传的文件）
       var prefix = "public/music/";
       var r2Key = prefix + path;
       let object = await env.MUSIC_BUCKET.get(r2Key);
@@ -40,6 +38,7 @@ export async function onRequest(context) {
 
         const range = request.headers.get('Range');
         if (range) {
+          // 范围请求：只返回请求的字节段（用于音频拖动）
           const [startStr, endStr] = range.replace('bytes=', '').split('-');
           const start = parseInt(startStr, 10);
           const end = endStr ? parseInt(endStr, 10) : object.size - 1;
@@ -50,9 +49,9 @@ export async function onRequest(context) {
           return new Response(chunkData, { status: 206, headers });
         }
 
-        const data = await object.arrayBuffer();
+        // 流式响应：不缓冲，边读边发
         headers.set('Content-Length', String(object.size));
-        return new Response(data, { status: 200, headers });
+        return new Response(object.body, { status: 200, headers });
       }
     } catch (e) {
       console.error('[R2] error fetching', decodedPath, e);
