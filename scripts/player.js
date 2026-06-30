@@ -69,9 +69,14 @@ export async function loadMusicList() {
     if (!ok) throw new Error('R2 returned empty');
     console.log('🎵 已从 R2 加载 ' + state.songs.length + ' 首歌曲');
   } catch (e) {
-    console.error('❌ R2 加载音乐列表失败:', e);
-    state.songs = [];
-    showToast('音乐列表加载失败，请检查网络');
+    console.warn('R2 加载失败，尝试 Pages:', e.message || e);
+    try {
+      await loadFromPages();
+      console.log('🎵 已从 Pages 加载 ' + state.songs.length + ' 首歌曲');
+    } catch(e2) {
+      console.error('❌ 全部加载失败:', e2);
+      state.songs = [];
+    }
   }
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
