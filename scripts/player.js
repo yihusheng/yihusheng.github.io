@@ -125,7 +125,7 @@ function loadEmbeddedLyrics(audioUrl, callback) {
     if (cached) { callback(cached); return; }
     fetch(audioUrl, { method: 'HEAD' }).then(function(r) {
       var size = parseInt(r.headers.get('Content-Length') || '0', 10);
-      if (size > 3 * 1024 * 1024) { callback(null, true); return; } // true = skipped due to size
+      if (size > 10 * 1024 * 1024) { callback(null, true); return; }
       readEmbeddedLyrics(audioUrl, callback);
     }).catch(function() { readEmbeddedLyrics(audioUrl, callback); });
   });
