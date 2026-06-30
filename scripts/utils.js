@@ -1,7 +1,7 @@
 import { state } from './state.js';
 
 // ── Web Worker 并行处理 ──
-export var maxWorker = new Worker('/src/scripts/worker.js');
+export var maxWorker = new Worker('/scripts/worker.js');
 var _wqid = 0;
 var _wcb = {};
 maxWorker.addEventListener('message', function(e) {

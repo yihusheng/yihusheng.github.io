@@ -23,7 +23,7 @@ export default {
       .on('head', {
         element(el) {
           el.append(
-            '<link href="/src/style/Music-unlock-injectior-wise-theme.css" rel="stylesheet">',
+            '<link href="/style/Music-unlock-injectior-wise-theme.css" rel="stylesheet">',
             { html: true }
           );
         },

@@ -2,7 +2,7 @@
  * 本地音乐处理流程
  *
  * 步骤 1: 解析元数据 + 提取内嵌封面/歌词 + 生成 music_list.js
- *   node src/scripts/generate-music.js
+ *   node scripts/generate-music.js
  *
  * 步骤 2: 上传到 R2（任选一种方式）
  *   方式 A — 使用本脚本（需配置以下环境变量）:
@@ -14,10 +14,10 @@
  *   方式 B — 使用 rclone（推荐，简单可靠）:
  *     rclone config  # 选 S3 → Cloudflare R2
  *     rclone copy public/music/ r2-music:maxcloud/ --progress
- *     rclone copy src/scripts/music_list.js r2-music:maxcloud/src/scripts/
+ *     rclone copy scripts/music_list.js r2-music:maxcloud/scripts/
  *
  *   方式 C — 推送到 GitHub，由 Actions 自动部署
- *     git add src/scripts/music_list.js
+ *     git add scripts/music_list.js
  *     git commit -m "update music list"
  *     git push
  *
@@ -126,11 +126,11 @@ async function main() {
   }
 
   // 上传 music_list.js
-  const musicListPath = path.join(__dirname, '..', 'src', 'scripts', 'music_list.js');
+  const musicListPath = path.join(__dirname, 'music_list.js');
   if (fs.existsSync(musicListPath)) {
     try {
-      process.stdout.write(`  📤 src/scripts/music_list.js... `);
-      await uploadToR2('src/scripts/music_list.js', musicListPath);
+      process.stdout.write(`  📤 scripts/music_list.js... `);
+      await uploadToR2('scripts/music_list.js', musicListPath);
     } catch (e) {
       console.error(`  ❌ music_list.js: ${e.message}`);
       ok = false;
@@ -141,7 +141,7 @@ async function main() {
   if (ok) {
     console.log('✅ 全部上传完成');
     console.log('💡 推送到 GitHub 触发 Pages 部署:');
-    console.log('   git add src/scripts/music_list.js');
+    console.log('   git add scripts/music_list.js');
     console.log('   git commit -m "update music list"');
     console.log('   git push');
   } else {

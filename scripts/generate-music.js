@@ -1,16 +1,16 @@
 /**
  * generate-music.js
  * 扫描 public/music 目录，提取 MP3 / FLAC / M4A / OGG 等格式的内置封面和歌词，
- * 生成 src/scripts/music.json
+ * 生成 scripts/music.json
  *
- * 用法: node src/scripts/generate-music.js
+ * 用法: node scripts/generate-music.js
  */
 
 const fs = require('fs');
 const path = require('path');
 const mm = require('music-metadata');
 
-const musicDir = path.join(__dirname, '..', '..', 'public', 'music');
+const musicDir = path.join(__dirname, '..', 'public', 'music');
 const outputFile = path.join(__dirname, 'music_list.js');
 
 const AUDIO_EXTS = new Set(['.mp3', '.wav', '.flac', '.ogg', '.m4a', '.aac', '.mp4', '.wma']);

@@ -8,7 +8,7 @@ on:
       - 'public/music/*.ogg'
       - 'public/music/*.wav'
       - 'public/music/*.aac'
-      - 'src/scripts/generate-music.js'
+      - 'scripts/generate-music.js'
       - '.github/workflows/update-music.yml'
   workflow_dispatch:
 
@@ -49,14 +49,14 @@ jobs:
 
       - name: Generate music_list.js + extract covers + lyrics
         if: steps.check.outputs.has_new == 'true'
-        run: node src/scripts/generate-music.js
+        run: node scripts/generate-music.js
 
       - name: Copy music_list.json to public/music/ for R2 serving
         if: steps.check.outputs.has_new == 'true'
         run: |
           node -e "
             var fs = require('fs');
-            var js = fs.readFileSync('src/scripts/music_list.js', 'utf8');
+            var js = fs.readFileSync('scripts/music_list.js', 'utf8');
             var start = js.indexOf('[');
             var end = js.lastIndexOf(']');
             if (start !== -1 && end > start) {
@@ -107,7 +107,7 @@ jobs:
           for f in public/music/*.jpeg; do [ -f "$f" ] && upload "$f" "image/jpeg"; done
           for f in public/music/*.png; do [ -f "$f" ] && upload "$f" "image/png"; done
           for f in public/music/*.json; do [ -f "$f" ] && upload "$f" "application/json"; done
-          [ -f src/scripts/music_list.js ] && upload "src/scripts/music_list.js" "application/javascript"
+          [ -f scripts/music_list.js ] && upload "scripts/music_list.js" "application/javascript"
 
       - name: Remove audio files and extracted files
         if: steps.check.outputs.has_new == 'true'
@@ -128,7 +128,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "bot@users.noreply.github.com"
-          git add src/scripts/music_list.js
+          git add scripts/music_list.js
           # Keep .gitkeep to preserve folder structure
           touch public/music/.gitkeep
           git add public/music/.gitkeep

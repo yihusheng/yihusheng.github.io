@@ -26,7 +26,7 @@ export async function loadMusicList() {
   };
 
   var loadFromPages = function() {
-    return fetch('/src/scripts/music_list.js?' + Date.now())
+    return fetch('/scripts/music_list.js?' + Date.now())
       .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
       .then(function(text) {
         var start = text.indexOf('[');
