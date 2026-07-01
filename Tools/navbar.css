@@ -41,14 +41,6 @@
   -webkit-user-select: none;
 }
 
-/* zashboard：透明 + 无阴影，只留深色图标 */
-body[data-nav-page="zashboard"] .wise-nav-btn {
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
 .wise-nav-btn:hover {
   background: #d8dbd6;
   color: var(--nv-ink);
@@ -183,6 +175,4 @@ body[data-nav-page="zashboard"] .wise-nav-btn {
 .wise-nav-drawer-link.active .nv-icon {
   background: rgba(159,232,112,0.15);
 }
-
-/* ── Overlay mode for full-screen SPAs ── */
 
