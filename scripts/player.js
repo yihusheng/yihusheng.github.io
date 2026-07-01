@@ -15,19 +15,6 @@ function savePlayerState() {
     r: state.isRepeat ? 1 : 0
   });
   CookieUtils.set('player', val, 365);
-  console.log('[Save]', val);
-}
-
-// ── Cookie 持久化播放状态 ──
-function savePlayerState() {
-  // 只在用户交互后保存状态
-  if (state.currentSongIndex == null || isNaN(state.currentSongIndex)) return;
-  var val = JSON.stringify({
-    i: state.currentSongIndex,
-    s: state.isShuffle ? 1 : 0,
-    r: state.isRepeat ? 1 : 0
-  });
-  CookieUtils.set('player', val, 365);
 }
 // 每 15 秒保存进度，提高恢复精度
 setInterval(function() {
@@ -72,15 +59,27 @@ export async function loadMusicList() {
 
   try {
     var r = await fetch('/public/music/music_list.json?' + Date.now(), {
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(8000)
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     state.songs = await r.json();
     if (!state.songs || !state.songs.length) throw new Error('empty list');
     console.log('🎵 已加载 ' + state.songs.length + ' 首歌曲');
   } catch (e) {
-    console.warn('加载音乐列表失败:', e.message || e);
-    state.songs = [];
+    // R2 代理超时或失败时，直接请求 Pages 静态文件
+    console.warn('R2 加载失败:', e.message || e);
+    try {
+      var r2 = await fetch('/public/music/music_list.json', { cache: 'reload' });
+      if (r2.ok) {
+        state.songs = await r2.json();
+        if (state.songs && state.songs.length > 0) {
+          console.log('🎵 已从 Pages 静态文件加载 ' + state.songs.length + ' 首歌曲');
+        } else { throw new Error('empty'); }
+      } else { throw new Error('HTTP ' + r2.status); }
+    } catch(e2) {
+      console.error('全部加载失败:', e2);
+      state.songs = [];
+    }
   }
   if (state.songs.length === 0) {
     state.songs = [{ title: '暂无歌曲', artist: '请添加 .mp3 文件到 public/music 目录', cover: '', src: '' }];
