@@ -35,19 +35,20 @@ export async function fetchWeather() {
         CookieUtils.set('weather_lat',lat,30); CookieUtils.set('weather_lon',lon,30);
       } catch(e) {
         var ip=await getLocationByIP();
-        if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-        else{ lat=null;lon=null; } // 全失败则跳过天气更新
+        if(ip){lat=ip.lat;lon=ip.lon;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
+        else{ lat=null;lon=null; }
       }
     } else {
       var ip=await getLocationByIP();
-      if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
+      if(ip){lat=ip.lat;lon=ip.lon;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
       else{ lat=null;lon=null; }
     }
   }
-  if(lat==null||lon==null){ document.getElementById('locationDisplay').textContent='位置获取失败，请检查网络或允许定位'; return; }
+  if(lat==null||lon==null){ document.getElementById('locationDisplay').textContent='位置获取失败，请检查网络或允许定位'; var ll=document.getElementById('locLabel'); if(ll) ll.textContent='位置获取失败'; return; }
   try {
     if(!locName){ try { var l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh',{signal:AbortSignal.timeout(5000)}); var ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
     if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
+    var ll=document.getElementById('locLabel'); if(ll) ll.textContent=locName;
     var wr=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,cloud_cover,precipitation&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&timezone=auto&forecast_days=1',{signal:AbortSignal.timeout(8000)});
     var d=await wr.json(); var c=d.current||d.current_weather, da=d.daily, tz=d.timezone||'';
     var t=Math.round(c.temperature_2m), fl=Math.round(c.apparent_temperature||t), cd=c.weather_code, w=weatherCodeMap[cd]||{d:'未知',i:'thermostat',b:'#1a1c18'};
