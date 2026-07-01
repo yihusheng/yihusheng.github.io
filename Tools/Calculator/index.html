@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=yes,viewport-fit=cover">
 <title>配料表含量转换器</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0">
 <link rel="stylesheet" href="/Tools/navbar.css">
 <script src="/Tools/navbar.js"></script>
 <style>
@@ -61,7 +61,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .ft .ft-t{font-size:12px;font-weight:700;color:var(--p);margin-bottom:4px}
 .ft .ft-f{font-size:10px;color:rgba(232,235,230,.5);line-height:1.6}
 .ft .ft-f strong{color:var(--p);font-weight:600}
-/* 添加卡片按钮 */
 .add-card-wrap{display:flex;justify-content:center;padding:4px 0}
 .add-card{width:44px;height:44px;border:none;border-radius:16px;background:var(--c);color:var(--b);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;transition:all .12s;box-shadow:0 2px 8px rgba(14,15,12,.06)}
 .add-card:hover{background:var(--pp);color:var(--kd);transform:scale(1.05)}
@@ -74,8 +73,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 </head>
 <body>
 <div class="wrap">
-<div class="g" id="grid">
-</div>
+<div class="g" id="grid"></div>
 <div class="add-card-wrap">
   <button class="add-card" id="addCardBtn" title="添加面板"><span class="material-symbols-rounded">add</span></button>
 </div>
@@ -83,11 +81,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 </div>
 <script>
 (function(){
-  // ── 面板管理 ──
-  var P = ['A','B'];
-  var nextLetter = 'C';
+  var P = [];
+  var nextLetter = 'A';
 
-  // ── 获取数值 ──
   function g(id) {
     var e = document.getElementById(id);
     if (!e) return null;
@@ -97,14 +93,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     return (isNaN(n) || n < 0) ? null : n;
   }
 
-  // ── 格式化 ──
   function f(n, d) {
-    if (n === null || isNaN(n)) return '—';
+    if (n === null || isNaN(n)) return '\u2014';
     if (n === 0) return '0';
     return parseFloat(n.toFixed(d)).toString();
   }
 
-  // ── 计算单个面板 ──
   function c(p) {
     var s = g('s'+p) || 100;
     var na = g('na'+p), kj = g('kj'+p), pro = g('pro'+p), fat = g('fat'+p), car = g('car'+p), fib = g('fib'+p);
@@ -114,14 +108,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     var fp = fat !== null ? fat / s : null;
     var cp = car !== null ? car / s : null;
     var fip = fib !== null ? fib / s : null;
-    document.getElementById('salt'+p).textContent = sp !== null ? f(sp,3) : '—';
-    document.getElementById('kcal'+p).textContent = kp !== null ? f(kp,2) : '—';
-    document.getElementById('pr'+p).textContent = pp !== null ? f(pp,2) : '—';
-    document.getElementById('ft'+p).textContent = fp !== null ? f(fp,2) : '—';
-    document.getElementById('cb'+p).textContent = cp !== null ? f(cp,2) : '—';
-    document.getElementById('fb'+p).textContent = fip !== null ? f(fip,2) : '—';
+    document.getElementById('salt'+p).textContent = sp !== null ? f(sp,3) : '\u2014';
+    document.getElementById('kcal'+p).textContent = kp !== null ? f(kp,2) : '\u2014';
+    document.getElementById('pr'+p).textContent = pp !== null ? f(pp,2) : '\u2014';
+    document.getElementById('ft'+p).textContent = fp !== null ? f(fp,2) : '\u2014';
+    document.getElementById('cb'+p).textContent = cp !== null ? f(cp,2) : '\u2014';
+    document.getElementById('fb'+p).textContent = fip !== null ? f(fip,2) : '\u2014';
     var tw = g('tw'+p);
-    function t(pg) { return (pg !== null && tw !== null && tw > 0) ? f(pg * tw, 2) : '—'; }
+    function t(pg) { return (pg !== null && tw !== null && tw > 0) ? f(pg * tw, 2) : '\u2014'; }
     document.getElementById('ts'+p).textContent = t(sp);
     document.getElementById('tk'+p).textContent = t(kp);
     document.getElementById('tpr'+p).textContent = t(pp);
@@ -134,14 +128,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     });
   }
 
-  function ca() { P.forEach(c); }
-
-  // ── 绑定面板事件 ──
   function bindPanel(p) {
     var ids = ['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p];
     ids.forEach(function(id) {
       var e = document.getElementById(id);
-      if (e) { e.addEventListener('input', function() { c(p); }); e.addEventListener('change', function() { c(p); }); }
+      if (e) {
+        e.addEventListener('input', function() { c(p); });
+        e.addEventListener('change', function() { c(p); });
+      }
     });
     var tp = document.getElementById('tp'+p);
     if (tp) tp.addEventListener('click', function(e) {
@@ -150,84 +144,114 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       document.getElementById('tw'+p).value = t.dataset.w;
       c(p);
     });
-    var cb = document.getElementById('p' + p.toLowerCase()).querySelector('.pc');
-    if (cb) cb.addEventListener('click', function() {
-      ids.forEach(function(id) {
-        var e = document.getElementById(id);
-        if (e) e.value = id.startsWith('s') ? '100' : '';
-      });
-      c(p);
+  }
+
+  // 克隆卡片（从第一张卡片复制 DOM，替换 ID）
+  function cloneCard(letter) {
+    var template = document.querySelector('#grid .card');
+    if (!template) return null;
+    var clone = template.cloneNode(true);
+    clone.id = 'p' + letter.toLowerCase();
+
+    // 替换所有带 ID 的元素
+    var idMap = {
+      'sA':'s','twA':'tw','naA':'na','kjA':'kj','proA':'pro',
+      'fatA':'fat','carA':'car','fibA':'fib',
+      'saltA':'salt','kcalA':'kcal','prA':'pr','ftA':'ft','cbA':'cb','fbA':'fb',
+      'tsA':'ts','tkA':'tk','tprA':'tpr','tftA':'tft','tcbA':'tcb','tfbA':'tfb',
+      'tpA':'tp'
+    };
+    clone.querySelectorAll('[id]').forEach(function(el) {
+      var old = el.id;
+      if (idMap[old]) el.id = idMap[old] + letter;
     });
+    // 替换 letter 标签
+    var label = clone.querySelector('.pb');
+    if (label) label.textContent = letter;
+    // 替换 data-p
+    var closeBtn = clone.querySelector('.pc');
+    if (closeBtn) closeBtn.setAttribute('data-p', letter);
+    // 清空输入值
+    clone.querySelectorAll('input').forEach(function(inp) {
+      if (inp.id.startsWith('s')) inp.value = '100';
+      else inp.value = '';
+    });
+    // 清空结果显示
+    clone.querySelectorAll('.rv').forEach(function(el) {
+      el.textContent = '\u2014';
+    });
+    // 取消高亮
+    clone.querySelectorAll('.qc').forEach(function(el) {
+      el.classList.remove('act');
+    });
+    return clone;
   }
 
-  // ── 卡片模板 ──
-  function cardHTML(letter) {
-    var l = letter.toLowerCase();
-    return '<div class="card card-pad" id="p' + l + '">' +
-      '<div class="ph"><div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>' +
-      '<div class="ph-r"><div class="pb">' + letter + '</div>' +
-      '<button class="pc remove-card" data-p="' + letter + '"><span class="material-symbols-rounded">close</span></button></div></div>' +
-      '<div class="sv"><div class="sr">' +
-        '<div class="ip"><label>每份</label><input type="number" id="s' + letter + '" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>' +
-        '<div class="ip"><label>总重</label><input type="number" id="tw' + letter + '" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div></div>' +
-      '<div class="qr"><span class="ql">总重快捷</span><div id="tp' + letter + '">' +
-        '<button class="qc" data-w="15">15</button><button class="qc" data-w="30">30</button>' +
-        '<button class="qc" data-w="50">50</button><button class="qc" data-w="100">100</button>' +
-        '<button class="qc" data-w="200">200</button><button class="qc" data-w="500">500</button></div></div></div>' +
-      '<div class="nt">' +
-        '<div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="salt' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="ts' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="na' + letter + '" placeholder="0" class="ni"><span class="nu">mg</span></div>' +
-        '<div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcal' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tk' + letter + '">—<span class="ru">kcal</span></span></div></div><input type="number" id="kj' + letter + '" placeholder="0" class="ni"><span class="nu">kJ</span></div>' +
-        '<div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="pr' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tpr' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="pro' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
-        '<div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ft' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tft' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="fat' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
-        '<div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cb' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcb' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="car' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
-        '<div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fb' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfb' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="fib' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
-      '</div></div>';
-  }
-
-  // ── 新建面板 ──
+  // 新建卡片（克隆后追加）
   function addCard(letter) {
-    if (!letter) {
-      letter = nextLetter;
+    letter = letter || nextLetter;
+    if (!letter) return;
+    if (letter === nextLetter) {
       nextLetter = String.fromCharCode(nextLetter.charCodeAt(0) + 1);
     }
     var grid = document.getElementById('grid');
-    var dummy = document.createElement('div');
-    dummy.innerHTML = cardHTML(letter);
-    var card = dummy.firstChild;
-    grid.appendChild(card);
+    // 第一张卡片由 JS 创建
+    if (!grid.querySelector('.card')) {
+      // 用 innerHTML 创建第一张
+      var dummy = document.createElement('div');
+      dummy.innerHTML = '<div class="card card-pad" id="pa">' +
+        '<div class="ph"><div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>' +
+        '<div class="ph-r"><div class="pb">A</div>' +
+        '<button class="pc remove-card" data-p="A"><span class="material-symbols-rounded">close</span></button></div></div>' +
+        '<div class="sv"><div class="sr">' +
+        '<div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>' +
+        '<div class="ip"><label>总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div></div>' +
+        '<div class="qr"><span class="ql">总重快捷</span><div id="tpA">' +
+        '<button class="qc" data-w="15">15</button><button class="qc" data-w="30">30</button>' +
+        '<button class="qc" data-w="50">50</button><button class="qc" data-w="100">100</button>' +
+        '<button class="qc" data-w="200">200</button><button class="qc" data-w="500">500</button></div></div></div>' +
+        '<div class="nt">' +
+        '<div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsA">—</span></div></div><input type="number" id="naA" placeholder="0" class="ni"><span class="nu">mg</span></div>' +
+        '<div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkA">—</span></div></div><input type="number" id="kjA" placeholder="0" class="ni"><span class="nu">kJ</span></div>' +
+        '<div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprA">—</span></div></div><input type="number" id="proA" placeholder="0" class="ni"><span class="nu">g</span></div>' +
+        '<div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftA">—</span></div><div class=" class</span><span class="rv" id="tftA">—</span></div></div><input type="number" id="fatA" placeholder="0" class="ni"><span class="nu">g</span></div>' +
+        '<div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbA">—</span></div></div><input type="number" id="carA" placeholder="0" class="ni"><span class="nu">g</span></div>' +
+        '<div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbA">—</span></div></div><input type="number" id="fibA" placeholder="0" class="ni"><span class="nu">g</span></div>' +
+        '</div></div>';
+      var card = dummy.firstChild;
+      grid.appendChild(card);
+    } else {
+      // 克隆
+      var card = cloneCard(letter);
+      if (!card) return;
+      grid.appendChild(card);
+    }
     P.push(letter);
     bindPanel(letter);
-    ca();
+    c(letter);
   }
 
-  // ── 初始化 A/B ──
-  // 清空默认面板，全部由模板生成
-  var grid = document.getElementById("grid");
-  while (grid.firstChild) grid.removeChild(grid.firstChild);
+  // 初始化
   addCard('A');
   addCard('B');
   nextLetter = 'C';
 
-  // ── 移除面板 ──
+  // 删除卡片（事件委托）
   document.getElementById('grid').addEventListener('click', function(e) {
     var btn = e.target.closest('.remove-card');
     if (!btn) return;
     var p = btn.getAttribute('data-p');
     var card = btn.closest('.card');
-    if (!card) return;
-    // 至少保留两个面板
-    if (P.length <= 2) return;
+    if (!card || P.length <= 2) return;
     card.remove();
     var idx = P.indexOf(p);
     if (idx > -1) P.splice(idx, 1);
   });
 
-  // ── 添加卡片按钮 ──
-  document.getElementById('addCardBtn').addEventListener('click', function() { addCard(); });
-
-  // ── 初始化 ──
-  P.forEach(bindPanel);
-  ca();
+  // 添加卡片按钮
+  document.getElementById('addCardBtn').addEventListener('click', function() {
+    addCard();
+  });
 })();
 </script>
 </body>
