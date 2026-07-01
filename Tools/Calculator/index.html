@@ -11,30 +11,22 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--p:#9fe870;--op:#0e0f0c;--pa:#cdffad;--pp:#e2f6d5;--k:#0e0f0c;--kd:#163300;--b:#454745;--m:#868685;--c:#fff;--s:#e8ebe6;--r:24px;--rs:12px;--rp:9999px;--r-sm:8px;--card-bg:#fff;--section-bg:#e8ebe6}
-/* 暗色模式 */
-[data-theme="dark"]{--p:#6bbb40;--op:#0e0f0c;--pa:#4e9a2e;--pp:#1a2e12;--k:#e0e0e0;--kd:#c8e6b0;--b:#b0b0b0;--m:#707070;--c:#1a1a1a;--s:#252525;--card-bg:#2a2a2a;--section-bg:#333}
-[data-theme="dark"] body{background:#1a1a1a}
-[data-theme="dark"] .inp-sm,[data-theme="dark"] .ni{border-color:#555;color:#e0e0e0;background:#1a1a1a}
-[data-theme="dark"] .qc{background:#333;color:#ccc}
-[data-theme="dark"] .qc.act{background:#6bbb40;color:#0e0f0c}
-[data-theme="dark"] .pc:hover{background:#333}
-[data-theme="dark"] .card{box-shadow:0 4px 24px rgba(0,0,0,.2)}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px;transition:background .3s}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);color:var(--k);min-height:100vh;display:flex;justify-content:center;padding:16px;}
 .wrap{width:100%;max-width:1000px;display:flex;flex-direction:column;gap:12px;margin-top:4px}
-.card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden;transition:background .3s}
+.card{background:var(--c);border-radius:var(--r);box-shadow:0 4px 24px rgba(14,15,12,.06);overflow:hidden;}
 .card-pad{padding:24px}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .ph{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
-.ph-bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;transition:background .3s,color .3s}
+.ph-bdg{display:inline-flex;align-items:center;gap:5px;background:var(--pp);color:var(--kd);padding:4px 12px;border-radius:var(--rp);font-size:11px;font-weight:700;,color .3s}
 .ph-bdg .material-symbols-rounded{font-size:13px}
 .ph-r{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0}
-.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--b);transition:background .3s}
+.pb{width:36px;height:36px;background:var(--s);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:var(--b);}
 .pc{background:none;border:none;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
 .pc:hover{background:var(--s);color:#d03238}
-.pc .material-symbols-rounded{font-size:18px.s-radius;-direction:column;gap:10px;margin-bottom:12px;transition:background .3s}
+.pc .material-symbols-rounded{font-size:18px.s-radius;-direction:column;gap:10px;margin-bottom:12px;}
 .sr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .ip{display:flex;align-items:center;gap:6px}
-.ip label{font-size:11px;font-weight:700;color:var(--b);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em;transition:color .3s}
+.ip label{font-size:11px;font-weight:700;color:var(--b);white-space:nowrap;text-transform:uppercase;letter-spacing:.05em;}
 .inp-sm{width:64px;height:34px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 8px;font-family:'Inter',monospace;font-size:13px;font-weight:600;text-align:center;background:var(--c);color:var(--k);outline:none;transition:all .15s}
 .inp-sm:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .ip .un{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase}
@@ -49,7 +41,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .nr:focus-within{background:var(--s)}
 .nr.hl{background:var(--pp)}
 .nr.he{background:rgba(255,209-the{,187,64,.12)}
-[data-theme="dark"] .nr.he{background:rgba(255,209,26,.08)}
 .nd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .nd-na{background:#e8b860}
 .nd-kj{background:#e08070}
@@ -57,18 +48,18 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .nd-ft{background:#e896b0}
 .nd-cb{background:#5db8c4}
 .nd-fb{background:#9cbc60}
-.nn{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--k);transition:color .3s}
+.nn{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--k);}
 .ir{display:flex;gap:10px;flex-shrink:0}
 .rc{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
 .rl{font-size:8px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.06em;line-height:1}
-.rv{font-size:12px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--k);transition:color .3s}
+.rv{font-size:12px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;color:var(--k);}
 .ru{font-size:.65em;font-weight:500;color:var(--m)}
 .ni{width:52px;height:28px;border:2px solid var(--k);border-radius:var(--r-sm);padding:0 6px;font-family:'Inter',monospace;font-size:12px;font-weight:600;text-align:right;background:var(--c);color:var(--k);outline:none;transition:all .12s;flex-shrink:0;-webkit-appearance:none;-moz-appearance:textfield}
 .ni::-webkit-inner-spin-button,.ni::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .ni:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(159,232,112,.2)}
 .ni:user-invalid,.ni.ng{border-color:#d03238;box-shadow:0 0 0 3px rgba(208,50,56,.15)}
 .nu{font-size:10px;font-weight:600;color:var(--m);min-width:20px;flex-shrink:0}
-.ft{background:var(--k);padding:16px 24px;text-align:center;transition:background .3s}
+.ft{background:var(--k);padding:16px 24px;text-align:center;}
 .ft .ft-t{font-size:12px;font-weight:700;color:var(--p);margin-bottom:4px}
 .ft .ft-f{font-size:10px;color:rgba(232,235,230,.5);line-height:1.6}
 .ft .ft-f strong{color:var(--p);font-weight:600}
@@ -77,20 +68,15 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .wrap{max-width:480px}
 }
 /* 主题切换小按钮 */
-.theme-tog{position:fixed;top:66px;right:16px;z-index:999;width:32px;height:32px;border:none;border-radius:10px;background:rgba(232,235,230,.5);color:#454745;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;-webkit-tap-highlight-color:transparent}
-.theme-tog:hover{background:rgba(232,235,230,.8)}
-@media(min-width:768px){.theme-tog{top:74px;right:24px}}
 </style>
 </head>
 <body>
-<button class="theme-tog" id="themeToggle" aria-label="切换暗色模式"><span class="material-symbols-rounded">dark_mode</span></button>
-
 <div class="wrap">
 <div class="g" id="grid">
   <!-- 面板 A -->
   <div class="card card-pad" id="pa">
     <div class="ph">
-      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> <span data-i18n="Nutrition Calculator">Nutrition Calculator</span></div>
+      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> <span>Nutrition Calculator</span></div>
       <div class="ph-r">
         <div class="pb">A</div>
         <button class="pc" data-p="A" aria-label="清除面板A"><span class="material-symbols-rounded">close</span></button>
@@ -98,11 +84,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     </div>
     <div class="sv">
       <div class="sr">
-        <div class="ip"><label for="sA" data-i18n="每份">每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm" tabindex="1" aria-label="每份重量"><span class="un">g</span></div>
-        <div class="ip"><label for="twA" data-i18n="总重">总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm" tabindex="2" aria-label="总重量"><span class="un">g</span></div>
+        <div class="ip"><label for="sA">每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm" tabindex="1" aria-label="每份重量"><span class="un">g</span></div>
+        <div class="ip"><label for="twA">总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm" tabindex="2" aria-label="总重量"><span class="un">g</span></div>
       </div>
       <div class="qr">
-        <span class="ql" data-i18n="总重快捷">总重快捷</span>
+        <span class="ql">总重快捷</span>
         <div id="tpA">
           <button class="qc" data-w="15" aria-label="15克">15</button>
           <button class="qc" data-w="30" aria-label="30克">30</button>
@@ -114,18 +100,18 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       </div>
     </div>
     <div class="nt" id="nutA">
-      <div class="nr hl"><span class="nd nd-na"></span><span class="nn" data-i18n="钠">钠</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="saltA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tsA" aria-live="polite">—</span></div></div><input type="number" id="naA" placeholder="0" class="ni" tabindex="3" aria-label="钠毫克数" inputmode="decimal"><span class="nu">mg</span></div>
-      <div class="nr he"><span class="nd nd-kj"></span><span class="nn" data-i18n="能量">能量</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="kcalA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tkA" aria-live="polite">—</span></div></div><input type="number" id="kjA" placeholder="0" class="ni" tabindex="4" aria-label="能量千焦数" inputmode="decimal"><span class="nu">kJ</span></div>
-      <div class="nr"><span class="nd nd-pr"></span><span class="nn" data-i18n="蛋白质">蛋白质</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="prA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tprA" aria-live="polite">—</span></div></div><input type="number" id="proA" placeholder="0" class="ni" tabindex="5" aria-label="蛋白质克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-ft"></span><span class="nn" data-i18n="脂肪">脂肪</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="ftA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tftA" aria-live="polite">—</span></div></div><input type="number" id="fatA" placeholder="0" class="ni" tabindex="6" aria-label="脂肪克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-cb"></span><span class="nn" data-i18n="碳水">碳水</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="cbA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tcbA" aria-live="polite">—</span></div></div><input type="number" id="carA" placeholder="0" class="ni" tabindex="7" aria-label="碳水克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-fb"></span><span class="nn" data-i18n="纤维">纤维</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="fbA" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tfbA" aria-live="polite">—</span></div></div><input type="number" id="fibA" placeholder="0" class="ni" tabindex="8" aria-label="纤维克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsA" aria-live="polite">—</span></div></div><input type="number" id="naA" placeholder="0" class="ni" tabindex="3" aria-label="钠毫克数" inputmode="decimal"><span class="nu">mg</span></div>
+      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkA" aria-live="polite">—</span></div></div><input type="number" id="kjA" placeholder="0" class="ni" tabindex="4" aria-label="能量千焦数" inputmode="decimal"><span class="nu">kJ</span></div>
+      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprA" aria-live="polite">—</span></div></div><input type="number" id="proA" placeholder="0" class="ni" tabindex="5" aria-label="蛋白质克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftA" aria-live="polite">—</span></div></div><input type="number" id="fatA" placeholder="0" class="ni" tabindex="6" aria-label="脂肪克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbA" aria-live="polite">—</span></div></div><input type="number" id="carA" placeholder="0" class="ni" tabindex="7" aria-label="碳水克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbA" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbA" aria-live="polite">—</span></div></div><input type="number" id="fibA" placeholder="0" class="ni" tabindex="8" aria-label="纤维克数" inputmode="decimal"><span class="nu">g</span></div>
     </div>
   </div>
   <!-- 面板 B -->
   <div class="card card-pad" id="pb">
     <div class="ph">
-      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> <span data-i18n="Nutrition Calculator">Nutrition Calculator</span></div>
+      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> <span>Nutrition Calculator</span></div>
       <div class="ph-r">
         <div class="pb">B</div>
         <button class="pc" data-p="B" aria-label="清除面板B"><span class="material-symbols-rounded">close</span></button>
@@ -133,11 +119,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     </div>
     <div class="sv">
       <div class="sr">
-        <div class="ip"><label for="sB" data-i18n="每份">每份</label><input type="number" id="sB" value="100" step="any" min="0" class="inp-sm" tabindex="9" aria-label="每份重量"><span class="un">g</span></div>
-        <div class="ip"><label for="twB" data-i18n="总重">总重</label><input type="number" id="twB" placeholder="—" step="any" min="0" class="inp-sm" tabindex="10" aria-label="总重量"><span class="un">g</span></div>
+        <div class="ip"><label for="sB">每份</label><input type="number" id="sB" value="100" step="any" min="0" class="inp-sm" tabindex="9" aria-label="每份重量"><span class="un">g</span></div>
+        <div class="ip"><label for="twB">总重</label><input type="number" id="twB" placeholder="—" step="any" min="0" class="inp-sm" tabindex="10" aria-label="总重量"><span class="un">g</span></div>
       </div>
       <div class="qr">
-        <span class="ql" data-i18n="总重快捷">总重快捷</span>
+        <span class="ql">总重快捷</span>
         <div id="tpB">
           <button class="qc" data-w="15" aria-label="15克">15</button>
           <button class="qc" data-w="30" aria-label="30克">30</button>
@@ -149,16 +135,16 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       </div>
     </div>
     <div class="nt" id="nutB">
-      <div class="nr hl"><span class="nd nd-na"></span><span class="nn" data-i18n="钠">钠</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="saltB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tsB" aria-live="polite">—</span></div></div><input type="number" id="naB" placeholder="0" class="ni" tabindex="11" aria-label="钠毫克数" inputmode="decimal"><span class="nu">mg</span></div>
-      <div class="nr he"><span class="nd nd-kj"></span><span class="nn" data-i18n="能量">能量</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="kcalB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tkB" aria-live="polite">—</span></div></div><input type="number" id="kjB" placeholder="0" class="ni" tabindex="12" aria-label="能量千焦数" inputmode="decimal"><span class="nu">kJ</span></div>
-      <div class="nr"><span class="nd nd-pr"></span><span class="nn" data-i18n="蛋白质">蛋白质</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="prB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tprB" aria-live="polite">—</span></div></div><input type="number" id="proB" placeholder="0" class="ni" tabindex="13" aria-label="蛋白质克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-ft"></span><span class="nn" data-i18n="脂肪">脂肪</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="ftB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tftB" aria-live="polite">—</span></div></div><input type="number" id="fatB" placeholder="0" class="ni" tabindex="14" aria-label="脂肪克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-cb"></span><span class="nn" data-i18n="碳水">碳水</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="cbB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tcbB" aria-live="polite">—</span></div></div><input type="number" id="carB" placeholder="0" class="ni" tabindex="15" aria-label="碳水克数" inputmode="decimal"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-fb"></span><span class="nn" data-i18n="纤维">纤维</span><div class="ir"><div class="rc"><span class="rl" data-i18n="每g">每g</span><span class="rv" id="fbB" aria-live="polite">—</span></div><div class="rc"><span class="rl" data-i18n="总含">总含</span><span class="rv" id="tfbB" aria-live="polite">—</span></div></div><input type="number" id="fibB" placeholder="0" class="ni" tabindex="16" aria-label="纤维克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsB" aria-live="polite">—</span></div></div><input type="number" id="naB" placeholder="0" class="ni" tabindex="11" aria-label="钠毫克数" inputmode="decimal"><span class="nu">mg</span></div>
+      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkB" aria-live="polite">—</span></div></div><input type="number" id="kjB" placeholder="0" class="ni" tabindex="12" aria-label="能量千焦数" inputmode="decimal"><span class="nu">kJ</span></div>
+      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprB" aria-live="polite">—</span></div></div><input type="number" id="proB" placeholder="0" class="ni" tabindex="13" aria-label="蛋白质克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftB" aria-live="polite">—</span></div></div><input type="number" id="fatB" placeholder="0" class="ni" tabindex="14" aria-label="脂肪克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbB" aria-live="polite">—</span></div></div><input type="number" id="carB" placeholder="0" class="ni" tabindex="15" aria-label="碳水克数" inputmode="decimal"><span class="nu">g</span></div>
+      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbB" aria-live="polite">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbB" aria-live="polite">—</span></div></div><input type="number" id="fibB" placeholder="0" class="ni" tabindex="16" aria-label="纤维克数" inputmode="decimal"><span class="nu">g</span></div>
     </div>
   </div>
 </div>
-<div class="card"><div class="ft"><div class="ft-t" data-i18n="换算公式">换算公式</div><div class="ft-f"><strong data-i18n="盐(g) = 钠(mg) × 2.54 ÷ 1000">盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;·&nbsp; <strong data-i18n="kcal = kJ ÷ 4.184">kcal = kJ ÷ 4.184</strong></div></div></div>
+<div class="card"><div class="ft"><div class="ft-t">换算公式</div><div class="ft-f"><strong>盐(g) = 钠(mg) × 2.54 ÷ 1000</strong> &nbsp;·&nbsp; <strong>kcal = kJ ÷ 4.184</strong></div></div></div>
 </div>
 
 <script>
@@ -262,22 +248,17 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     }
   });
 
-  // ── 暗色主题 ──
   (function() {
     var saved = null;
     try { saved = document.cookie.match('(^|;)\\\\s*theme=([^;]*)'); saved = saved ? saved[2] : null; } catch(e) {}
-    if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-    var btn = document.getElementById('themeToggle');
     if (btn) {
       btn.addEventListener('click', function() {
-        var cur = document.documentElement.getAttribute('data-theme');
         var next = cur === 'dark' ? '' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
         try {
           var d = new Date(); d.setTime(d.getTime() + 365*864e5);
           document.cookie = 'theme=' + (next || 'light') + ';expires=' + d.toUTCString() + ';path=/';
         } catch(e) {}
-        btn.querySelector('.material-symbols-rounded').textContent = next === 'dark' ? 'light_mode' : 'dark_mode';
+        btn.querySelector('.material-symbols-rounded').textContent = next === 'dark' ? 'light_mode' : '';
       });
     }
   })();
