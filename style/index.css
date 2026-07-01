@@ -186,14 +186,16 @@ body {
 
 /* ── 天气详情抽屉 ── */
 .dynamic-island.weather-detailed {
-  height: 480px !important;
+  height: 380px !important;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 .dynamic-island.weather-detailed #weatherCompactRow { display: none !important; }
 
 .weather-drawer {
   display: none;
-  flex-direction: column; gap: 4px; justify-content: center;
+  flex-direction: column; gap: 4px;
   padding: 4px 0 0;
   opacity: 0; pointer-events: none;
   transform: translateY(-8px);
@@ -202,6 +204,7 @@ body {
 }
 .dynamic-island.weather-detailed .weather-drawer {
   display: flex;
+  flex: 1;
   opacity: 1; pointer-events: auto;
   transform: translateY(0);
 }
