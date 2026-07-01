@@ -74,7 +74,8 @@
   }
 
   function injectSpacerCSS() {
-    if (document.body && document.body.classList.contains('navbar-overlay')) return;
+    var p = window.location.pathname;
+    if (p.includes('/zashboard/') || p.includes('/Metacubexd/')) return;
     var style = document.createElement('style');
     style.id = 'wiseNavbarSpacerCSS';
     style.textContent =
@@ -284,6 +285,7 @@
   function doInit() {
     if (isHomePage()) return;
 
+    document.body.classList.remove('navbar-overlay');
     var alreadyExists = !!document.getElementById('wiseNavToggle');
     if (!alreadyExists) {
       injectFonts();
