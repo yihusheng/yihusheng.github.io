@@ -29,6 +29,43 @@
   --phone-screen-bg: #e8ebe6;
   --player-bg: #e8ebe6;
 }
+
+/* ── 暗色主题 ── */
+[data-theme="dark"] {
+  --wise-primary: #6bbb40;
+  --wise-on-primary: #0e0f0c;
+  --wise-primary-active: #4e9a2e;
+  --wise-primary-pale: #1a2e12;
+  --wise-ink: #e0e0e0;
+  --wise-ink-deep: #c8e6b0;
+  --wise-body: #b0b0b0;
+  --wise-mute: #707070;
+  --wise-canvas: #1a1a1a;
+  --wise-canvas-soft: #252525;
+  --wise-canvas-soft-darker: #303030;
+  --md-sys-color-primary: #6bbb40;
+  --md-sys-color-on-primary: #0e0f0c;
+  --md-sys-color-primary-container: #1a2e12;
+  --md-sys-color-on-primary-container: #9fe870;
+  --md-sys-color-secondary-container: #2a2a2a;
+  --md-sys-color-on-secondary-container: #e0e0e0;
+  --md-sys-color-surface: #1a1a1a;
+  --md-sys-color-surface-container: #2a2a2a;
+  --md-sys-color-on-surface: #e0e0e0;
+  --md-sys-color-on-surface-variant: #909090;
+  --md-sys-color-outline: #505050;
+  --phone-screen-bg: #1a1a1a;
+  --player-bg: #1a1a1a;
+}
+[data-theme="dark"] body { background-color: #1a1a1a; }
+[data-theme="dark"] .btn { box-shadow: none; }
+[data-theme="dark"] .btn-play { box-shadow: 0 4px 16px rgba(107,187,64,0.25); }
+[data-theme="dark"] .m3-slider-track-inactive { background-color: rgba(255,255,255,0.15); }
+[data-theme="dark"] .playlist-sheet { box-shadow: 0 -8px 40px rgba(0,0,0,0.4); }
+[data-theme="dark"] .bottom-drawer { box-shadow: 0 -8px 40px rgba(0,0,0,0.3); }
+[data-theme="dark"] .album-art { box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+[data-theme="dark"] .playlist-backdrop { background: rgba(0,0,0,0.6); }
+[data-theme="dark"] .dynamic-island { box-shadow: 0 4px 16px rgba(0,0,0,0.5); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -220,6 +257,10 @@ body {
   background: var(--phone-screen-bg);
 }
 .lyrics-view.open { display: block; }
+
+/* 歌词打开时背景变纯色，不用内联 style 避免重排 */
+.lyrics-open .player-background { opacity: 0 !important; }
+.lyrics-open .player-content { background: var(--phone-screen-bg); }
 
 .lyrics-scroll {
   position: relative;

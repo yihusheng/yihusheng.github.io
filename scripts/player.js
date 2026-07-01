@@ -19,16 +19,40 @@ function savePlayerState() {
 }
 
 // ── Cookie 持久化播放状态 ──
-
-// ── 播放器内部函数 ──
-
-function getRandomIndex() {
-  if (state.songs.length <= 1) return 0;
-  var idx;
-  do { idx = Math.floor(Math.random() * state.songs.length); }
-  while (idx === state.currentSongIndex);
-  return idx;
+function savePlayerState() {
+  // 只在用户交互后保存状态
+  if (state.currentSongIndex == null || isNaN(state.currentSongIndex)) return;
+  var val = JSON.stringify({
+    i: state.currentSongIndex,
+    s: state.isShuffle ? 1 : 0,
+    r: state.isRepeat ? 1 : 0
+  });
+  CookieUtils.set('player', val, 365);
 }
+// 每 15 秒保存进度，提高恢复精度
+setInterval(function() {
+  if (state.currentHowl && state.currentHowl.playing()) {
+    var seek = Math.floor(state.currentHowl.seek() || 0);
+    var pos = CookieUtils.get('player');
+    try {
+      var data = JSON.parse(pos || '{}');
+      data.p = seek;
+      CookieUtils.set('player', JSON.stringify(data), 365);
+    } catch(e) {}
+  }
+}, 15000);
+
+// 播放时标记正在播放（用于恢复）
+var origPlaySong = playSong;
+playSong = function() {
+  if (!state.currentHowl) return;
+  origPlaySong();
+  var pos = CookieUtils.get('player');
+  try {
+    var data = JSON.parse(pos || '{}');
+    CookieUtils.set('player', JSON.stringify(data), 365);
+  } catch(e) {}
+};
 
 export async function loadMusicList() {
   // 读取单 Cookie 恢复状态
@@ -38,6 +62,8 @@ export async function loadMusicList() {
       state.currentSongIndex = saved.i;
       state.isShuffle = saved.s === 1;
       state.isRepeat = saved.r === 1;
+      state._restorePosition = typeof saved.p === 'number' ? saved.p : 0;
+      state._restorePlaying = saved.p !== null;
     }
   } catch(e) {}
 
@@ -62,6 +88,19 @@ export async function loadMusicList() {
   // 恢复歌曲
   if (state.songs[state.currentSongIndex]) {
     loadSong(state.songs[state.currentSongIndex]);
+    // 恢复播放进度
+    if (state._restorePosition > 0) {
+      var waitForLoad = setInterval(function() {
+        if (state.currentHowl && state.currentHowl.state() === 'loaded') {
+          clearInterval(waitForLoad);
+          try { state.currentHowl.seek(Math.min(state._restorePosition, state.currentHowl.duration() || 0)); } catch(e) {}
+          if (state._restorePlaying) setTimeout(function() { try { state.currentHowl.play(); } catch(e){} }, 200);
+          state._restorePosition = 0;
+          state._restorePlaying = false;
+        }
+      }, 100);
+      setTimeout(function() { clearInterval(waitForLoad); }, 5000);
+    }
   } else {
     state.currentSongIndex = Math.floor(Math.random() * state.songs.length);
     loadSong(state.songs[state.currentSongIndex]);
@@ -72,11 +111,8 @@ function loadEmbeddedCover(mp3Url, callback) {
   if (typeof jsmediatags === 'undefined') { callback(null); return; }
   CoverDB.get(mp3Url).then(function(cached) {
     if (cached) { callback(cached); return; }
-    fetch(mp3Url, { method: 'HEAD' }).then(function(r) {
-      var size = parseInt(r.headers.get('Content-Length') || '0', 10);
-      if (size > 3 * 1024 * 1024) { callback(null); return; }
-      readEmbeddedCover(mp3Url, callback);
-    }).catch(function() { readEmbeddedCover(mp3Url, callback); });
+    // jsmediatags 用 Range 请求只下载 ID3 标签部分，不限大小
+    readEmbeddedCover(mp3Url, callback);
   });
 }
 function readEmbeddedCover(mp3Url, callback) {
@@ -229,18 +265,18 @@ function syncIslandCover() {
 export function toggleLyrics() {
   state.lyricsVisible = !state.lyricsVisible;
   var lv = document.getElementById('lyricsView');
-  var pb = document.querySelector('.player-background');
-  var pc = document.querySelector('.player-content');
   var island = document.getElementById('island');
   if (state.lyricsVisible) {
+    app.classList.add('lyrics-open');
     lv.classList.add('open');
-    pb.style.opacity = '0';
-    pc.style.background = 'var(--phone-screen-bg)';
     island.classList.add('music-mode');
     island.classList.remove('active');
     island.classList.remove('weather-detailed');
     updateIslandMusic();
     if (state.lyricsData.length > 0) {
+      renderLyrics();
+      updateLyricHighlight();
+    } else if (state.currentSongLrcUrl) {
       renderLyrics();
       updateLyricHighlight();
     } else if (state.currentSongLrcUrl) {
@@ -270,8 +306,7 @@ export function toggleLyrics() {
     }
   } else {
     lv.classList.remove('open');
-    pb.style.opacity = '';
-    pc.style.background = '';
+    app.classList.remove('lyrics-open');
     island.classList.remove('music-mode');
   }
 }
@@ -311,7 +346,24 @@ export function loadSong(song){
   state.currentSongLrcUrl = song.lrc || null; state.lrcLoadId = 0;
 
   var fallback = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280"><rect fill="#e8ebe6" width="280" height="280"/><text x="140" y="155" font-size="64" text-anchor="middle" fill="#868685">\u266a</text></svg>');
-  var _cv=song.cover;if(_cv&&_cv.indexOf('./')===0)_cv='/'+_cv.slice(2);mc.src=_cv||fallback;
+  var _cv=song.cover;if(_cv&&_cv.indexOf('./')===0)_cv='/'+_cv.slice(2);
+  // 封面预加载：新封面图片加载完成后再替换，避免闪烁
+  var newSrc = _cv || fallback;
+  if (newSrc !== mc.src) {
+    var preloadImg = new Image();
+    preloadImg.onload = function() { if (songId === state.currentSongId) { mc.src = preloadImg.src; } };
+    preloadImg.onerror = function() {
+      // 加载失败时尝试从 MP3 内嵌提取
+      if (songId === state.currentSongId) { mc.src = fallback; }
+      loadEmbeddedCover(song.src, function(dataUrl) {
+        if (dataUrl && songId === state.currentSongId) mc.src = dataUrl;
+      });
+    };
+    preloadImg.src = newSrc;
+  } else if (!mc.src) {
+    mc.src = fallback;
+  }
+  mc.onerror = function() { /* handled by preloadImg */ };
   updateMediaSession(song.title, song.artist, mc.src, song.cover);
 
   CoverDB.get(song.src).then(function(cached) {
