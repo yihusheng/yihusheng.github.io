@@ -142,15 +142,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       var t = e.target.closest('.qc');
       if (!t) return;
       var w = t.dataset.w;
-      var focused = document.activeElement;
       var sInput = document.getElementById('s'+p);
       var twInput = document.getElementById('tw'+p);
-      if (focused === twInput) {
-        twInput.value = w;
-        twInput.blur();
-      } else {
+      if (document.activeElement === sInput) {
         sInput.value = w;
         sInput.blur();
+      } else {
+        twInput.value = w;
+        if (document.activeElement === twInput) twInput.blur();
       }
       c(p);
     });
