@@ -129,12 +129,15 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
   }
 
   function bindPanel(p) {
+    // 记住当前面板哪个输入框最后获得焦点
+    var lastFocused = null;
     var ids = ['s'+p,'na'+p,'kj'+p,'pro'+p,'fat'+p,'car'+p,'fib'+p,'tw'+p];
     ids.forEach(function(id) {
       var e = document.getElementById(id);
       if (e) {
         e.addEventListener('input', function() { c(p); });
         e.addEventListener('change', function() { c(p); });
+        e.addEventListener('focus', function() { lastFocused = e; });
       }
     });
     var tp = document.getElementById('tp'+p);
@@ -144,13 +147,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
       var w = t.dataset.w;
       var sInput = document.getElementById('s'+p);
       var twInput = document.getElementById('tw'+p);
-      if (document.activeElement === sInput) {
+      if (lastFocused === sInput) {
         sInput.value = w;
         sInput.blur();
       } else {
         twInput.value = w;
-        if (document.activeElement === twInput) twInput.blur();
+        if (lastFocused === twInput) twInput.blur();
       }
+      lastFocused = null;
       c(p);
     });
   }
