@@ -1,4 +1,7 @@
 // ── 应用入口 ──
+// 移除加载态，防止 HTML 占位符闪烁
+document.body.classList.remove('js-loading');
+
 import { setCookieUtils, initI18n } from './i18n.js';
 import './drawer.js'; // 侧效加载：渲染抽屉 + 事件绑定
 import { updateTime, fetchWeather, updateThemeColor } from './weather.js';
