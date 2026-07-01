@@ -25,17 +25,15 @@
   width: 42px;
   height: 42px;
   border: none;
-  background: rgba(232,235,230,0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #454745;
+  background: var(--nv-surface-soft);
+  color: var(--nv-body);
   cursor: grab;
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  box-shadow: 0 1px 4px rgba(14,15,12,0.04);
+  box-shadow: 0 2px 8px rgba(14,15,12,0.08);
   transition: background 0.2s, color 0.2s, box-shadow 0.2s, border-radius 0.2s;
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
@@ -43,13 +41,21 @@
   -webkit-user-select: none;
 }
 
+/* zashboard：透明 + 无阴影，只留深色图标 */
+body[data-nav-page="zashboard"] .wise-nav-btn {
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .wise-nav-btn:hover {
-  background: rgba(232,235,230,0.7);
+  background: #d8dbd6;
   color: var(--nv-ink);
 }
 
 .wise-nav-btn:active {
-  background: rgba(232,235,230,0.85);
+  background: var(--nv-primary-pale);
 }
 
 /* 拖拽中 */
