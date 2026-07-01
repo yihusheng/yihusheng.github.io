@@ -1,20 +1,41 @@
 import { state } from './state.js';
 
-// ── Web Worker 并行处理 ──
-export var maxWorker = new Worker('/scripts/worker.js');
+// ── AbortSignal.timeout polyfill (Via 等旧浏览器不支持) ──
+if (!AbortSignal.timeout) {
+  AbortSignal.timeout = function(ms) {
+    var ctrl = new AbortController();
+    setTimeout(function() { ctrl.abort(); }, ms);
+    return ctrl.signal;
+  };
+}
+
+// ── Web Worker 并行处理（容错：Worker 不可用时回退到主线程）──
+export var maxWorker = null;
 var _wqid = 0;
 var _wcb = {};
-maxWorker.addEventListener('message', function(e) {
-  var m = e.data;
-  var cb = _wcb[m.id];
-  if (cb) { delete _wcb[m.id]; cb(m); }
-});
+var _workerFallback = false;
+try { maxWorker = new Worker('/scripts/worker.js'); } catch(e) { _workerFallback = true; }
+if (maxWorker) {
+  maxWorker.addEventListener('message', function(e) {
+    var m = e.data;
+    var cb = _wcb[m.id];
+    if (cb) { delete _wcb[m.id]; cb(m); }
+  });
+}
 export function wPost(type, payload, cb) {
   var id = ++_wqid;
   _wcb[id] = cb;
   payload.type = type;
   payload.id = id;
-  maxWorker.postMessage(payload);
+  if (maxWorker) {
+    maxWorker.postMessage(payload);
+  } else if (_workerFallback) {
+    // Worker 不可用时直接在主线程回调
+    queueMicrotask(function() {
+      var cb2 = _wcb[id];
+      if (cb2) { delete _wcb[id]; cb2({ data: null }); }
+    });
+  }
 }
 
 // ── 预加载队列 ──
