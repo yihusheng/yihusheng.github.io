@@ -18,8 +18,9 @@ export function updateThemeColor() { var c=getComputedStyle(document.documentEle
 export function updateTime() { var n=new Date(); document.getElementById('islandTime').textContent = String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); }
 
 async function getLocationByIP() {
-  try { var r=await fetch('https://ipapi.co/json/',{signal:AbortSignal.timeout(5000)}); if(!r.ok)throw Error(); var d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city}; } catch(e){}
-  try { var r2=await fetch('https://ip-api.com/json/?lang=zh-CN',{signal:AbortSignal.timeout(5000)}); if(r2.ok){ var d2=await r2.json(); if(d2.status==='success') return {lat:d2.lat,lon:d2.lon,city:d2.city}; } } catch(e2){}
+  try { var r=await fetch('https://ipapi.co/json/',{signal:AbortSignal.timeout(4000)}); if(r.ok){ var d=await r.json(); if(d.latitude&&d.longitude) return {lat:d.latitude,lon:d.longitude,city:d.city||d.city||''}; } } catch(e){}
+  try { var r=await fetch('https://ip-api.com/json/?fields=status,lat,lon,city',{signal:AbortSignal.timeout(4000)}); if(r.ok){ var d=await r.json(); if(d.status==='success') return {lat:d.lat,lon:d.lon,city:d.city||''}; } } catch(e2){}
+  try { var r=await fetch('https://ipinfo.io/json',{signal:AbortSignal.timeout(4000)}); if(r.ok){ var d=await r.json(); if(d.loc){ var p=d.loc.split(','); return {lat:parseFloat(p[0]),lon:parseFloat(p[1]),city:d.city||d.region||''}; } } } catch(e3){}
   return null;
 }
 
@@ -35,14 +36,15 @@ export async function fetchWeather() {
       } catch(e) {
         var ip=await getLocationByIP();
         if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-        else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
+        else{ lat=null;lon=null; } // 全失败则跳过天气更新
       }
     } else {
       var ip=await getLocationByIP();
       if(ip){lat=ip.lat;lon=ip.lon;locName=ip.city;CookieUtils.set('weather_lat',lat,30);CookieUtils.set('weather_lon',lon,30);}
-      else{lat=39.9042;lon=116.4074;document.getElementById('locationDisplay').textContent='默认位置 (北京)';}
+      else{ lat=null;lon=null; }
     }
   }
+  if(lat==null||lon==null){ document.getElementById('locationDisplay').textContent='位置获取失败，请检查网络或允许定位'; return; }
   try {
     if(!locName){ try { var l=await fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lon+'&localityLanguage=zh',{signal:AbortSignal.timeout(5000)}); var ld=await l.json(); locName=ld.city||ld.locality||ld.principalSubdivision||ld.countryName||lat.toFixed(2)+', '+lon.toFixed(2); } catch(e){locName='未知位置';} }
     if(!document.getElementById('locationDisplay').textContent.includes('默认')) document.getElementById('locationDisplay').textContent=locName;
