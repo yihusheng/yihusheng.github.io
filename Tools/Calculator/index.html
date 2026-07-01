@@ -33,7 +33,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 .ip .un{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase}
 .qr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .ql{font-size:9px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.08em;margin-right:2px}
-.qc{background:var(--c);border:none;padding:3px 10px;border-radius:var(--rp);font-size:10px;font-weight:700;cursor:pointer;color:var(--b);font-family:inherit;transition:all .12s}
+.qc{background:var(--c);border:none;margin:0 2px;padding:3px 10px;border-radius:var(--rp);font-size:10px;font-weight:700;cursor:pointer;color:var(--b);font-family:inherit;transition:all .12s}
 .qc:hover{background:var(--pp);color:var(--kd)}
 .qc.act{background:var(--k);color:var(--p)}
 .nt{display:flex;flex-direction:column;gap:3px}
@@ -202,6 +202,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 
   // ── 初始化 A/B ──
   // 清空默认面板，全部由模板生成
+  var grid = document.getElementById("grid");
   while (grid.firstChild) grid.removeChild(grid.firstChild);
   addCard('A');
   addCard('B');
