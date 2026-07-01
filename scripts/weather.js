@@ -154,7 +154,7 @@ function updateMoonArc(moonriseStr, moonsetStr) {
       progress = Math.max(0, Math.min(1, (nowMin - mrMin) / (msMin - mrMin)));
     }
     var cx = 12 + progress * 216;
-    var cy = 46 - (1 - Math.pow(2*progress - 1, 2)) * 34;
+    var cy = 46 - (1 - Math.pow(2*progress - 1, 2)) * 34 - 6;
     var md = document.getElementById('md');
     var mgd = document.getElementById('mgd');
     if (md) { md.setAttribute('cx', cx); md.setAttribute('cy', cy); md.setAttribute('opacity', '1'); }
