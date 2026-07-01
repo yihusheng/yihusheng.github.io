@@ -53,6 +53,10 @@ export function initIsland() {
     weatherMoreBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleWeatherDetail(); });
     weatherMoreBtn.addEventListener('touchstart', function(e) { e.stopPropagation(); });
   }
+  var weatherMoreHint = document.getElementById('weatherMoreHint');
+  if (weatherMoreHint) {
+    weatherMoreHint.addEventListener('click', function(e) { e.stopPropagation(); toggleWeatherDetail(); });
+  }
 
   // 天气详情内部所有点击不冒泡（防止穿透到外部收起逻辑）
   var weatherDetail = document.querySelector('.island-weather-detail');
