@@ -141,7 +141,17 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     if (tp) tp.addEventListener('click', function(e) {
       var t = e.target.closest('.qc');
       if (!t) return;
-      document.getElementById('tw'+p).value = t.dataset.w;
+      var w = t.dataset.w;
+      var focused = document.activeElement;
+      var sInput = document.getElementById('s'+p);
+      var twInput = document.getElementById('tw'+p);
+      if (focused === twInput) {
+        twInput.value = w;
+        twInput.blur();
+      } else {
+        sInput.value = w;
+        sInput.blur();
+      }
       c(p);
     });
   }
@@ -206,7 +216,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
         '<div class="sv"><div class="sr">' +
         '<div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>' +
         '<div class="ip"><label>总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div></div>' +
-        '<div class="qr"><span class="ql">总重快捷</span><div id="tpA">' +
+        '<div class="qr"><span class="ql">快捷</span><div id="tpA">' +
         '<button class="qc" data-w="15">15</button><button class="qc" data-w="30">30</button>' +
         '<button class="qc" data-w="50">50</button><button class="qc" data-w="100">100</button>' +
         '<button class="qc" data-w="200">200</button><button class="qc" data-w="500">500</button></div></div></div>' +
