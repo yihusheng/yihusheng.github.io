@@ -152,7 +152,8 @@ body {
 .dynamic-island.active .island-weather-detail { opacity: 1; pointer-events: auto; }
 .detail-main {
   display: flex; align-items: flex-start; justify-content: space-between;
-  flex: 1;
+  flex: 0 0 auto;
+  min-height: 100px;
 }
 .detail-left { display: flex; flex-direction: column; align-items: flex-start; }
 .detail-icon-lg { font-size: 2.8rem; line-height: 1; margin-bottom: 10px; color: var(--md-sys-color-primary); }
@@ -188,7 +189,7 @@ body {
   height: 480px !important;
   overflow-y: auto;
 }
-.dynamic-island.weather-detailed #weatherCompactRow { display: none; }
+.dynamic-island.weather-detailed #weatherCompactRow { display: none !important; }
 
 .weather-drawer {
   display: flex; flex-direction: column; gap: 4px; justify-content: center;
