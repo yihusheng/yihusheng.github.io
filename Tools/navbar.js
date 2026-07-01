@@ -284,11 +284,6 @@
   function doInit() {
     if (isHomePage()) return;
 
-    // 标记页面类型，CSS 据此区分样式
-    var path = window.location.pathname;
-    if (path.includes('/zashboard/')) document.body.setAttribute('data-nav-page','zashboard');
-    else if (path.includes('/Metacubexd/')) document.body.setAttribute('data-nav-page','metacubexd');
-
     var alreadyExists = !!document.getElementById('wiseNavToggle');
     if (!alreadyExists) {
       injectFonts();
