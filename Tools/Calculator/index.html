@@ -75,74 +75,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
 <body>
 <div class="wrap">
 <div class="g" id="grid">
-  <div class="card card-pad" id="pa">
-    <div class="ph">
-      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
-      <div class="ph-r">
-        <div class="pb">A</div>
-        <button class="pc" data-p="A"><span class="material-symbols-rounded">close</span></button>
-      </div>
-    </div>
-    <div class="sv">
-      <div class="sr">
-        <div class="ip"><label>每份</label><input type="number" id="sA" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-        <div class="ip"><label>总重</label><input type="number" id="twA" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-      </div>
-      <div class="qr">
-        <span class="ql">总重快捷</span>
-        <div id="tpA">
-          <button class="qc" data-w="15">15</button>
-          <button class="qc" data-w="30">30</button>
-          <button class="qc" data-w="50">50</button>
-          <button class="qc" data-w="100">100</button>
-          <button class="qc" data-w="200">200</button>
-          <button class="qc" data-w="500">500</button>
-        </div>
-      </div>
-    </div>
-    <div class="nt">
-      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsA">—<span class="ru">g</span></span></div></div><input type="number" id="naA" placeholder="0" class="ni"><span class="nu">mg</span></div>
-      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkA">—<span class="ru">kcal</span></span></div></div><input type="number" id="kjA" placeholder="0" class="ni"><span class="nu">kJ</span></div>
-      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprA">—<span class="ru">g</span></span></div></div><input type="number" id="proA" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftA">—<span class="ru">g</span></span></div></div><input type="number" id="fatA" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbA">—<span class="ru">g</span></span></div></div><input type="number" id="carA" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbA">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbA">—<span class="ru">g</span></span></div></div><input type="number" id="fibA" placeholder="0" class="ni"><span class="nu">g</span></div>
-    </div>
-  </div>
-  <div class="card card-pad" id="pb">
-    <div class="ph">
-      <div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>
-      <div class="ph-r">
-        <div class="pb">B</div>
-        <button class="pc" data-p="B"><span class="material-symbols-rounded">close</span></button>
-      </div>
-    </div>
-    <div class="sv">
-      <div class="sr">
-        <div class="ip"><label>每份</label><input type="number" id="sB" value="100" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-        <div class="ip"><label>总重</label><input type="number" id="twB" placeholder="—" step="any" min="0" class="inp-sm"><span class="un">g</span></div>
-      </div>
-      <div class="qr">
-        <span class="ql">总重快捷</span>
-        <div id="tpB">
-          <button class="qc" data-w="15">15</button>
-          <button class="qc" data-w="30">30</button>
-          <button class="qc" data-w="50">50</button>
-          <button class="qc" data-w="100">100</button>
-          <button class="qc" data-w="200">200</button>
-          <button class="qc" data-w="500">500</button>
-        </div>
-      </div>
-    </div>
-    <div class="nt">
-      <div class="nr hl"><span class="nd nd-na"></span><span class="nn">钠</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="saltB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tsB">—<span class="ru">g</span></span></div></div><input type="number" id="naB" placeholder="0" class="ni"><span class="nu">mg</span></div>
-      <div class="nr he"><span class="nd nd-kj"></span><span class="nn">能量</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="kcalB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tkB">—<span class="ru">kcal</span></span></div></div><input type="number" id="kjB" placeholder="0" class="ni"><span class="nu">kJ</span></div>
-      <div class="nr"><span class="nd nd-pr"></span><span class="nn">蛋白质</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="prB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tprB">—<span class="ru">g</span></span></div></div><input type="number" id="proB" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-ft"></span><span class="nn">脂肪</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="ftB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tftB">—<span class="ru">g</span></span></div></div><input type="number" id="fatB" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcbB">—<span class="ru">g</span></span></div></div><input type="number" id="carB" placeholder="0" class="ni"><span class="nu">g</span></div>
-      <div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fbB">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfbB">—<span class="ru">g</span></span></div></div><input type="number" id="fibB" placeholder="0" class="ni"><span class="nu">g</span></div>
-    </div>
-  </div>
 </div>
 <div class="add-card-wrap">
   <button class="add-card" id="addCardBtn" title="添加面板"><span class="material-symbols-rounded">add</span></button>
@@ -228,13 +160,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
     });
   }
 
-  // ── 新建面板 ──
-  function addCard() {
-    var letter = nextLetter;
-    nextLetter = String.fromCharCode(nextLetter.charCodeAt(0) + 1);
+  // ── 卡片模板 ──
+  function cardHTML(letter) {
     var l = letter.toLowerCase();
-
-    var html = '<div class="card card-pad" id="p' + l + '">' +
+    return '<div class="card card-pad" id="p' + l + '">' +
       '<div class="ph"><div class="ph-bdg"><span class="material-symbols-rounded">calculate</span> Nutrition Calculator</div>' +
       '<div class="ph-r"><div class="pb">' + letter + '</div>' +
       '<button class="pc remove-card" data-p="' + letter + '"><span class="material-symbols-rounded">close</span></button></div></div>' +
@@ -253,16 +182,30 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
         '<div class="nr"><span class="nd nd-cb"></span><span class="nn">碳水</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="cb' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tcb' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="car' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
         '<div class="nr"><span class="nd nd-fb"></span><span class="nn">纤维</span><div class="ir"><div class="rc"><span class="rl">每g</span><span class="rv" id="fb' + letter + '">—</span></div><div class="rc"><span class="rl">总含</span><span class="rv" id="tfb' + letter + '">—<span class="ru">g</span></span></div></div><input type="number" id="fib' + letter + '" placeholder="0" class="ni"><span class="nu">g</span></div>' +
       '</div></div>';
+  }
 
+  // ── 新建面板 ──
+  function addCard(letter) {
+    if (!letter) {
+      letter = nextLetter;
+      nextLetter = String.fromCharCode(nextLetter.charCodeAt(0) + 1);
+    }
     var grid = document.getElementById('grid');
     var dummy = document.createElement('div');
-    dummy.innerHTML = html;
+    dummy.innerHTML = cardHTML(letter);
     var card = dummy.firstChild;
     grid.appendChild(card);
     P.push(letter);
     bindPanel(letter);
     ca();
   }
+
+  // ── 初始化 A/B ──
+  // 清空默认面板，全部由模板生成
+  while (grid.firstChild) grid.removeChild(grid.firstChild);
+  addCard('A');
+  addCard('B');
+  nextLetter = 'C';
 
   // ── 移除面板 ──
   document.getElementById('grid').addEventListener('click', function(e) {
@@ -279,7 +222,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--s);
   });
 
   // ── 添加卡片按钮 ──
-  document.getElementById('addCardBtn').addEventListener('click', addCard);
+  document.getElementById('addCardBtn').addEventListener('click', function() { addCard(); });
 
   // ── 初始化 ──
   P.forEach(bindPanel);
