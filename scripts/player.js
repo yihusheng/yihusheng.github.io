@@ -277,9 +277,6 @@ export function toggleLyrics() {
       renderLyrics();
       updateLyricHighlight();
     } else if (state.currentSongLrcUrl) {
-      renderLyrics();
-      updateLyricHighlight();
-    } else if (state.currentSongLrcUrl) {
       document.getElementById('lyricsContent').innerHTML = '<div class="lyrics-empty">歌词加载中...</div>';
       var lid = ++state.lrcLoadId;
       loadLyrics(state.currentSongLrcUrl, function(data) {
