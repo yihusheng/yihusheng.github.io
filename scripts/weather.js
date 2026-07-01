@@ -57,9 +57,9 @@ export async function fetchWeather() {
     document.getElementById('detailHumidity').innerHTML='<span class="material-symbols-rounded">water_drop</span> '+c.relative_humidity_2m+'%';
     document.documentElement.style.setProperty('--island-expand-bg',w.b);
     var sunriseStr='--:--',sunsetStr='--:--';
-    if(da.sunrise&&da.sunrise[0]){ var sr=new Date(da.sunrise[0]); sunriseStr=String(sr.getHours()).padStart(2,'0')+':'+String(sr.getMinutes()).padStart(2,'0'); document.getElementById('weatherSunrise').textContent=sunriseStr; }
-    if(da.sunset&&da.sunset[0]){ var ss=new Date(da.sunset[0]); sunsetStr=String(ss.getHours()).padStart(2,'0')+':'+String(ss.getMinutes()).padStart(2,'0'); document.getElementById('weatherSunset').textContent=sunsetStr; }
-    var mp=getMoonPhase(new Date()); document.getElementById('weatherMoonPhase').textContent=mp;
+    if(da.sunrise&&da.sunrise[0]){ var sr=new Date(da.sunrise[0]); sunriseStr=String(sr.getHours()).padStart(2,'0')+':'+String(sr.getMinutes()).padStart(2,'0'); document.getElementById('weatherSunrise').textContent=sunriseStr; document.getElementById('weatherSunriseSmall').textContent=sunriseStr; }
+    if(da.sunset&&da.sunset[0]){ var ss=new Date(da.sunset[0]); sunsetStr=String(ss.getHours()).padStart(2,'0')+':'+String(ss.getMinutes()).padStart(2,'0'); document.getElementById('weatherSunset').textContent=sunsetStr; document.getElementById('weatherSunsetSmall').textContent=sunsetStr; }
+    var mp=getMoonPhase(new Date()); document.getElementById('weatherMoonPhase').textContent=mp; document.getElementById('weatherMoonPhaseSmall').textContent=mp.replace(/[\uD800-\uDFFF]/g,'').trim() || mp;
     updateSunArc(sunriseStr||'--:--',sunsetStr||'--:--');
     calcMoonTimes(sunriseStr,sunsetStr);
   } catch(e) { console.error(e); if(!document.getElementById('locationDisplay').textContent.includes('失败')) document.getElementById('locationDisplay').textContent='天气获取失败'; }
@@ -108,16 +108,56 @@ function calcMoonTimes(sunriseStr, sunsetStr) {
     var ms = document.getElementById('weatherMoonset');
     var mt = document.getElementById('moonTimesRow');
     if (!mr || !ms) return;
+    var mrStr = '--:--', msStr = '--:--';
     if (sunsetStr && sunsetStr !== '--:--') {
       var ss = sunsetStr.split(':');
       var mrH = (parseInt(ss[0],10) + 1) % 24;
-      mr.textContent = String(mrH).padStart(2,'0') + ':' + ss[1];
+      mrStr = String(mrH).padStart(2,'0') + ':' + ss[1];
+      mr.textContent = mrStr;
     }
     if (sunriseStr && sunriseStr !== '--:--') {
       var sr = sunriseStr.split(':');
       var msH = (parseInt(sr[0],10) - 1 + 24) % 24;
-      ms.textContent = String(msH).padStart(2,'0') + ':' + sr[1];
+      msStr = String(msH).padStart(2,'0') + ':' + sr[1];
+      ms.textContent = msStr;
     }
     if (mt) mt.style.display = 'flex';
+    // 更新月亮位置弧
+    updateMoonArc(mrStr, msStr);
+  } catch(e) {}
+}
+
+function updateMoonArc(moonriseStr, moonsetStr) {
+  try {
+    var moonSvg = document.getElementById('moonArcSvg');
+    if (!moonSvg) return;
+    var now = new Date();
+    if (moonriseStr === '--:--' || moonsetStr === '--:--') return;
+    var mrParts = moonriseStr.split(':');
+    var msParts = moonsetStr.split(':');
+    if (mrParts.length < 2 || msParts.length < 2) return;
+    var mrMin = parseInt(mrParts[0],10)*60 + parseInt(mrParts[1],10);
+    var msMin = parseInt(msParts[0],10)*60 + parseInt(msParts[1],10);
+    var nowMin = now.getHours()*60 + now.getMinutes();
+    // 如果月落 < 月升，表示跨天（月落是次日凌晨）
+    var progress;
+    if (msMin <= mrMin) {
+      // 跨天：当前在月升前（夜间）或月落后（凌晨）
+      if (nowMin >= mrMin) {
+        // 月升后，跨天到次日月落
+        progress = Math.max(0, Math.min(1, (nowMin - mrMin) / (msMin + 1440 - mrMin)));
+      } else {
+        // 还没月升（次日凌晨），在次日月升前
+        progress = 0;
+      }
+    } else {
+      progress = Math.max(0, Math.min(1, (nowMin - mrMin) / (msMin - mrMin)));
+    }
+    var cx = 12 + progress * 216;
+    var cy = 46 - (1 - Math.pow(2*progress - 1, 2)) * 34;
+    var md = document.getElementById('md');
+    var mgd = document.getElementById('mgd');
+    if (md) { md.setAttribute('cx', cx); md.setAttribute('cy', cy); md.setAttribute('opacity', '1'); }
+    if (mgd) { mgd.setAttribute('cx', cx); mgd.setAttribute('cy', cy); mgd.setAttribute('opacity', '0.8'); }
   } catch(e) {}
 }
