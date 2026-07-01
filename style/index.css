@@ -188,6 +188,8 @@ body {
   height: 480px !important;
   overflow-y: auto;
 }
+.dynamic-island.weather-detailed #weatherCompactRow { display: none; }
+
 .weather-drawer {
   display: flex; flex-direction: column; gap: 4px; justify-content: center;
   padding: 4px 0 0;
